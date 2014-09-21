@@ -9,8 +9,8 @@ namespace Cloud14
             Server server = new Server();
             server.enqueue("Test1.");
             server.enqueue("Test2.");
-            server.getID(0);
-            server.getID(1);
+            server.enqueue("Test3.");
+            server.getRange(0, 3);
             Console.ReadKey();
         }
     }

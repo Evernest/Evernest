@@ -49,7 +49,6 @@ Lectures :
 
  * Benchmarking
  * Interface web
- * 
 
 
 Buts

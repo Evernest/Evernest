@@ -1,0 +1,26 @@
+Interface entre la réception des messages et le stockage
+=======================================================
+
+Le projet est divisé de la manière suivante : 
+
+
+  +------+       +-------+       +------+
+  | Back |<--+-->| Front |<--+-->|Client|
+  +------+   |   +-------+   |   +------+
+             |               |
+             V               V
+            Ici          Voir api-draft.md
+
+
+I. Le Back-end et le Front-end
+------------------------------
+
+Le rôle du back-end est de gérer le stockage des messages. Lorsqu'un client envoie un message, celui-ci est réceptionné par la partie 'Front' du projet. Le Front-end se charge de le transmettre au Back-end. De même quand un client demande un ensemble de message, c'est le Front-end qui procède à l'envoi. De manière générale, le Front-end fait l'interface entre le client et le stockage.
+
+II. L'interface IStorage
+------------------------
+
+L'interface IStorage est implémentée par le Back-end. Elle définie notamment les méthodes d'ajout et de requête de message.
+
+
+

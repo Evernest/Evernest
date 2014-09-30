@@ -1,4 +1,4 @@
 Evernest
 ========
 
-Projet du cours de Cloud Computing de l'ENS de 2014.
+Projet du cours de Cloud Computing de l'ENS de 2014 (J. Vermorel).

@@ -8,7 +8,7 @@ Présentations
 
 | Sujet         | Commentaire               | Présentateur |
 |---------------|---------------------------|--------------|
-| Git/Github    |                           |              |
+| Git/Github    |                           | Martin       |
 | nunit + R#    | tests U                   | Axelle       |
 | msbuild       | ~ Makefile                |              |
 | teamcity      | Intégration continue      |              |

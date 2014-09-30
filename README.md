@@ -1,12 +1,5 @@
-Cloud14
-=======
+Evernest
+========
 
-Cloud Computing '14 project for computer sciences students at ENS (Paris, France)
-
-Assignments :
-
-Elie (Coordinator), Rémi (Test/Regression Master), Alex (Build Master), Martin (Back Manager), Raphael (Front Manager), Aymeric (Admin)
-
-Not assigned yet :
-
-Axelle, Marc, Corentin, Emile, Aurelien, Ikram, Diane
+Projet du cours de Cloud Computing de l'ENS de 2014 (J. Vermorel).
+>>>>>>> 4ac301acb8ebd90eb91e39c0b105384376771048

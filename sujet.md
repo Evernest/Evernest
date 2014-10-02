@@ -33,7 +33,7 @@ Service vers lequel on peut pousser des évènements et qui répond avec un ID e
 Lectures :
 
  * Aléatoire
- * Par intervale
+ * Par intervalle
 
 ### Intérêt
 

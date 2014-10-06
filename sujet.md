@@ -10,8 +10,8 @@ Présentations
 |---------------|---------------------------|--------------|
 | Git/Github    |                           | Martin       |
 | nunit + R#    | tests U                   | Axelle       |
-| msbuild       | ~ Makefile                |              |
-| teamcity      | Intégration continue      |              |
+| msbuild       | ~ Makefile                | Rémi         |
+| teamcity      | Intégration continue      | Marc         |
 | ncover        | Analyse statique          | Alex         |
 | powershell    |                           |              |
 | TPL + PLinq   | Multicore                 |              |

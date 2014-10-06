@@ -5,6 +5,17 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestWeb", "EvernestWeb\EvernestWeb.csproj", "{4B9B8DEC-8CD1-452E-8D4D-EACF227EE97B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{5504E19B-1BD8-48F6-88A8-598C4F6BC42A}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
+		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{5551F3CD-8770-4DE7-B980-43EF266CD5C1}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\Configurations\EvernestWeb-WAWS-dev.json = PublishScripts\Configurations\EvernestWeb-WAWS-dev.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +29,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5551F3CD-8770-4DE7-B980-43EF266CD5C1} = {5504E19B-1BD8-48F6-88A8-598C4F6BC42A}
 	EndGlobalSection
 EndGlobal

@@ -17,7 +17,7 @@ Présentations
 | TPL + PLinq   | Multicore                 |              |
 | REST, ASP.NNC | API                       | Élie         |
 | .trace        | profiler CPU              |              |
-| Linq          | SQL C# typé               |              |
+| Linq          | SQL C# typé               | Corentin     |
 | Bootstrap     | Framework Webapp          |              |
 | .Peek         | décompilateur             |              |
 | kudu          | déploiement Azure par Git |              |

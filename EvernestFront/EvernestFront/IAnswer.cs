@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace EvernestFront
 {
-    public class Class1
+    interface IAnswer
     {
-        // Stuff here....
+        string ToString();
     }
 }

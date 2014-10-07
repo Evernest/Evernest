@@ -1,7 +1,7 @@
-Interface entre la rÈception des messages et le stockage
+Interface entre la r√©ception des messages et le stockage
 =======================================================
 
-Le projet est divisÈ de la maniËre suivante : 
+Le projet est divis√© de la mani√®re suivante : 
 
 
   +------+       +-------+       +------+
@@ -15,12 +15,51 @@ Le projet est divisÈ de la maniËre suivante :
 I. Le Back-end et le Front-end
 ------------------------------
 
-Le rÙle du back-end est de gÈrer le stockage des messages. Lorsqu'un client envoie un message, celui-ci est rÈceptionnÈ par la partie 'Front' du projet. Le Front-end se charge de le transmettre au Back-end. De mÍme quand un client demande un ensemble de message, c'est le Front-end qui procËde ‡ l'envoi. De maniËre gÈnÈrale, le Front-end fait l'interface entre le client et le stockage.
+Le r√¥le du back-end est de g√©rer le stockage des messages. Lorsqu'un client envoie un message, celui-ci est r√©ceptionn√© par la partie 'Front' du projet. Le Front-end se charge de le transmettre au Back-end. De m√™me quand un client demande un ensemble de message, c'est le Front-end qui proc√®de √† l'envoi. De mani√®re g√©n√©rale, le Front-end fait l'interface entre le client et le stockage.
 
 II. L'interface IStorage
 ------------------------
 
-L'interface IStorage est implÈmentÈe par le Back-end. Elle dÈfinie notamment les mÈthodes d'ajout et de requÍte de message.
+L'interface IStorage est impl√©ment√©e par le Back-end. Elle d√©finie notamment les m√©thodes d'ajout et de requ√™te de message.
 
 
+                          IStorage
+         +------------------------------------------------------------+
+         |                                                            |
+requests |  +-------------------+           +----------+              |
+  --------->| Stream Controller |------+--->| Producer |--------+     |
+         |  +-----------------+-+      |    +----------+        |     |
+         |                    |        +---->   ...             |     |
+         |                    |        +---->   ...             |     |
+         |                    |                                 |     |
+         |                    |             +----------+        |     |
+         |                    +--------+--->| Reader   |----+   |     |
+         |                             |    +----------+    |   |     |
+         |                             +---->   ...         |   |     |
+         |                             +---->   ...         |   |     |
+         |                                                  |   |     |
+feedback |  +--------------------+                          |   |     |
+  <---------| Stream Deliver     |<-------------------------+   |     |
+         |  +--------------------+                              |     |
+         |                    A                                 |     |
+         |                    +---------------------------------+     |
+         |                                                            |
+         +------------------------------------------------------------+
 
+
+Toutes les requ√™tes viennent du front-end. Elles sont r√©parties entre 
+un ensemble de Producer (pour ce qui est de l'√©criture) et un ensemble 
+de Reader (pour ce qui est de la lecture) par un controlleur (Stream 
+Controller). 
+
+Toutes les op√©rations sont asynchrones. Faire une requ√™te ne retourne
+rien. Une fois que la requ√™te trait√©e, le Producer ou le Reader en 
+informe le Stream Deliver qui envoie un feedback au front-end 
+(C'est-√†-dire soit un ACK, soit les messages demand√©s).
+
+On utilise le pattern "Fire and forget". Une fois que le front-end fait 
+une requ√™te, il sait qu'il va obtenir une r√©ponse. Il n'a pas besoin de 
+l'attendre. 
+
+ --> Permet facilement de paralleliser, le controlleur g√®re qui √©crit o√π,
+ mais il ne fait pas d'op√©rations couteuses. Tous les blocs sont ind√©pendants

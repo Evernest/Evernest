@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cloud14;
 
 namespace Cloud14
 {
-	class Server
+	class Server : IStorage
 	{
         private LinkedList<Message> messagesList = new LinkedList<Message>();
         private int id = 0;

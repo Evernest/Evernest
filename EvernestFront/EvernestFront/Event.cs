@@ -8,6 +8,6 @@ namespace EvernestFront
 {
     class Event
     {
-        // prendre directement celle du Back ?
+       
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvernestFront
 {
-    interface IAnswer
+    public interface IAnswer
     {
         string ToString();
     }

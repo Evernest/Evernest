@@ -41,11 +41,13 @@
   <ItemGroup>
     <Compile Include="Answer.cs" />
     <Compile Include="Event.cs" />
-    <Compile Include="Request.cs" />
+    <Compile Include="Request\Request.cs" />
     <Compile Include="IAnswer.cs" />
-    <Compile Include="IRequest.cs" />
+    <Compile Include="Request\IRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequestPush.cs" />
+    <Compile Include="Request\PullBetween.cs" />
+    <Compile Include="Request\PullRandom.cs" />
+    <Compile Include="Request\Push.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

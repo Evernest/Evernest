@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace EvernestFront
 {
-    interface IRequest
+    namespace Request
     {
-        string ToString();
+        interface IRequest
+        {
+            string ToString();
 
-        IAnswer Process();
+            IAnswer Process();
+        } 
     }
 }

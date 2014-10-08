@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace EvernestFront
+namespace EvernestFront.Request
 {
-    namespace Request
-    {
-
+   
         class PullRandom : Request
         {
             public PullRandom(string user, string streamName)
@@ -19,5 +13,5 @@ namespace EvernestFront
                 throw new NotImplementedException();
             }
         }
-    }
+    
 }

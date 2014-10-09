@@ -11,7 +11,7 @@ namespace EvernestFront
     {
         private string name;
 
-        //private Dictionary<string, StreamRights> rights;
+        private Dictionary<string, StreamRights> rightsTable;
 
 
         protected Stream()
@@ -24,8 +24,27 @@ namespace EvernestFront
             throw new NotImplementedException();
         }
 
+        private StreamRights GetRights(string user)
+        {
+            if (rightsTable.ContainsKey(user))
+                return rightsTable[user];
+            else return StreamRights.NoRights;
+        }
 
-
+        // TODO : préciser Answer -> Answer.PullRandom
+        internal Answer PullRandom(string user)
+        {
+            StreamRights rights = GetRights(user);
+            switch (rights)
+            {
+                case (StreamRights.NoRights):
+                    {
+                        throw new NotImplementedException();
+                    }
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
         // interface de Martin :
         //

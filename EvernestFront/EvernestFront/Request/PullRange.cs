@@ -3,14 +3,16 @@
 namespace EvernestFront.Request
 {
  
-        class PullBetween : Request
+        class PullRange : Request
         {
+            
             string eventIdFrom;
             string eventIdTo;
 
-            public PullBetween(string user, string streamName, string from, string to)
+            public PullRange(string user, string streamName, string from, string to)
                 : base(user, streamName)
             {
+
                 this.eventIdFrom = from;
                 this.eventIdTo = to;
             }

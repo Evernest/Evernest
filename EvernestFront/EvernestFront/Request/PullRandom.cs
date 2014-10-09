@@ -10,7 +10,16 @@ namespace EvernestFront.Request
 
             public override IAnswer Process()
             {
-                throw new NotImplementedException();
+                try
+                {
+                    Stream stream = StreamTable.GetStream(StreamName);
+                    return stream.PullRandom(User);
+                }
+                catch (StreamNameDoesNotExistException e)
+                {
+                    throw new NotImplementedException();
+                }
+                
             }
         }
     

@@ -11,7 +11,7 @@ namespace EvernestFront
     {
         private string name;
 
-        //private Dictionary<string, StreamRights> rights;
+        //private Dictionary<string, StreamRights> rights; 
 
 
         protected Stream()

@@ -3,14 +3,14 @@
   
         public abstract class Request : IRequest
         {
-            private string user;
+            protected string User;
 
-            private string streamName;
+            protected string StreamName;
 
             protected Request(string user, string streamName)
             {
-                this.user = user;
-                this.streamName = streamName;
+                this.User = user;
+                this.StreamName = streamName;
             }
 
             public abstract IAnswer Process();

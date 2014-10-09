@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace EvernestFront
 {
-    abstract class Answer:IAnswer
+    public enum StreamRights
     {
-        string IAnswer.ToString()
-        {
-            throw new NotImplementedException();
-        }
+        NoRights,
+        Read,
+        ReadWrite,
+        Admin
     }
 }

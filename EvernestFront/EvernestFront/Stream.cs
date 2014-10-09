@@ -9,15 +9,14 @@ namespace EvernestFront
 {
     class Stream
     {
-        private string name;
-
 
         private Dictionary<string, StreamRights> rightsTable;
 
 
-        protected Stream()
+        internal Stream(string user)
         {
-            throw new NotImplementedException();
+                rightsTable = new Dictionary<string, StreamRights> {{user, StreamRights.Admin}};
+                // TODO : appeler Martin NewStorage()
         }
 
         protected List<Event> PullRange(int from, int to)

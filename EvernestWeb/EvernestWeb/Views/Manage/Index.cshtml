@@ -1,78 +1,78 @@
 ﻿@model EvernestWeb.Models.IndexViewModel
 @{
-    ViewBag.Title = "Gérer";
+    ViewBag.Title = "Manage";
 }
 
 <h2>@ViewBag.Title.</h2>
 
 <p class="text-success">@ViewBag.StatusMessage</p>
 <div>
-    <h4>Changer les paramètres de votre compte</h4>
+    <h4>Change your account settings</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>Mot de passe :</dt>
+        <dt>Password:</dt>
         <dd>
             [
             @if (Model.HasPassword)
             {
-                @Html.ActionLink("Changer votre mot de passe", "ChangePassword")
+                @Html.ActionLink("Change your password", "ChangePassword")
             }
             else
             {
-                @Html.ActionLink("Créer", "SetPassword")
+                @Html.ActionLink("Create", "SetPassword")
             }
             ]
         </dd>
-        <dt>Connexions externes :</dt>
+        <dt>External Logins:</dt>
         <dd>
             @Model.Logins.Count [
-            @Html.ActionLink("Gérer", "ManageLogins") ]
+            @Html.ActionLink("Manage", "ManageLogins") ]
         </dd>
         @*
-            Les numéros de téléphone peuvent servir de second facteur de vérification dans un système d'authentification à 2 facteurs.
+            Phone Numbers can used as a second factor of verification in a two-factor authentication system.
              
-             Voir <a href="http://go.microsoft.com/fwlink/?LinkId=313242">cet article</a>
-                pour savoir comment configurer cette application ASP.NET pour qu'elle prenne en charge l'authentification à 2 facteurs via les SMS.
+             See <a href="http://go.microsoft.com/fwlink/?LinkId=313242">this article</a>
+                for details on setting up this ASP.NET application to support two-factor authentication using SMS.
              
-             Décommentez le bloc suivant après avoir configuré l'authentification à 2 facteurs
+             Uncomment the following block after you have set up two-factor authentication
         *@
         @*  
-            <dt>Numéro de téléphone :</dt>
+            <dt>Phone Number:</dt>
             <dd>
-                @(Model.PhoneNumber ?? "Aucun") [
+                @(Model.PhoneNumber ?? "None") [
                 @if (Model.PhoneNumber != null)
                 {
-                    @Html.ActionLink("Changer", "AddPhoneNumber")
+                    @Html.ActionLink("Change", "AddPhoneNumber")
                     @: &nbsp;|&nbsp;
-                    @Html.ActionLink("Supprimer", "RemovePhoneNumber")
+                    @Html.ActionLink("Remove", "RemovePhoneNumber")
                 }
                 else
                 {
-                    @Html.ActionLink("Ajouter", "AddPhoneNumber")
+                    @Html.ActionLink("Add", "AddPhoneNumber")
                 }
                 ]
             </dd>
         *@
-        <dt>Authentification à 2 facteurs :</dt>
+        <dt>Two-Factor Authentication:</dt>
         <dd>
             <p>
-                Aucun fournisseur d'authentification à 2 facteurs n'est configuré. Voir <a href="http://go.microsoft.com/fwlink/?LinkId=313242">cet article</a>
-               pour savoir comment configurer cette application ASP.NET pour qu'elle prenne en charge l'authentification à 2 facteurs.
+                There are no two-factor authentication providers configured. See <a href="http://go.microsoft.com/fwlink/?LinkId=313242">this article</a>
+                for details on setting up this ASP.NET application to support two-factor authentication.
             </p>
             @*@if (Model.TwoFactor)
                 {
 
                     <form method="post" action="/Manage/DisableTwoFactorAuthentication">
-                        Activé
-                        <input type="submit" value="Désactiver" class="btn btn-link" />
+                        Enabled
+                        <input type="submit" value="Disable" class="btn btn-link" />
                     </form>
                 }
                 else
                 {
 
                     <form method="post" action="/Manage/EnableTwoFactorAuthentication">
-                        Désactivé
-                        <input type="submit" value="Activer" class="btn btn-link" />
+                        Disabled
+                        <input type="submit" value="Enable" class="btn btn-link" />
                     </form>
                 }*@
         </dd>

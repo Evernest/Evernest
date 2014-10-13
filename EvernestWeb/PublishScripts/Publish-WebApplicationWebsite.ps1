@@ -2,8 +2,8 @@
 
 <#
 .SYNOPSIS
-Crée et déploie un site Web Microsoft Azure pour un projet Web Visual Studio.
-Pour plus de détails visitez le site à l'adresse suivante : http://go.microsoft.com/fwlink/?LinkID=394471 
+Creates and deploys a Microsoft Azure Web Site for a Visual Studio web project.
+For more detailed documentation go to: http://go.microsoft.com/fwlink/?LinkID=394471 
 
 .EXAMPLE
 PS C:\> .\Publish-WebApplicationWebSite.ps1 `
@@ -42,16 +42,16 @@ param
 
 function New-WebDeployPackage
 {
-    #Écrire une fonction pour générer et empaqueter votre application Web
+    #Write a function to build and package your web application
 
-    #Pour générer votre application Web, utilisez MsBuild.exe. Pour obtenir de l'aide, consultez les informations de référence relatives à la syntaxe de ligne de commande de MSBuild à l'adresse suivante : http://go.microsoft.com/fwlink/?LinkId=391339
+    #To build your web application, use MsBuild.exe. For help, see MSBuild Command-Line Reference at: http://go.microsoft.com/fwlink/?LinkId=391339
 }
 
 function Test-WebApplication
 {
-    #Modifier cette fonction pour exécuter des tests unitaires sur votre application Web
+    #Edit this function to run unit tests on your web application
 
-    #Pour écrire une fonction permettant d'exécuter des tests unitaires sur votre application Web, utilisez VSTest.Console.exe. Pour obtenir de l'aide, consultez les informations de référence relatives à la syntaxe de ligne de commande de VSTest.Console à l'adresse suivante : http://go.microsoft.com/fwlink/?LinkId=391340
+    #Write a function to run unit tests on your web application, use VSTest.Console.exe. For help, see VSTest.Console Command-Line Reference at http://go.microsoft.com/fwlink/?LinkId=391340
 }
 
 function New-AzureWebApplicationWebsiteEnvironment
@@ -70,7 +70,7 @@ function New-AzureWebApplicationWebsiteEnvironment
     )
        
     Add-AzureWebsite -Name $Config.name -Location $Config.location | Out-String | Write-HostWithTime
-    # Créez les bases de données SQL. La chaîne de connexion est utilisée pour le déploiement.
+    # Create the SQL databases. The connection string is used for deployment.
     $connectionString = New-Object -TypeName Hashtable
     
     if ($Config.Contains('databases'))
@@ -120,7 +120,7 @@ function Publish-AzureWebApplicationToWebsite
 }
 
 
-# Routine principale du script
+# Script main routine
 Set-StrictMode -Version 3
 
 Remove-Module AzureWebSitePublishModule -ErrorAction SilentlyContinue
@@ -143,50 +143,50 @@ try
     
     $scriptName = $MyInvocation.MyCommand.Name + ':'
     
-    Write-VerboseWithTime ($scriptName + ' Démarrer')
+    Write-VerboseWithTime ($scriptName + ' Start')
     
     $Global:ErrorActionPreference = 'Stop'
-    Write-VerboseWithTime ('{0} $ErrorActionPreference a la valeur {1}' -f $scriptName, $ErrorActionPreference)
+    Write-VerboseWithTime ('{0} $ErrorActionPreference is set to {1}' -f $scriptName, $ErrorActionPreference)
     
-    Write-Debug ('{0} : $PSCmdlet.ParameterSetName = {1}' -f $scriptName, $PSCmdlet.ParameterSetName)
+    Write-Debug ('{0}: $PSCmdlet.ParameterSetName = {1}' -f $scriptName, $PSCmdlet.ParameterSetName)
 
-    # Enregistrez l'abonnement actif. Il sera restauré à l'état Actif plus tard dans le script
+    # Save the current subscription. It will be restored to Current status later in the script
     Backup-Subscription -UserSpecifiedSubscription $SubscriptionName
     
-    # Vérifiez que vous disposez du module Windows Azure, version 0.7.4 ou ultérieure.
+    # Verify that you have the Azure module, Version 0.7.4 or later.
     if (-not (Test-AzureModule))
     {
-         throw 'Vous avez une version obsolète de Microsoft Azure PowerShell. Pour installer la dernière version, accédez à http://go.microsoft.com/fwlink/?LinkID=320552.'
+         throw 'You have an outdated version of Microsoft Azure PowerShell. To install the latest version, go to http://go.microsoft.com/fwlink/?LinkID=320552 .'
     }
     
     if ($SubscriptionName)
     {
 
-        # Si vous avez fourni un nom d'abonnement, vérifiez que l'abonnement existe dans votre compte.
+        # If you provided a subscription name, verify that the subscription exists in your account.
         if (!(Get-AzureSubscription -SubscriptionName $SubscriptionName))
         {
-            throw ("{0} : impossible de trouver le nom d'abonnement $SubscriptionName" -f $scriptName)
+            throw ("{0}: Cannot find the subscription name $SubscriptionName" -f $scriptName)
 
         }
 
-        # Définissez l'abonnement spécifié à l'état actif.
+        # Set the specified subscription to current.
         Select-AzureSubscription -SubscriptionName $SubscriptionName | Out-Null
 
-        Write-VerboseWithTime ('{0} : l'abonnement a la valeur {1}' -f $scriptName, $SubscriptionName)
+        Write-VerboseWithTime ('{0}: Subscription is set to {1}' -f $scriptName, $SubscriptionName)
     }
 
     $Config = Read-ConfigFile $Configuration 
 
-    #Générer et empaqueter votre application Web
+    #Build and package your web application
     New-WebDeployPackage
 
-    #Exécuter des tests unitaires sur votre application Web
+    #Run unit tests on your web application
     Test-WebApplication
 
-    #Créer l'environnement Windows Azure décrit dans le fichier de configuration JSON
+    #Create Azure environment described in the JSON configuration file
     $newEnvironmentResult = New-AzureWebApplicationWebsiteEnvironment -Configuration $Config -DatabaseServerPassword $DatabaseServerPassword
 
-    #Déployer le package d'applications Web si $WebDeployPackage est spécifié par l'utilisateur 
+    #Deploy Web Application package if $WebDeployPackage is specified by the user 
     if($WebDeployPackage)
     {
         Publish-AzureWebApplicationToWebsite `
@@ -200,7 +200,7 @@ finally
     $Global:ErrorActionPreference = $originalErrorActionPreference
     $Global:VerbosePreference = $originalVerbosePreference
 
-    # Restaurer l'abonnement actif d'origine à l'état Actif
+    # Restore the original current subscription to Current status
     Restore-Subscription
 
     Write-Output $Global:AzureWebAppPublishOutput    

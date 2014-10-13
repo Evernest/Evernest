@@ -1,29 +1,29 @@
-﻿#  AzureWebSitePublishModule.psm1 est un module de script Windows PowerShell. Ce module exporte des fonctions Windows PowerShell qui automatisent la gestion du cycle de vie pour les applications Web. Vous pouvez utiliser ces fonctions en l'état ou les personnaliser pour votre application et votre environnement de publication.
+﻿#  AzureWebSitePublishModule.psm1 is a Windows PowerShell script module. This module exports Windows PowerShell functions that automate life cycle management for web applications. You can use the functions as is or customize them for your application and publishing environment.
 
 Set-StrictMode -Version 3
 
-# Variable d'enregistrement de l'abonnement d'origine.
+# A variable to save original subscription.
 $Script:originalCurrentSubscription = $null
 
-# Variable d'enregistrement du compte de stockage d'origine.
+# A variable to save original storage account.
 $Script:originalCurrentStorageAccount = $null
 
-# Variable d'enregistrement du compte de stockage de l'abonnement spécifique à l'utilisateur.
+# A variable to save storage account of user specified subscription.
 $Script:originalStorageAccountOfUserSpecifiedSubscription = $null
 
-# Variable d'enregistrement du nom de l'abonnement.
+# A variable to save subscription name.
 $Script:userSpecifiedSubscription = $null
 
 
 <#
 .SYNOPSIS
-Indique la date et l'heure avant un message.
+Prepends the date and time to a message.
 
 .DESCRIPTION
-Indique la date et l'heure avant un message. Cette fonction est conçue pour les messages écrits dans les flux Error et Verbose.
+Prepends the date and time to a message. This function is designed for messages written to the Error and Verbose streams.
 
 .PARAMETER  Message
-Spécifie les messages sans la date.
+Specifies the messages without the date.
 
 .INPUTS
 System.String
@@ -32,8 +32,8 @@ System.String
 System.String
 
 .EXAMPLE
-PS C:\> Format-DevTestMessageWithTime -Message "Ajout du fichier $filename à l'annuaire"
-2/5/2014 1:03:08 PM - Ajout du fichier $filename à l'annuaire
+PS C:\> Format-DevTestMessageWithTime -Message "Adding file $filename to the directory"
+2/5/2014 1:03:08 PM - Adding file $filename to the directory
 
 .LINK
 Write-VerboseWithTime
@@ -58,19 +58,19 @@ function Format-DevTestMessageWithTime
 <#
 
 .SYNOPSIS
-Écrit un message d'erreur précédé de l'heure actuelle.
+Writes an error message prefixed with the current time.
 
 .DESCRIPTION
-Écrit un message d'erreur précédé de l'heure actuelle. Cette fonction appelle la fonction Format-DevTestMessageWithTime pour ajouter l'heure au début du message avant de l'écrire dans le flux Error.
+Writes an error message prefixed with the current time. This function calls the Format-DevTestMessageWithTime function to prepend the time before writing the message to the Error stream.
 
 .PARAMETER  Message
-Spécifie le message dans l'appel du message d'erreur. Vous pouvez utiliser le pipe de la chaîne de message pour la fonction.
+Specifies the message in the error message call. You can pipe the message string to the function.
 
 .INPUTS
 System.String
 
 .OUTPUTS
-Aucune. La fonction écrit dans le flux Error.
+None. The function writes to the Error stream.
 
 .EXAMPLE
 PS C:> Write-ErrorWithTime -Message "Failed. Cannot find the file."
@@ -99,19 +99,19 @@ function Write-ErrorWithTime
 
 <#
 .SYNOPSIS
-Écrit un message détaillé précédé de l'heure actuelle.
+Writes a verbose message prefixed with the current time.
 
 .DESCRIPTION
-Écrit un message détaillé précédé de l'heure actuelle. Dans la mesure où il appelle Write-Verbose, le message ne s'affiche que lorsque le script s'exécute avec le paramètre Verbose ou que la préférence VerbosePreference a la valeur Continue.
+Writes a verbose message prefixed with the current time. Because it calls Write-Verbose, the message displays only when the script runs with the Verbose parameter or when the VerbosePreference preference is set to Continue.
 
 .PARAMETER  Message
-Spécifie le message dans l'appel du message détaillé. Vous pouvez utiliser le pipe de la chaîne de message pour la fonction.
+Specifies the message in the verbose message call. You can pipe the message string to the function.
 
 .INPUTS
 System.String
 
 .OUTPUTS
-Aucune. La fonction écrit dans le flux Verbose.
+None. The function writes to the Verbose stream.
 
 .EXAMPLE
 PS C:> Write-VerboseWithTime -Message "The operation succeeded."
@@ -142,23 +142,23 @@ function Write-VerboseWithTime
 
 <#
 .SYNOPSIS
-Écrit un message d'hôte précédé de l'heure actuelle.
+Writes a host message prefixed with the current time.
 
 .DESCRIPTION
-Cette fonction écrit un message au programme hôte (Write-Host) en le faisant précéder de l'heure actuelle. L'effet de l'écriture au programme hôte varie. La plupart des programmes qui hébergent Windows PowerShell écrivent ces messages vers la sortie standard.
+This function writes a message to the host program (Write-Host) prefixed with the current time. The effect of writing to the host program varies. Most programs that host Windows PowerShell write these messages to standard output.
 
 .PARAMETER  Message
-Spécifie le message de base sans la date. Vous pouvez utiliser le pipe de la chaîne de message pour la fonction.
+Specifies the base message without the date. You can pipe the message string to the function.
 
 .INPUTS
 System.String
 
 .OUTPUTS
-Aucune. La fonction écrit le message au programme hôte.
+None. The function writes the message to the host program.
 
 .EXAMPLE
-PS C:> Write-HostWithTime -Message "L'opération a réussi."
-1/27/2014 11:02:37 AM - L'opération a réussi.
+PS C:> Write-HostWithTime -Message "The operation succeeded."
+1/27/2014 11:02:37 AM - The operation succeeded.
 
 .LINK
 Write-Host
@@ -191,19 +191,19 @@ function Write-HostWithTime
 
 <#
 .SYNOPSIS
-Retourne $true si une propriété ou une méthode est membre de l'objet. Sinon, $false.
+Returns $true if a property or method is a member of the object. Otherwise, $false.
 
 .DESCRIPTION
-Retourne $true si la propriété ou la méthode est membre de l'objet. Cette fonction retourne $false pour les méthodes statiques de la classe et pour les vues, par exemple PSBase et PSObject.
+Returns $true if the property or method is a member of the object. This function returns $false for static methods of the class and for views, such as PSBase and PSObject.
 
 .PARAMETER  Object
-Spécifie l'objet dans le test. Entrez une variable qui contient un objet ou une expression qui retourne un objet. Vous ne pouvez pas spécifier de types, par exemple [DateTime], ou utiliser le pipe d'objets pour cette fonction.
+Specifies the object in the test. Enter a variable that contains an object or an expression that returns an object. You cannot specify types, such as [DateTime] or pipe objects to this function.
 
 .PARAMETER  Member
-Spécifie le nom de la propriété ou de la méthode dans le test. Lors de la spécification d'une méthode, omettez les parenthèses placées à la suite du nom de la méthode.
+Specifies the name of the property or method in the test. When specifying a method, omit parentheses that follow the method name.
 
 .INPUTS
-Aucune. Cette fonction n'accepte aucune entrée du pipeline.
+None. This function does not take input from the pipeline.
 
 .OUTPUTS
 System.Boolean
@@ -246,13 +246,13 @@ function Test-Member
 
 <#
 .SYNOPSIS
-Retourne $true si le module Windows Azure correspond à la version 0.7.4 ou une version ultérieure. Sinon, $false.
+Returns $true if the version of the Azure module is 0.7.4 or later. Else, $false.
 
 .DESCRIPTION
-Test-AzureModuleVersion retourne $true si le module Azure correspond à la version 0.7.4 ou une version ultérieure. Elle retourne $false si le module n'est pas installé ou s'il correspond à une version antérieure. Cette fonction n'a aucun paramètre.
+Test-AzureModuleVersion returns $true if the version of the Azure module is 0.7.4 or later. It returns $false if the module isn't installed or is an earlier version. This function has no parameters.
 
 .INPUTS
-Aucun
+None
 
 .OUTPUTS
 System.Boolean
@@ -296,13 +296,13 @@ function Test-AzureModuleVersion
 
 <#
 .SYNOPSIS
-Retourne $true si le module Windows Azure installé correspond à la version 0.7.4 ou une version ultérieure.
+Returns $true if the installed Azure module version is 0.7.4 or later.
 
 .DESCRIPTION
-Test-AzureModule retourne $true si le module Windows Azure installé correspond à la version 0.7.4 ou une version ultérieure. Retourne $false si le module n'est pas installé ou s'il correspond à une version antérieure. Cette fonction n'a aucun paramètre.
+Test-AzureModule returns $true if the installed Azure module version is 0.7.4 or later. Returns $false if the module isn't installed or is an earlier version. This function has no parameters.
 
 .INPUTS
-Aucun
+None
 
 .OUTPUTS
 System.Boolean
@@ -361,19 +361,19 @@ function Test-AzureModule
 
 <#
 .SYNOPSIS
-Enregistre l'abonnement Microsoft Azure actif dans la variable $Script:originalSubscription du script.
+Saves the current Microsoft Azure subscription in the $Script:originalSubscription variable in script scope.
 
 .DESCRIPTION
-La fonction Backup-Subscription enregistre l'abonnement Microsoft Azure actif (Get-AzureSubscription -Current) et son compte de stockage, ainsi que l'abonnement modifié par ce script ($UserSpecifiedSubscription) et son compte de stockage, dans la portée du script. En enregistrant les valeurs, vous pouvez utiliser une fonction telle que Restore-Subscription pour restaurer l'abonnement actif d'origine et son compte de stockage à l'état actif, si ce dernier a changé.
+The Backup-Subscription function saves the current Microsoft Azure subscription (Get-AzureSubscription -Current) and its storage account, and the subscription that is changed by this script ($UserSpecifiedSubscription) and its storage account, in script scope. By saving the values, you can use a function, such as Restore-Subscription, to restore the original current subscription and storage account to current status if the current status has changed.
 
 .PARAMETER UserSpecifiedSubscription
-Spécifie le nom de l'abonnement dans lequel les ressources doivent être créées et publiées. La fonction enregistre les noms de l'abonnement et de ses comptes de stockage dans la portée du script. Ce paramètre est obligatoire.
+Specifies the name of the subscription in which the new resources will be created and published. The function saves the names of the subscription and its storage accounts in script scope. This parameter is required.
 
 .INPUTS
-Aucun
+None
 
 .OUTPUTS
-Aucun
+None
 
 .EXAMPLE
 PS C:\> Backup-Subscription -UserSpecifiedSubscription Contoso
@@ -396,12 +396,12 @@ function Backup-Subscription
         $UserSpecifiedSubscription
     )
 
-    Write-VerboseWithTime 'Backup-Subscription : début'
+    Write-VerboseWithTime 'Backup-Subscription: Start'
 
     $Script:originalCurrentSubscription = Get-AzureSubscription -Current -ErrorAction SilentlyContinue
     if ($Script:originalCurrentSubscription)
     {
-        Write-VerboseWithTime ('Backup-Subscription : l'abonnement d'origine est ' + $Script:originalCurrentSubscription.SubscriptionName)
+        Write-VerboseWithTime ('Backup-Subscription: Original subscription is ' + $Script:originalCurrentSubscription.SubscriptionName)
         $Script:originalCurrentStorageAccount = $Script:originalCurrentSubscription.CurrentStorageAccountName
     }
     
@@ -415,22 +415,22 @@ function Backup-Subscription
         }        
     }
 
-    Write-VerboseWithTime 'Backup-Subscription : fin'
+    Write-VerboseWithTime 'Backup-Subscription: End'
 }
 
 
 <#
 .SYNOPSIS
-Restaure à l'état "actif" l'abonnement Microsoft Azure enregistré dans la variable $Script:originalSubscription du script.
+Restores to "current" status the Microsoft Azure subscription that is saved in the $Script:originalSubscription variable in script scope.
 
 .DESCRIPTION
-La fonction Restore-Subscription rend (de nouveau) actif l'abonnement enregistré dans la variable $Script:originalSubscription. Si l'abonnement d'origine a un compte de stockage, cette fonction rend ce compte de stockage actif pour l'abonnement actif. La fonction restaure l'abonnement uniquement s'il existe une variable $SubscriptionName non Null dans l'environnement. Sinon, son exécution s'arrête. Si $SubscriptionName est rempli, mais que $Script:originalSubscription a la valeur $null, Restore-Subscription utilise la cmdlet Select-AzureSubscription pour effacer les paramètres actuels et par défaut des abonnements dans Microsoft Azure PowerShell. Cette fonction n'a aucun paramètre, elle n'accepte aucune entrée et ne retourne rien (void). Vous pouvez utiliser -Verbose pour écrire des messages dans le flux Verbose.
+The Restore-Subscription function makes the subscription that is saved in the $Script:originalSubscription variable the current subscription (again). If the original subscription has a storage account, this function makes that storage account current for the current subscription.  The function restores the subscription only if there is a non-null $SubscriptionName variable in the environment. Otherwise, it exits.  If the $SubscriptionName is populated, but $Script:originalSubscription is $null, Restore-Subscription uses the Select-AzureSubscription cmdlet to clear the Current and Default settings for subscriptions in Microsoft Azure PowerShell.  This function doesn't have parameters, it takes no input, and it returns nothing (void). You can use -Verbose to write messages to the Verbose stream.
 
 .INPUTS
-Aucun
+None
 
 .OUTPUTS
-Aucun
+None
 
 .EXAMPLE
 PS C:\> Restore-Subscription
@@ -446,7 +446,7 @@ function Restore-Subscription
     [CmdletBinding()]
     param()
 
-    Write-VerboseWithTime 'Restore-Subscription : début'
+    Write-VerboseWithTime 'Restore-Subscription: Start'
 
     if ($Script:originalCurrentSubscription)
     {
@@ -472,28 +472,28 @@ function Restore-Subscription
             -CurrentStorageAccountName $Script:originalStorageAccountOfUserSpecifiedSubscription
     }
 
-    Write-VerboseWithTime 'Restore-Subscription : fin'
+    Write-VerboseWithTime 'Restore-Subscription: End'
 }
 
 
 <#
 .SYNOPSIS
-Valide le fichier de configuration et retourne une table de hachage des valeurs du fichier de configuration.
+Validates the config file and returns a hashtable of config file values.
 
 .DESCRIPTION
-La fonction Read-ConfigFile valide le fichier de configuration JSON et retourne une table de hachage des valeurs sélectionnées.
--- Il convertit d'abord le fichier JSON en un PSCustomObject. La table de hachage du site Web contient les clés suivantes :
--- Location: Emplacement du site Web
--- Databases: Bases de données SQL du site Web
+The Read-ConfigFile function validates the JSON configuration file and returns a hash table of selected values.
+-- It begins by converting the JSON file to a PSCustomObject. The web site hash table has the following keys:
+-- Location: Web site location
+-- Databases: Web site SQL databases
 
 .PARAMETER  ConfigurationFile
-Spécifie le chemin d'accès et le nom du fichier de configuration JSON de votre projet Web. Visual Studio génère le fichier JSON automatiquement lorsque vous créez un projet Web et que vous le stockez dans le dossier PublishScripts de votre solution.
+Specifies the path and name of the JSON configuration file for your web project. Visual Studio generates the JSON file automatically when you create a web project and stores it in the PublishScripts folder in your solution.
 
 .PARAMETER HasWebDeployPackage
-Indique la présence d'un fichier ZIP de package Web Deploy pour l'application Web. Pour spécifier une valeur de $true, utilisez -HasWebDeployPackage ou HasWebDeployPackage:$true. Pour spécifier une valeur de false, utilisez HasWebDeployPackage:$false. Ce paramètre est obligatoire.
+Indicates that there is a web deploy package ZIP file for the web application. To specify a value of $true, use -HasWebDeployPackage or HasWebDeployPackage:$true. To specify a value of false, use HasWebDeployPackage:$false.This parameter is required.
 
 .INPUTS
-Aucune. Vous ne pouvez pas utiliser le pipe d'entrée pour cette fonction.
+None. You cannot pipe input to this function.
 
 .OUTPUTS
 System.Collections.Hashtable
@@ -518,25 +518,25 @@ function Read-ConfigFile
         $ConfigurationFile
     )
 
-    Write-VerboseWithTime 'Read-ConfigFile : début'
+    Write-VerboseWithTime 'Read-ConfigFile: Start'
 
-    # Obtenir le contenu du fichier JSON (-raw ignore les sauts de ligne) et le convertir en PSCustomObject
+    # Get the contents of the JSON file (-raw ignores line breaks) and convert it to a PSCustomObject
     $config = Get-Content $ConfigurationFile -Raw | ConvertFrom-Json
 
     if (!$config)
     {
-        throw ('Échec de Read-ConfigFile : ConvertFrom-Json : ' + $error[0])
+        throw ('Read-ConfigFile: ConvertFrom-Json failed: ' + $error[0])
     }
 
-    # Déterminer si l'objet environmentSettings a les propriétés 'webSite' (quelle que soit la valeur de la propriété)
+    # Determine whether the environmentSettings object has 'webSite' properties (regardless of the property value)
     $hasWebsiteProperty =  Test-Member -Object $config.environmentSettings -Member 'webSite'
 
     if (!$hasWebsiteProperty)
     {
-        throw 'Read-ConfigFile : le fichier de configuration ne contient pas de propriété webSite.'
+        throw 'Read-ConfigFile: The configuration file does not have a webSite property.'
     }
 
-    # Créer une table de hachage à partir des valeurs de PSCustomObject
+    # Build a hash table from the values in the PSCustomObject
     $returnObject = New-Object -TypeName Hashtable
 
     $returnObject.Add('name', $config.environmentSettings.webSite.name)
@@ -547,7 +547,7 @@ function Read-ConfigFile
         $returnObject.Add('databases', $config.environmentSettings.databases)
     }
 
-    Write-VerboseWithTime 'Read-ConfigFile : fin'
+    Write-VerboseWithTime 'Read-ConfigFile: End'
 
     return $returnObject
 }
@@ -555,19 +555,19 @@ function Read-ConfigFile
 
 <#
 .SYNOPSIS
-Crée un site Web Microsoft Azure.
+Creates a Microsoft Azure web site.
 
 .DESCRIPTION
-Crée un site Web Microsoft Azure avec un nom et un emplacement spécifiques. Cette fonction appelle l'applet de commande New-AzureWebsite dans le module Azure. Si l'abonnement n'a pas encore de site Web avec le nom spécifié, cette fonction crée le site Web et retourne un objet de site Web. Si ce n'est pas le cas, elle retourne le site Web existant.
+Creates a Microsoft Azure web site with the specific name and location. This function calls the New-AzureWebsite cmdlet in the Azure module. If the subscription does not yet have a web site with the specified name, this function creates the web site and returns a web site object. Otherwise, it returns the existing web site.
 
 .PARAMETER  Name
-Spécifie un nom pour le nouveau site Web. Le nom doit être unique dans Microsoft Azure. Ce paramètre est obligatoire.
+Specifies a name for the new web site. The name must be unique in Microsoft Azure. This parameter is required.
 
 .PARAMETER  Location
-Spécifie l'emplacement du site Web. Les valeurs valides correspondent aux emplacements de Microsoft Azure, par exemple "Ouest des États-Unis". Ce paramètre est obligatoire.
+Specifies the location of the web site. Valid values are the Microsoft Azure locations, such as "West US". This parameter is required.
 
 .INPUTS
-AUCUNE.
+NONE.
 
 .OUTPUTS
 Microsoft.WindowsAzure.Commands.Utilities.Websites.Services.WebEntities.Site
@@ -596,19 +596,19 @@ function Add-AzureWebsite
         $Location
     )
 
-    Write-VerboseWithTime 'Add-AzureWebsite : début'
+    Write-VerboseWithTime 'Add-AzureWebsite: Start'
     $website = Get-AzureWebsite -Name $Name -ErrorAction SilentlyContinue
 
     if ($website)
     {
-        Write-HostWithTime ('Add-AzureWebsite : site Web existant ' +
-        $website.Name + ' trouvé')
+        Write-HostWithTime ('Add-AzureWebsite: An existing web site ' +
+        $website.Name + ' was found')
     }
     else
     {
         if (Test-AzureName -Website -Name $Name)
         {
-            Write-ErrorWithTime ('Le site Web {0} existe déjà' -f $Name)
+            Write-ErrorWithTime ('Website {0} already exists' -f $Name)
         }
         else
         {
@@ -617,23 +617,23 @@ function Add-AzureWebsite
     }
 
     $website | Out-String | Write-VerboseWithTime
-    Write-VerboseWithTime 'Add-AzureWebsite : fin'
+    Write-VerboseWithTime 'Add-AzureWebsite: End'
 
     return $website
 }
 
 <#
 .SYNOPSIS
-Retourne $True lorsque l'URL est absolue et que son modèle est https.
+Returns $True when the URL is absolute and its scheme is https.
 
 .DESCRIPTION
-La fonction Test-HttpsUrl convertit l'URL d'entrée en objet System.Uri. Retourne $True lorsque l'URL est absolue (non relative) et que son modèle est https. Si la valeur est false dans les deux cas, ou si la chaîne d'entrée ne peut pas être convertie en URL, la fonction retourne $false.
+The Test-HttpsUrl function converts the input URL to a System.Uri object. Returns $True when the URL is absolute (not relative) and its scheme is https. If either is false, or the input string cannot be converted to a URL, the function returns $false.
 
 .PARAMETER Url
-Spécifie l'URL à tester. Entrez une chaîne d'URL,
+Specifies the URL to test. Enter a URL string,
 
 .INPUTS
-AUCUNE.
+NONE.
 
 .OUTPUTS
 System.Boolean
@@ -655,7 +655,7 @@ function Test-HttpsUrl
         $Url
     )
 
-    # Si $uri ne peut pas être converti en objet System.Uri, Test-HttpsUrl retourne $false
+    # If $uri cannot be converted to a System.Uri object, Test-HttpsUrl returns $false
     $uri = $Url -as [System.Uri]
 
     return $uri.IsAbsoluteUri -and $uri.Scheme -eq 'https'
@@ -664,25 +664,25 @@ function Test-HttpsUrl
 
 <#
 .SYNOPSIS
-Crée une chaîne qui vous permet de vous connecter à une base de données SQL Microsoft Azure.
+Creates a string that lets you connect to a Microsoft Azure SQL database.
 
 .DESCRIPTION
-La fonction Get-AzureSQLDatabaseConnectionString assemble une chaîne de connexion pour se connecter à une base de données SQL Microsoft Azure.
+The Get-AzureSQLDatabaseConnectionString function assembles a connection string to connect to a Microsoft Azure SQL database.
 
 .PARAMETER  DatabaseServerName
-Spécifie le nom d'un serveur de base de données existant dans l'abonnement Microsoft Azure. Toutes les bases de données SQL Microsoft Azure doivent être associées à un serveur de base de données SQL. Pour obtenir le nom du serveur, utilisez la cmdlet Get-AzureSqlDatabaseServer (module Microsoft Azure). Ce paramètre est obligatoire.
+Specifies the name of an existing database server in the Microsoft Azure subscription. All Microsoft Azure SQL databases must be associated with a SQL database server. To get the server name, use the Get-AzureSqlDatabaseServer cmdlet (Azure module). This parameter is required.
 
 .PARAMETER  DatabaseName
-Spécifie le nom de la base de données SQL. Il peut s'agir d'une base de données SQL existante ou d'un nom utilisé pour une nouvelle base de données SQL. Ce paramètre est obligatoire.
+Specifies the name for the SQL database. This can be an existing SQL database or a name used for a new SQL database. This parameter is required.
 
 .PARAMETER  Username
-Spécifie le nom de l'administrateur de base de données SQL. Le nom d'utilisateur est $Username@DatabaseServerName. Ce paramètre est obligatoire.
+Specifies the name of the SQL database administrator. The username will be $Username@DatabaseServerName. This parameter is required.
 
 .PARAMETER  Password
-Spécifie le mot de passe de l'administrateur de base de données SQL. Entrez un mot de passe en texte clair. Les chaînes sécurisées ne sont pas autorisées. Ce paramètre est obligatoire.
+Specifies a password for the SQL database administrator. Enter a password in plain text. Secure strings are not permitted. This parameter is required.
 
 .INPUTS
-Aucune.
+None.
 
 .OUTPUTS
 System.String
@@ -728,13 +728,13 @@ function Get-AzureSQLDatabaseConnectionString
 
 <#
 .SYNOPSIS
-Crée des bases de données SQL Microsoft Azure à partir des valeurs du fichier de configuration JSON généré par Visual Studio.
+Creates Microsoft Azure SQL databases from the values in the JSON configuation file that Visual Studio generates.
 
 .DESCRIPTION
-La fonction Add-AzureSQLDatabases accepte les informations de la section databases du fichier JSON. Cette fonction, Add-AzureSQLDatabases (pluriel), appelle la fonction Add-AzureSQLDatabase (singulier) pour chaque base de données SQL du fichier JSON. Add-AzureSQLDatabase (singulier) appelle la cmdlet New-AzureSqlDatabase (module Windows Azure), qui crée les bases de données SQL. Cette fonction ne retourne pas d'objet de base de données. Elle retourne une table de hachage des valeurs utilisées pour créer les bases de données.
+The Add-AzureSQLDatabases function takes information from the databases section of the JSON file. This function, Add-AzureSQLDatabases (plural), calls the Add-AzureSQLDatabase (singular) function for each SQL database in the JSON file. Add-AzureSQLDatabase (singular) calls the New-AzureSqlDatabase cmdlet (Azure module), which creates the SQL databases. This function does not return a database object. It returns a hashtable of values that were used to create the databases.
 
 .PARAMETER DatabaseConfig
- Accepte un tableau de PSCustomObjects qui proviennent du fichier JSON retourné par la fonction Read-ConfigFile lorsque le fichier JSON possède une propriété de site Web. Cela inclut les propriétés de environmentSettings.databases. Vous pouvez utiliser le pipe de la liste pour cette fonction.
+ Takes an array of PSCustomObjects that originate in the JSON file that the Read-ConfigFile function returns when the JSON file has a web site property. It includes the environmentSettings.databases properties. You can pipe the list to this function.
 PS C:\> $config = Read-ConfigFile <name>.json
 PS C:\> $DatabaseConfig = $config.databases| where {$_.connectionStringName}
 PS C:\> $DatabaseConfig
@@ -750,10 +750,10 @@ password   : Test.123
 location   : West US
 
 .PARAMETER  DatabaseServerPassword
-Spécifie le mot de passe pour l'administrateur du serveur de base de données SQL. Entrez une table de hachage avec les clés Nom et Mot de passe. La valeur de Nom correspond au nom du serveur de base de données SQL. La valeur de Mot de passe correspond au mot de passe de l'administrateur. Par exemple : @Name = "TestDB1"; Password = "password" Ce paramètre est facultatif. Si vous l'omettez ou si le nom du serveur de base de données SQL ne correspond pas à la valeur de la propriété serverName de l'objet $DatabaseConfig la fonction utilise la propriété Mot de passe de l'objet $DatabaseConfig pour la base de données SQL dans la chaîne de connexion.
+Specifies the password for the SQL database server administrator. Enter a hashtable with Name and Password keys. The value of Name is the name of the SQL database server. The value of Password is the administrator password. For example: @Name = "TestDB1"; Password = "password" This parameter is optional. If you omit it or the SQL database server name doesn't match the value of the serverName property of the $DatabaseConfig object, the function uses the Password property of the $DatabaseConfig object for the SQL database in the connection string.
 
 .PARAMETER CreateDatabase
-Vérifie que vous souhaitez créer une base de données. Ce paramètre est facultatif.
+Verifies that you want to create a database. This parameter is optional.
 
 .INPUTS
 System.Collections.Hashtable[]
@@ -799,16 +799,16 @@ function Add-AzureSQLDatabases
 
     begin
     {
-        Write-VerboseWithTime 'Add-AzureSQLDatabases : début'
+        Write-VerboseWithTime 'Add-AzureSQLDatabases: Start'
     }
     process
     {
-        Write-VerboseWithTime ('Add-AzureSQLDatabases : création ' + $DatabaseConfig.databaseName)
+        Write-VerboseWithTime ('Add-AzureSQLDatabases: Creating ' + $DatabaseConfig.databaseName)
 
         if ($CreateDatabase)
         {
-            # Crée une base de données SQL avec les valeurs DatabaseConfig (à moins qu'elle n'existe déjà)
-            # La sortie de la commande est supprimée.
+            # Creates a new SQL database with the DatabaseConfig values (unless one already exists)
+            # The command output is suppressed.
             Add-AzureSQLDatabase -DatabaseConfig $DatabaseConfig | Out-Null
         }
 
@@ -841,23 +841,23 @@ function Add-AzureSQLDatabases
     }
     end
     {
-        Write-VerboseWithTime 'Add-AzureSQLDatabases : fin'
+        Write-VerboseWithTime 'Add-AzureSQLDatabases: End'
     }
 }
 
 
 <#
 .SYNOPSIS
-Crée une base de données SQL Microsoft Azure.
+Creates a new Microsoft Azure SQL database.
 
 .DESCRIPTION
-La fonction Add-AzureSQLDatabase crée une base de données SQL Microsoft Azure à partir des données du fichier de configuration JSON généré par Visual Studio, puis retourne la nouvelle base de données. Si l'abonnement a déjà une base de données SQL avec le nom de base de données spécifié sur le serveur de base de données SQL désigné, la fonction retourne la base de données existante. Cette fonction appelle la cmdlet New-AzureSqlDatabase (module Microsoft Azure), qui crée en fait la base de données SQL.
+The Add-AzureSQLDatabase function creates a Microsoft Azure SQL database from the data in the JSON configuration file that Visual Studio generates and returns the new database. If the subscription already has a SQL database with the specified database name in the specified SQL database server, the function returns the existing database. This function calls the New-AzureSqlDatabase cmdlet (Azure module), which actually creates the SQL database.
 
 .PARAMETER DatabaseConfig
-Accepte un PSCustomObject qui provient du fichier de configuration JSON retourné par la fonction Read-ConfigFile lorsque le fichier JSON possède une propriété de site Web. Cela inclut les propriétés de environmentSettings.databases. Vous ne pouvez pas utiliser le pipe de l'objet pour cette fonction. Visual Studio génère un fichier de configuration JSON pour tous les projets Web et le stocke dans le dossier PublishScripts de votre solution.
+Takes a PSCustomObject that originates in the JSON configuration file that the Read-ConfigFile function returns when the JSON file has a web site property. It includes the environmentSettings.databases properties. You cannot pipe the object to this function. Visual Studio generates a JSON configuration file for all web projects and stores it in the PublishScripts folder of your solution.
 
 .INPUTS
-Aucune. Cette fonction n'accepte aucune entrée du pipeline
+None. This function does not take input from the pipeline
 
 .OUTPUTS
 Microsoft.WindowsAzure.Commands.SqlDatabase.Services.Server.Database
@@ -897,18 +897,18 @@ function Add-AzureSQLDatabase
         $DatabaseConfig
     )
 
-    Write-VerboseWithTime 'Add-AzureSQLDatabase : début'
+    Write-VerboseWithTime 'Add-AzureSQLDatabase: Start'
 
-    # Échec, si la valeur de paramètre n'a pas la propriété serverName, ou si la valeur de la propriété serverName n'est pas indiquée.
+    # Fail if the parameter value doesn't have the serverName property, or the serverName property value isn't populated.
     if (-not (Test-Member $DatabaseConfig 'serverName') -or -not $DatabaseConfig.serverName)
     {
-        throw 'Add-AzureSQLDatabase : le nom du serveur de base de données (obligatoire) est absent de la valeur DatabaseConfig.'
+        throw 'Add-AzureSQLDatabase: The database serverName (required) is missing from the DatabaseConfig value.'
     }
 
-    # Échec, si la valeur de paramètre n'a pas la propriété databasename, ou si la valeur de propriété databasename n'est pas indiquée.
+    # Fail if the parameter value doesn't have the databasename property, or the databasename property value isn't populated.
     if (-not (Test-Member $DatabaseConfig 'databaseName') -or -not $DatabaseConfig.databaseName)
     {
-        throw 'Add-AzureSQLDatabase : le nom de la base de données (obligatoire) est absent de la valeur DatabaseConfig.'
+        throw 'Add-AzureSQLDatabase: The databasename (required) is missing from the DatabaseConfig value.'
     }
 
     $DbServer = $null
@@ -939,7 +939,7 @@ function Add-AzureSQLDatabase
 
     if ($db)
     {
-        Write-HostWithTime ('Create-AzureSQLDatabase : utilisation de la base de données existante ' + $db.Name)
+        Write-HostWithTime ('Create-AzureSQLDatabase: Using existing database ' + $db.Name)
         $db | Out-String | Write-VerboseWithTime
     }
     else
@@ -957,24 +957,24 @@ function Add-AzureSQLDatabase
             $param.Add('MaxSizeGB', 1)
         }
 
-        # Si l'objet $DatabaseConfig a une propriété collation dont la valeur n'est pas Null ou vide
+        # If the $DatabaseConfig object has a collation property and it's not null or empty
         if ((Test-Member $DatabaseConfig 'collation') -and $DatabaseConfig.collation)
         {
             $param.Add('Collation', $DatabaseConfig.collation)
         }
 
-        # Si l'objet $DatabaseConfig a une propriété edition dont la valeur n'est pas Null ou vide
+        # If the $DatabaseConfig object has an edition property and it's not null or empty
         if ((Test-Member $DatabaseConfig 'edition') -and $DatabaseConfig.edition)
         {
             $param.Add('Edition', $DatabaseConfig.edition)
         }
 
-        # Écrire la table de hachage dans le flux des commentaires
+        # Write the hash table to the Verbose stream
         $param | Out-String | Write-VerboseWithTime
-        # Appeler New-AzureSqlDatabase à l'aide de la projection (supprimer la sortie)
+        # Call New-AzureSqlDatabase with splatting (suppress the output)
         $db = New-AzureSqlDatabase @param
     }
 
-    Write-VerboseWithTime 'Add-AzureSQLDatabase : fin'
+    Write-VerboseWithTime 'Add-AzureSQLDatabase: End'
     return $db
 }

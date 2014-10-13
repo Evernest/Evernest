@@ -5,7 +5,7 @@ namespace EvernestWeb
 {
     public class BundleConfig
     {
-        // Pour plus d'informations sur le regroupement, visitez http://go.microsoft.com/fwlink/?LinkId=301862
+        // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
@@ -14,8 +14,8 @@ namespace EvernestWeb
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
 
-            // Utilisez la version de développement de Modernizr pour le développement et l'apprentissage. Puis, une fois
-            // prêt pour la production, utilisez l'outil de génération (bluid) sur http://modernizr.com pour choisir uniquement les tests dont vous avez besoin.
+            // Use the development version of Modernizr to develop with and learn from. Then, when you're
+            // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
@@ -27,8 +27,8 @@ namespace EvernestWeb
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
 
-            // Définissez EnableOptimizations sur False pour le débogage. Pour plus d'informations,
-            // visitez http://go.microsoft.com/fwlink/?LinkId=301862
+            // Set EnableOptimizations to false for debugging. For more information,
+            // visit http://go.microsoft.com/fwlink/?LinkId=301862
             BundleTable.EnableOptimizations = true;
         }
     }

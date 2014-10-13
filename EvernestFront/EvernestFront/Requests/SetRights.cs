@@ -9,9 +9,9 @@ namespace EvernestFront.Requests
     class SetRights:Request
     {
         private string targetUser;
-        private StreamRights rights;
+        private AccessRights rights;
 
-        public SetRights(string user, string streamName, string targetUser, StreamRights rights)
+        public SetRights(string user, string streamName, string targetUser, AccessRights rights)
             : base(user, streamName)
         {
             this.targetUser = targetUser;

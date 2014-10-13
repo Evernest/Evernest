@@ -10,10 +10,10 @@ namespace EvernestFront.Exceptions
     {
         public string StreamName { get; private set; }
         public string User { get; private set; }
-        public StreamRights UserRights { get; private set; }
-        public StreamRights NeededRights { get; private set; }
+        public AccessRights UserRights { get; private set; }
+        public AccessRights NeededRights { get; private set; }
 
-        public AccessDeniedException(string argUser, StreamRights argUserRights, StreamRights argNeededRights)
+        public AccessDeniedException(string argUser, AccessRights argUserRights, AccessRights argNeededRights)
         {
             User = argUser;
             UserRights = argUserRights;

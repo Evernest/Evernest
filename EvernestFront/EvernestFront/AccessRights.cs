@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvernestFront
 {
-    public enum StreamRights
+    public enum AccessRights
     {
         NoRights,
         Read,

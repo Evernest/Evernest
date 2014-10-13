@@ -42,9 +42,9 @@
     <Compile Include="Answers\Answer.cs" />
     <Compile Include="Answers\PullRandom.cs" />
     <Compile Include="Answers\PullRange.cs" />
-	<Compile Include="Answers\Push.cs" />
-	<Compile Include="Answers\CreateStream.cs" />
-	<Compile Include="Answers\SetRights.cs" />
+    <Compile Include="Answers\Push.cs" />
+    <Compile Include="Answers\CreateStream.cs" />
+    <Compile Include="Answers\SetRights.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Exceptions\AccessDeniedException.cs" />
     <Compile Include="Requests\CreateStream.cs" />
@@ -60,7 +60,7 @@
     <Compile Include="StreamTable.cs" />
     <Compile Include="Exceptions\StreamNameDoesNotExistException.cs" />
     <Compile Include="Exceptions\StreamNameTakenException.cs" />
-    <Compile Include="StreamRights.cs" />
+    <Compile Include="AccessRights.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

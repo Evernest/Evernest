@@ -4,10 +4,9 @@ namespace EvernestFront.Exceptions
 {
     public class StreamNameDoesNotExistException : Exception
     {
-        private string StreamName { get; set; }
+        public string StreamName { get; private set; }
 
         public StreamNameDoesNotExistException(string name)
-            : base()
         {
             StreamName = name;
         }

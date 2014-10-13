@@ -11,13 +11,11 @@ namespace EvernestFront
     {
         private static readonly Dictionary<string, Stream> Table = new Dictionary<string, Stream>();
 
-
         internal static void CheckNameIsFree(string name)
         {
             if (Table.ContainsKey(name))
                 throw new StreamNameTakenException(name);
         }
-
 
         internal static void Add(string name, Stream str)
         {

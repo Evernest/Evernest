@@ -42,11 +42,14 @@
     <Compile Include="Answers\Answer.cs" />
     <Compile Include="Answers\PullRandom.cs" />
     <Compile Include="Answers\PullRange.cs" />
+	<Compile Include="Answers\Push.cs" />
+	<Compile Include="Answers\CreateStream.cs" />
+	<Compile Include="Answers\SetRights.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Exceptions\AccessDeniedException.cs" />
     <Compile Include="Requests\CreateStream.cs" />
     <Compile Include="Requests\Request.cs" />
-    <Compile Include="IAnswer.cs" />
+    <Compile Include="Answers\IAnswer.cs" />
     <Compile Include="Requests\IRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Requests\PullRange.cs" />

@@ -25,7 +25,11 @@ L'interface IStorage est implémentée par le Back-end. Elle définie notamment 
 
                           IStorage
          +------------------------------------------------------------+
-         |                                                            |
+         |                                  +------------+            |
+         |                                  |Request List|            |
+         |                                  +------------+            |
+         |                                     A                      |
+         |                                     |Requests              |
 requests |  +-------------------+           +----------+              |
   --------->| Stream Controller |------+--->| Producer |--------+     |
          |  +-----------------+-+      |    +----------+        |     |

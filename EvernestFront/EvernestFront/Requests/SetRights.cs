@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvernestFront.Request
+namespace EvernestFront.Requests
 {
     class SetRights:Request
     {

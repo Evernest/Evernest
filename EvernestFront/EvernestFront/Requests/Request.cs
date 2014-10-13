@@ -1,4 +1,4 @@
-﻿namespace EvernestFront.Request
+﻿namespace EvernestFront.Requests
 {
   
         public abstract class Request : IRequest

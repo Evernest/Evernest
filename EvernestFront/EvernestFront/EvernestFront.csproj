@@ -39,17 +39,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Answer.cs" />
+    <Compile Include="Answers\Answer.cs" />
+    <Compile Include="Answers\PullRandom.cs" />
+    <Compile Include="Answers\PullRange.cs" />
     <Compile Include="Event.cs" />
-    <Compile Include="Request\CreateStream.cs" />
-    <Compile Include="Request\Request.cs" />
+    <Compile Include="Requests\CreateStream.cs" />
+    <Compile Include="Requests\Request.cs" />
     <Compile Include="IAnswer.cs" />
-    <Compile Include="Request\IRequest.cs" />
+    <Compile Include="Requests\IRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Request\PullRange.cs" />
-    <Compile Include="Request\PullRandom.cs" />
-    <Compile Include="Request\Push.cs" />
-    <Compile Include="Request\SetRights.cs" />
+    <Compile Include="Requests\PullRange.cs" />
+    <Compile Include="Requests\PullRandom.cs" />
+    <Compile Include="Requests\Push.cs" />
+    <Compile Include="Requests\SetRights.cs" />
     <Compile Include="Stream.cs" />
     <Compile Include="StreamTable.cs" />
     <Compile Include="StreamNameDoesNotExistException.cs" />

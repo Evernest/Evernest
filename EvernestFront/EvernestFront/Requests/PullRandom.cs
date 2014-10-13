@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EvernestFront.Request
+namespace EvernestFront.Requests
 {
    
         class PullRandom : Request

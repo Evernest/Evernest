@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace EvernestFront.Request
+namespace EvernestFront.Requests
+
 {
  
         class PullRange : Request

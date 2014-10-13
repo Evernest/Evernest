@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Answer.cs" />
     <Compile Include="Event.cs" />
+    <Compile Include="Request\CreateStream.cs" />
     <Compile Include="Request\Request.cs" />
     <Compile Include="IAnswer.cs" />
     <Compile Include="Request\IRequest.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="Request\PullRange.cs" />
     <Compile Include="Request\PullRandom.cs" />
     <Compile Include="Request\Push.cs" />
+    <Compile Include="Request\SetRights.cs" />
     <Compile Include="Stream.cs" />
     <Compile Include="StreamTable.cs" />
     <Compile Include="StreamNameDoesNotExistException.cs" />

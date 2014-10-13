@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace EvernestFront.Answers
 {
-    class CreateStream:Answer
+    class SetRights:Answer
     {
-        public CreateStream(Exception exn)
+        public SetRights(Exception exn)
             : base(exn) { }
-        public CreateStream()
+        public SetRights()
         {
             success = true;
         }

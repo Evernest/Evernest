@@ -17,6 +17,7 @@ namespace EvernestFront.Answers
         }
         public PullRange(List<Event> eventsPulled)
         {
+            success = true;
             events = eventsPulled;
         }
     }

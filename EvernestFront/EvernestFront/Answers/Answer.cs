@@ -18,10 +18,13 @@ namespace EvernestFront.Answers
         protected Exception exception = null;
         //TODO : protected string requestID;
 
-        public Answer()
+        protected Answer()
         {
         }
-
+        /// <summary>
+        /// Sets field success to false and field exception to exn.
+        /// </summary>
+        /// <param name="exn"></param>
         public Answer(Exception exn)
         {
             success = false;

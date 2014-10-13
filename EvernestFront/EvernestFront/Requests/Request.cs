@@ -13,7 +13,7 @@
                 this.StreamName = streamName;
             }
 
-            public abstract IAnswer Process();
+            public abstract Answers.IAnswer Process();
            
             
         } 

@@ -13,7 +13,7 @@ namespace EvernestFront.Requests
                 this.eventToPush = eventToPush;
             }
 
-            public override IAnswer Process()
+            public override Answers.IAnswer Process()
             {
                 throw new NotImplementedException();
             }

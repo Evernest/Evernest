@@ -9,12 +9,17 @@ namespace EvernestFront.Requests
 {
     class CreateStream:Request
     {
+        /// <summary>
+        /// Constructor for CreateStream request.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="name"></param>
         public CreateStream(string user, string name)
             : base(user, name)
         {
         }
 
-        public override IAnswer Process()
+        public override Answers.IAnswer Process()
         {
             try
             {

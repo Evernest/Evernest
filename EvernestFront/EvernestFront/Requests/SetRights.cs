@@ -18,7 +18,7 @@ namespace EvernestFront.Requests
             this.rights = rights;
         }
         
-        public override IAnswer Process()
+        public override Answers.IAnswer Process()
         {
             throw new NotImplementedException();
         }

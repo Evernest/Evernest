@@ -9,7 +9,7 @@ namespace EvernestFront.Requests
             public PullRandom(string user, string streamName)
                 : base(user, streamName) { }
 
-            public override IAnswer Process()
+            public override Answers.IAnswer Process()
             {
                 try
                 {

@@ -18,7 +18,7 @@ namespace EvernestFront.Requests
                 this.eventIdTo = to;
             }
 
-            public override IAnswer Process()
+            public override Answers.IAnswer Process()
             {
                 throw new NotImplementedException();
             }

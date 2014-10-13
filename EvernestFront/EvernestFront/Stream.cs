@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EvernestFront.Answers;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront
 {
@@ -20,11 +21,6 @@ namespace EvernestFront
                 // TODO : appeler Martin NewStorage()
         }
 
-        protected List<Event> PullRange(int from, int to)
-        {
-            throw new NotImplementedException();
-        }
-
         private StreamRights GetRights(string user)
         {
             if (rightsTable.ContainsKey(user))
@@ -32,20 +28,31 @@ namespace EvernestFront
             else return StreamRights.NoRights;
         }
 
-        // TODO : préciser Answer -> Answer.PullRandom
-        internal Answer PullRandom(string user)
+        protected List<Event> PullRange(int from, int to)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        internal Answers.PullRandom PullRandom(string user)
         {
             StreamRights rights = GetRights(user);
             switch (rights)
             {
                 case (StreamRights.NoRights):
-                    {
-                        throw new NotImplementedException();
-                    }
+                {
+                    var exn = new AccessDeniedException(user, StreamRights.NoRights, StreamRights.Read);
+                    return new Answers.PullRandom(exn);
+                }
                 default:
                     throw new NotImplementedException();
+                    // TODO : appeler Back
+                    // TODO : attendre réponse
             }
         }
+
+        
 
         // interface de Martin :
         //

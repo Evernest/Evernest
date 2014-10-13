@@ -1,4 +1,5 @@
 ﻿using System;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront.Requests
 {
@@ -15,9 +16,9 @@ namespace EvernestFront.Requests
                     Stream stream = StreamTable.GetStream(StreamName);
                     return stream.PullRandom(User);
                 }
-                catch (StreamNameDoesNotExistException e)
+                catch (StreamNameDoesNotExistException exn)
                 {
-                    throw new NotImplementedException();
+                    return new Answers.PullRandom(exn);
                 }
                 
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront.Requests
 {
@@ -13,23 +14,18 @@ namespace EvernestFront.Requests
         {
         }
 
-        public override string ToString()
-        {
-            return base.ToString();
-        }   
-
         public override IAnswer Process()
         {
             try
             {
                 StreamTable.CheckNameIsFree(StreamName);
-                Stream stream = new Stream(User);
+                var stream = new Stream(User);
                 StreamTable.Add(StreamName, stream);
-                throw new NotImplementedException();
+                return new Answers.CreateStream();
             }
             catch (StreamNameTakenException exn)
             {
-                throw new NotImplementedException();
+                return new Answers.CreateStream(exn);
             }
         }
     }

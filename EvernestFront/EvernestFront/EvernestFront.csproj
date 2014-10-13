@@ -43,6 +43,7 @@
     <Compile Include="Answers\PullRandom.cs" />
     <Compile Include="Answers\PullRange.cs" />
     <Compile Include="Event.cs" />
+    <Compile Include="Exceptions\AccessDeniedException.cs" />
     <Compile Include="Requests\CreateStream.cs" />
     <Compile Include="Requests\Request.cs" />
     <Compile Include="IAnswer.cs" />
@@ -54,8 +55,8 @@
     <Compile Include="Requests\SetRights.cs" />
     <Compile Include="Stream.cs" />
     <Compile Include="StreamTable.cs" />
-    <Compile Include="StreamNameDoesNotExistException.cs" />
-    <Compile Include="StreamNameTakenException.cs" />
+    <Compile Include="Exceptions\StreamNameDoesNotExistException.cs" />
+    <Compile Include="Exceptions\StreamNameTakenException.cs" />
     <Compile Include="StreamRights.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

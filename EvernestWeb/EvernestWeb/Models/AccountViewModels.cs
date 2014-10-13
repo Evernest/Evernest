@@ -6,7 +6,7 @@ namespace EvernestWeb.Models
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
-        [Display(Name = "Courrier électronique")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
     }
 
@@ -33,7 +33,7 @@ namespace EvernestWeb.Models
         public string Code { get; set; }
         public string ReturnUrl { get; set; }
 
-        [Display(Name = "Mémoriser ce navigateur ?")]
+        [Display(Name = "Remember this browser?")]
         public bool RememberBrowser { get; set; }
 
         public bool RememberMe { get; set; }
@@ -42,23 +42,23 @@ namespace EvernestWeb.Models
     public class ForgotViewModel
     {
         [Required]
-        [Display(Name = "Courrier électronique")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
     }
 
     public class LoginViewModel
     {
         [Required]
-        [Display(Name = "Courrier électronique")]
+        [Display(Name = "Email")]
         [EmailAddress]
         public string Email { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Mot de passe")]
+        [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Display(Name = "Mémoriser le mot de passe ?")]
+        [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
 
@@ -66,18 +66,18 @@ namespace EvernestWeb.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Courrier électronique")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "La chaîne {0} doit comporter au moins {2} caractères.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "Mot de passe")]
+        [Display(Name = "Password")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirmer le mot de passe ")]
-        [Compare("Password", ErrorMessage = "Le mot de passe et le mot de passe de confirmation ne correspondent pas.")]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
 
@@ -85,18 +85,18 @@ namespace EvernestWeb.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Courrier électronique")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "La chaîne {0} doit comporter au moins {2} caractères.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "Mot de passe")]
+        [Display(Name = "Password")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirmer le mot de passe")]
-        [Compare("Password", ErrorMessage = "Le nouveau mot de passe et le mot de passe de confirmation ne correspondent pas.")]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }
@@ -106,7 +106,7 @@ namespace EvernestWeb.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "E-mail")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
     }
 }

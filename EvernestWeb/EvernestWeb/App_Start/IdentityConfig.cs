@@ -18,7 +18,7 @@ namespace EvernestWeb
     {
         public Task SendAsync(IdentityMessage message)
         {
-            // Indiquez votre service de messagerie ici pour envoyer un e-mail.
+            // Plug in your email service here to send an email.
             return Task.FromResult(0);
         }
     }
@@ -27,12 +27,12 @@ namespace EvernestWeb
     {
         public Task SendAsync(IdentityMessage message)
         {
-            // Connectez votre service SMS ici pour envoyer un message texte.
+            // Plug in your SMS service here to send a text message.
             return Task.FromResult(0);
         }
     }
 
-    // Configurer l'application que le gestionnaire des utilisateurs a utilisée dans cette application. UserManager est défini dans ASP.NET Identity et est utilisé par l'application.
+    // Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
     public class ApplicationUserManager : UserManager<ApplicationUser>
     {
         public ApplicationUserManager(IUserStore<ApplicationUser> store)
@@ -43,14 +43,14 @@ namespace EvernestWeb
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 
         {
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
-            // Configurer la logique de validation pour les noms d'utilisateur
+            // Configure validation logic for usernames
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {
                 AllowOnlyAlphanumericUserNames = false,
                 RequireUniqueEmail = true
             };
 
-            // Configurer la logique de validation pour les mots de passe
+            // Configure validation logic for passwords
             manager.PasswordValidator = new PasswordValidator
             {
                 RequiredLength = 6,
@@ -60,21 +60,21 @@ namespace EvernestWeb
                 RequireUppercase = true,
             };
 
-            // Configurer les valeurs par défaut du verrouillage de l'utilisateur
+            // Configure user lockout defaults
             manager.UserLockoutEnabledByDefault = true;
             manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
             manager.MaxFailedAccessAttemptsBeforeLockout = 5;
 
-            // Inscrire les fournisseurs d'authentification à 2 facteurs. Cette application utilise le téléphone et les e-mails comme procédure de réception de code pour confirmer l'utilisateur
-            // Vous pouvez écrire votre propre fournisseur et le connecter ici.
-            manager.RegisterTwoFactorProvider("Code téléphonique ", new PhoneNumberTokenProvider<ApplicationUser>
+            // Register two factor authentication providers. This application uses Phone and Emails as a step of receiving a code for verifying the user
+            // You can write your own provider and plug it in here.
+            manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<ApplicationUser>
             {
-                MessageFormat = "Votre code de sécurité est {0}"
+                MessageFormat = "Your security code is {0}"
             });
-            manager.RegisterTwoFactorProvider("Code d'e-mail", new EmailTokenProvider<ApplicationUser>
+            manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<ApplicationUser>
             {
-                Subject = "Code de sécurité",
-                BodyFormat = "Votre code de sécurité est {0}"
+                Subject = "Security Code",
+                BodyFormat = "Your security code is {0}"
             });
             manager.EmailService = new EmailService();
             manager.SmsService = new SmsService();
@@ -88,7 +88,7 @@ namespace EvernestWeb
         }
     }
 
-    // Configurer le gestionnaire de connexion d'application qui est utilisé dans cette application.
+    // Configure the application sign-in manager which is used in this application.
     public class ApplicationSignInManager : SignInManager<ApplicationUser, string>
     {
         public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)

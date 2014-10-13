@@ -40,12 +40,12 @@ namespace EvernestWeb.Controllers
         public async Task<ActionResult> Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
-                message == ManageMessageId.ChangePasswordSuccess ? "Votre mot de passe a été changé."
-                : message == ManageMessageId.SetPasswordSuccess ? "Votre mot de passe a été défini."
-                : message == ManageMessageId.SetTwoFactorSuccess ? "Votre fournisseur d'authentification à 2 facteurs a été défini."
-                : message == ManageMessageId.Error ? "Une erreur s'est produite."
-                : message == ManageMessageId.AddPhoneSuccess ? "Votre numéro de téléphone a été ajouté."
-                : message == ManageMessageId.RemovePhoneSuccess ? "Votre numéro de téléphone a été supprimé."
+                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
+                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+                : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
+                : message == ManageMessageId.Error ? "An error has occurred."
+                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
+                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
             var model = new IndexViewModel
@@ -109,14 +109,14 @@ namespace EvernestWeb.Controllers
             {
                 return View(model);
             }
-            // Générer le jeton et l'envoyer
+            // Generate the token and send it
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), model.Number);
             if (UserManager.SmsService != null)
             {
                 var message = new IdentityMessage
                 {
                     Destination = model.Number,
-                    Body = "Votre code de sécurité est : " + code
+                    Body = "Your security code is: " + code
                 };
                 await UserManager.SmsService.SendAsync(message);
             }
@@ -156,7 +156,7 @@ namespace EvernestWeb.Controllers
         public async Task<ActionResult> VerifyPhoneNumber(string phoneNumber)
         {
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), phoneNumber);
-            // Envoyer un SMS via le fournisseur SMS afin de vérifier le numéro de téléphone
+            // Send an SMS through the SMS provider to verify the phone number
             return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
 
@@ -180,8 +180,8 @@ namespace EvernestWeb.Controllers
                 }
                 return RedirectToAction("Index", new { Message = ManageMessageId.AddPhoneSuccess });
             }
-            //Si nous sommes arrivés là, quelque chose a échoué, réafficher le formulaire
-            ModelState.AddModelError("", "La vérification du téléphone a échoué");
+            // If we got this far, something failed, redisplay form
+            ModelState.AddModelError("", "Failed to verify phone");
             return View(model);
         }
 
@@ -261,7 +261,7 @@ namespace EvernestWeb.Controllers
                 AddErrors(result);
             }
 
-            //Si nous sommes arrivés là, quelque chose a échoué, réafficher le formulaire
+            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -270,8 +270,8 @@ namespace EvernestWeb.Controllers
         public async Task<ActionResult> ManageLogins(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
-                message == ManageMessageId.RemoveLoginSuccess ? "La connexion externe a été supprimée."
-                : message == ManageMessageId.Error ? "Une erreur s'est produite."
+                message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
+                : message == ManageMessageId.Error ? "An error has occurred."
                 : "";
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
             if (user == null)
@@ -294,7 +294,7 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LinkLogin(string provider)
         {
-            // Demander une redirection vers le fournisseur de connexion externe afin de lier une connexion pour l'utilisateur actuel
+            // Request a redirect to the external login provider to link a login for the current user
             return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), User.Identity.GetUserId());
         }
 
@@ -311,8 +311,8 @@ namespace EvernestWeb.Controllers
             return result.Succeeded ? RedirectToAction("ManageLogins") : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
         }
 
-#region Programmes d'assistance
-        // Utilisé pour la protection XSRF lors de l'ajout de connexions externes
+#region Helpers
+        // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
         private IAuthenticationManager AuthenticationManager

@@ -3,18 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestWeb", "EvernestWeb\EvernestWeb.csproj", "{4B9B8DEC-8CD1-452E-8D4D-EACF227EE97B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestWeb", "EvernestWeb\EvernestWeb.csproj", "{DDBC1A6A-6BBD-42E5-AEC1-4099C5F7C2A6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{5504E19B-1BD8-48F6-88A8-598C4F6BC42A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{D19B1CA9-E4A5-4DD6-B661-E6A830D56038}"
 	ProjectSection(SolutionItems) = preProject
 		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
 		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{5551F3CD-8770-4DE7-B980-43EF266CD5C1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{64B7486A-438C-4FD8-9F50-63C8E5FBB8E8}"
 	ProjectSection(SolutionItems) = preProject
 		PublishScripts\Configurations\EvernestWeb-WAWS-dev.json = PublishScripts\Configurations\EvernestWeb-WAWS-dev.json
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F4211BBF-50D3-4D46-8B82-CDCACD7B19B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,15 +24,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4B9B8DEC-8CD1-452E-8D4D-EACF227EE97B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B9B8DEC-8CD1-452E-8D4D-EACF227EE97B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B9B8DEC-8CD1-452E-8D4D-EACF227EE97B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B9B8DEC-8CD1-452E-8D4D-EACF227EE97B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDBC1A6A-6BBD-42E5-AEC1-4099C5F7C2A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDBC1A6A-6BBD-42E5-AEC1-4099C5F7C2A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDBC1A6A-6BBD-42E5-AEC1-4099C5F7C2A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDBC1A6A-6BBD-42E5-AEC1-4099C5F7C2A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{5551F3CD-8770-4DE7-B980-43EF266CD5C1} = {5504E19B-1BD8-48F6-88A8-598C4F6BC42A}
+		{64B7486A-438C-4FD8-9F50-63C8E5FBB8E8} = {D19B1CA9-E4A5-4DD6-B661-E6A830D56038}
 	EndGlobalSection
 EndGlobal

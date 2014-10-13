@@ -16,7 +16,7 @@ namespace EvernestFront.Answers
         protected bool success;
         //protected string errorMessage = "";
         protected Exception exception = null;
-
+        //TODO : protected string requestID;
 
         public Answer()
         {

@@ -8,6 +8,16 @@ namespace EvernestFront.Answers
 {
     class PullRange:Answer
     {
+        //TODO : tableau d'events ? liste ? chaîne JSON ?
+        List<Event> events;
 
+        public PullRange(Exception exn)
+            :base(exn)
+        {
+        }
+        public PullRange(List<Event> eventsPulled)
+        {
+            events = eventsPulled;
+        }
     }
 }

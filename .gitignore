@@ -1,4 +1,4 @@
-
+﻿
 
 
 
@@ -193,4 +193,3 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
-*.csproj

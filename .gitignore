@@ -6,6 +6,9 @@
 *#
 *~
 
+# Vim
+*.swp
+
 
 ## Gros blob gitignore trouvé ici : https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 ## Merci Internet !

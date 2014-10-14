@@ -18,9 +18,11 @@ namespace Cloud14
         class StreamController
         {
         }
+
         class StreamDeliver
         {
-
+            protected void DeliverFeedBack()
+            { }
         }
     }
 }

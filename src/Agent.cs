@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Cloud14
 {
-    class Reader
+    class Agent
     {
-        private Int64 requestID;
+        protected Int64 requestID;
 
-        public Reader(Int64 requestID)
+        protected Agent(Int64 requestID)
         {
-            
+            this.requestID = requestID;
         }
     }
 }

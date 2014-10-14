@@ -6,18 +6,18 @@ using System.Text;
 
 namespace Cloud14
 {
-    class Producer
+    class Producer:Agent
     {
         private Message message;
-        private Int64 requestID;
-        public Producer(Message message, Int64 requestId)
+
+        public Producer(Message message, Int64 requestId):base(requestId)
         {
             this.message = message;
-            this.requestID = requestId;
         }
 
-        public void RequestWrite()
+        public Message GetMessage()
         {
+            return message;
         }
         
         /**

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Cloud14
 {
-    class Agent
+    abstract class Agent
     {
         protected Int64 requestID;
 
@@ -13,5 +13,11 @@ namespace Cloud14
         {
             this.requestID = requestID;
         }
+
+        public Int64 GetRequestID()
+        {
+            return requestID;
+        }
+
     }
 }

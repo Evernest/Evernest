@@ -2,16 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System.Configuration;
 
 namespace Cloud14
 {
     class Stream
     {
-        IStorage storage;
+        private CloudBlobClient blobClient;
+        private WriteLocker writeLock;
 
-        public Stream(IStorage storage)
+
+        public Stream()
         {
-            this.storage = storage;
+            // Create the blob client
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                ConfigurationManager.ConnectionStrings["StorageConnectionString"].ConnectionString);
+            blobClient = storageAccount.CreateCloudBlobClient();
+
+            writeLock = new WriteLocker(blobClient);
         }
 
 
@@ -21,8 +32,11 @@ namespace Cloud14
 
         class StreamDeliver
         {
-            protected void DeliverFeedBack()
-            { }
+            protected void DeliverFeedBack(Producer prod)
+            {
+                // TODO - Complete with feedback in frontend
+                Console.WriteLine("La requete {0} a retourné {1}", prod.GetRequestID(), prod.GetMessage().ToString());
+            }
         }
     }
 }

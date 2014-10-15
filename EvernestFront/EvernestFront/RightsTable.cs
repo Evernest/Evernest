@@ -8,7 +8,7 @@ using EvernestFront.Exceptions;
 
 namespace EvernestFront
 {
-    static class RightsTable
+    public static class RightsTable
     {
         /// <summary>
         /// When adding a new stream, AccessRights to set for its creator

@@ -49,7 +49,6 @@
     <Compile Include="Exceptions\AccessDeniedException.cs" />
     <Compile Include="Requests\CreateStream.cs" />
     <Compile Include="Requests\Request.cs" />
-    <Compile Include="Answers\IAnswer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Requests\PullRange.cs" />
     <Compile Include="Requests\PullRandom.cs" />

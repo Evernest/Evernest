@@ -28,8 +28,8 @@ namespace EvernestFront.Requests
         {
             try
             {
-                StreamTable.CheckNameIsFree(StreamName);
-                var stream = new Stream(User);
+                RightsTable.AddStream(User, StreamName);
+                var stream = new Stream();
                 StreamTable.Add(StreamName, stream);
                 return new Answers.CreateStream();
             }

@@ -23,9 +23,14 @@ namespace EvernestFront.Requests
                 try
                 {
                     Stream stream = StreamTable.GetStream(StreamName);
-                    return stream.PullRandom(User);
+                    RightsTable.CheckCanRead(User,StreamName);
+                    return stream.PullRandom();
                 }
                 catch (StreamNameDoesNotExistException exn)
+                {
+                    return new Answers.PullRandom(exn);
+                }
+                catch (AccessDeniedException exn)
                 {
                     return new Answers.PullRandom(exn);
                 }

@@ -26,7 +26,20 @@ namespace EvernestFront.Requests
             /// <returns></returns>
             public override Answers.Push Process()
             {
-                throw new NotImplementedException();
+                try
+                {
+                    Stream stream = StreamTable.GetStream(StreamName);
+                    RightsTable.CheckCanWrite(User, StreamName);
+                    return stream.Push(eventToPush);
+                }
+                catch (StreamNameDoesNotExistException exn)
+                {
+                    return new Answers.Push(exn);
+                }
+                catch (AccessDeniedException exn)
+                {
+                    return new Answers.Push(exn);
+                }
             }
         } 
     

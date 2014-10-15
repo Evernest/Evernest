@@ -8,8 +8,8 @@ namespace EvernestFront.Requests
         class PullRange : Request<Answers.PullRange>
         {
  
-            string eventIdFrom;
-            string eventIdTo;
+            int eventIdFrom;
+            int eventIdTo;
             /// <summary>
             /// Constructor for PullRange requests.
             /// Request pulls events between from and to (inclusive).
@@ -18,7 +18,7 @@ namespace EvernestFront.Requests
             /// <param name="streamName"></param>
             /// <param name="from"></param>
             /// <param name="to"></param>
-            public PullRange(string user, string streamName, string from, string to)
+            public PullRange(string user, string streamName, int from, int to)
                 : base(user, streamName)
             {
 
@@ -31,7 +31,20 @@ namespace EvernestFront.Requests
             /// <returns></returns>
             public override Answers.PullRange Process()
             {
-                throw new NotImplementedException();
+                try
+                {
+                    Stream stream = StreamTable.GetStream(StreamName);
+                    RightsTable.CheckCanRead(User, StreamName);
+                    return stream.PullRange(eventIdFrom,eventIdTo);
+                }
+                catch (StreamNameDoesNotExistException exn)
+                {
+                    return new Answers.PullRange(exn);
+                }
+                catch (AccessDeniedException exn)
+                {
+                    return new Answers.PullRange(exn);
+                }
             }
         } 
     

@@ -11,6 +11,8 @@ namespace EvernestFront.Requests
     {
         private string targetUser;
         private AccessRights rights;
+
+
         /// <summary>
         /// Constructor for SetRights requests.
         /// Synopsis : user sets the rights of targetUser for stream streamName to rights.
@@ -32,7 +34,20 @@ namespace EvernestFront.Requests
         /// <returns></returns>
         public override Answers.SetRights Process()
         {
-            throw new NotImplementedException();
+            try
+            {
+                RightsTable.CheckCanAdmin(User, StreamName);
+                RightsTable.SetRights(targetUser, StreamName, rights);
+                return new Answers.SetRights();
+            }
+            catch (StreamNameDoesNotExistException exn)
+            {
+                return new Answers.SetRights(exn);
+            }
+            catch (AccessDeniedException exn)
+            {
+                return new Answers.SetRights(exn);
+            }
         }
     }
 }

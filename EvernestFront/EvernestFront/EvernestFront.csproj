@@ -55,6 +55,7 @@
     <Compile Include="Requests\PullRandom.cs" />
     <Compile Include="Requests\Push.cs" />
     <Compile Include="Requests\SetRights.cs" />
+    <Compile Include="RightsTable.cs" />
     <Compile Include="Stream.cs" />
     <Compile Include="StreamTable.cs" />
     <Compile Include="Exceptions\StreamNameDoesNotExistException.cs" />

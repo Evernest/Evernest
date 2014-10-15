@@ -7,7 +7,7 @@ using EvernestFront.Exceptions;
 
 namespace EvernestFront.Requests
 {
-    class CreateStream:Request
+    class CreateStream:Request<Answers.CreateStream>
     {
         /// <summary>
         /// Constructor for CreateStream request.

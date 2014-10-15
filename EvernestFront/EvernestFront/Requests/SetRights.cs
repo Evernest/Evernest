@@ -7,7 +7,7 @@ using EvernestFront.Exceptions;
 
 namespace EvernestFront.Requests
 {
-    class SetRights:Request
+    class SetRights:Request<Answers.SetRights>
     {
         private string targetUser;
         private AccessRights rights;

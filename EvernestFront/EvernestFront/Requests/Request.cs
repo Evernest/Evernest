@@ -1,11 +1,18 @@
-﻿namespace EvernestFront.Requests
+﻿using System;
+
+namespace EvernestFront.Requests
 {
   
-        public abstract class Request : IRequest
+        public abstract class Request<TAnswer> where TAnswer : Answers.Answer
         {
             protected string User;
 
             protected string StreamName;
+
+            public override string ToString()
+            {
+                throw new NotImplementedException();
+            }
 
             protected Request(string user, string streamName)
             {
@@ -17,7 +24,7 @@
             /// Processes the request with a back-end call.
             /// </summary>
             /// <returns></returns>
-            public abstract Answers.IAnswer Process();
+            public abstract TAnswer Process();
            
             
         } 

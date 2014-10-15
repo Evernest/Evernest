@@ -5,7 +5,7 @@ using EvernestFront.Exceptions;
 namespace EvernestFront.Requests
 {
    
-        class Push : Request
+        class Push : Request<Answers.Push>
         {
             private Event eventToPush;
             /// <summary>

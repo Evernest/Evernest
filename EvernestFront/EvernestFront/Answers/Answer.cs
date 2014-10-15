@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace EvernestFront.Answers
 {
-    public abstract class Answer:IAnswer
+    public abstract class Answer
     {
-        string IAnswer.ToString()
+        public override string ToString()
         {
             throw new NotImplementedException();
         }
 
-        public bool Success {get; private set;}
+        public bool Success {get; protected set;}
         
         //TODO : protected string requestID;
 

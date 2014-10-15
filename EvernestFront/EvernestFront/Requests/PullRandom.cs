@@ -4,7 +4,7 @@ using EvernestFront.Exceptions;
 namespace EvernestFront.Requests
 {
    
-        class PullRandom : Request
+        class PullRandom : Request<Answers.PullRandom>
         {   
             /// <summary>
             /// Constructor for PullRandom requests.

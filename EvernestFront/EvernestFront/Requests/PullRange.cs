@@ -5,7 +5,7 @@ namespace EvernestFront.Requests
 
 {
  
-        class PullRange : Request
+        class PullRange : Request<Answers.PullRange>
         {
  
             string eventIdFrom;

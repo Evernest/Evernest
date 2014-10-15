@@ -19,7 +19,9 @@ namespace EvernestFront.Answers
 
         public Exception Exception { get; private set; }
 
-
+        /// <summary>
+        /// Default constructor for class Answer : allows for constructors without a parameter in subclasses.
+        /// </summary>
         protected Answer()
         {
         }

@@ -15,6 +15,7 @@ namespace EvernestFront
         /// Does nothing if name is available.
         /// Throws a StreamNameTakenException if it is taken.
         /// </summary>
+        /// <exception cref="StreamNameTakenException"
         /// <param name="name"></param>
         internal static void CheckNameIsFree(string name)
         {
@@ -24,8 +25,8 @@ namespace EvernestFront
 
         /// <summary>
         /// Adds a new stream called name if name is available.
-        /// Throws a StreamNameTakenException if it is taken.
         /// </summary>
+        /// <exception cref="StreamNameTakenException"
         /// <param name="name"></param>
         /// <param name="str"></param>
         internal static void Add(string name, Stream str)
@@ -37,8 +38,8 @@ namespace EvernestFront
 
         /// <summary>
         /// Returns the stream named name, if it exists.
-        /// Throws a StreamNameDoesNotExistException if it does not.
         /// </summary>
+        /// <exception cref="StreamNameDoesNotExistException"
         /// <param name="name"></param>
         /// <returns></returns>
         internal static Stream GetStream(string name)

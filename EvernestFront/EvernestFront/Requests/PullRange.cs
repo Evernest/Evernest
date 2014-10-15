@@ -1,4 +1,5 @@
 ﻿using System;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront.Requests
 

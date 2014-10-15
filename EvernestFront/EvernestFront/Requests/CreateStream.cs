@@ -19,7 +19,12 @@ namespace EvernestFront.Requests
         {
         }
 
-        public override Answers.IAnswer Process()
+        /// <summary>
+        /// Processes a stream creation request.  If name is available,  the request is successful and user has creator rights.
+        /// </summary>
+        /// <returns></returns>
+
+        public override Answers.CreateStream Process()
         {
             try
             {
@@ -28,6 +33,7 @@ namespace EvernestFront.Requests
                 StreamTable.Add(StreamName, stream);
                 return new Answers.CreateStream();
             }
+                //TODO : catch some more exceptions
             catch (StreamNameTakenException exn)
             {
                 return new Answers.CreateStream(exn);

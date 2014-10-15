@@ -19,7 +19,7 @@ namespace EvernestFront.Answers
         /// </summary>
         public CreateStream()
         {
-            success = true;
+            Success = true;
         }
     }
 }

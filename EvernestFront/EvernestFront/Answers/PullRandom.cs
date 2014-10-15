@@ -25,7 +25,7 @@ namespace EvernestFront.Answers
         /// <param name="evt"></param>
         public PullRandom(Event evt)
         {
-            success = true;
+            Success = true;
             eventPulled = evt;
         }
 

@@ -13,10 +13,12 @@ namespace EvernestFront.Answers
             throw new NotImplementedException();
         }
 
-        protected bool success;
-        //protected string errorMessage = "";
-        protected Exception exception = null;
+        public bool Success {get; private set;}
+        
         //TODO : protected string requestID;
+
+        public Exception Exception { get; private set; }
+
 
         protected Answer()
         {
@@ -27,8 +29,8 @@ namespace EvernestFront.Answers
         /// <param name="exn"></param>
         public Answer(Exception exn)
         {
-            success = false;
-            exception =  exn;
+            Success = false;
+            Exception =  exn;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace EvernestFront.Answers
         /// <param name="id"></param>
         public Push(string id)
         {
-            success = true;
+            Success = true;
             MessageID = id;
         }
 

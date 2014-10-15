@@ -21,7 +21,7 @@ namespace EvernestFront.Answers
         /// </summary>
         public SetRights()
         {
-            success = true;
+            Success = true;
         }
     }
 }

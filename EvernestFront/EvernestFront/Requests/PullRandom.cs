@@ -5,11 +5,20 @@ namespace EvernestFront.Requests
 {
    
         class PullRandom : Request
-        {
+        {   
+            /// <summary>
+            /// Constructor for PullRandom requests.
+            /// </summary>
+            /// <param name="user"></param>
+            /// <param name="streamName"></param>
             public PullRandom(string user, string streamName)
                 : base(user, streamName) { }
 
-            public override Answers.IAnswer Process()
+            /// <summary>
+            /// Processes PullRandom request with a backend call. Request is successful if user has reading rights.
+            /// </summary>
+            /// <returns></returns>
+            public override Answers.PullRandom Process()
             {
                 try
                 {

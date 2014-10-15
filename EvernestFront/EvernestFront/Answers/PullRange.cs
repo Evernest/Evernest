@@ -26,7 +26,7 @@ namespace EvernestFront.Answers
         /// <param name="eventsPulled"></param>
         public PullRange(List<Event> eventsPulled)
         {
-            success = true;
+            Success = true;
             events = eventsPulled;
         }
     }

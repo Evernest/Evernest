@@ -13,6 +13,10 @@
                 this.StreamName = streamName;
             }
 
+            /// <summary>
+            /// Processes the request with a back-end call.
+            /// </summary>
+            /// <returns></returns>
             public abstract Answers.IAnswer Process();
            
             

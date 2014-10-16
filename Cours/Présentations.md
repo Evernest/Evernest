@@ -1,4 +1,4 @@
-Présentations
+﻿Présentations
 =============
 
 | Sujet         | Commentaire               | Présentateur |
@@ -14,6 +14,6 @@ Présentations
 | .trace        | profiler CPU              |              |
 | Linq          | SQL C# typé               | Corentin     |
 | Bootstrap     | Framework Webapp          |              |
-| .Peek         | décompilateur             |              |
-| kudu          | déploiement Azure par Git |              |
+| .Peek         | décompilateur             | Diane        |
+| kudu          | déploiement Azure par Git | Raphaël      |
 | ndepend       |                           | Nicolas      |

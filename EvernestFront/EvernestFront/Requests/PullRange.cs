@@ -37,14 +37,11 @@ namespace EvernestFront.Requests
                     RightsTable.CheckCanRead(User, StreamName);
                     return stream.PullRange(eventIdFrom,eventIdTo);
                 }
-                catch (StreamNameDoesNotExistException exn)
+                catch (FrontException exn)
                 {
                     return new Answers.PullRange(exn);
                 }
-                catch (AccessDeniedException exn)
-                {
-                    return new Answers.PullRange(exn);
-                }
+
             }
         } 
     

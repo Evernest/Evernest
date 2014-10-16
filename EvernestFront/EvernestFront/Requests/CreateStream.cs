@@ -33,10 +33,9 @@ namespace EvernestFront.Requests
                 StreamTable.Add(StreamName, stream);
                 return new Answers.CreateStream();
             }
-                //TODO : catch some more exceptions
-            catch (StreamNameTakenException exn)
+            catch (FrontException exn)
             {
-                return new Answers.CreateStream(exn);
+                return new Answers.CreateStream(exn);             
             }
         }
     }

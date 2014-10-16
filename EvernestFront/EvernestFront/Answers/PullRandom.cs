@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront.Answers
 {
@@ -13,7 +14,7 @@ namespace EvernestFront.Answers
         /// Sets field success to false and field exception to exn.
         /// </summary>
         /// <param name="exn"></param>
-        public PullRandom(Exception exn)
+        public PullRandom(FrontException exn)
         :base(exn)
         {
         }

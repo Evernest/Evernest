@@ -2,7 +2,7 @@
 
 namespace EvernestFront.Exceptions
 {
-    public class StreamNameDoesNotExistException : Exception
+    public class StreamNameDoesNotExistException : FrontException
     { 
         public string StreamName { get; private set; }
         /// <summary>

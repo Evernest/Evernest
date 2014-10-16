@@ -40,14 +40,11 @@ namespace EvernestFront.Requests
                 RightsTable.SetRights(targetUser, StreamName, rights);
                 return new Answers.SetRights();
             }
-            catch (StreamNameDoesNotExistException exn)
+            catch (FrontException exn)
             {
                 return new Answers.SetRights(exn);
             }
-            catch (AccessDeniedException exn)
-            {
-                return new Answers.SetRights(exn);
-            }
+
         }
     }
 }

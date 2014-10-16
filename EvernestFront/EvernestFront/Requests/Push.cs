@@ -32,14 +32,11 @@ namespace EvernestFront.Requests
                     RightsTable.CheckCanWrite(User, StreamName);
                     return stream.Push(eventToPush);
                 }
-                catch (StreamNameDoesNotExistException exn)
+                catch (FrontException exn)
                 {
                     return new Answers.Push(exn);
                 }
-                catch (AccessDeniedException exn)
-                {
-                    return new Answers.Push(exn);
-                }
+
             }
         } 
     

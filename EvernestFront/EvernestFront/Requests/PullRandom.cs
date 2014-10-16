@@ -26,14 +26,11 @@ namespace EvernestFront.Requests
                     RightsTable.CheckCanRead(User,StreamName);
                     return stream.PullRandom();
                 }
-                catch (StreamNameDoesNotExistException exn)
+                catch (FrontException exn)
                 {
                     return new Answers.PullRandom(exn);
                 }
-                catch (AccessDeniedException exn)
-                {
-                    return new Answers.PullRandom(exn);
-                }
+
                 
             }
         }

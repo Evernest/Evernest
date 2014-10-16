@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvernestFront.Exceptions
 {
-    public class AccessDeniedException : Exception
+    public class AccessDeniedException : FrontException
     {
         public string StreamName { get; private set; }
         public string User { get; private set; }

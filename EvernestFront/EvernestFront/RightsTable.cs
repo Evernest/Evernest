@@ -38,7 +38,8 @@ namespace EvernestFront
 
         static internal void ResetTable()
         {
-            Table.Clear(); // mettre à jour
+            TableByUser.Clear();
+            TableByStream.Clear();
         }
 
 

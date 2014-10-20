@@ -8,6 +8,5 @@ namespace EvernestFront
 {
     class Event
     {
-       
     }
 }

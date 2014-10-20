@@ -1,26 +1,47 @@
 ﻿using System;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront.Requests
 
 {
  
-        class PullRange : Request
+        class PullRange : Request<Answers.PullRange>
         {
-            
-            string eventIdFrom;
-            string eventIdTo;
-
-            public PullRange(string user, string streamName, string from, string to)
+ 
+            int eventIdFrom;
+            int eventIdTo;
+            /// <summary>
+            /// Constructor for PullRange requests.
+            /// Request pulls events between from and to (inclusive).
+            /// </summary>
+            /// <param name="user"></param>
+            /// <param name="streamName"></param>
+            /// <param name="from"></param>
+            /// <param name="to"></param>
+            public PullRange(string user, string streamName, int from, int to)
                 : base(user, streamName)
             {
 
                 this.eventIdFrom = from;
                 this.eventIdTo = to;
             }
-
-            public override Answers.IAnswer Process()
+            /// <summary>
+            /// Processes PullRange request. Request is successful if user has reading rights.
+            /// </summary>
+            /// <returns></returns>
+            public override Answers.PullRange Process()
             {
-                throw new NotImplementedException();
+                try
+                {
+                    Stream stream = StreamTable.GetStream(StreamName);
+                    RightsTable.CheckCanRead(User, StreamName);
+                    return stream.PullRange(eventIdFrom,eventIdTo);
+                }
+                catch (FrontException exn)
+                {
+                    return new Answers.PullRange(exn);
+                }
+
             }
         } 
     

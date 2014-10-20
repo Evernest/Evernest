@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvernestFront.Answers
+namespace EvernestFront.Exceptions
 {
-    public interface IAnswer
+    public abstract class FrontException : Exception
     {
-        string ToString();
     }
 }

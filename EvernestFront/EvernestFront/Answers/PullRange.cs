@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront.Answers
 {
@@ -14,7 +15,7 @@ namespace EvernestFront.Answers
         /// Sets field success to false and field exception to exn.
         /// </summary>
         /// <param name="exn"></param>
-        public PullRange(Exception exn)
+        public PullRange(FrontException exn)
             :base(exn)
         {
         }
@@ -26,7 +27,7 @@ namespace EvernestFront.Answers
         /// <param name="eventsPulled"></param>
         public PullRange(List<Event> eventsPulled)
         {
-            success = true;
+            Success = true;
             events = eventsPulled;
         }
     }

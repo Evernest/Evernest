@@ -3,32 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront.Answers
 {
-    public abstract class Answer:IAnswer
+    public abstract class Answer
     {
-        string IAnswer.ToString()
+        public override string ToString()
         {
             throw new NotImplementedException();
         }
 
-        protected bool success;
-        //protected string errorMessage = "";
-        protected Exception exception = null;
+        public bool Success {get; protected set;}
+        
         //TODO : protected string requestID;
 
+        public FrontException Exception { get; private set; }
+
+        /// <summary>
+        /// Default constructor for class Answer : allows for constructors without a parameter in subclasses.
+        /// </summary>
         protected Answer()
         {
         }
+
+
         /// <summary>
         /// Sets field success to false and field exception to exn.
         /// </summary>
         /// <param name="exn"></param>
-        public Answer(Exception exn)
+        protected Answer(FrontException exn)
         {
-            success = false;
-            exception =  exn;
+            Success = false;
+            Exception =  exn;
         }
     }
 }

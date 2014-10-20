@@ -7,7 +7,7 @@ using EvernestFront.Exceptions;
 
 namespace EvernestFront.Requests
 {
-    class CreateStream:Request
+    class CreateStream:Request<Answers.CreateStream>
     {
         /// <summary>
         /// Constructor for CreateStream request.
@@ -19,18 +19,23 @@ namespace EvernestFront.Requests
         {
         }
 
-        public override Answers.IAnswer Process()
+        /// <summary>
+        /// Processes a stream creation request.  If name is available,  the request is successful and user has creator rights.
+        /// </summary>
+        /// <returns></returns>
+
+        public override Answers.CreateStream Process()
         {
             try
             {
-                StreamTable.CheckNameIsFree(StreamName);
-                var stream = new Stream(User);
+                RightsTable.AddStream(User, StreamName);
+                var stream = new Stream();
                 StreamTable.Add(StreamName, stream);
                 return new Answers.CreateStream();
             }
-            catch (StreamNameTakenException exn)
+            catch (FrontException exn)
             {
-                return new Answers.CreateStream(exn);
+                return new Answers.CreateStream(exn);             
             }
         }
     }

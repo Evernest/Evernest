@@ -196,3 +196,7 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
+
+# NCover
+**/*.boltdata/*

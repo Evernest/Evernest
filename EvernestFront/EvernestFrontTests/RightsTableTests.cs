@@ -1,14 +1,14 @@
 ﻿using System;
 using EvernestFront;
 using EvernestFront.Exceptions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using NUnit.Framework;
+//using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 
 namespace EvernestFrontTests
 {
-    [TestClass]
+    [TestFixture]
     public class RightsTableTests
     {
 
@@ -34,7 +34,7 @@ namespace EvernestFrontTests
         //}
 
 
-        [TestMethod]
+        [Test]
         public void AddStream_StreamNameNotTaken_SetsCreatorRights()
             //nom ?
         {
@@ -45,7 +45,7 @@ namespace EvernestFrontTests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod] 
+        [Test] 
         [ExpectedException(typeof(StreamNameTakenException))]
         public void AddStream_StreamNameTaken_Throws()
         {
@@ -54,7 +54,7 @@ namespace EvernestFrontTests
             RightsTable.AddStream(user1,stream);
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(StreamNameDoesNotExistException))]
         public void SetRights_StreamNameDoesNotExist_Throws()
         {
@@ -62,7 +62,7 @@ namespace EvernestFrontTests
             RightsTable.SetRights(user, stream, AccessRights.Read);
         }
 
-        [TestMethod]
+        [Test]
         [ExpectedException(typeof(AccessDeniedException))]
         public void CheckCanRead_AccessRightsDotNoRights_AccessDeniedException()
         {
@@ -71,7 +71,7 @@ namespace EvernestFrontTests
             RightsTable.CheckCanRead(user1,stream);
         }
 
-        [TestMethod]
+        [Test]
         public void CheckCanRead_AccessRightsDotRead_Returns()
         {
             RightsTable.ResetTable();
@@ -80,7 +80,7 @@ namespace EvernestFrontTests
             RightsTable.CheckCanRead(user1, stream);
         }
 
-        [TestMethod]
+        [Test]
         public void CheckCanRead_AccessRightsDotReadWrite_Returns()
         {
             RightsTable.ResetTable();

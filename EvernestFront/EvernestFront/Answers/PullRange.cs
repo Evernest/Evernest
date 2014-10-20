@@ -7,7 +7,7 @@ using EvernestFront.Exceptions;
 
 namespace EvernestFront.Answers
 {
-    class PullRange:Answer
+    public class PullRange:Answer
     {
         //TODO : tableau d'events ? liste ? chaîne JSON ?
         List<Event> events;
@@ -15,7 +15,7 @@ namespace EvernestFront.Answers
         /// Sets field success to false and field exception to exn.
         /// </summary>
         /// <param name="exn"></param>
-        public PullRange(FrontException exn)
+        internal PullRange(FrontException exn)
             :base(exn)
         {
         }
@@ -25,7 +25,7 @@ namespace EvernestFront.Answers
         /// Sets field success to true and fills field events.
         /// </summary>
         /// <param name="eventsPulled"></param>
-        public PullRange(List<Event> eventsPulled)
+        internal PullRange(List<Event> eventsPulled)
         {
             Success = true;
             events = eventsPulled;

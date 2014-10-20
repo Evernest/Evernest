@@ -7,14 +7,14 @@ using EvernestFront.Exceptions;
 
 namespace EvernestFront.Answers
 {
-    class PullRandom : Answer
+    public class PullRandom : Answer
     {
         Event eventPulled = null;
         /// <summary>
         /// Sets field success to false and field exception to exn.
         /// </summary>
         /// <param name="exn"></param>
-        public PullRandom(FrontException exn)
+        internal PullRandom(FrontException exn)
         :base(exn)
         {
         }
@@ -24,7 +24,7 @@ namespace EvernestFront.Answers
         /// Sets field success to true and field eventPulled to evt.
         /// </summary>
         /// <param name="evt"></param>
-        public PullRandom(Event evt)
+        internal PullRandom(Event evt)
         {
             Success = true;
             eventPulled = evt;

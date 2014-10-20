@@ -65,6 +65,7 @@
     <Compile Include="Exceptions\AccessDeniedException.cs" />
     <Compile Include="Exceptions\FrontException.cs" />
     <Compile Include="Exceptions\UnregisteredUserException.cs" />
+    <Compile Include="Process.cs" />
     <Compile Include="Requests\CreateStream.cs" />
     <Compile Include="Requests\Request.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

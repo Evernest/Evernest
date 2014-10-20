@@ -8,7 +8,7 @@
 | msbuild       | ~ Makefile                | Rémi         |
 | teamcity      | Intégration continue      | Marc         |
 | ncover        | Analyse statique          | Alex         |
-| powershell    |                           |              |
+| powershell    |                           | Aymeric      |
 | TPL + PLinq   | Multicore                 |              |
 | REST, ASP.NNC | API                       | Élie         |
 | .trace        | profiler CPU              |              |

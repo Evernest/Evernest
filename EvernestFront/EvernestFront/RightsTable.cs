@@ -13,7 +13,7 @@ namespace EvernestFront
         /// <summary>
         /// When adding a new stream, AccessRights to set for its creator
         /// </summary>
-        private const AccessRights CreatorRights = AccessRights.Admin;
+        public const AccessRights CreatorRights = AccessRights.Admin;
   
 
         private static readonly Dictionary<string, Dictionary<string, AccessRights>> Table 
@@ -26,7 +26,10 @@ namespace EvernestFront
 
 
 
-        
+        static internal void ResetTable()
+        {
+            Table.Clear();
+        }
 
         /// <summary>
         /// Adds a new stream to the static table, with user having rights CreatorRights.

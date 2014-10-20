@@ -21,24 +21,27 @@ namespace EvernestFrontTests
 
         
 
-        //[SetUp]
+
+
+        //[TestInitialize]
         //public void Initialize()
         //{
         //    RightsTable.AddStream(user, stream);
         //}
 
-        //[NUnit.Framework.TearDown]
-        //public void Reset()
-        //{
-        //    RightsTable.ResetTable();
-        //}
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            RightsTable.ResetTable();
+        }
+
 
 
         [TestMethod]
         public void AddStream_StreamNameNotTaken_SetsCreatorRights()
             //nom ?
         {
-            RightsTable.ResetTable();
             RightsTable.AddStream(user, stream);
             var expected = RightsTable.CreatorRights;
             var actual = RightsTable.GetRights(user, stream);
@@ -49,7 +52,6 @@ namespace EvernestFrontTests
         [ExpectedException(typeof(StreamNameTakenException))]
         public void AddStream_StreamNameTaken_Throws()
         {
-            RightsTable.ResetTable();
             RightsTable.AddStream(user, stream);
             RightsTable.AddStream(user1,stream);
         }
@@ -58,32 +60,28 @@ namespace EvernestFrontTests
         [ExpectedException(typeof(StreamNameDoesNotExistException))]
         public void SetRights_StreamNameDoesNotExist_Throws()
         {
-            RightsTable.ResetTable();
             RightsTable.SetRights(user, stream, AccessRights.Read);
         }
 
         [TestMethod]
         [ExpectedException(typeof(AccessDeniedException))]
-        public void CheckCanRead_AccessRightsDotNoRights_AccessDeniedException()
+        public void CheckCanRead_NoRights_AccessDeniedException()
         {
-            RightsTable.ResetTable();
             RightsTable.AddStream(user, stream);
             RightsTable.CheckCanRead(user1,stream);
         }
 
         [TestMethod]
-        public void CheckCanRead_AccessRightsDotRead_Returns()
+        public void CheckCanRead_Read_Returns()
         {
-            RightsTable.ResetTable();
             RightsTable.AddStream(user, stream);
             RightsTable.SetRights(user1, stream, AccessRights.Read);
             RightsTable.CheckCanRead(user1, stream);
         }
 
         [TestMethod]
-        public void CheckCanRead_AccessRightsDotReadWrite_Returns()
+        public void CheckCanRead_ReadWrite_Returns()
         {
-            RightsTable.ResetTable();
             RightsTable.AddStream(user, stream);
             RightsTable.SetRights(user1, stream, AccessRights.ReadWrite);
             RightsTable.CheckCanRead(user1, stream);

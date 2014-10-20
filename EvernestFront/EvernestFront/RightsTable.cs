@@ -15,18 +15,22 @@ namespace EvernestFront
         /// </summary>
         private const AccessRights CreatorRights = AccessRights.Admin;
   
-
-        private static readonly Dictionary<string, Dictionary<string, AccessRights>> Table 
+        /// <summary>
+        /// Access rights table, indexed by stream first, user second.
+        /// </summary>
+        private static readonly Dictionary<string, Dictionary<string, AccessRights>> TableByStream 
             = new Dictionary<string, Dictionary<string, AccessRights>>();
 
 
         // TODO : historique stocké dans une stream
 
-        // TODO : table indexée directement par les utilisateurs ? Pour vérifier si un nom est libre, donner la liste des streams qui le concernent...
+        /// <summary>
+        /// Access rights table, indexed by user first, stream second.
+        /// </summary>
+        private static readonly Dictionary<string, Dictionary<string,AccessRights>> TableByUser
+            = new Dictionary<string,Dictionary<string,AccessRights>>();
 
-
-
-        
+        //TODO : ajouter de la sûreté entre les noms de string et d'user ?
 
         /// <summary>
         /// Adds a new stream to the static table, with user having rights CreatorRights.
@@ -36,11 +40,16 @@ namespace EvernestFront
         /// <param name="user"></param>
         static internal void AddStream(string user, string stream)
         {
-            if (Table.ContainsKey(stream))
+            if (TableByStream.ContainsKey(stream))
                 throw new StreamNameTakenException(stream);
             else
-                Table[stream] = new Dictionary<string, AccessRights> {{user, CreatorRights}};
+                TableByStream[stream] = new Dictionary<string, AccessRights> {{user, CreatorRights}};
             // TODO : update la stream historique
+            if (TableByUser.ContainsKey(user))
+                TableByUser[user].Add(stream, CreatorRights);
+            else
+                TableByUser[user] = new Dictionary<string, AccessRights> { { stream, CreatorRights } };
+
         }
 
 
@@ -54,16 +63,23 @@ namespace EvernestFront
         /// <param name="rights"></param>
         static internal void SetRights(string user, string stream, AccessRights rights)
         {
-            if (Table.ContainsKey(stream))
+            if (TableByStream.ContainsKey(stream))
             {
                 //var tableAssociatedToStream = Table[stream];
-                Table[stream][user] = rights;
+                TableByStream[stream][user] = rights;
                 // TODO : interdire de destituer un admin ?
                 // retirer user de la table si rights = AccessRights.NoRights ?
                 // TODO : update la stream historique
             }
             else
-                throw new StreamNameDoesNotExistException(stream);    
+                throw new StreamNameDoesNotExistException(stream);
+            if (TableByUser.ContainsKey(user))
+            {
+                TableByUser[user][stream] = rights;
+            }
+            else
+                TableByUser[user] = new Dictionary<string, AccessRights> { { stream, rights } };
+
         }
 
 
@@ -82,9 +98,9 @@ namespace EvernestFront
         /// <returns></returns>
         internal static AccessRights GetRights(string user, string stream)
         {
-            if (Table.ContainsKey(stream))
+            if (TableByStream.ContainsKey(stream))
             {
-                var tableAssociatedToStream = Table[stream];
+                var tableAssociatedToStream = TableByStream[stream];
                 if (tableAssociatedToStream.ContainsKey(user))
                     return tableAssociatedToStream[user];
                 else
@@ -156,8 +172,21 @@ namespace EvernestFront
                     return;
             }
         }
-
-
-
+        /// <summary>
+        /// Returns a list of all streams on which user has rights, and the associated AccessRights.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        /// <exception cref="UnregisteredUserException"></exception>
+        static internal List<KeyValuePair<string, AccessRights>> StreamsOfUser(string user)
+        {
+            if (TableByUser.ContainsKey(user))
+            {
+                return TableByUser[user].ToList();
+                //TODO : exclure les streams avec droits égaux à NoRights ?
+            }
+            else
+                throw new UnregisteredUserException(user);
+        }
     }
 }

@@ -29,6 +29,7 @@ namespace Cloud14
                 {
                     Producer p = waitingProducers.Take();
                     StoreToCloud(p);
+                    p.Processed();
                 }
             }
             );

@@ -6,14 +6,14 @@ namespace Cloud14
     class Message
     {
         protected String message;
-        protected int id;
-        public Message(String s, int id)
+        protected Int64 id;
+        public Message(String s, Int64 id)
         {
             message = s;
             this.id = id;
         }
 
-        public int getID()
+        public Int64 getID()
         {
             return id;
         }

@@ -14,7 +14,6 @@ namespace Cloud14
         private CloudBlobClient blobClient;
         private WriteLocker writeLock;
 
-
         public Stream()
         {
             // Create the blob client
@@ -26,17 +25,20 @@ namespace Cloud14
         }
 
 
-        class StreamController
+        public void StreamWrite(String message, Int64 id)
         {
+            Message m = new Message(message, id);
+            Producer p = new Producer(m, id, writeLock, this);
         }
 
-        class StreamDeliver
+        public void StreamRead()
         {
-            protected void DeliverFeedBack(Producer prod)
-            {
-                // TODO - Complete with feedback in frontend
-                Console.WriteLine("La requete {0} a retourné {1}", prod.GetRequestID(), prod.GetMessage().ToString());
-            }
+
+        }
+
+        public void StreamDeliver(Agent agent)
+        {
+            Console.WriteLine(agent.GetMessage().ToString());
         }
     }
 }

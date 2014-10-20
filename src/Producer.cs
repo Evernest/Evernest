@@ -9,10 +9,13 @@ namespace Cloud14
     class Producer:Agent
     {
         private Message message;
+        private WriteLocker writer;
 
-        public Producer(Message message, Int64 requestId):base(requestId)
+        public Producer(Message message, Int64 requestId, WriteLocker writeLocker,
+            Stream feedback):base(requestId, feedback)
         {
             this.message = message;
+            this.writer = writeLocker;
         }
 
         public Message GetMessage()
@@ -20,13 +23,15 @@ namespace Cloud14
             return message;
         }
         
-        /**
-         * Cette méthode est appellée lorsque le Producer à l'autorisation d'écrire.
-         */
         private void write()
         {
-            Console.Write("Méthode Producer.Write() sur le thread {0}",
-                Thread.CurrentThread.ManagedThreadId);
+            writer.Register(this);
+        }
+
+        public void Processed()
+        {
+            this.message = new Message("ACK", this.message.getID());
+            base.feedback.StreamDeliver(this);
         }
     }
 }

@@ -8,9 +8,9 @@ namespace Cloud14
     // Interface between Back-end and Front-end parts
     public interface IStorage
     {
-        public Message getID(int id);
-        public List<Message> getRange(int from, int to);
-        public int enqueue(Message message);
-        public static IStorage NewStorage();
+        //public Message getID(int id);
+        //public List<Message> getRange(int from, int to);
+        //public int enqueue(Message message);
+        //public static IStorage NewStorage();
     }
 }

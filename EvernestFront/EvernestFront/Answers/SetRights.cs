@@ -7,20 +7,20 @@ using EvernestFront.Exceptions;
 
 namespace EvernestFront.Answers
 {
-    class SetRights:Answer
+    public class SetRights:Answer
     {
         /// <summary>
         /// Sets field success to false and field exception to exn.
         /// </summary>
         /// <param name="exn"></param>
-        public SetRights(FrontException exn)
+        internal SetRights(FrontException exn)
             : base(exn) { }
         
         
         /// <summary>
         /// Sets field success to true. To change it to false, an exception parameter must be passed.
         /// </summary>
-        public SetRights()
+        internal SetRights()
         {
             Success = true;
         }

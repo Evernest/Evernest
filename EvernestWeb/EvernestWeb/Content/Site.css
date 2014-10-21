@@ -22,3 +22,10 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.ev-logo {
+    display: block;
+    margin: auto;
+    width: 100%;
+    max-width: 10em;
+}

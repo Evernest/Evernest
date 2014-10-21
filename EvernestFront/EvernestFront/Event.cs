@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvernestFront
 {
-    class Event
+    public class Event
     {
     }
 }

@@ -33,23 +33,30 @@ namespace EvernestLocal
             request.Credentials = CredentialCache.DefaultCredentials;
             //request.ContentType = "application/x-www-form-urlencoded";
             request.ContentType = "text/json";
+            System.Net.ServicePointManager.Expect100Continue = false;
         }
 
                                                                                     /* Methods */
-        public string SendDataGetResponse(string data)
+
+        
+        public void SendData(string data)
         {
             // convert data into byteArray
             string postData = data;
             byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-            
+
             // set parameter
             request.ContentLength = byteArray.Length;
- 
+
             // create stream and send data in stream
             dataStream = request.GetRequestStream();
             dataStream.Write(byteArray, 0, byteArray.Length);
             dataStream.Flush();
             dataStream.Close();
+        }
+
+        public string GetResponse()
+        {
 
             // get response
             WebResponse response = request.GetResponse();
@@ -64,5 +71,6 @@ namespace EvernestLocal
             // return response
             return responseFromServer;
         }
+        
     }
 }

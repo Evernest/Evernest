@@ -36,7 +36,7 @@ namespace EvernestFront.Requests
         {
             try
             {
-                RightsTable.CheckCanAdmin(User, StreamName);
+                CheckRights.CheckCanAdmin(User, StreamName);
                 RightsTable.SetRights(targetUser, StreamName, rights);
                 return new Answers.SetRights();
             }

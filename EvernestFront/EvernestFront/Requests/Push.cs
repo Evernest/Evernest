@@ -28,8 +28,8 @@ namespace EvernestFront.Requests
             {
                 try
                 {
+                    CheckRights.CheckCanWrite(User, StreamName);
                     Stream stream = StreamTable.GetStream(StreamName);
-                    RightsTable.CheckCanWrite(User, StreamName);
                     return stream.Push(eventToPush);
                 }
                 catch (FrontException exn)

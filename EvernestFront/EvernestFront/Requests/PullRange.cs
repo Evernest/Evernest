@@ -33,8 +33,8 @@ namespace EvernestFront.Requests
             {
                 try
                 {
+                    CheckRights.CheckCanRead(User, StreamName);
                     Stream stream = StreamTable.GetStream(StreamName);
-                    RightsTable.CheckCanRead(User, StreamName);
                     return stream.PullRange(eventIdFrom,eventIdTo);
                 }
                 catch (FrontException exn)

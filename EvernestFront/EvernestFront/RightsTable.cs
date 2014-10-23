@@ -30,15 +30,18 @@ namespace EvernestFront
 
 
 
-
+        /// <summary>
+        /// Clears the tables and add user Users.RootUser.
+        /// </summary>
         static internal void ResetTable()
         {
             TableByUser.Clear();
             TableByStream.Clear();
+            TableByUser[Users.RootUser] = new Dictionary<string, AccessRights>();
         }
 
         /// <summary>
-        /// Adds a new user to TableByUser with an empty dictionnary.
+        /// Adds a new user.
         /// </summary>
         /// <param name="user"></param>
         /// <exception cref="UserNameTakenException"></exception>
@@ -50,7 +53,7 @@ namespace EvernestFront
         }
 
         /// <summary>
-        /// Adds a new stream to the static table, with user having rights CreatorRights.
+        /// Adds a new stream, with user having rights CreatorRights.
         /// </summary>
         /// <exception cref="StreamNameTakenException"></exception>
         /// <param name="stream"></param>
@@ -61,8 +64,9 @@ namespace EvernestFront
                 throw new UnregisteredUserException(user);
             if (TableByStream.ContainsKey(stream))
                 throw new StreamNameTakenException(stream);
-            TableByStream[stream] = new Dictionary<string, AccessRights> {{user, Users.CreatorRights}};
+            TableByStream[stream] = new Dictionary<string, AccessRights> {{user, Users.CreatorRights}, {Users.RootUser, AccessRights.Root}};
             TableByUser[user].Add(stream, Users.CreatorRights);
+            TableByUser[Users.RootUser].Add(stream, AccessRights.Root);
             // TODO : update la stream historique
         }
 
@@ -72,16 +76,24 @@ namespace EvernestFront
         /// Set AccessRights of user about stream to rights.
         /// (interdire de destituer un admin ?)
         /// </summary>
+        /// <exception cref="UnregisteredUserException"></exception>
         /// <exception cref="StreamNameDoesNotExistException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
         /// <param name="rights"></param>
         static internal void SetRights(string user, string stream, AccessRights rights)
         {
-            if (!TableByUser.ContainsKey(user))
-                throw new UnregisteredUserException(user);
-            if (!TableByStream.ContainsKey(stream))
-                throw new StreamNameDoesNotExistException(stream);
+            //if (!TableByUser.ContainsKey(user))
+            //    throw new UnregisteredUserException(user);
+            //if (!TableByStream.ContainsKey(stream))
+            //    throw new StreamNameDoesNotExistException(stream);
+
+            var previousRights = GetRights(user, stream);
+            // peut lever UnregisteredUserException ou StreamNameDoesNotExistException
+            if (previousRights==AccessRights.Admin || previousRights==AccessRights.Root)
+                throw new Exception("cannot change rights of an admin or root user");
+
+
             TableByUser[user][stream] = rights;
             TableByStream[stream][user] = rights;
             // retirer des tables si rights = AccessRights.NoRights ?

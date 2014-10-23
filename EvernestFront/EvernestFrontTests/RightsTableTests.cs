@@ -32,8 +32,8 @@ namespace EvernestFrontTests
         //    RightsTable.AddStream(user, stream);
         //}
 
-        [TearDown]
-        public void Cleanup()
+        [SetUp]
+        public void Initialize()
         {
             RightsTable.ResetTable();
         }

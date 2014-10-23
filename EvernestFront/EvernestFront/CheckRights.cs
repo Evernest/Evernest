@@ -27,6 +27,7 @@ namespace EvernestFront
                 case (AccessRights.ReadOnly):
                 case (AccessRights.ReadWrite):
                 case (AccessRights.Admin):
+                case (AccessRights.Root):
                     return;
             }
         }
@@ -49,6 +50,7 @@ namespace EvernestFront
                 case (AccessRights.WriteOnly):
                 case (AccessRights.ReadWrite):
                 case (AccessRights.Admin):
+                case (AccessRights.Root):
                     return;
             }
         }
@@ -71,8 +73,15 @@ namespace EvernestFront
                 case (AccessRights.ReadWrite):
                     throw new AccessDeniedException(user, rights, AccessRights.Admin);
                 case (AccessRights.Admin):
+                case (AccessRights.Root):    
                     return;
             }
         }
+
+        static internal void CheckRightsCanBeModified(string user, string stream)
+        {
+            
+        }
+
     }
 }

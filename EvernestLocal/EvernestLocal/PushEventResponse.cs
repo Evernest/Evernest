@@ -14,7 +14,7 @@ namespace EvernestLocal
 
         public void ToPrint()
         {
-            Console.WriteLine("New_Token : " + new_token + "Id : " + id + "; Token_Timeout : " + token_timeout);
+            Console.WriteLine("New_Token : " + new_token + "; Id : " + id + "; Token_Timeout : " + token_timeout);
         }
     }
 }

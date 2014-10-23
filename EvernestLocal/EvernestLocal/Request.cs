@@ -17,11 +17,6 @@ namespace EvernestLocal
             this.token = token;
         }
 
-        public string ToJsonString()
-        {
-            return "{\"token\":\"" + token + "\",\"event\":{\"content\":\"" + content + "\"}}";
-        }
-
         public void ToPrint()
         {
             Console.WriteLine("Token : " + token + "; Content : " + content);

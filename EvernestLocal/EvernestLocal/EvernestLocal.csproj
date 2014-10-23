@@ -45,7 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnexionResponse.cs" />
+    <Compile Include="AccountResponse.cs" />
+    <Compile Include="ApiUrl.cs" />
     <Compile Include="Evenement.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="Program.cs" />
@@ -57,6 +58,8 @@
     <Compile Include="RequestToken.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="API_Account.json" />
+    <None Include="API_Parameters.json" />
     <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

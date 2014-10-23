@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,104 +16,67 @@ namespace EvernestLocal
 {
     internal class Program
     {
-        private static string urlBase = "http://www.evernest.org" ;
+
         private static void Main(string[] args)
         {
-            string response;
-            string adresseConnexion = urlBase + "/api/login";
-            string adressePullRandom = urlBase + "/api/pull/event/random";
-            string adressePull = urlBase + "/api/pull/event/3/4";
-            string adressePush = urlBase + "/api/push/event";
+            ApiUrl apiUrl = loadUrl("API_Parameters.json");
 
-            /* je me connecte et je récupère un token et son timeout */
+            AccountResponse a = Connexion(apiUrl.GetConnexion());
+            a.ToPrint();
 
-            HttpClient MyRequest = new HttpClient(adresseConnexion);
-
-
-            Account connect = new Account("evernest", "zkr5XF");
-
-            string jsonConnexion = connect.ToJsonString();
-            MyRequest.SendData(jsonConnexion);
-            response = MyRequest.GetResponse();
-
-            //Console.WriteLine(response);
-
-            ConnexionResponse cr = JsonToObject<ConnexionResponse>(response);
-            cr.ToPrint();
-
-            Console.WriteLine("\nFin Identification\n");
-
-            /* je push un event pour voir si ça fonctionne */
-            HttpClient MyRequestPush = new HttpClient(adressePush);
-
-            Request r = new Request("blabla", cr.new_token);
-            string r_string = r.ToJsonString();
-            MyRequestPush.SendData(r_string);
-            response = MyRequestPush.GetResponse();
-
-            PushEventResponse per = JsonToObject<PushEventResponse>(response);
-
+            RequestResponse per = Pull(apiUrl.GetPull(), new RequestToken(a.new_token));
             per.ToPrint();
-            //Console.WriteLine(response);
 
-            Console.WriteLine("\nFin Push\n");
 
-            /*
-            MyRequestPush = new HttpClient(adressePush);
-            Request r2 = new Request("blublo", per.new_token);
-            string r2_string = r2.ToJsonString();
-            MyRequest.SendData(r2_string);
-            response = MyRequestPush.GetResponse();
-            Console.WriteLine(response);
-             */
 
-            /* puis je récupère cet event */
-
-            RequestToken rt = new RequestToken(per.new_token);
-            string rt_string = rt.ToJsonString();
-            HttpClient MyRequestPull = new HttpClient(adressePullRandom);
-            MyRequestPull.SendData(rt_string);
-
-            response = MyRequestPull.GetResponse();
-            RequestResponse rr = JsonToObject<RequestResponse>(response);
-            rr.ToPrint();
-            //Console.WriteLine(response);
-
-            Console.WriteLine("\nFin Pull Random\n");
-
-            RequestToken rt2 = new RequestToken(rr.new_token);
-            string rt2_string = rt2.ToJsonString();
-            string adress_1 = GetPullIdUrl(3);
-            Console.WriteLine(adress_1);
-            HttpClient Myrt2Pull = new HttpClient(GetPullIdUrl(3,4));
-            Myrt2Pull.SendData(rt2_string);
-
-            response = Myrt2Pull.GetResponse();
-            RequestResponse rr2 = JsonToObject<RequestResponse>(response);
-            rr2.ToPrint();
-
-            Console.WriteLine("Fin du pull id" );
 
         }
 
-        
-
-        public static string GetPullIdUrl(int fst)
+        private static AccountResponse Connexion(string url)
         {
-            return urlBase + "/api/pull/event/" + fst;
+            HttpClient request = new HttpClient(url);
+            Account account = loadAccount("API_Account.json");
+            request.SendData(ObjectToJson(account));
+            return JsonToObject<AccountResponse>(request.GetResponse());
         }
 
-        public static string GetPullIdUrl(int fst, int snd)
+        private static PushEventResponse Push(string url, Request r)
         {
-            return GetPullIdUrl(fst) + "/" + snd;
+            HttpClient request = new HttpClient(url);
+            request.SendData(ObjectToJson(r));
+            return JsonToObject<PushEventResponse>(request.GetResponse());
         }
 
-        public static T JsonToObject<T>(string data)
+        private static RequestResponse Pull(string url, RequestToken r)
+        {
+            HttpClient request = new HttpClient(url);
+            request.SendData(ObjectToJson(r));
+            return JsonToObject<RequestResponse>(request.GetResponse());
+        }
+
+        private static Account loadAccount(string account_file)
+        {
+            string contentFile = System.IO.File.ReadAllText(@"..\\..\\"+account_file);   
+            return JsonToObject<Account>(contentFile);
+        }
+
+        private static ApiUrl loadUrl(string param_file)
+        {
+            string contentFile = System.IO.File.ReadAllText(@"..\\..\\"+param_file);   
+            return JsonToObject<ApiUrl>(contentFile);
+        }
+
+        private static T JsonToObject<T>(string data)
         {
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
             T res = jsonSerializer.Deserialize<T>(data);
             return res;
         }
-    }
 
+        private static string ObjectToJson(object obj)
+        {
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            return jsonSerializer.Serialize(obj);
+        }
+    }
 }

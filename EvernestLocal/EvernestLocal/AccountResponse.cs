@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvernestLocal
 {
-    class ConnexionResponse
+    class AccountResponse
     {
         public string new_token { get; set; }
         public int token_timeout { get; set; }

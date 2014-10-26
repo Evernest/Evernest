@@ -9,9 +9,9 @@ namespace Cloud14
     {
         protected Int64 requestID;
         protected Stream feedback;
-        private Message message;
+        protected String message;
 
-        protected Agent(Int64 requestID, Stream feedback)
+        protected Agent(String Message, Int64 requestID, Stream feedback)
         {
             this.requestID = requestID;
             this.feedback = feedback;
@@ -22,7 +22,7 @@ namespace Cloud14
             return requestID;
         }
 
-        public Message GetMessage()
+        public String GetMessage()
         {
             return message;
         }

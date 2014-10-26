@@ -8,16 +8,13 @@ namespace Cloud14
 {
     class Producer:Agent
     {
-        private Message message;
         private WriteLocker writer;
 
-        public Producer(Message message, Int64 requestId, 
+        public Producer(String message, Int64 requestId, 
             WriteLocker writeLocker, Stream feedback)
-            :base(requestId, feedback)
+            :base(message, requestId, feedback)
         {
-            this.message = message;
             this.writer = writeLocker;
-
             write();
         }
 
@@ -33,7 +30,7 @@ namespace Cloud14
 
         public void Processed()
         {
-            this.message = new Message("ACK", this.message.getID());
+            this.message = "ACK" + this.GetRequestID();
             base.feedback.StreamDeliver(this);
         }
 

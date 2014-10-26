@@ -38,8 +38,7 @@ namespace Cloud14
 
         public void StreamWrite(String message, Int64 id)
         {
-            Message m = new Message(message, id);
-            Producer p = new Producer(m, id, writeLock, this);
+            Producer p = new Producer(message, id, writeLock, this);
         }
 
         public void StreamRead()

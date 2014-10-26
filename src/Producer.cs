@@ -11,17 +11,20 @@ namespace Cloud14
         private Message message;
         private WriteLocker writer;
 
-        public Producer(Message message, Int64 requestId, WriteLocker writeLocker,
-            Stream feedback):base(requestId, feedback)
+        public Producer(Message message, Int64 requestId, 
+            WriteLocker writeLocker, Stream feedback)
+            :base(requestId, feedback)
         {
             this.message = message;
             this.writer = writeLocker;
+
+            write();
         }
 
-        public Message GetMessage()
-        {
-            return message;
-        }
+        //public Message GetMessage()
+        //{
+        //    return message;
+        //}
         
         private void write()
         {
@@ -32,6 +35,10 @@ namespace Cloud14
         {
             this.message = new Message("ACK", this.message.getID());
             base.feedback.StreamDeliver(this);
+        }
+
+        public void ProcessFailed(String feedBackMessage)
+        {
         }
     }
 }

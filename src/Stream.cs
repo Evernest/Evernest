@@ -18,18 +18,18 @@ namespace Cloud14
         {
             // Create the blob client
             CloudStorageAccount storageAccount = null;
-            try
-            {
+            //try
+            //{
                 storageAccount = CloudStorageAccount.Parse(
                     ConfigurationManager.ConnectionStrings["StorageConnectionString"].ConnectionString);
-            } catch (NullReferenceException e)
-            {
-                Console.Error.WriteLine("Erreur de configuration du storageAccount");
-                Console.Error.WriteLine("Method : {0}", e.TargetSite);
-                Console.Error.WriteLine("Message : {0}", e.Message);
-                Console.Error.WriteLine("Source : {0}", e.Source);
-                return;
-            }
+            //} catch (NullReferenceException e)
+            //{
+            //    Console.Error.WriteLine("Erreur de configuration du storageAccount");
+            //    Console.Error.WriteLine("Method : {0}", e.TargetSite);
+            //    Console.Error.WriteLine("Message : {0}", e.Message);
+            //    Console.Error.WriteLine("Source : {0}", e.Source);
+            //    return;
+            //}
             blobClient = storageAccount.CreateCloudBlobClient();
 
             writeLock = new WriteLocker(blobClient);
@@ -38,17 +38,17 @@ namespace Cloud14
 
         public void StreamWrite(String message, Int64 id)
         {
-            Producer p = new Producer(message, id, writeLock, this);
+            Agent p = new Producer(message, id, writeLock, this);
         }
 
-        public void StreamRead()
+        public void StreamRead(Int64 id)
         {
-
+            Agent r = new Reader(null, id, this);
         }
 
         public void StreamDeliver(Agent agent)
         {
-            Console.WriteLine(agent.GetMessage().ToString());
+            Console.WriteLine(agent.GetMessage());
         }
     }
 }

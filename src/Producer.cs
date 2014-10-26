@@ -28,14 +28,10 @@ namespace Cloud14
             writer.Register(this);
         }
 
-        public void Processed()
+        public override void Processed()
         {
             this.message = "ACK" + this.GetRequestID();
             base.feedback.StreamDeliver(this);
-        }
-
-        public void ProcessFailed(String feedBackMessage)
-        {
         }
     }
 }

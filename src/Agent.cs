@@ -27,5 +27,10 @@ namespace Cloud14
             return message;
         }
 
+        abstract public void Processed();
+
+        public void ProcessFailed(String feedBackMessage)
+        {
+        }
     }
 }

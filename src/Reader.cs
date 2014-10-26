@@ -5,13 +5,23 @@ using System.Text;
 
 namespace Cloud14
 {
-    class Reader
+    class Reader:Agent
     {
-        private Int64 requestID;
-
-        public Reader(Int64 requestID)
+        public Reader(String message, Int64 requestID, Stream feedback)
+            :base(message, requestID, feedback)
         {
             
+        }
+        
+        private void read()
+        {
+            //TODO
+            // message = "Aller chercher le message sur le blob"
+        }
+
+        public override void Processed()
+        {
+            base.feedback.StreamDeliver(this);
         }
     }
 }

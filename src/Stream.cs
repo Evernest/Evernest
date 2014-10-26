@@ -18,18 +18,19 @@ namespace Cloud14
         {
             // Create the blob client
             CloudStorageAccount storageAccount = null;
-            //try
-            //{
+            try
+            {
                 storageAccount = CloudStorageAccount.Parse(
                     ConfigurationManager.ConnectionStrings["StorageConnectionString"].ConnectionString);
-            //} catch (NullReferenceException e)
-            //{
-            //    Console.Error.WriteLine("Erreur de configuration du storageAccount");
-            //    Console.Error.WriteLine("Method : {0}", e.TargetSite);
-            //    Console.Error.WriteLine("Message : {0}", e.Message);
-            //    Console.Error.WriteLine("Source : {0}", e.Source);
-            //    return;
-            //}
+            }
+            catch (NullReferenceException e)
+            {
+                Console.Error.WriteLine("Erreur de configuration du storageAccount");
+                Console.Error.WriteLine("Method : {0}", e.TargetSite);
+                Console.Error.WriteLine("Message : {0}", e.Message);
+                Console.Error.WriteLine("Source : {0}", e.Source);
+                return;
+            }
             blobClient = storageAccount.CreateCloudBlobClient();
 
             writeLock = new WriteLocker(blobClient);

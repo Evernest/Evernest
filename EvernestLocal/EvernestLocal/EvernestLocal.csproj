@@ -45,16 +45,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnexionResponse.cs" />
+    <Compile Include="AccountResponse.cs" />
+    <Compile Include="ApiUrl.cs" />
+    <Compile Include="Evenement.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Account.cs" />
     <Compile Include="PushEventResponse.cs" />
     <Compile Include="Request.cs" />
+    <Compile Include="RequestResponse.cs" />
+    <Compile Include="RequestToken.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="API_Account.json" />
+    <None Include="API_Parameters.json" />
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Evenements.txt" />
+    <Content Include="Sortie.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

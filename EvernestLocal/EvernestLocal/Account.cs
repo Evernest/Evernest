@@ -11,17 +11,6 @@ namespace EvernestLocal
         public string user { get; set; }
         public string password { get; set; }
 
-        public Account(String user, String password)
-        {
-            this.user = user;
-            this.password = password;
-        }
-
-        public string ToJsonString()
-        {
-            return "{\"user\":\"" + user + "\",\"password\":\"" + password + "\"}";
-        }
-
         public void ToPrint()
         {
             Console.WriteLine("User : " + user + "; Password : " + password);

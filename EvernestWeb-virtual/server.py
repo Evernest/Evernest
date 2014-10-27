@@ -104,6 +104,17 @@ def get_event_random():
     return res
 
 
+@app.post('/api/pull/event/<n:int>')
+def get_event():
+    """Return event <n>"""
+    data, res = api_manager()
+
+    if not 0 <= n <= len(events):
+        abort(400, make_error('Index out of bound'))
+
+    return { 'id': n, 'content': events[n]['content'] }
+
+
 @app.post('/api/pull/event/<n1:int>/<n2:int>')
 def get_event_slice():
     """Return events between <n1> and <n2> (excluded)"""

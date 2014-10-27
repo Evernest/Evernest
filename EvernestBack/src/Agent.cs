@@ -7,24 +7,14 @@ namespace Cloud14
 {
     abstract class Agent
     {
-        protected Int64 requestID;
+        protected Int64 requestID { get; private set; }
         protected Stream feedback;
-        protected String message;
+        public String message { get; protected set; }
 
         protected Agent(String Message, Int64 requestID, Stream feedback)
         {
             this.requestID = requestID;
             this.feedback = feedback;
-        }
-
-        public Int64 GetRequestID()
-        {
-            return requestID;
-        }
-
-        public String GetMessage()
-        {
-            return message;
         }
 
         abstract public void Processed();

@@ -17,11 +17,6 @@ namespace Cloud14
             this.writer = writeLocker;
             write();
         }
-
-        //public Message GetMessage()
-        //{
-        //    return message;
-        //}
         
         private void write()
         {
@@ -30,7 +25,7 @@ namespace Cloud14
 
         public override void Processed()
         {
-            this.message = "ACK" + this.GetRequestID();
+            this.message = "ACK" + this.requestID;
             base.feedback.StreamDeliver(this);
         }
     }

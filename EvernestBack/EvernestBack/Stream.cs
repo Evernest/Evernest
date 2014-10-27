@@ -49,7 +49,7 @@ namespace EvernestBack
 
         public void StreamDeliver(Agent agent)
         {
-            Console.WriteLine(agent.GetMessage());
+            Console.WriteLine(agent.message);
         }
     }
 }

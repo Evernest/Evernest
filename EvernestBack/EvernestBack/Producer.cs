@@ -17,11 +17,6 @@ namespace EvernestBack
             this.writer = writeLocker;
             write();
         }
-
-        //public Message GetMessage()
-        //{
-        //    return message;
-        //}
         
         private void write()
         {
@@ -30,7 +25,7 @@ namespace EvernestBack
 
         public override void Processed()
         {
-            this.message = "ACK" + this.GetRequestID();
+            this.message = "ACK" + this.requestID;
             base.feedback.StreamDeliver(this);
         }
     }

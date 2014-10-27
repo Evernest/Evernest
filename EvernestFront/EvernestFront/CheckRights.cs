@@ -7,8 +7,16 @@ using EvernestFront.Exceptions;
 
 namespace EvernestFront
 {
-    class CheckRights
+    static class CheckRights
     {
+        static private AccessRights GetRights(string user, string stream)
+        {
+            return RightsTableByUser.GetRights(user, stream);
+            // sécurité ?
+        }
+
+
+
         /// <summary>
         /// Returns if and only if user can read on stream.
         /// </summary>
@@ -18,7 +26,7 @@ namespace EvernestFront
         /// <param name="stream"></param>
         static internal void CheckCanRead(string user, string stream)
         {
-            var rights = RightsTable.GetRights(user, stream);
+            var rights = GetRights(user, stream);
             switch (rights)
             {
                 case (AccessRights.NoRights):
@@ -41,7 +49,7 @@ namespace EvernestFront
         /// <param name="stream"></param>
         static internal void CheckCanWrite(string user, string stream)
         {
-            var rights = RightsTable.GetRights(user, stream);
+            var rights = GetRights(user, stream);
             switch (rights)
             {
                 case (AccessRights.NoRights):
@@ -64,7 +72,7 @@ namespace EvernestFront
         /// <param name="stream"></param>
         static internal void CheckCanAdmin(string user, string stream)
         {
-            var rights = RightsTable.GetRights(user, stream);
+            var rights = GetRights(user, stream);
             switch (rights)
             {
                 case (AccessRights.NoRights):
@@ -80,7 +88,7 @@ namespace EvernestFront
 
         static internal void CheckRightsCanBeModified(string user, string stream)
         {
-            var rights = RightsTable.GetRights(user, stream);
+            var rights = GetRights(user, stream);
             switch (rights)
             {
                 case (AccessRights.Admin):

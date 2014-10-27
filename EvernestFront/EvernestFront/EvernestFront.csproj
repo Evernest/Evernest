@@ -67,6 +67,8 @@
     <Compile Include="Exceptions\FrontException.cs" />
     <Compile Include="Exceptions\UnregisteredUserException.cs" />
     <Compile Include="Exceptions\UserNameTakenException.cs" />
+    <Compile Include="RightsTableByStream.cs" />
+    <Compile Include="RightsTableByUser.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="Requests\CreateStream.cs" />

@@ -23,7 +23,7 @@ namespace EvernestFront
             {
                 case (AccessRights.NoRights):
                 case (AccessRights.WriteOnly):
-                    throw new AccessDeniedException(user, rights, AccessRights.ReadOnly);
+                    throw new ReadAccessDeniedException(stream, user, rights);
                 case (AccessRights.ReadOnly):
                 case (AccessRights.ReadWrite):
                 case (AccessRights.Admin):
@@ -46,7 +46,7 @@ namespace EvernestFront
             {
                 case (AccessRights.NoRights):
                 case (AccessRights.ReadOnly):
-                    throw new AccessDeniedException(user, rights, AccessRights.ReadWrite);
+                    throw new WriteAccessDeniedException(stream, user, rights);
                 case (AccessRights.WriteOnly):
                 case (AccessRights.ReadWrite):
                 case (AccessRights.Admin):
@@ -71,7 +71,7 @@ namespace EvernestFront
                 case (AccessRights.ReadOnly):
                 case (AccessRights.WriteOnly):
                 case (AccessRights.ReadWrite):
-                    throw new AccessDeniedException(user, rights, AccessRights.Admin);
+                    throw new AdminAccessDeniedException(stream, user, rights);
                 case (AccessRights.Admin):
                 case (AccessRights.Root):    
                     return;
@@ -80,7 +80,18 @@ namespace EvernestFront
 
         static internal void CheckRightsCanBeModified(string user, string stream)
         {
-            
+            var rights = RightsTable.GetRights(user, stream);
+            switch (rights)
+            {
+                case (AccessRights.Admin):
+                case (AccessRights.Root):
+                    throw new CannotDestituteAdminException(stream, user);
+                case (AccessRights.NoRights):
+                case (AccessRights.ReadOnly):
+                case (AccessRights.WriteOnly):
+                case (AccessRights.ReadWrite):
+                    return;
+            }
         }
 
     }

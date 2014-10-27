@@ -9,7 +9,7 @@ namespace EvernestFront.Exceptions
         /// Constructor for StreamNameDoesNotExistException.
         /// </summary>
         /// <param name="name"></param>
-        public StreamNameDoesNotExistException(string name)
+        internal StreamNameDoesNotExistException(string name)
         {
             StreamName = name;
         }

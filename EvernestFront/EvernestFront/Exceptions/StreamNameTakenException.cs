@@ -9,7 +9,7 @@ namespace EvernestFront.Exceptions
         /// Constructor for StreamNameTakenException.
         /// </summary>
         /// <param name="name"></param>
-        public StreamNameTakenException(string name)
+        internal StreamNameTakenException(string name)
         {
             StreamName = name;
         }

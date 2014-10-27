@@ -13,7 +13,7 @@ namespace EvernestFront.Exceptions
         /// Constructor for UserNameTakenException.
         /// </summary>
         /// <param name="name"></param>
-        public UserNameTakenException(string name)
+        internal UserNameTakenException(string name)
         {
             UserName = name;
         }

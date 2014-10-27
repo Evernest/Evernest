@@ -110,11 +110,23 @@ namespace EvernestLocal
                             url = apiUrl.GetPull();
                         else
                             url = apiUrl.GetPull(id1,id2);
-                        RequestResponse per = Pull(url, new RequestToken(token));
-                        token = per.new_token;
-                        getToken = true;
-                        Console.SetCursorPosition(2, 16);
-                        per.ToPrint();   
+                        try
+                        {
+                            RequestResponse per = Pull(url, new RequestToken(token));
+                            token = per.new_token;
+                            getToken = true;
+                            Console.SetCursorPosition(2, 16);
+                            per.ToPrint();
+                        }
+                        catch (Exception e)
+                        {
+                            
+                           
+                        }
+                        
+                        
+
+                           
                         break;
                     case Action.ActionQuit:
                         ClearConsole();
@@ -139,13 +151,23 @@ namespace EvernestLocal
             HttpClient request = new HttpClient(url);
             request.SendData(ObjectToJson(r));
             return JsonToObject<PushEventsResponse>(request.GetResponse());
+           
         }
 
         private static RequestResponse Pull(string url, RequestToken r)
         {
             HttpClient request = new HttpClient(url);
             request.SendData(ObjectToJson(r));
-            return JsonToObject<RequestResponse>(request.GetResponse());
+            try
+            {
+                return JsonToObject<RequestResponse>(request.GetResponse());
+
+            }
+            catch (Exception e)
+            {
+                
+                throw e;
+            }
         }
 
         private static Action chooseAction(Boolean token)

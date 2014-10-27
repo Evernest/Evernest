@@ -2,6 +2,5 @@
 	"urlBase" : "http://www.evernest.org",
 	"apiConnexion" : "/api/login",        
 	"apiPull" : "/api/pull/event",
-    "apiPush": "/api/push/event",
-    "apiLastId" :  "/api/last_id" // return dans un champ "last_id"
+    "apiPush": "/api/push/event"
 }

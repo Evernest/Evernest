@@ -59,7 +59,19 @@ namespace EvernestLocal
         {
 
             // get response
-            WebResponse response = request.GetResponse();
+
+            WebResponse response; 
+            try
+            {
+                response = request.GetResponse();
+            }
+            catch (System.Net.WebException e)
+            {
+             
+                Console.WriteLine("Message : " + e.Message);
+                throw new Exception("0");
+            }
+
             // this.Status = ((HttpWebResponse)response).StatusDescription; // optional
             dataStream = response.GetResponseStream();
             StreamReader reader = new StreamReader(dataStream);

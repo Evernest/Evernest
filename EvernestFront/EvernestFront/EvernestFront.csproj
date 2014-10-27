@@ -64,11 +64,15 @@
     <Compile Include="CheckRights.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Exceptions\AccessDeniedException.cs" />
+    <Compile Include="Exceptions\AdminAccessDeniedException.cs" />
+    <Compile Include="Exceptions\CannotDestituteAdminException.cs" />
     <Compile Include="Exceptions\FrontException.cs" />
+    <Compile Include="Exceptions\ReadAccessDeniedException.cs" />
     <Compile Include="Exceptions\UnregisteredUserException.cs" />
     <Compile Include="Exceptions\UserNameTakenException.cs" />
     <Compile Include="RightsTableByStream.cs" />
     <Compile Include="RightsTableByUser.cs" />
+    <Compile Include="Exceptions\WriteAccessDeniedException.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="Requests\CreateStream.cs" />

@@ -2,19 +2,27 @@
 Evernest API
 ============
 
+
  * Overview
     o JSON
     o Access by Object
- * Keys and Rights
+ * Authentication
+    o Keys and Rights
     o Usage jailing
     o Key mechanism for sources and user
  * API Objects
+    o General comments
     o Event
     o Stream
     o Source
     o User
     o Right
     o UserRight
+ * API Actions
+    o Read (`GET`)
+    o Create (`POST`)
+    o Update (`PATCH`)
+    o Delete (`DELETE`)
  * Request/Response overview
     o Different HTTP methods (at least GET and POST since user send data)
     o HTTP response code + error/success field in answer
@@ -33,16 +41,55 @@ Evernest API
 
 
 
+## Overview
+
+*todo*
 
 
+## Authentication
 
-## Objects
+*todo*
 
-This is a full description of Evernest API Objects.
-As appropriate, objects effectively returned by API calls can be only partial.
+
+## API Objects
+
+This section is a full description of Evernest API Objects. This page does not explains what the objets are, which is the role of the [Concepts](https://github.com/Evernest/Evernest/wiki/Concepts:-Events,-Streams-and-Rights) page, but shows how they are transmitted by the API.
+
+As appropriate, objects effectively returned by API calls can be only partial, due to right restriction. For example, a given user can not see information about an unrelated stream.
+
+Objects are described as a list of properties, which can be either integers, strings or other objects. In examples, `{Foo}` stands for an object of type `Foo`.
+
+
+### General comments
+
+#### Ids
+
+Every objet has an `Id` field. It is not always totally unique since it can be related to a parent object (as events are related to streams) but are a way to identify the object instance.
+
+#### Names
+
+Some objects have a `Name` field. This is about to be like an identifier but for humans. Numerical Ids are not easy to remember so objects that are exposed to the User Interface can be named by the user.
+
+There is technically no problem with multiple objects sharing the same name, although this is obviously not recommanded.
+
+Name can be either public (for streams) or private (for sources). For more information, see the Visibility section.
 
 
 ### Event
+
+An event essentially stores a string in a stream.
+
+#### Fields
+
+ * `Id` *int*: Event identifier.
+ * `ParentStream` *Stream*: Stream in which the event has been stored.
+ * `Content` *string*: Event content.
+
+#### Constraints
+
+Within a given stream, event `Id` is unique. In other words, the pair `Id`/`ParentStream` is unique.
+
+#### Example
 
 ```
 {
@@ -52,22 +99,59 @@ As appropriate, objects effectively returned by API calls can be only partial.
 }
 ```
 
-`Id`/`ParentStream` is unique.
-
 
 ### Stream
+
+Streams are series of events.
+
+#### Fields
+
+ * `Id` *int*: Stream identifier.
+ * `LastId` *int*: Id of the last inserted event.
+ * `Count` *int*: Number of events within the stream.
+ * `Name` *string*: Stream user name.
+
+#### Constraints
+
+`Id` is unique. It is not unique for a given user only since streams can be symetrically shared by many users as soon as they have the `Admin` rights on it.
+
+`Name` is a public field since it may be shared by every users working on it.
+
+#### Example
 
 ```
 {
 	"Id": 4567,
+	"LastId": 45,
+	"Count": 12,
 	"Name": "Example of Stream"
 }
 ```
 
-`Id` is unique.
-
 
 ### Source
+
+A source represents a program access key to the API. It may be used by a program, or a module of a program.
+
+A user can create as sources as he wishes in order to give different rights to different programs.
+
+#### Fields
+
+ * `Id` *int*: Stream identifier.
+ * `ParentUser` *User*: User who owns the source.
+ * `Name` *string*: Source name.
+ * `Key` *base64-encoded int*: API access key.
+
+#### Constraints
+
+`Id`/`ParentUser` is unique.
+`Name` and `Key` are private.
+
+For a given user, source `Id` is unique. In other words, the pair `Id`/`ParentUser` is unique.
+
+`Name` can not be seen by other users, which means you can manage your names as you wish. Nobody will care and it will not be a way to discover what program you are using.
+
+#### Example
 
 ```
 {
@@ -77,9 +161,6 @@ As appropriate, objects effectively returned by API calls can be only partial.
 	"Key": "MqJksh1GMRdo3pbgiKOBxtIrvqf7ikkl"
 }
 ```
-
-`Id`/`ParentUser` is unique.
-`Name` and `Key` are private.
 
 
 ### User

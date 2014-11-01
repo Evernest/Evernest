@@ -4,39 +4,39 @@ Evernest API
 
 
  * Overview
-    o JSON
-    o Access by Object
+    - JSON
+    - Access by Object
  * Authentication
-    o Keys and Rights
-    o Usage jailing
-    o Key mechanism for sources and user
+    - Keys and Rights
+    - Usage jailing
+    - Key mechanism for sources and user
  * API Objects
-    o General comments
-    o Event
-    o Stream
-    o Source
-    o User
-    o Right
-    o UserRight
+    - General comments
+    - Event
+    - Stream
+    - Source
+    - User
+    - Right
+    - UserRight
  * API Actions
-    o Read (`GET`)
-    o Create (`POST`)
-    o Update (`PATCH`)
-    o Delete (`DELETE`)
+    - Read (`GET`)
+    - Create (`POST`)
+    - Update (`PATCH`)
+    - Delete (`DELETE`)
  * Request/Response overview
-    o Different HTTP methods (at least GET and POST since user send data)
-    o HTTP response code + error/success field in answer
+    - Different HTTP methods (at least GET and POST since user send data)
+    - HTTP response code + error/success field in answer
  * Data selection (partials)
  * Paging
-    o Cursoring
-    o Since/After
+    - Cursoring
+    - Since/After
  * Visibility
  * Rate limits
-    o Limitation on returned data length
-    o Quota Cost
+    - Limitation on returned data length
+    - Quota Cost
  * High-level
-    o Statistics
-    o Search
+    - Statistics
+    - Search
  * Best practices
 
 
@@ -74,6 +74,12 @@ There is technically no problem with multiple objects sharing the same name, alt
 
 Name can be either public (for streams) or private (for sources). For more information, see the Visibility section.
 
+#### Default selector
+
+Selectors define what fields are returned by the server. For more information about selectors, see the Data selection section.
+
+For each object, a default selector is given.
+
 
 ### Event
 
@@ -89,12 +95,18 @@ An event essentially stores a string in a stream.
 
 Within a given stream, event `Id` is unique. In other words, the pair `Id`/`ParentStream` is unique.
 
+#### Default selector
+
+`Id, ParentStream(Id), Content`
+
 #### Example
 
 ```
 {
 	"Id": 1234,
-	"ParentStream": {Stream},
+	"ParentStream": {
+		"Id": 4567
+	},
 	"Content": "This is a sample event."
 }
 ```
@@ -116,6 +128,10 @@ Streams are series of events.
 `Id` is unique. It is not unique for a given user only since streams can be symetrically shared by many users as soon as they have the `Admin` rights on it.
 
 `Name` is a public field since it may be shared by every users working on it.
+
+#### Default selector
+
+`Id, LastId, Count, Name`
 
 #### Example
 
@@ -151,12 +167,18 @@ For a given user, source `Id` is unique. In other words, the pair `Id`/`ParentUs
 
 `Name` can not be seen by other users, which means you can manage your names as you wish. Nobody will care and it will not be a way to discover what program you are using.
 
+#### Default selector
+
+`Id, ParentUser(Id), Name, Key`
+
 #### Example
 
 ```
 {
 	"Id": 8901,
-	"ParentUser": {User},
+	"ParentUser": {
+		"Id": 234
+	},
 	"Name": "Example of Source",
 	"Key": "MqJksh1GMRdo3pbgiKOBxtIrvqf7ikkl"
 }
@@ -165,40 +187,118 @@ For a given user, source `Id` is unique. In other words, the pair `Id`/`ParentUs
 
 ### User
 
+A user represents a physical person, e.g. a user account.
+
+It owns sources and administrates streams.
+
+#### Fields
+
+ * `Id` *int*: User identifier.
+ * `Name` *string*: User personnal name.
+ * `FirstName` *string*: User personnal first name.
+ * `RelatedStreams` *{Stream} list*: List of streams that are related to this user. A related stream is a stream that is either readable, writable or administrated by the user.
+ * `OwnedSources` *{Stream} list*: List of streams that are administrated by this user.
+
+
+#### Constraints
+
+`Id` is unique.
+
+`RelatedStreams` and `OwnedSources` are redundant information and may not fully up to date.
+
+#### Default selector
+
+`Id, Name, FirstName, Key, RelatedStreams(items(Id)), OwnedSources(items(Id))`
+
+#### Example
+
 ```
 {
 	"Id": 2345,
 	"Name": "Doe",
 	"FirstName": "John",
-	"AdminStreams": [{Stream}, {Stream}, …],
-	"Sources": [{Source}, {Source}, …],
 	"Key": "srAADi3VgIVSMZCd4TcRRi24ZcjQP13i"
+	"RelatedStreams": [
+		{ "Id": 678 },
+		{ "Id": 901 }
+	],
+	"OwnedSources": [
+		{ "Id": 234 },
+		{ "Id": 567 },
+		{ "Id": 890 }
+	]
 }
 ```
 
-`Id` is unique.
-
 
 ### Right
+
+A right defines the priviledges a given source has on a given stream.
+
+When no right entry exists for a pair of a source and a stream, that means that the source has no rights on the stream.
+
+#### Fields
+
+ * `Id` *int*: Right identifier.
+ * `Source` *{Source}*: Source to which the right provides priviledges.
+ * `Stream` *{Stream}*: Stream to which the right is related.
+ * `Type` *None|Read|Write|ReadWrite|Admin*: Right type. This is an enumerable field. `Read` means that the source can only read events from stream. `Right` means that it can append events but not read it. `ReadWrite` is the addition of both previous rights and `Admin` means that the source can edit rights related to the target stream while still being able to read from and write to it.
+
+#### Constraints
+
+`Id` is unique.
+
+The pair `Source`/`Stream` is unique too.
+
+#### Default selector
+
+`Id, Source(Id), Stream(Id), Type`
+
+#### Example
 
 ```
 {
 	"Id": 6789,
 	"Source": {Source},
 	"Stream": {Stream},
-	"Type": "None|Read|Write|ReadWrite|Admin"
+	"Type": "ReadWrite"
 }
 ```
 
 
 ### UserRight
 
+User rights are very similar to rights except that they provides rights to *user* and not to *sources*.
+
+#### Fields
+
+ * `Id` *int*: User right identifier.
+ * `User` *{User}*: User to which the user right provides priviledges.
+ * `Stream` *{Stream}*: Stream to which the right is related.
+ * `Type` *None|Read|Write|ReadWrite|Admin*: Right type. See `Right` `Type` field for more information.
+
+#### Constraints
+
+`Id` is unique.
+
+The pair `User`/`Stream` is unique too.
+
+#### Default selector
+
+`Id, Source(Id), Stream(Id), Type`
+
+#### Example
+
 ```
 {
 	"Id": 123,
-	"User": {User},
-	"Stream": {Stream},
-	"Type": "None|Read|Write|ReadWrite|Admin"
+	"User": {
+		"Id": 456
+	},
+	"Stream": {
+		"Id": 789
+	},
+	"Type": "Admin"
 }
 ```
 

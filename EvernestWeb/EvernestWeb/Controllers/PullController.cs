@@ -13,28 +13,27 @@ namespace EvernestWeb.Controllers
     {
         // GET api/pull
         // Get a random result
-        public PullRandom Get()
+        public PullRandom GetRandom()
         {
             PullRandom ans = EvernestFront.Process.PullRandom("user", "stream");
             // TODO: check that it worked
             return ans;
         }
 
-        // GET api/pull/5
-        public PullRange Get(int id)
+        // GET api/pull/5/10
+        public PullRange GetRange(int id, int id2)
         {
-            PullRange ans = EvernestFront.Process.PullRange("user", "stream", id, id);
-            // TODO: check that it worked
+            PullRange ans = EvernestFront.Process.PullRange("user", "stream", id, id2);
+            //// TODO: check that it worked
             return ans;
         }
 
-        // GET api/pull/5/10
-        public PullRange Get(int begin, int end)
+        // GET api/pull/5
+        public PullRange GetOne(int id)
         {
-            PullRange ans = EvernestFront.Process.PullRange("user", "stream", begin, end);
-            // TODO: check that it worked
-            return ans;
+            return GetRange(id, id) ;
         }
+
         // POST api/pull
         public void Post([FromBody]string value)
         {

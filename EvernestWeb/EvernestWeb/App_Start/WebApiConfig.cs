@@ -11,8 +11,9 @@ namespace EvernestWebAPI
         {
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id1}/{id2}",
-                defaults: new { id1 = RouteParameter.Optional, id2 = RouteParameter.Optional }
+                routeTemplate: "api/{controller}/{id}/{id2}",
+                constraints: new { id = @"\d+", id2 = @"\d+"},
+                defaults: new { id = RouteParameter.Optional, id2 = RouteParameter.Optional }
             );
 
             // Uncomment the following line of code to enable query support for actions with an IQueryable or IQueryable<T> return type.

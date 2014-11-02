@@ -34,19 +34,19 @@ namespace EvernestWeb.Controllers
             return GetRange(id, id) ;
         }
 
-        // POST api/pull
-        public void Post([FromBody]string value)
-        {
-        }
+        //// POST api/pull
+        //public void Post([FromBody]string value)
+        //{
+        //}
 
-        // PUT api/pull/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
+        //// PUT api/pull/5
+        //public void Put(int id, [FromBody]string value)
+        //{
+        //}
 
-        // DELETE api/pull/5
-        public void Delete(int id)
-        {
-        }
+        //// DELETE api/pull/5
+        //public void Delete(int id)
+        //{
+        //}
     }
 }

@@ -41,7 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EvernestFront">
-      <HintPath>EvernestFront\EvernestFront\bin\Debug\EvernestFront.dll</HintPath>
+      <HintPath>..\..\EvernestFront\EvernestFront\bin\Debug\EvernestFront.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.core">

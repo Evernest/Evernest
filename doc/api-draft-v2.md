@@ -48,7 +48,23 @@ Evernest API
 
 ## Authentication
 
-*todo*
+Access to API is of course restricted and so requires some way of authentication.
+
+The most basic authentication would be to provide your personnal credentials everytime you request the API. But the major problem is that API are designed to be accessed by programs, not humans. So your credentials would be found inside your application code, and even binary, which is a very bad design.
+
+Actually your credentials must remains in the human field. Programs would be identified by unique keys. Thus, when a program's key get corrupted, you can invalidate it without breaking all other running projects.
+
+This leads to a fundamental principle of Evernest: *Usage jailing*. Evernest has been designed such as a problem in a given project can never affect other ones. And the key system is the main feature providing usage jailing.
+
+These keys are called *sources* keys. A source represents a program, are a unit of a program that needs to access some stream. You can select which rights source has on which streams.
+
+It differes from the *user* key, which is unique and has all the rights you have when you are logged in the administration interface.
+
+Although it wants to insure this jailing, the API allow you to do everything from the API, so you better follow simple rules:
+
+ * Although you can distribute your keys between programs as you wish, and even have a single key with rights uppon all your streams, don't do so. A key must have priviledges on streams related to one project at a time.
+
+ * Never use your User key in programs meant to be packaged. This key is an administration key and must used by your administration tools only.
 
 
 ## API Objects
@@ -259,8 +275,12 @@ The pair `Source`/`Stream` is unique too.
 ```
 {
 	"Id": 6789,
-	"Source": {Source},
-	"Stream": {Stream},
+	"Source": {
+		"Id": 123
+	},
+	"Stream": {
+		"Id": 456
+	},
 	"Type": "ReadWrite"
 }
 ```

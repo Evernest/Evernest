@@ -7,6 +7,7 @@ namespace EvernestBack
         static void Main(string[] args)
         {
             Stream s = new Stream();
+            Console.Read();
         }
     }
 }

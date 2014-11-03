@@ -29,7 +29,7 @@ namespace EvernestFront.Requests
             /// Processes PullRange request. Request is successful if user has reading rights.
             /// </summary>
             /// <returns></returns>
-            internal override Answers.PullRange Process()
+            public override Answers.PullRange Process()
             {
                 try
                 {

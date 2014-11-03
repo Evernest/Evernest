@@ -1,7 +1,7 @@
-#Requêtes, réponses
+#RequÃªtes, rÃ©ponses
 
-La classe Process (à renommer ? le nom n'est peut-être pas très clair) contient, pour chaque type de requête devant 
-passer par le back-end (tout sauf ce qui concerne les droits des utilisateurs), une méthode statique appropriée.
+La classe Process (Ã  renommer ? le nom n'est peut-Ãªtre pas trÃ¨s clair) contient, pour chaque type de requÃªte devant 
+passer par le back-end (tout sauf ce qui concerne les droits des utilisateurs), une mÃ©thode statique appropriÃ©e.
 
  Par exemple :
 
@@ -10,23 +10,23 @@ passer par le back-end (tout sauf ce qui concerne les droits des utilisateurs), 
 	Process.PullRange(string user, string streamName, string eventIdFrom, string eventIdTo)
 	Process.CreateStream(string user, string streamName)
 
-L'idée est donc que pour chaque requête d'un client, le site Web appelle la méthode concernée. 
+L'idÃ©e est donc que pour chaque requÃªte d'un client, le site Web appelle la mÃ©thode concernÃ©e. 
 
-La valeur de retour est un objet héritant de la classe abstraite Answer (définie dans le namespace EvernestFront.Answers)
-et du type approprié : Process.Push retourne un objet de type Answers.Push, etc. 
+La valeur de retour est un objet hÃ©ritant de la classe abstraite Answer (dÃ©finie dans le namespace EvernestFront.Answers)
+et du type appropriÃ© : Process.Push retourne un objet de type Answers.Push, etc. 
 
-Un objet de type Answer contient une propriété booléenne Success qui indique si la requête a abouti, 
-une propriété contenant les informations obtenues si la requête aboutit, et une propriété Exception pouvant 
-contenir une exception définie dans le namespace EvernestFront.Exceptions. 
+Un objet de type Answer contient une propriÃ©tÃ© boolÃ©enne Success qui indique si la requÃªte a abouti, 
+une propriÃ©tÃ© contenant les informations obtenues si la requÃªte aboutit, et une propriÃ©tÃ© Exception pouvant 
+contenir une exception dÃ©finie dans le namespace EvernestFront.Exceptions. 
 
-Si Success vaut true, l'exception vaut null, et si Success vaut false, les données valent null et Exception contient alors 
-nécessairement une exception qui explique pourquoi la requête a échoué. (Si ça vous semble peu pratique, on peut aussi enlever la propriété
-Exception et lever directement l'exception au lieu de retourner lorsque la requête échoue.)
+Si Success vaut true, l'exception vaut null, et si Success vaut false, les donnÃ©es valent null et Exception contient alors 
+nÃ©cessairement une exception qui explique pourquoi la requÃªte a Ã©chouÃ©. (Si Ã§a vous semble peu pratique, on peut aussi enlever la propriÃ©tÃ©
+Exception et lever directement l'exception au lieu de retourner lorsque la requÃªte Ã©choue.)
 
 
 Pour augmenter les performances, Martin propose d'utiliser le paradigme fire and forget. 
-On pourrait faire en sorte que les méthodes de Process prennent en argument un delegate, 
-qui prend lui-même en argument l'objet de type Answer qu'on retourne actuellement : à discuter...
+On pourrait faire en sorte que les mÃ©thodes de Process prennent en argument un delegate, 
+qui prend lui-mÃªme en argument l'objet de type Answer qu'on retourne actuellement : Ã  discuter...
 
 ----------------------------------------------------------------------------------------------------
 
@@ -36,26 +36,29 @@ qui prend lui-même en argument l'objet de type Answer qu'on retourne actuellemen
 
 Pour chaque paire utilisateur/stream, l'utilisateur a un des droits suivants sur la stream :
 
-* NoRights (aucun droit, valeur par défaut)
+* NoRights (aucun droit, valeur par dÃ©faut)
 * ReadOnly
 * WriteOnly
 * ReadWrite
-* Admin (peut consulter et modifier les droits des autres utilisateurs sur la stream, lire, et écrire)
+* Admin (peut consulter et modifier les droits des autres utilisateurs sur la stream, lire, et Ã©crire)
 
-Ces droits sont définis dans l'enum public AccessRights.
+Ces droits sont dÃ©finis dans l'enum public AccessRights.
 
-Le frontend maintient une table des droits des utilisateurs sur les streams, les méthodes pour la consulter et la modifier 
-sont dans la classe Users. Ces méthodes ont pour type de retour *void*, et lèvent des exceptions (spécifiées dans leurs commentaires)
-en cas d'échec.
+Le frontend maintient une table des droits des utilisateurs sur les streams, les mÃ©thodes pour la consulter et la modifier 
+sont dans la classe Users. Ces mÃ©thodes lÃ¨vent des exceptions (spÃ©cifiÃ©es dans leurs commentaires)
+en cas d'Ã©chec.
 
 Exemples :
 	
-	Users.SetRights(string user, string streamName, string targetUser, AccessRights rights)
-	Users.AddUser(string userToAdd)
-	Users.StreamsOfUser(string user)
-	Users.UsersOfStream(string user, string stream)
+	void Users.SetRights(string user, string streamName, string targetUser, AccessRights rights)
+	void Users.AddUser(string userToAdd)
+	void Users.AddStream(string userCreatingStream, string streamToCreate)
+	List<KeyValuePair<string, AccessRights>> Users.StreamsOfUser(string user)
+	List<KeyValuePair<string, AccessRights>> Users.UsersOfStream(string userAsking, string stream)
 
-Modifications à faire : garantir certaines choses comme l'existence d'au moins un Admin par stream (pour l'instant, 
-le créateur est un Admin, mais rien ne l'empêche de se destituer), peut-être créer un super-utilisateur système ?
+Modifications Ã  faire : crÃ©er un super-utilisateur systÃ¨me ? (une constante publique Users.RootUser existe mais le reste n'est pas implÃ©mentÃ©)
 
 
+#Gestion des droits des sources
+
+Ã  faire

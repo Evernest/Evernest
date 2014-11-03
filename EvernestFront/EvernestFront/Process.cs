@@ -53,9 +53,9 @@ namespace EvernestFront
         /// <param name="streamName"></param>
         /// <param name="eventToPush"></param>
         /// <returns></returns>
-        public static Answers.Push Push(string user, string streamName, Event eventToPush)
+        public static Answers.Push Push(string user, string streamName, string message)
         {
-            var request = new Requests.Push(user, streamName, eventToPush);
+            var request = new Requests.Push(user, streamName, message);
             return request.Process();
         }
 

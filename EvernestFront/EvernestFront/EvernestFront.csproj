@@ -39,11 +39,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Answers\AddUser.cs" />
     <Compile Include="Answers\Answer.cs" />
     <Compile Include="Answers\PullRandom.cs" />
     <Compile Include="Answers\PullRange.cs" />
     <Compile Include="Answers\Push.cs" />
     <Compile Include="Answers\CreateStream.cs" />
+    <Compile Include="Answers\RelatedStreams.cs" />
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="CheckRights.cs" />
     <Compile Include="Event.cs" />

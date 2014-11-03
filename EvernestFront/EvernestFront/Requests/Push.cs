@@ -7,17 +7,17 @@ namespace EvernestFront.Requests
    
         class Push : Request<Answers.Push>
         {
-            private Event eventToPush;
+            private string message;
             /// <summary>
             /// Constructor for Push requests.
             /// </summary>
             /// <param name="user"></param>
             /// <param name="streamName"></param>
             /// <param name="eventToPush"></param>
-            internal Push(string user, string streamName, Event eventToPush)
+            internal Push(string user, string streamName, string message)
                 : base(user, streamName)
             {
-                this.eventToPush = eventToPush;
+                this.message = message;
             }
 
             /// <summary>
@@ -30,7 +30,7 @@ namespace EvernestFront.Requests
                 {
                     CheckRights.CheckCanWrite(User, StreamName);
                     Stream stream = StreamTable.GetStream(StreamName);
-                    return stream.Push(eventToPush);
+                    return stream.Push(message);
                 }
                 catch (FrontException exn)
                 {

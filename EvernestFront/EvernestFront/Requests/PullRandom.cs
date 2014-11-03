@@ -11,14 +11,14 @@ namespace EvernestFront.Requests
             /// </summary>
             /// <param name="user"></param>
             /// <param name="streamName"></param>
-            public PullRandom(string user, string streamName)
+            internal PullRandom(string user, string streamName)
                 : base(user, streamName) { }
 
             /// <summary>
             /// Processes PullRandom request with a backend call. Request is successful if user has reading rights.
             /// </summary>
             /// <returns></returns>
-            public override Answers.PullRandom Process()
+            internal override Answers.PullRandom Process()
             {
                 try
                 {

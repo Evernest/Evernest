@@ -18,11 +18,7 @@ Evernest API
     - User
     - Right
     - UserRight
- * API Actions
-    - Read (`GET`)
-    - Create (`POST`)
-    - Update (`PATCH`)
-    - Delete (`DELETE`)
+ * API Endpoints
  * Request/Response overview
     - Different HTTP methods (at least GET and POST since user send data)
     - HTTP response code + error/success field in answer
@@ -44,6 +40,8 @@ Evernest API
 ## Overview
 
 *todo*
+
+Not case-sensitive
 
 
 ## Authentication
@@ -210,6 +208,9 @@ It owns sources and administrates streams.
 #### Fields
 
  * `Id` *int*: User identifier.
+ * `UserName` *string*: User personnal name.
+ * `Password` *hash*: Hash of user password concatenated to `PasswordSalt`.
+ * `PasswordSalt` *hash*: Random string used to avoid pattern recognition in password hash.
  * `Name` *string*: User personnal name.
  * `FirstName` *string*: User personnal first name.
  * `RelatedStreams` *{Stream} list*: List of streams that are related to this user. A related stream is a stream that is either readable, writable or administrated by the user.
@@ -224,13 +225,18 @@ It owns sources and administrates streams.
 
 #### Default selector
 
-`Id, Name, FirstName, Key, RelatedStreams(items(Id)), OwnedSources(items(Id))`
+`Id, UserName, Name, FirstName, Key, RelatedStreams(items(Id)), OwnedSources(items(Id))`
+
+Note that password fields are not returned by default.
 
 #### Example
 
 ```
 {
 	"Id": 2345,
+	"UserName": "jdo",
+	"Password": "j3M36oxUiV719mrqXyBaSRPm6nOhRdch",
+	"PasswordSalt": "zMQJYyioafGRTXt5g4ehinz5l8vfljLp",
 	"Name": "Doe",
 	"FirstName": "John",
 	"Key": "srAADi3VgIVSMZCd4TcRRi24ZcjQP13i"
@@ -323,17 +329,85 @@ The pair `User`/`Stream` is unique too.
 ```
 
 
-## Request template
 
-`{action} /{object}/{relation}`
+## API Endpoints
 
-Where:
+*draft*
 
- * `{action}` can be `GET`, `POST`, `PUT` or `DELETE`
- * `{object}` can be `Event`, `Stream`, `Source`, `User`, `Right`, `UserRight`
+### Stream
+
+#### Get stream info
+
+**URL:** `GET /stream/{StreamId}`
+**Required rights:** `Read` right on the stream.
+**Returned value:** single Stream
+
+#### Get a random event
+
+**URL:** `GET /stream/{StreamId}/pull/random`
+**Required rights:** `Read` right on the stream.
+**Returned value:** single Event
+
+#### Get a single event
+
+**URL:** `GET /stream/{StreamId}/pull/{Id}`
+**Required rights:** `Read` right on the stream.
+**Returned value:** single Event
+
+#### Get a range of events
+
+**URL:** `GET /stream/{StreamId}/pull/{StartId}/{StopId}`
+**Required rights:** `Read` right on the stream.
+**Returned value:** list of Events
+
+#### Post a new event
+
+**URL:** `POST /stream/{StreamId}/push`
+**Required data:** `Event(Content)`
+**Required rights:** `Write` right on the stream
+**Returned value:** None
+**Example:**
+
+```
+POST /stream/19/push HTTP/1.1
+Host: api.evernest.org
+
+{
+	"Event": {
+		"Content": "This is a new event!"
+	}
+}
+```
+
+### Sources
 
 
-## Answer template
+
+
+
+## Request/Response overview
+
+For more consistency, all requests and responses follow the same pattern. This pattern can be slightly different according to the HTTP method used.
+
+### Request
+
+#### Authentication
+
+Requests to the API **always** require the following information an authentication key, or credentials. Human credentials must be used only when there is no other way to do, e.g. for the first API access ever. After that, you should use the user key.
+
+When authenticating though a key, use the `key` field. For credentials, use `login` and `password` fields.
+
+#### URL
+
+Although API endpoints can varie due to the differences between objects, they try to follow the template `/{object}/{action}/{arguments}`.
+
+`{object}` can be `Event`, `Stream`, `Source`, `User`, `Right`, `UserRight`.
+Available values for `{action}` depends on the object and `{arguments}` depend on the action itself.
+
+
+## Response
+
+HTTP response code + error/success field in answer
 
 ```
 {
@@ -352,6 +426,33 @@ Where:
 Header and content.
 An empty field can not being here at all (e.g. there is no `Events` field in a response to a query about rights).
 
+
+
+## Data selection (partials)
+
+*todo*
+
+## Paging
+
+*todo*
+
+## Visibility
+
+*todo*
+
+## Rate limits
+
+*todo*
+
+## High-level
+
+*todo*
+
+## Best practices
+
+*todo*
+
+## Request template
 
 ## Visibility rules
 

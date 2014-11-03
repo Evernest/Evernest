@@ -18,10 +18,8 @@ Evernest API
     - User
     - Right
     - UserRight
- * API Endpoints
  * Request/Response overview
-    - Different HTTP methods (at least GET and POST since user send data)
-    - HTTP response code + error/success field in answer
+ * API Endpoints
  * Data selection (partials)
  * Paging
     - Cursoring
@@ -330,60 +328,6 @@ The pair `User`/`Stream` is unique too.
 
 
 
-## API Endpoints
-
-*draft*
-
-### Stream
-
-#### Get stream info
-
-**URL:** `GET /stream/{StreamId}`
-**Required rights:** `Read` right on the stream.
-**Returned value:** single Stream
-
-#### Get a random event
-
-**URL:** `GET /stream/{StreamId}/pull/random`
-**Required rights:** `Read` right on the stream.
-**Returned value:** single Event
-
-#### Get a single event
-
-**URL:** `GET /stream/{StreamId}/pull/{Id}`
-**Required rights:** `Read` right on the stream.
-**Returned value:** single Event
-
-#### Get a range of events
-
-**URL:** `GET /stream/{StreamId}/pull/{StartId}/{StopId}`
-**Required rights:** `Read` right on the stream.
-**Returned value:** list of Events
-
-#### Post a new event
-
-**URL:** `POST /stream/{StreamId}/push`
-**Required data:** `Event(Content)`
-**Required rights:** `Write` right on the stream
-**Returned value:** None
-**Example:**
-
-```
-POST /stream/19/push HTTP/1.1
-Host: api.evernest.org
-
-{
-	"Event": {
-		"Content": "This is a new event!"
-	}
-}
-```
-
-### Sources
-
-
-
-
 
 ## Request/Response overview
 
@@ -399,9 +343,12 @@ When authenticating though a key, use the `key` field. For credentials, use `log
 
 #### URL
 
-Although API endpoints can varie due to the differences between objects, they try to follow the template `/{object}/{action}/{arguments}`.
+Although API endpoints can varie due to the differences between objects, they try to follow the template `/{object}/{selector}/{action}/{arguments}`.
 
 `{object}` can be `Event`, `Stream`, `Source`, `User`, `Right`, `UserRight`.
+
+`{selector}` indicates which object is targeted. Some actions may not need any selection.
+
 Available values for `{action}` depends on the object and `{arguments}` depend on the action itself.
 
 
@@ -425,6 +372,149 @@ HTTP response code + error/success field in answer
 
 Header and content.
 An empty field can not being here at all (e.g. there is no `Events` field in a response to a query about rights).
+
+
+
+
+## API Endpoints
+
+### Overview
+
+Each endpoint is presented with a uniform information. The following subsections describes what are those fields.
+
+#### URL
+
+The *URL* field indicates what method you should use to access the endpoint. Note that this is just an indication. You can replace a POST request by a GET request with options inside the query string.
+
+To do so, encode each JSON field in the `Parent(Field)` form. For example, the following POST body would be encoded as `?Event(Content)=This%20is%20a%20new%20event!`
+
+```
+{
+	"Event": {
+		"Content": "This is a new event!"
+	}
+}
+```
+
+#### Input data
+
+The *Input data* describes the information that the request could be provided. It is encoded in the `Parent(Field)` form.
+
+Mandatory fields are explicitely signaled by the **[required]** tag.
+
+When not specified, no input data is processed.
+
+#### Required rights
+
+The *Required rights* are the least rights that the key used for authentication must have to be able to perform the request.
+
+When not specified, access is public.
+
+#### Returned value
+
+The *Returned value* is always *single Something* or *list of Something*. It indicates if the value fields of the response template are empty or contains one or more elements.
+
+When not specified, all lists are empty.
+
+### Stream
+
+#### Get stream info
+
+Get stream by its Id.
+
+**URL:** `GET /Stream/{StreamId}`
+
+**Required rights:** `Read` right on the stream.
+
+**Returned value:** single Stream
+
+#### Get a random event
+
+Get a random event from stream `{StreamId}`
+
+**URL:** `GET /Stream/{StreamId}/Pull/Random`
+
+**Required rights:** `Read` right on the stream.
+
+**Returned value:** single Event
+
+#### Get a single event
+
+Get an event from `{StreamId}` by its Id.
+
+If {Id} is negative, `{LastId}` is added to it so that it is counted from the end of the stream.
+
+**URL:** `GET /Stream/{StreamId}/Pull/{Id}`
+
+**Required rights:** `Read` right on the stream.
+
+**Returned value:** single Event
+
+#### Get a range of events
+
+Get all events from stream `{StreamId}` whose Ids are between `{StartId}` and `{StopId}` (including bounds).
+
+If these Ids are negatives, `{LastId}` is added to them so that they are counted from the end of the stream.
+
+**URL:** `GET /Stream/{StreamId}/Pull/{StartId}/{StopId}`
+
+**Input data:**
+
+ * `Since` *int*: See paging section
+ * `Before` *int*: See paging section
+
+**Required rights:** `Read` right on the stream.
+
+**Returned value:** list of Events
+
+#### Post a new event
+
+**URL:** `POST /Stream/{StreamId}/Push`
+
+**Input data:**
+
+ * `Event(Content)` *string* **[required]**: New event content.
+
+**Required rights:** `Write` right on the stream
+
+**Example:**
+
+```
+POST /Stream/19/Push HTTP/1.1
+Host: api.evernest.org
+
+{
+	"Event": {
+		"Content": "This is a new event!"
+	}
+}
+```
+
+### Sources
+
+#### Get source info
+
+Get source by its Id.
+
+**URL:** `GET /Source/{SourceId}`
+
+**Required rights:** `Read` or `Right` right on a stream in common between both the used key and the target source.
+
+**Returned value:** single Source
+
+
+### Users
+
+#### Get user info
+
+Get user by its Id.
+
+**URL:** `GET /User/{UserId}`
+
+**Returned value:** single User
+
+*todo*: Returned fields depending on rights (common stream)
+
 
 
 

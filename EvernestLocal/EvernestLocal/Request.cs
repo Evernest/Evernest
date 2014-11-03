@@ -8,18 +8,23 @@ namespace EvernestLocal
 {
     class Request
     {
-        public string content { get; set; }
         public string token { get; set; }
+        public List<Event> events { get; set; }
 
-        public Request(String content, String token)
+        public Request(List<Event> events, String token)
         {
-            this.content = content;
             this.token = token;
+            this.events = events;
         }
 
         public void ToPrint()
         {
-            Console.WriteLine("Token : " + token + "; Content : " + content);
+            Console.WriteLine("Token : " + token);
+            foreach (Event e in events)
+            {
+                Console.Write("\t");
+                e.ToPrint();
+            }
         }
     }
 }

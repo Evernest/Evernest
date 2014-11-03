@@ -30,22 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.core">
-      <HintPath>..\packages\NUnitTestAdapter.1.2\lib\nunit.core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>..\packages\NUnitTestAdapter.1.2\lib\nunit.core.interfaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="nunit.util">
-      <HintPath>..\packages\NUnitTestAdapter.1.2\lib\nunit.util.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NUnit.VisualStudio.TestAdapter">
-      <HintPath>..\packages\NUnitTestAdapter.1.2\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -64,9 +48,15 @@
     <Compile Include="CheckRights.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Exceptions\AccessDeniedException.cs" />
+    <Compile Include="Exceptions\AdminAccessDeniedException.cs" />
+    <Compile Include="Exceptions\CannotDestituteAdminException.cs" />
     <Compile Include="Exceptions\FrontException.cs" />
+    <Compile Include="Exceptions\ReadAccessDeniedException.cs" />
     <Compile Include="Exceptions\UnregisteredUserException.cs" />
     <Compile Include="Exceptions\UserNameTakenException.cs" />
+    <Compile Include="RightsTableByStream.cs" />
+    <Compile Include="RightsTableByUser.cs" />
+    <Compile Include="Exceptions\WriteAccessDeniedException.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="Requests\CreateStream.cs" />
@@ -82,9 +72,6 @@
     <Compile Include="Exceptions\StreamNameDoesNotExistException.cs" />
     <Compile Include="Exceptions\StreamNameTakenException.cs" />
     <Compile Include="AccessRights.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

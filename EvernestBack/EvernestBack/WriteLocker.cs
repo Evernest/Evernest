@@ -8,7 +8,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System.Configuration;
 
 
-namespace Cloud14
+namespace EvernestBack
 {
     class WriteLocker
 	{

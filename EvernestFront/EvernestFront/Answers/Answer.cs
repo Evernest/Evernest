@@ -25,6 +25,7 @@ namespace EvernestFront.Answers
         /// </summary>
         protected Answer()
         {
+            Success = true;
         }
 
 

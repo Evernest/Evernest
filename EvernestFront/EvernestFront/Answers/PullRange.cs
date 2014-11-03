@@ -26,8 +26,8 @@ namespace EvernestFront.Answers
         /// </summary>
         /// <param name="eventsPulled"></param>
         internal PullRange(List<Event> eventsPulled)
+            :base ()
         {
-            Success = true;
             events = eventsPulled;
         }
     }

@@ -21,8 +21,7 @@ namespace EvernestFront.Answers
         /// Sets field success to true. To change it to false, an exception parameter must be passed.
         /// </summary>
         internal SetRights()
-        {
-            Success = true;
-        }
+            : base() { }
+      
     }
 }

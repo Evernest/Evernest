@@ -23,8 +23,8 @@ namespace EvernestFront.Answers
         /// </summary>
         /// <param name="id"></param>
         internal Push(string id)
+        :base ()
         {
-            Success = true;
             MessageID = id;
         }
 

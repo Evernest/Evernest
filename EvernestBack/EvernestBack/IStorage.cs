@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace Cloud14
+namespace EvernestBack
 {
     // Define interface for the storage part of the project. 
     // Interface between Back-end and Front-end parts

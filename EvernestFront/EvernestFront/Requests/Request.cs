@@ -3,7 +3,7 @@
 namespace EvernestFront.Requests
 {
   
-        public abstract class Request<TAnswer> where TAnswer : Answers.Answer
+        abstract class Request<TAnswer> where TAnswer : Answers.Answer
         {
             protected string User;
 

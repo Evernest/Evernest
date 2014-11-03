@@ -74,17 +74,19 @@ namespace EvernestLocal
                         {
                             Write(2,10,"Tentative d'ajout de l'évènement suivant : ");
                             Write(2, 11, line);
-                            Request req = new Request(line, token);
-                            PushEventResponse r = Push(apiUrl.GetPush(), req);
-                            Write(2, 12, "Récupération du de l'identifiant de l'évènement.");
+                            Event e = new Event(line);
+                            List<Event> l = new List<Event>();
+                            l.Add(e);
+                            Request req = new Request(l, token);
+                            PushEventsResponse r = Push(apiUrl.GetPush(), req);
+                            Write(2, 12, "Récupération de l'identifiant de l'évènement.");
                             token = r.new_token;
                             getToken = true;
                             Console.SetCursorPosition(2, 13);
                             r.ToPrint();
-                            Write(2,14,"Nombre d'évènement ajouté : " + compteur);
-                            ++compteur;
+                            Write(2,14,"Nombre d'évènement ajouté : " + ++compteur);
                         }
-                        Write(2, 16, "Opération terminée.");
+                        Write(2, 28, "Opération terminée.");
                         ReturnChooseActionLocation();
                         break;
                     case Action.ActionPull:
@@ -108,11 +110,23 @@ namespace EvernestLocal
                             url = apiUrl.GetPull();
                         else
                             url = apiUrl.GetPull(id1,id2);
-                        RequestResponse per = Pull(url, new RequestToken(token));
-                        token = per.new_token;
-                        getToken = true;
-                        Console.SetCursorPosition(2, 16);
-                        per.ToPrint();   
+                        try
+                        {
+                            RequestResponse per = Pull(url, new RequestToken(token));
+                            token = per.new_token;
+                            getToken = true;
+                            Console.SetCursorPosition(2, 16);
+                            per.ToPrint();
+                        }
+                        catch (Exception e)
+                        {
+                            
+                           
+                        }
+                        
+                        
+
+                           
                         break;
                     case Action.ActionQuit:
                         ClearConsole();
@@ -132,18 +146,28 @@ namespace EvernestLocal
             return JsonToObject<AccountResponse>(request.GetResponse());
         }
 
-        private static PushEventResponse Push(string url, Request r)
+        private static PushEventsResponse Push(string url, Request r)
         {
             HttpClient request = new HttpClient(url);
             request.SendData(ObjectToJson(r));
-            return JsonToObject<PushEventResponse>(request.GetResponse());
+            return JsonToObject<PushEventsResponse>(request.GetResponse());
+           
         }
 
         private static RequestResponse Pull(string url, RequestToken r)
         {
             HttpClient request = new HttpClient(url);
             request.SendData(ObjectToJson(r));
-            return JsonToObject<RequestResponse>(request.GetResponse());
+            try
+            {
+                return JsonToObject<RequestResponse>(request.GetResponse());
+
+            }
+            catch (Exception e)
+            {
+                
+                throw e;
+            }
         }
 
         private static Action chooseAction(Boolean token)

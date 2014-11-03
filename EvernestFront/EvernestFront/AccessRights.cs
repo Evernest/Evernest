@@ -12,6 +12,7 @@ namespace EvernestFront
         ReadOnly,
         WriteOnly,
         ReadWrite,
-        Admin
+        Admin,
+        Root
     }
 }

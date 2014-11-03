@@ -18,14 +18,8 @@ Evernest API
     - User
     - Right
     - UserRight
- * API Actions
-    - Read (`GET`)
-    - Create (`POST`)
-    - Update (`PATCH`)
-    - Delete (`DELETE`)
  * Request/Response overview
-    - Different HTTP methods (at least GET and POST since user send data)
-    - HTTP response code + error/success field in answer
+ * API Endpoints
  * Data selection (partials)
  * Paging
     - Cursoring
@@ -45,10 +39,28 @@ Evernest API
 
 *todo*
 
+Not case-sensitive
+
 
 ## Authentication
 
-*todo*
+Access to API is of course restricted and so requires some way of authentication.
+
+The most basic authentication would be to provide your personnal credentials everytime you request the API. But the major problem is that API are designed to be accessed by programs, not humans. So your credentials would be found inside your application code, and even binary, which is a very bad design.
+
+Actually your credentials must remains in the human field. Programs would be identified by unique keys. Thus, when a program's key get corrupted, you can invalidate it without breaking all other running projects.
+
+This leads to a fundamental principle of Evernest: *Usage jailing*. Evernest has been designed such as a problem in a given project can never affect other ones. And the key system is the main feature providing usage jailing.
+
+These keys are called *sources* keys. A source represents a program, are a unit of a program that needs to access some stream. You can select which rights source has on which streams.
+
+It differes from the *user* key, which is unique and has all the rights you have when you are logged in the administration interface.
+
+Although it wants to insure this jailing, the API allow you to do everything from the API, so you better follow simple rules:
+
+ * Although you can distribute your keys between programs as you wish, and even have a single key with rights uppon all your streams, don't do so. A key must have priviledges on streams related to one project at a time.
+
+ * Never use your User key in programs meant to be packaged. This key is an administration key and must used by your administration tools only.
 
 
 ## API Objects
@@ -119,7 +131,7 @@ Streams are series of events.
 #### Fields
 
  * `Id` *int*: Stream identifier.
- * `LastId` *int*: Id of the last inserted event.
+ * `LastEventId` *int*: Id of the last inserted event.
  * `Count` *int*: Number of events within the stream.
  * `Name` *string*: Stream user name.
 
@@ -131,14 +143,14 @@ Streams are series of events.
 
 #### Default selector
 
-`Id, LastId, Count, Name`
+`Id, LastEventId, Count, Name`
 
 #### Example
 
 ```
 {
 	"Id": 4567,
-	"LastId": 45,
+	"LastEventId": 45,
 	"Count": 12,
 	"Name": "Example of Stream"
 }
@@ -194,6 +206,9 @@ It owns sources and administrates streams.
 #### Fields
 
  * `Id` *int*: User identifier.
+ * `UserName` *string*: User personnal name.
+ * `Password` *hash*: Hash of user password concatenated to `PasswordSalt`.
+ * `PasswordSalt` *hash*: Random string used to avoid pattern recognition in password hash.
  * `Name` *string*: User personnal name.
  * `FirstName` *string*: User personnal first name.
  * `RelatedStreams` *{Stream} list*: List of streams that are related to this user. A related stream is a stream that is either readable, writable or administrated by the user.
@@ -208,13 +223,18 @@ It owns sources and administrates streams.
 
 #### Default selector
 
-`Id, Name, FirstName, Key, RelatedStreams(items(Id)), OwnedSources(items(Id))`
+`Id, UserName, Name, FirstName, Key, RelatedStreams(items(Id)), OwnedSources(items(Id))`
+
+Note that password fields are not returned by default.
 
 #### Example
 
 ```
 {
 	"Id": 2345,
+	"UserName": "jdo",
+	"Password": "j3M36oxUiV719mrqXyBaSRPm6nOhRdch",
+	"PasswordSalt": "zMQJYyioafGRTXt5g4ehinz5l8vfljLp",
 	"Name": "Doe",
 	"FirstName": "John",
 	"Key": "srAADi3VgIVSMZCd4TcRRi24ZcjQP13i"
@@ -259,8 +279,12 @@ The pair `Source`/`Stream` is unique too.
 ```
 {
 	"Id": 6789,
-	"Source": {Source},
-	"Stream": {Stream},
+	"Source": {
+		"Id": 123
+	},
+	"Stream": {
+		"Id": 456
+	},
 	"Type": "ReadWrite"
 }
 ```
@@ -303,22 +327,39 @@ The pair `User`/`Stream` is unique too.
 ```
 
 
-## Request template
-
-`{action} /{object}/{relation}`
-
-Where:
-
- * `{action}` can be `GET`, `POST`, `PUT` or `DELETE`
- * `{object}` can be `Event`, `Stream`, `Source`, `User`, `Right`, `UserRight`
 
 
-## Answer template
+## Request/Response overview
+
+For more consistency, all requests and responses follow the same pattern. This pattern can be slightly different according to the HTTP method used.
+
+### Request
+
+#### Authentication
+
+Requests to the API **always** require the following information an authentication key, or credentials. Human credentials must be used only when there is no other way to do, e.g. for the first API access ever. After that, you should use the user key.
+
+When authenticating though a key, use the `key` field. For credentials, use `login` and `password` fields.
+
+#### URL
+
+Although API endpoints can varie due to the differences between objects, they try to follow the template `/{object}/{selector}/{action}/{arguments}`.
+
+`{object}` can be `Event`, `Stream`, `Source`, `User`, `Right`, `UserRight`.
+
+`{selector}` indicates which object is targeted. Some actions may not need any selection.
+
+Available values for `{action}` depends on the object and `{arguments}` depend on the action itself.
+
+
+### Response
+
+HTTP response code + error/success field in answer
 
 ```
 {
 	"Status": "Success|Error",
-	"FieldErrors": ["Foo", "Bar/Baz"],
+	"FieldErrors": ["Foo", "Bar(Baz)"],
 
 	"Events": [{Event}, {Event}, …],
 	"Streams": [{Stream}, {Stream}, …],
@@ -332,6 +373,176 @@ Where:
 Header and content.
 An empty field can not being here at all (e.g. there is no `Events` field in a response to a query about rights).
 
+
+
+
+## API Endpoints
+
+### Overview
+
+Each endpoint is presented with a uniform information. The following subsections describes what are those fields.
+
+#### URL
+
+The *URL* field indicates what method you should use to access the endpoint. Note that this is just an indication. You can replace a POST request by a GET request with options inside the query string.
+
+To do so, encode each JSON field in the `Parent(Field)` form. For example, the following POST body would be encoded as `?Event(Content)=This%20is%20a%20new%20event!`
+
+```
+{
+	"Event": {
+		"Content": "This is a new event!"
+	}
+}
+```
+
+#### Input data
+
+The *Input data* describes the information that the request could be provided. It is encoded in the `Parent(Field)` form.
+
+Mandatory fields are explicitely signaled by the **[required]** tag.
+
+When not specified, no input data is processed.
+
+#### Required rights
+
+The *Required rights* are the least rights that the key used for authentication must have to be able to perform the request.
+
+When not specified, access is public.
+
+#### Returned value
+
+The *Returned value* is always *single Something* or *list of Something*. It indicates if the value fields of the response template are empty or contains one or more elements.
+
+When not specified, all lists are empty.
+
+### Stream
+
+#### Get stream info
+
+Get stream by its Id.
+
+**URL:** `GET /Stream/{StreamId}`
+
+**Required rights:** `Read` right on the stream.
+
+**Returned value:** single Stream
+
+#### Get a random event
+
+Get a random event from stream `{StreamId}`
+
+**URL:** `GET /Stream/{StreamId}/Pull/Random`
+
+**Required rights:** `Read` right on the stream.
+
+**Returned value:** single Event
+
+#### Get a single event
+
+Get an event from `{StreamId}` by its Id.
+
+If `{Id}` is negative, `{LastEventId}` is added to it so that it is counted from the end of the stream.
+
+**URL:** `GET /Stream/{StreamId}/Pull/{Id}`
+
+**Required rights:** `Read` right on the stream.
+
+**Returned value:** single Event
+
+#### Get a range of events
+
+Get all events from stream `{StreamId}` whose Ids are between `{StartId}` and `{StopId}` (including bounds).
+
+If these Ids are negatives, `{LastEventId}` is added to them so that they are counted from the end of the stream.
+
+**URL:** `GET /Stream/{StreamId}/Pull/{StartId}/{StopId}`
+
+**Input data:**
+
+ * `Since` *int*: See paging section
+ * `Before` *int*: See paging section
+
+**Required rights:** `Read` right on the stream.
+
+**Returned value:** list of Events
+
+#### Post a new event
+
+**URL:** `POST /Stream/{StreamId}/Push`
+
+**Input data:**
+
+ * `Event(Content)` *string* **[required]**: New event content.
+
+**Required rights:** `Write` right on the stream
+
+**Example:**
+
+```
+POST /Stream/19/Push HTTP/1.1
+Host: api.evernest.org
+
+{
+	"Event": {
+		"Content": "This is a new event!"
+	}
+}
+```
+
+### Sources
+
+#### Get source info
+
+Get source by its Id.
+
+**URL:** `GET /Source/{SourceId}`
+
+**Required rights:** `Read` or `Right` right on a stream in common between both the used key and the target source.
+
+**Returned value:** single Source
+
+
+### Users
+
+#### Get user info
+
+Get user by its Id.
+
+**URL:** `GET /User/{UserId}`
+
+**Returned value:** single User
+
+*todo*: Returned fields depending on rights (common stream)
+
+
+
+
+## Data selection (partials)
+
+*todo*
+
+## Paging
+
+*todo*
+
+## Visibility
+
+*todo*
+
+## Rate limits
+
+*todo*
+
+## High-level
+
+*todo*
+
+## Best practices
+
+*todo*
+
+## Request template
 
 ## Visibility rules
 

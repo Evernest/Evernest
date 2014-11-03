@@ -20,8 +20,12 @@ namespace Cloud14
             CloudStorageAccount storageAccount = null;
             try
             {
-                storageAccount = CloudStorageAccount.Parse(
-                    ConfigurationManager.ConnectionStrings["StorageConnectionString"].ConnectionString);
+                // TODO
+                string connectionString = ConfigurationManager.AppSettings.Get(0);
+                Console.WriteLine("ConnectionString : ");
+                Console.WriteLine(connectionString);
+                Console.Read();
+                //storageAccount = CloudStorageAccount.Parse(connectionString);
             }
             catch (NullReferenceException e)
             {

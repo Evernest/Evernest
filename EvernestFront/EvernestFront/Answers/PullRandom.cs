@@ -9,7 +9,7 @@ namespace EvernestFront.Answers
 {
     public class PullRandom : Answer
     {
-        Event eventPulled = null;
+        public Event EventPulled {get; private set;}
         /// <summary>
         /// Sets field success to false and field exception to exn.
         /// </summary>
@@ -25,9 +25,9 @@ namespace EvernestFront.Answers
         /// </summary>
         /// <param name="evt"></param>
         internal PullRandom(Event evt)
+            :base()
         {
-            Success = true;
-            eventPulled = evt;
+            EventPulled = evt;
         }
 
          

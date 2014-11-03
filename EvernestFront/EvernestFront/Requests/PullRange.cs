@@ -18,7 +18,7 @@ namespace EvernestFront.Requests
             /// <param name="streamName"></param>
             /// <param name="from"></param>
             /// <param name="to"></param>
-            public PullRange(string user, string streamName, int from, int to)
+            internal PullRange(string user, string streamName, int from, int to)
                 : base(user, streamName)
             {
 
@@ -29,7 +29,7 @@ namespace EvernestFront.Requests
             /// Processes PullRange request. Request is successful if user has reading rights.
             /// </summary>
             /// <returns></returns>
-            public override Answers.PullRange Process()
+            internal override Answers.PullRange Process()
             {
                 try
                 {

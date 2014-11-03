@@ -14,7 +14,7 @@ namespace EvernestFront.Requests
             /// <param name="user"></param>
             /// <param name="streamName"></param>
             /// <param name="eventToPush"></param>
-            public Push(string user, string streamName, Event eventToPush)
+            internal Push(string user, string streamName, Event eventToPush)
                 : base(user, streamName)
             {
                 this.eventToPush = eventToPush;
@@ -24,7 +24,7 @@ namespace EvernestFront.Requests
             /// Processes Push request. Request is successful if user has writing rights.
             /// </summary>
             /// <returns></returns>
-            public override Answers.Push Process()
+            internal override Answers.Push Process()
             {
                 try
                 {

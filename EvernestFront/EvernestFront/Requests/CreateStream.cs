@@ -14,7 +14,7 @@ namespace EvernestFront.Requests
         /// </summary>
         /// <param name="user"></param>
         /// <param name="name"></param>
-        public CreateStream(string user, string name)
+        internal CreateStream(string user, string name)
             : base(user, name)
         {
         }
@@ -24,7 +24,7 @@ namespace EvernestFront.Requests
         /// </summary>
         /// <returns></returns>
 
-        public override Answers.CreateStream Process()
+        internal override Answers.CreateStream Process()
         {
             try
             {

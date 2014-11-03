@@ -22,10 +22,8 @@ namespace Cloud14
             {
                 // TODO
                 string connectionString = ConfigurationManager.AppSettings.Get(0);
-                Console.WriteLine("ConnectionString : ");
-                Console.WriteLine(connectionString);
+                storageAccount = CloudStorageAccount.Parse(connectionString);
                 Console.Read();
-                //storageAccount = CloudStorageAccount.Parse(connectionString);
             }
             catch (NullReferenceException e)
             {
@@ -41,12 +39,12 @@ namespace Cloud14
         }
 
 
-        public void StreamWrite(String message, Int64 id)
+        public void Push(String message, Int64 id)
         {
             Agent p = new Producer(message, id, writeLock, this);
         }
 
-        public void StreamRead(Int64 id)
+        public void Pull(Int64 id)
         {
             Agent r = new Reader(null, id, this);
         }

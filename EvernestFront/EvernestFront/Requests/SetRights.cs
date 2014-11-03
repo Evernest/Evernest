@@ -32,7 +32,7 @@ namespace EvernestFront.Requests
         /// Processes a SetRights request. Request is successful if user has admin rights.
         /// </summary>
         /// <returns></returns>
-        internal override Answers.SetRights Process()
+        public override Answers.SetRights Process()
         {
             try
             {

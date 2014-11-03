@@ -131,7 +131,7 @@ Streams are series of events.
 #### Fields
 
  * `Id` *int*: Stream identifier.
- * `LastId` *int*: Id of the last inserted event.
+ * `LastEventId` *int*: Id of the last inserted event.
  * `Count` *int*: Number of events within the stream.
  * `Name` *string*: Stream user name.
 
@@ -143,14 +143,14 @@ Streams are series of events.
 
 #### Default selector
 
-`Id, LastId, Count, Name`
+`Id, LastEventId, Count, Name`
 
 #### Example
 
 ```
 {
 	"Id": 4567,
-	"LastId": 45,
+	"LastEventId": 45,
 	"Count": 12,
 	"Name": "Example of Stream"
 }
@@ -352,14 +352,14 @@ Although API endpoints can varie due to the differences between objects, they tr
 Available values for `{action}` depends on the object and `{arguments}` depend on the action itself.
 
 
-## Response
+### Response
 
 HTTP response code + error/success field in answer
 
 ```
 {
 	"Status": "Success|Error",
-	"FieldErrors": ["Foo", "Bar/Baz"],
+	"FieldErrors": ["Foo", "Bar(Baz)"],
 
 	"Events": [{Event}, {Event}, …],
 	"Streams": [{Stream}, {Stream}, …],
@@ -442,7 +442,7 @@ Get a random event from stream `{StreamId}`
 
 Get an event from `{StreamId}` by its Id.
 
-If {Id} is negative, `{LastId}` is added to it so that it is counted from the end of the stream.
+If `{Id}` is negative, `{LastEventId}` is added to it so that it is counted from the end of the stream.
 
 **URL:** `GET /Stream/{StreamId}/Pull/{Id}`
 
@@ -454,7 +454,7 @@ If {Id} is negative, `{LastId}` is added to it so that it is counted from the en
 
 Get all events from stream `{StreamId}` whose Ids are between `{StartId}` and `{StopId}` (including bounds).
 
-If these Ids are negatives, `{LastId}` is added to them so that they are counted from the end of the stream.
+If these Ids are negatives, `{LastEventId}` is added to them so that they are counted from the end of the stream.
 
 **URL:** `GET /Stream/{StreamId}/Pull/{StartId}/{StopId}`
 

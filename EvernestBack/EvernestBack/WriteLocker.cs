@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
@@ -19,12 +20,14 @@ namespace EvernestBack
         public WriteLocker(CloudBlobClient blobClient)
         {
             this.blobClient = blobClient;
+            Store();
         }
 
         public void Store()
         {
             Task.Run(() =>
             {
+                Console.WriteLine("Starting Storing");
                 while (waitingProducers.Count > 0)
                 {
                     Producer p = waitingProducers.Take();
@@ -38,6 +41,8 @@ namespace EvernestBack
         private void StoreToCloud(Producer prod)
         {
             // TODO
+            Console.WriteLine("Store producer {0} to Cloud.", prod.requestID);
+            Console.WriteLine(prod.message);
         }
 
         public void Register(Producer producer)

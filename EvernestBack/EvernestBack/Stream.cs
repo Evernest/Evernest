@@ -23,7 +23,6 @@ namespace EvernestBack
                 // TODO
                 string connectionString = ConfigurationManager.AppSettings.Get(0);
                 storageAccount = CloudStorageAccount.Parse(connectionString);
-                Console.Read();
             }
             catch (NullReferenceException e)
             {

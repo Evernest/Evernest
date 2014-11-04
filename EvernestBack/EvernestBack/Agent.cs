@@ -7,7 +7,7 @@ namespace EvernestBack
 {
     abstract class Agent
     {
-        protected Int64 requestID { get; private set; }
+        public Int64 requestID { get; private set; }
         protected Stream feedback;
         public String message { get; protected set; }
 

@@ -48,7 +48,7 @@ namespace EvernestFront
         /// <exception cref="StreamNameTakenException"></exception>
         /// <param name="stream"></param>
         /// <param name="user"></param>
-        static public void AddStream(string user, string stream)
+        static internal void AddStream(string user, string stream)
         {
             if (!RightsTableByUser.ContainsUser(user))
                 throw new UnregisteredUserException(user);

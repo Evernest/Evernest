@@ -12,7 +12,6 @@ namespace EvernestFront
 
         internal Stream()
         {
-            throw new NotImplementedException();
                 // TODO : appeler Martin NewStorage()
         }
 

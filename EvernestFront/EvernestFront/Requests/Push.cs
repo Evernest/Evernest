@@ -24,7 +24,7 @@ namespace EvernestFront.Requests
             /// Processes Push request. Request is successful if user has writing rights.
             /// </summary>
             /// <returns></returns>
-            public override Answers.Push Process()
+            internal override Answers.Push Process()
             {
                 try
                 {

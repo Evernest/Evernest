@@ -9,12 +9,12 @@ namespace EvernestFront.Answers
 {
     public class RelatedStreams : Answer
     {
-        public List<KeyValuePair<string, AccessRights>> RelatedStreams { get; private set; }
+        public List<KeyValuePair<string, AccessRights>> Streams { get; private set; }
 
         internal RelatedStreams(List<KeyValuePair<string, AccessRights>> streams)
             : base()
         {
-            RelatedStreams = streams;
+            Streams = streams;
         }
 
         internal RelatedStreams(FrontException exn)

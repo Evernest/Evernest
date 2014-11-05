@@ -24,7 +24,7 @@ namespace EvernestFront.Requests
         /// </summary>
         /// <returns></returns>
 
-        public override Answers.CreateStream Process()
+        internal override Answers.CreateStream Process()
         {
             try
             {

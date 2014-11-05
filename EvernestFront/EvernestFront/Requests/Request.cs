@@ -24,7 +24,7 @@ namespace EvernestFront.Requests
             /// Processes the request with a back-end call.
             /// </summary>
             /// <returns></returns>
-            public abstract TAnswer Process();
+            internal abstract TAnswer Process();
            
             
         } 

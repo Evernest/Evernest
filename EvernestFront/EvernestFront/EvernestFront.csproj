@@ -51,6 +51,10 @@
     <Compile Include="RightsTableByStream.cs" />
     <Compile Include="RightsTableByUser.cs" />
     <Compile Include="Exceptions\WriteAccessDeniedException.cs" />
+    <Compile Include="Source.cs" />
+    <Compile Include="SourceTable.cs" />
+    <Compile Include="StreamInfo.cs" />
+    <Compile Include="User.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

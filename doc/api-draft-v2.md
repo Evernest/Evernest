@@ -4,12 +4,8 @@ Evernest API
 
 
  * Overview
-    - JSON
-    - Access by Object
  * Authentication
-    - Keys and Rights
-    - Usage jailing
-    - Key mechanism for sources and user
+ * Data selection (partials)
  * API Objects
     - General comments
     - Event
@@ -20,7 +16,6 @@ Evernest API
     - UserRight
  * Request/Response overview
  * API Endpoints
- * Data selection (partials)
  * Paging
     - Cursoring
     - Since/After
@@ -61,6 +56,27 @@ Although it wants to insure this jailing, the API allow you to do everything fro
  * Although you can distribute your keys between programs as you wish, and even have a single key with rights uppon all your streams, don't do so. A key must have priviledges on streams related to one project at a time.
 
  * Never use your User key in programs meant to be packaged. This key is an administration key and must used by your administration tools only.
+
+
+
+## Data selection (partials)
+
+Returned data may be heavy, especially event ranges, and you may not be interested in each field that the API can potentially return.
+
+For example, since `Event` object contains a `ParentStream` field containing a `Stream` object, a range of event would contain a lot of redundant information.
+
+And the field `RelatedStreams` from `User` object may take more time to be computed on server side and so costs more quota units.
+
+That's why you can perform so called *partial requests*, e.g. a request with a `Selector` field specifying which fields you want the server to give back to you.
+
+To get only the `Foo` field, try `Selector=Foo`.
+
+But this `Foo` field can have on its turn multiple subfields`. You can get only the `Bar` subfield of the `Foo` field with `Selector=Foo.Bar`.
+
+To select many fields, separate them with a comma (,): `Selector=Foo.Bar,Foo.Baz`. You can also factorize parent field and use parenthesis (()): `Selector=Foo(Bar,Baz)`.
+
+This notation, refered as `Parent.Field` form in the followings, is used in this document to describe expected input data, visibility rules and default selectors.
+
 
 
 ## API Objects
@@ -606,11 +622,6 @@ Set user right associated to a User/Stream pair.
 
 **Required rights:** The requesting user must have `Admin` rights on the stream to edit related rights.
 
-
-
-## Data selection (partials)
-
-*todo*
 
 ## Paging
 

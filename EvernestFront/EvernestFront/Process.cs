@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront
 {
@@ -60,7 +61,7 @@ namespace EvernestFront
         /// </summary>
         /// <param name="user"></param>
         /// <param name="streamName"></param>
-        /// <param name="eventToPush"></param>
+        /// <param name="message"></param>
         /// <returns></returns>
         /// <exception cref="AccessDeniedException"></exception>
         /// <exception cref="StreamNameDoesNotExistException"></exception>

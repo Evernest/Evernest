@@ -53,7 +53,6 @@ namespace EvernestFront
         /// </summary>
         /// <exception cref="StreamNameTakenException"></exception>
         /// <param name="stream"></param>
-        /// <param name="user"></param>
         static internal void AddStream(string stream)
         {
             TableByStream[stream] = new Dictionary<string, AccessRights>();

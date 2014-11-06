@@ -15,7 +15,7 @@ namespace EvernestFront.Exceptions
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="user"></param>
-        /// <param name="userRights"></param>
+        /// <param name="rights"></param>
 
         internal WriteAccessDeniedException(string stream, string user, AccessRights rights)
             : base(stream, user, rights) { }

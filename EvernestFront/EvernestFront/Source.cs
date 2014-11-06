@@ -40,6 +40,7 @@ namespace EvernestFront
             UserId = userId;
             StreamId = streamId;
             Name = name;
+            Rights = rights;
         }
         internal Source(int id, int userId, int streamId, string name, AccessRights rights, Int64 key)
         {
@@ -48,6 +49,7 @@ namespace EvernestFront
             StreamId = streamId;
             Name = name;
             Key = key;
+            Rights = rights;
         }
 
 

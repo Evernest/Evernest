@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using EvernestFront;
-using EvernestFront.Answers;
+//using EvernestFront.Answers;
 
 namespace EvernestWeb.Controllers
 {
@@ -29,9 +29,9 @@ namespace EvernestWeb.Controllers
         //}
 
         // GET api/pull/5/10
-        public PullRange Get(int begin, int end)
+        public List<Event> Get(int begin, int end)
         {
-            PullRange ans = EvernestFront.Process.PullRange("user", "stream", begin, end);
+            List<Event> ans = EvernestFront.Process.PullRange("user", "stream", begin, end);
             // TODO: check that it worked
             return ans;
         }

@@ -6,6 +6,11 @@ Evernest API
  * Overview
  * Authentication
  * Data selection (partials)
+ * Cursoring
+ * Visibility
+ * Rate limits
+    - Limitation on returned data length
+    - Quota Cost
  * API Objects
     - General comments
     - Event
@@ -16,13 +21,6 @@ Evernest API
     - UserRight
  * Request/Response overview
  * API Endpoints
- * Paging
-    - Cursoring
-    - Since/After
- * Visibility
- * Rate limits
-    - Limitation on returned data length
-    - Quota Cost
  * High-level
     - Statistics
     - Search
@@ -76,6 +74,49 @@ But this `Foo` field can have on its turn multiple subfields`. You can get only 
 To select many fields, separate them with a comma (,): `Selector=Foo.Bar,Foo.Baz`. You can also factorize parent field and use parenthesis (()): `Selector=Foo(Bar,Baz)`.
 
 This notation, refered as `Parent.Field` form in the followings, is used in this document to describe expected input data, visibility rules and default selectors.
+
+
+
+## Cursoring
+
+### Negative index
+
+The most common use case of Evernest API is to pull event ranges. It is quite simple to do : just get `/Stream/12/Pull/10/20` to get the events from stream 12 whose Ids are between 10 and 20.
+
+But you may want to get the last events from a stream. The Evernest API provides an easy way to do so, using negative Ids to specify that it should be counted from the last Ids instead of being counted from the first one.
+
+For instance, get `/Stream/12/Pull/-10/-1` get the last 10 events from stream 12.
+
+Note that you can also manually compute the Ids thanks to the `LastEventId` field from `Stream` object.
+
+### Paging
+
+Where it becomes tricky is when you want to get so many data that it is not possible to do it in a single request, whether because you exceed the rate limits or your program can't handle too many data at once.
+
+For example, you could want to get the last 200 elements 10 by 10. You can either manually get all the `/Stream/12/Pull/-{n}/-{n-9}` for n from 200 to 10 or use the `Page` field to iterate over request pages, like so:
+
+`/Stream/12/Pull/-200/-1?Page={n}` with `n` starting at 0 and stoping when you want (e.g. when request return empty lists).
+
+By default, the number of items per page is set to the maximum according to rate limits. If you want to force it, use the `Count` field: `/Stream/12/Pull/-200/-1?Page={n}&Count=10`.
+
+### Racing
+
+The point is that new events could have been append to the stream during the sequence of request, so that it shifts all negative Ids and so you would have some common events in different requests results.
+
+To avoid that, you can provide a `Before` field not to get event whose Id is after a given Id. Set it to the last processed event Id and get for instance `/Stream/12/Pull/-200/-1?Count=10&Before=894`. It will returns at most 10 events which are in the last 200 events and whose Ids are before 894.
+
+On the contrary, you might want to get only new events. You can use the `After` field for that.
+
+Note that this is directly inspired by [the Twitter cursoring](https://dev.twitter.com/rest/public/timelines).
+
+
+## Visibility
+
+*todo*
+
+## Rate limits
+
+*todo*
 
 
 
@@ -623,59 +664,15 @@ Set user right associated to a User/Stream pair.
 **Required rights:** The requesting user must have `Admin` rights on the stream to edit related rights.
 
 
-## Paging
-
-*todo*
-
-## Visibility
-
-*todo*
-
-## Rate limits
-
-*todo*
-
 ## High-level
 
 *todo*
+
+Statistics?
+Search?
 
 ## Best practices
 
 *todo*
 
-## Request template
-
-## Visibility rules
-
-Say what is hidden?
-
-### From a source key
-
-If rule not set to `None`, can see other sources in relation with the stream.
-See source = `Id, ParentUser`
-
-
-### From a user key
-
-Do anything the user can do.
-Must be used for administration only. Exists for people wanting to create Evernest client, not for applications.
-
-
-
-## Granting rights
-
-A user cannot give more rights to its sources than it has on a stream.
-What if rights change?
-
-
-## Core principles
-
- * Personal accounts
- * Jail usages
-
-
-## High-level API
-
-Statistics?
-Search?
 

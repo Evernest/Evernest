@@ -11,11 +11,22 @@ namespace EvernestFront
 
         public String ParentStream { get; private set; }
 
-        internal Event(Int64 eventId, String message, StreamInfo parentStream)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <param name="message"></param>
+        /// <param name="parentStream"></param>
+        internal Event(Int64 eventId, String message, String parentStream)
         {
             Id = eventId;
             Message = message;
-            ParentStream = parentStream.Name;
+            ParentStream = parentStream;
+        }
+
+        internal static Event DummyEvent()
+        {
+            return new Event(0, "this is a dummy event because the implementation is not complete yet", "dummy stream for dummy event");
         }
     }
 }

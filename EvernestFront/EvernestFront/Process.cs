@@ -15,7 +15,7 @@ namespace EvernestFront
         public static void CreateStream(string user, string streamName)
         {
             RightsTable.AddStream(user, streamName);
-            var stream = new Stream();
+            var stream = new Stream(streamName);
             StreamTable.Add(streamName, stream);
             return;
         }

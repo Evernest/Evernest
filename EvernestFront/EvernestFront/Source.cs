@@ -12,20 +12,7 @@ namespace EvernestFront
 
         private string Name { get; set; }
 
-        private AccessRights _rights;
-        public AccessRights Rights
-        {
-            get
-            {
-                throw new NotImplementedException();
-                //var userRight = Users.GetRights(UserId, StreamId);
-                //var actualRight = "min" (userRight, rights);
-                //rights = actualRight;
-                //return actualRight;
-            }
-
-            internal set { _rights = value; }
-        }
+        internal AccessRights Rights { get; private set; }
 
         //base64 encoded int
         private string Key { get; set; } 

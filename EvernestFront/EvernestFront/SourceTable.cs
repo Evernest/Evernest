@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using KeyType = System.Int64;
+﻿using System;
+using System.Collections.Generic;
+using KeyType = System.String; //base 64 int
 
 namespace EvernestFront
 {
@@ -7,13 +8,10 @@ namespace EvernestFront
     {
         private static readonly Dictionary<KeyType, Source> Table = new Dictionary<KeyType, Source>();
 
-        private static KeyType _nextKey=0;
         private static KeyType NewKey()
         {
-            _nextKey++;
-            return _nextKey;
+            return Keys.NewKey();
         }
-        // à améliorer
 
         internal static void AddSource(Source source)
         {

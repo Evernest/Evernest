@@ -27,7 +27,8 @@ namespace EvernestFront
             internal set { _rights = value; }
         }
 
-        public Int64 Key { get; internal set; }
+        //base64 encoded int
+        public string Key { get; internal set; } 
 
         internal Source(int id, int userId, int streamId, string name, AccessRights rights)
         {
@@ -36,8 +37,9 @@ namespace EvernestFront
             StreamId = streamId;
             Name = name;
             Rights = rights;
+            Key = Keys.NewKey();
         }
-        internal Source(int id, int userId, int streamId, string name, AccessRights rights, Int64 key)
+        internal Source(int id, int userId, int streamId, string name, AccessRights rights, string key)
         {
             Id = id;
             UserId = userId;

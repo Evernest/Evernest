@@ -9,6 +9,8 @@ namespace EvernestFront
 
         public string Name { get; private set; }
 
+        private string Key { get; set; }
+
         public List<Source> Sources { get; private set; }
 
         public List<KeyValuePair<int, AccessRights>> Streams
@@ -21,6 +23,7 @@ namespace EvernestFront
         {
             Id = id;
             Name = name;
+            Key = Keys.NewKey();
         }
 
         internal void AddSource(Source source)

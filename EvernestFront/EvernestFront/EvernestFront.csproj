@@ -48,6 +48,7 @@
     <Compile Include="Exceptions\ReadAccessDeniedException.cs" />
     <Compile Include="Exceptions\UnregisteredUserException.cs" />
     <Compile Include="Exceptions\UserNameTakenException.cs" />
+    <Compile Include="Keys.cs" />
     <Compile Include="RightsTableByStream.cs" />
     <Compile Include="RightsTableByUser.cs" />
     <Compile Include="Exceptions\WriteAccessDeniedException.cs" />

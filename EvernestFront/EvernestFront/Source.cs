@@ -10,7 +10,7 @@ namespace EvernestFront
 
         public int StreamId { get; private set; }
 
-        public string Name { get; private set; }
+        private string Name { get; set; }
 
         private AccessRights _rights;
         public AccessRights Rights
@@ -28,7 +28,7 @@ namespace EvernestFront
         }
 
         //base64 encoded int
-        public string Key { get; internal set; } 
+        private string Key { get; set; } 
 
         internal Source(int id, int userId, int streamId, string name, AccessRights rights)
         {

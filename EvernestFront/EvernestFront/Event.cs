@@ -24,9 +24,9 @@ namespace EvernestFront
             ParentStream = parentStream;
         }
 
-        internal static Event DummyEvent()
+        internal static Event DummyEvent(string streamName)
         {
-            return new Event(0, "this is a dummy event because the implementation is not complete yet", "dummy stream for dummy event");
+            return new Event(0, "this is a dummy event because the implementation is not complete yet", streamName);
         }
     }
 }

@@ -46,7 +46,7 @@ namespace EvernestFront
             int id = random.Next(LastEventId+1);
                     
             // TODO : appeler Back
-            return Event.DummyEvent();
+            return Event.DummyEvent(Name);
         }
 
         internal Event Pull(int eventId)

@@ -1,0 +1,41 @@
+PowerShell :
+Paru le 14 novembre 2006
+But initial : Créer une console efficace pour windows, pour concurrencer les systèmes unix.
+Intérêt principal : Manipule des objets .NET, à la différence du shell unix qui ne manipule que du texte.
+Exemple : ls | get-member
+Permet d'utiliser un shell efficace, sans désarçonner les utilisateurs de bash ni ceux de cmd.exe (de nombreux alias qui correspondent aux deux)
+Doit permettre d'accomplir des tâches complexes. Implémente toutes les commandes unix classiques, avec le même niveau de sécurité.
+Permet de créer ses propres commandes/alias
+Insensible à la casse (get-service Get-Service, GeT-SErvice)
+Possibilités d'options classiques (-whatif, -verbose, -confirm)
+Invoke-Item pour ouvrir un fichier (équivalent à un double clic)
+Exemple : Get-Process |Export-CSV Proc.csv
+	Invoke-Item Proc.csv
+
+Scriptage : 
+Variables avec des $. Ex : $strComputer = "Computer1"
+Noms insensibles à la casse, quelques caractères interdits (espace, !, @, ...), quelques noms de variables réservés (if, break, ...)
+Accession avec $strComputer (Write-Output $strComputer)
+Convention utile : $typeNom
+Possibilité de forcer le typage : [int]$x=9
+Logique conditionnelle : comparateurs implémentés (eq, gt, lt, leq, not, ...), if, else, elseif, switch
+
+$x = 2 #creates a variable x and assigns 2 as the value
+  if ($x -eq 5) {Write-Host "Hello my name is Bob"}
+    elseif ($x -eq 4) {Write-Host "Hello, my name is Sue"}
+    elseif ($x -eq 2) {Write-Host "Hello, my name is Troy"}
+    elseif ($x -gt 1) {Write-Host "Hello, my name is Mary"}
+  else {"I have no idea what my name is?"}
+
+Boucles également implémentées
+
+Fonctions :
+Function Add ($x, $y)
+{
+$Ans = $x + $y
+Write-Host "The Answer is $Ans"
+}
+
+Puis Add 10 2
+Utilisation possible de $args, et $args[i] pour ne pas spécifier les variables dans la définition des fonctions.
+

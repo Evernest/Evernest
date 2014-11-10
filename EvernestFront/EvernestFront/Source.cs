@@ -15,7 +15,7 @@ namespace EvernestFront
         internal AccessRights Rights { get; private set; }
 
         //base64 encoded int
-        private string Key { get; set; } 
+        internal string Key { get; set; } 
 
         internal Source(int id, int userId, int streamId, string name, AccessRights rights)
         {

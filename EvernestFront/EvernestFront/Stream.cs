@@ -54,7 +54,7 @@ namespace EvernestFront
             eventId = ActualEventId(eventId);
 
             // appeler Back
-            return Event.DummyEvent();
+            return Event.DummyEvent(Name);
         }
 
         internal List<Event> PullRange(int fromEventId, int toEventId)
@@ -66,7 +66,7 @@ namespace EvernestFront
             for (int i = fromEventId; i <= toEventId; i++)
             {
                 // appeler Back
-                eventList.Add(Event.DummyEvent());
+                eventList.Add(Event.DummyEvent(Name));
             }
 
             return eventList;

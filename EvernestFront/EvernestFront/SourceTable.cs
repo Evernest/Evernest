@@ -8,16 +8,16 @@ namespace EvernestFront
     {
         private static readonly Dictionary<KeyType, Source> Table = new Dictionary<KeyType, Source>();
 
-        private static KeyType NewKey()
-        {
-            return Keys.NewKey();
-        }
+        //private static KeyType NewKey()
+        //{
+        //    return Keys.NewKey();
+        //}
 
         internal static void AddSource(Source source)
         {
-            var key = NewKey();
-            source.Key = key;
-            Table.Add(key,source);
+            //var key = NewKey();
+            //source.Key = key;
+            Table.Add(source.Key,source);
         }
 
         internal static Source GetSource(KeyType key)

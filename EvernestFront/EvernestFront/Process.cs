@@ -1,11 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using EvernestFront.Exceptions;
+using KeyType=System.String; //base64 encoded int
 
 namespace EvernestFront
 {
     public static class Process
     {
+
+        /// <summary>
+        /// Registers a new user and returns its ID.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <exception cref="UserNameTakenException"></exception>
+        static public Int64 AddUser(string user)
+        {
+            UserTable.CheckNameIsFree(user);
+            var usr = new User(user);
+            UserTable.Add(usr);
+            return usr.Id;
+        }
+
         /// <summary>
         /// Requests the creation of a stream called streamName, with user as admin, and returns its ID if successful.
         /// </summary>
@@ -88,6 +103,42 @@ namespace EvernestFront
             CheckRights.CheckCanAdmin(user, streamId);
             Users.SetRights(user,streamId, targetUser, rights);
             return;
+        }
+
+        /// <summary>
+        /// Returns a list of all streams on which user has rights, and the associated AccessRights.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        /// <exception cref="UnregisteredUserException"></exception>
+        static public List<KeyValuePair<string, AccessRights>> StreamsOfUser(Int64 user)
+        {
+            throw new NotImplementedException();
+            //if (!RightsTableByUser.ContainsUser(user))
+            //    throw new UnregisteredUserException(user);
+            //return RightsTableByUser.StreamsOfUser(user);
+
+            //TODO : exclure les streams avec droits égaux à NoRights ?
+        }
+
+        /// <summary>
+        /// Returns a list of all users who have rights on stream, and the associated AccessRights. User must have admin rights.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="AccessDeniedException"></exception>
+        static public List<KeyValuePair<string, AccessRights>> UsersOfStream(Int64 user, Int64 stream)
+        {
+            throw new NotImplementedException();
+
+            //if (!RightsTableByStream.ContainsStream(stream))
+            //    throw new StreamIdDoesNotExistException(stream);
+            //CheckRights.CheckCanAdmin(user, stream);
+            //return RightsTableByStream.UsersOfStream(stream);
+
+            //TODO : exclure les users avec droits égaux à NoRights ?
         }
     }
 }

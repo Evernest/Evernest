@@ -7,11 +7,11 @@ namespace EvernestBack
 {
     abstract class Agent
     {
-        protected Int64 requestID { get; private set; }
+        protected UInt64 requestID { get; private set; }
         protected Stream feedback;
         public String message { get; protected set; }
 
-        protected Agent(String Message, Int64 requestID, Stream feedback)
+        protected Agent(String Message, UInt64 requestID, Stream feedback)
         {
             this.requestID = requestID;
             this.feedback = feedback;

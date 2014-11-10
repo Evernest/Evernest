@@ -14,11 +14,11 @@ namespace EvernestBack
 	{
 
 		private BlockingCollection<Producer> waitingProducers = new BlockingCollection<Producer>();
-        private CloudBlobClient blobClient;
+        private CloudBlockBlob blob;
 
-        public WriteLocker(CloudBlobClient blobClient)
+        public WriteLocker(CloudBlockBlob blob)
         {
-            this.blobClient = blobClient;
+            this.blob = blob;
         }
 
         public void Store()

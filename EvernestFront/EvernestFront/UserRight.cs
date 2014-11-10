@@ -30,5 +30,18 @@ namespace EvernestFront
                 return AccessRights.NoRights;
             return userRight.Right;
         }
+
+        static internal void SetRight(User user, Stream stream, AccessRights right)
+        {
+            var userRight = user.UserRights.Find(x => x.Stream == stream);
+            if (userRight == null)
+            {
+                userRight = new UserRight(user, stream);
+                user.UserRights.Add(userRight);
+                stream.UserRights.Add(userRight);
+            }
+            userRight.Right = right;
+            // factorisation : vérifier ici si on destitue un admin ? (c'est fait ailleurs)
+        }
     }
 }

@@ -18,8 +18,8 @@ namespace EvernestFront
             StreamTable.CheckNameIsFree(streamName);
             var stream = new Stream(streamName);
             var id = stream.Id;
-            Users.AddStream(user, id); //also checks that user exists
             StreamTable.Add(stream);
+            // ajouter droits de User
             return id;
         }
 

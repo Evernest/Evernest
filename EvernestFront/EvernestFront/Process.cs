@@ -7,7 +7,7 @@ namespace EvernestFront
     public static class Process
     {
         /// <summary>
-        /// Requests the creation of a stream called streamId, with user as admin.
+        /// Requests the creation of a stream called streamName, with user as admin, and returns its ID if successful.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="streamName"></param>

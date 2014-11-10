@@ -25,13 +25,11 @@ namespace EvernestFront
         }
 
         /// <summary>
-        /// Adds a new user if its name is available
+        /// Adds a new user. Username availability should be checked beforehand !
         /// </summary>
-        /// <exception cref="UserNameTakenException"></exception>
         /// <param name="usr"></param>
         internal static void Add(User usr)
         {
-            CheckNameIsFree(usr.Name);
             TableByName.Add(usr.Name, usr);
             TableById.Add(usr.Id, usr);
         }

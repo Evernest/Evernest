@@ -22,14 +22,12 @@ namespace EvernestFront
         }
 
         /// <summary>
-        /// Adds a new stream called name if name is available.
+        /// Adds a new stream called name. Name availability should be checked beforehand !
         /// </summary>
-        /// <exception cref="StreamNameTakenException"></exception>
         /// <param name="str"></param>
         
         internal static void Add(Stream str)
         {
-            CheckNameIsFree(str.Name);
             TableByName.Add(str.Name,str);
             TableById.Add(str.Id, str);
         }

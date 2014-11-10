@@ -17,24 +17,17 @@ namespace EvernestFront
         public const string RootUser = "RootUser";
 
 
-        static void ClearTables()
-        {
-            RightsTableByUser.Clear();
-            RightsTableByStream.Clear();
-            RightsTableByUser.AddUser(RootUser);
-        }
-
         /// <summary>
-        /// Registers a new user.
+        /// Registers a new user and returns its ID.
         /// </summary>
         /// <param name="user"></param>
         /// <exception cref="UserNameTakenException"></exception>
-        static public void AddUser(string user)
+        static public Int64 AddUser(string user)
         {
-            if (RightsTableByUser.ContainsUser(user))
-                throw new UserNameTakenException(user);
-            RightsTableByUser.AddUser(user);
-            // TODO : update la stream historique
+            UserTable.CheckNameIsFree(user);
+            var usr=new User(user);
+            UserTable.Add(usr);
+            return usr.Id;
         }
 
 

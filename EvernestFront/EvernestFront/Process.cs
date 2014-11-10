@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using EvernestFront.Exceptions;
 
 namespace EvernestFront
@@ -6,84 +7,86 @@ namespace EvernestFront
     public static class Process
     {
         /// <summary>
-        /// Requests the creation of a stream called streamName, with user as admin.
+        /// Requests the creation of a stream called streamId, with user as admin.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="streamName"></param>
         /// <returns></returns>
         /// <exception cref="StreamNameTakenException"></exception>
-        public static void CreateStream(string user, string streamName)
+        public static Int64 CreateStream(Int64 user, string streamName)
         {
-            RightsTable.AddStream(user, streamName);
+            StreamTable.CheckNameIsFree(streamName);
             var stream = new Stream(streamName);
-            StreamTable.Add(streamName, stream);
-            return;
+            var id = stream.Id;
+            Users.AddStream(user, id); //also checks that user exists
+            StreamTable.Add(stream);
+            return id;
         }
 
         /// <summary>
-        /// Requests to pull a random event from stream streamName.
+        /// Requests to pull a random event from stream streamId.
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="streamName"></param>
+        /// <param name="streamId"></param>
         /// <returns></returns>
         /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
-        public static Event PullRandom(string user, string streamName)
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        public static Event PullRandom(Int64 user, Int64 streamId)
         {
-            CheckRights.CheckCanRead(user, streamName);
-            Stream stream = StreamTable.GetStream(streamName);
+            CheckRights.CheckCanRead(user, streamId);
+            Stream stream = StreamTable.GetStream(streamId);
             return stream.PullRandom();
         }
 
         /// <summary>
-        /// Requests to pull events in range [from, to] from stream streamName (inclusive).
+        /// Requests to pull events in range [from, to] from stream streamId (inclusive).
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="streamName"></param>
+        /// <param name="streamId"></param>
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
         /// <exception cref="AccessDeniedException"></exception>
-        public static List<Event> PullRange(string user, string streamName, int from, int to)
+        public static List<Event> PullRange(Int64 user, Int64 streamId, int from, int to)
         {
-            CheckRights.CheckCanRead(user, streamName);
-            Stream stream = StreamTable.GetStream(streamName);
+            CheckRights.CheckCanRead(user, streamId);
+            Stream stream = StreamTable.GetStream(streamId);
             return stream.PullRange(from, to);
         }
 
         /// <summary>
-        /// Requests to push eventToPush to stream streamName.
+        /// Requests to push eventToPush to stream streamId.
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="streamName"></param>
+        /// <param name="streamId"></param>
         /// <param name="message"></param>
         /// <returns></returns>
         /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
-        public static void Push(string user, string streamName, string message)
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        public static void Push(Int64 user, Int64 streamId, string message)
         {
-            CheckRights.CheckCanWrite(user, streamName);
-            Stream stream = StreamTable.GetStream(streamName);
+            CheckRights.CheckCanWrite(user, streamId);
+            Stream stream = StreamTable.GetStream(streamId);
             stream.Push(message);
             return;
         }
 
         /// <summary>
-        /// Changes access rights of targetUser over stream streamName.
+        /// Changes access rights of targetUser over stream streamId.
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="streamName"></param>
+        /// <param name="streamId"></param>
         /// <param name="targetUser"></param>
         /// <param name="rights"></param>
         /// <returns></returns>
         /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
         /// <exception cref="UnregisteredUserException"></exception>
-        public static void SetRights(string user, string streamName, string targetUser, AccessRights rights)
+        public static void SetRights(Int64 user, Int64 streamId, Int64 targetUser, AccessRights rights)
         {
-            CheckRights.CheckCanAdmin(user, streamName);
-            RightsTable.SetRights(targetUser,streamName, rights);
+            CheckRights.CheckCanAdmin(user, streamId);
+            Users.SetRights(user,streamId, targetUser, rights);
             return;
         }
     }

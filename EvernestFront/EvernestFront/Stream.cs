@@ -7,7 +7,7 @@ namespace EvernestFront
 {
     class Stream
     {
-        public int Id { get; private set; }
+        public Int64 Id { get; private set; }
 
         public string Name { get; private set; }
 
@@ -18,12 +18,12 @@ namespace EvernestFront
         // un champ privé contenant un objet du Back
 
         // provisoire
-        private static int _next;
-        private int nextID() { _next++; return _next; }
+        private static Int64 _next;
+        private static Int64 NextId() { _next++; return _next; }
 
         internal Stream(string name)
         {
-            Id = nextID();
+            Id = NextId();
             Name = name;
             Count = 0;
             LastEventId = 0; //?

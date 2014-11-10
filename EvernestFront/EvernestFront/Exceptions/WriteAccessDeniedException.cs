@@ -1,5 +1,7 @@
 ﻿
 
+using System;
+
 namespace EvernestFront.Exceptions
 {
     class WriteAccessDeniedException : AccessDeniedException
@@ -13,7 +15,7 @@ namespace EvernestFront.Exceptions
         /// <param name="user"></param>
         /// <param name="rights"></param>
 
-        internal WriteAccessDeniedException(string stream, string user, AccessRights rights)
+        internal WriteAccessDeniedException(Int64 stream, Int64 user, AccessRights rights)
             : base(stream, user, rights) { }
     }
 }

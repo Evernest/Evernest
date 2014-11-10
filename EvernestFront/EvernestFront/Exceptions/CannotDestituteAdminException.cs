@@ -1,10 +1,12 @@
 ﻿
+using System;
+
 namespace EvernestFront.Exceptions
 {
     class CannotDestituteAdminException : FrontException
     {
-        public string Stream { get; private set; }
-        public string User { get; private set; }
+        public Int64 Stream { get; private set; }
+        public Int64 User { get; private set; }
 
         /// <summary>
         /// Constructor for CannotDestituteAdminException.
@@ -13,7 +15,7 @@ namespace EvernestFront.Exceptions
         /// <param name="stream"></param>
         /// <param name="user"></param>
 
-        internal CannotDestituteAdminException(string stream, string user)
+        internal CannotDestituteAdminException(Int64 stream, Int64 user)
         {
             Stream = stream;
             User = user;

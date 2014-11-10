@@ -1,14 +1,16 @@
 ﻿
+using System;
+
 namespace EvernestFront.Exceptions
 {
     class UnregisteredUserException:FrontException
     {
-        public string User { get; private set; }
+        public Int64 User { get; private set; }
         /// <summary>
         /// Constructor for UnregisteredUserException.
         /// </summary>
         /// <param name="user"></param>
-        internal UnregisteredUserException(string user)
+        internal UnregisteredUserException(Int64 user)
         {
             User = user;
         }

@@ -5,11 +5,11 @@ namespace EvernestFront
 {
     class User
     {
-        public int Id { get; private set; }
+        public Int64 Id { get; private set; }
 
         public string Name { get; private set; }
 
-        private string Key { get; set; }
+        private string Key { get; set; } //base64 encoded int
 
         public List<Source> Sources { get; private set; }
 
@@ -19,9 +19,13 @@ namespace EvernestFront
             private set { throw new NotImplementedException(); }
         }
 
-        internal User(int id, string name)
+        //change this ? Factor with Stream.nextId() ?
+        private static Int64 _next;
+        private Int64 NextId() { _next++; return _next; }
+
+        internal User(string name)
         {
-            Id = id;
+            Id = NextId();
             Name = name;
             Key = Keys.NewKey();
         }

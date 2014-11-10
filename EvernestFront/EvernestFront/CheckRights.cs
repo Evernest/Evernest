@@ -1,9 +1,12 @@
 ﻿
+using System.Data.SqlTypes;
 using EvernestFront.Exceptions;
 using System;
 
 namespace EvernestFront
 {
+    //Checking stream and user existence should be done before calling anything from this class.
+
     static class CheckRights
     {
         //static private AccessRights GetRights(string user, string stream)
@@ -87,10 +90,11 @@ namespace EvernestFront
         /// Returns if and only if user can read on stream.
         /// </summary>
         /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="ReadAccessDeniedException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanRead(string user, string stream)
+        static internal void CheckCanRead(Int64 user, Int64 stream)
         {
             var rights = Users.GetRights(user, stream);
             if (CanRead(rights))
@@ -103,10 +107,11 @@ namespace EvernestFront
         /// Returns if and only if user can write on stream.
         /// </summary>
         /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="WriteAccessDeniedException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanWrite(string user, string stream)
+        static internal void CheckCanWrite(Int64 user, Int64 stream)
         {
             var rights = Users.GetRights(user, stream);
             if (CanWrite(rights))
@@ -119,10 +124,11 @@ namespace EvernestFront
         /// Returns if and only if user can administrate stream.
         /// </summary>
         /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="AdminAccessDeniedException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanAdmin(string user, string stream)
+        static internal void CheckCanAdmin(Int64 user, Int64 stream)
         {
             var rights = Users.GetRights(user, stream);
             if (CanAdmin(rights))
@@ -131,7 +137,7 @@ namespace EvernestFront
                 throw new AdminAccessDeniedException(stream, user, rights);
         }
 
-        static internal void CheckRightsCanBeModified(string user, string stream)
+        static internal void CheckRightsCanBeModified(Int64 user, Int64 stream)
         {
             var rights = Users.GetRights(user, stream);
             if (CanBeModified(rights))

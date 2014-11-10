@@ -1,22 +1,24 @@
 ﻿
+using System;
+
 namespace EvernestFront.Exceptions
 {
     public abstract class AccessDeniedException : FrontException
     {
-        public string StreamName { get; private set; }
-        public string User { get; private set; }
+        public Int64 StreamId { get; private set; }
+        public Int64 User { get; private set; }
         public AccessRights UserRights { get; private set; }
 
         /// <summary>
         /// Constructor for AccessDeniedException.
         /// </summary>
-        /// <param name="argStreamName"></param>
+        /// <param name="argStreamId"></param>
         /// <param name="argUser"></param>
         /// <param name="argUserRights"></param>
         
-        protected AccessDeniedException(string argStreamName, string argUser, AccessRights argUserRights)
+        protected AccessDeniedException(Int64 argStreamId, Int64 argUser, AccessRights argUserRights)
         {
-            StreamName = argStreamName;
+            StreamId = argStreamId;
             User = argUser;
             UserRights = argUserRights;
         }

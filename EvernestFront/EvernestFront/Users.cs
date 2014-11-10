@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using EvernestFront.Exceptions;
 
 namespace EvernestFront
@@ -42,17 +43,15 @@ namespace EvernestFront
         /// </summary>
         /// <exception cref="UnregisteredUserException"></exception>
         /// <exception cref="StreamNameTakenException"></exception>
-        /// <param name="stream"></param>
+        /// <param name="streamId"></param>
         /// <param name="user"></param>
-        static internal void AddStream(string user, string stream)
+        static internal void AddStream(Int64 user, Int64 streamId)
         {
             if (!RightsTableByUser.ContainsUser(user))
                 throw new UnregisteredUserException(user);
-            if (RightsTableByStream.ContainsStream(stream))
-                throw new StreamNameTakenException(stream);
-            RightsTableByStream.AddStream(stream);
-            RightsTableByStream.SetRights(user, stream, CreatorRights);
-            RightsTableByUser.SetRights(user, stream, CreatorRights);
+            RightsTableByStream.AddStream(streamId);
+            RightsTableByStream.SetRights(user, streamId, CreatorRights);
+            RightsTableByUser.SetRights(user, streamId, CreatorRights);
             // TODO : update la stream historique
         }
 
@@ -65,12 +64,13 @@ namespace EvernestFront
         /// <param name="rights"></param>
         /// <exception cref="UnregisteredUserException"></exception>
         /// <exception cref="AccessDeniedException"></exception>
-        static public void SetRights(string user, string stream, string targetUser, AccessRights rights)
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        static internal void SetRights(Int64 user, Int64 stream, Int64 targetUser, AccessRights rights)
         {
             if (!RightsTableByUser.ContainsUser(user))
                 throw new UnregisteredUserException(user);
             if (!RightsTableByStream.ContainsStream(stream))
-                throw new StreamNameDoesNotExistException(stream);
+                throw new StreamIdDoesNotExistException(stream);
             if (!RightsTableByUser.ContainsUser(targetUser))
                 throw new UnregisteredUserException(targetUser);
             CheckRights.CheckCanAdmin(user, stream);
@@ -84,16 +84,16 @@ namespace EvernestFront
         /// Returns the rights of user about stream.
         /// </summary>
         /// <exception cref="UnregisteredUserException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
         /// <param name="stream"></param>
         /// <param name="user"></param>
         /// <returns></returns>
-        internal static AccessRights GetRights(string user, string stream)
+        public static AccessRights GetRights(Int64 user, Int64 stream)
         {
             if (!RightsTableByUser.ContainsUser(user))
                 throw new UnregisteredUserException(user);
             if (!RightsTableByStream.ContainsStream(stream))
-                throw new StreamNameDoesNotExistException(stream);
+                throw new StreamIdDoesNotExistException(stream);
             return RightsTableByUser.GetRights(user, stream);
             // vérifier la cohérence avec l'autre table ?
         }
@@ -105,7 +105,7 @@ namespace EvernestFront
         /// <param name="user"></param>
         /// <returns></returns>
         /// <exception cref="UnregisteredUserException"></exception>
-        static public List<KeyValuePair<string, AccessRights>> StreamsOfUser(string user)
+        static public List<KeyValuePair<string, AccessRights>> StreamsOfUser(Int64 user)
         {
             if (!RightsTableByUser.ContainsUser(user))
                 throw new UnregisteredUserException(user);
@@ -119,12 +119,12 @@ namespace EvernestFront
         /// <param name="user"></param>
         /// <param name="stream"></param>
         /// <returns></returns>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
         /// <exception cref="AccessDeniedException"></exception>
-        static public List<KeyValuePair<string, AccessRights>> UsersOfStream(string user, string stream)
+        static public List<KeyValuePair<string, AccessRights>> UsersOfStream(Int64 user, Int64 stream)
         {
             if (!RightsTableByStream.ContainsStream(stream))
-                throw new StreamNameDoesNotExistException(stream);
+                throw new StreamIdDoesNotExistException(stream);
             CheckRights.CheckCanAdmin(user, stream);
             return RightsTableByStream.UsersOfStream(stream);
             //TODO : exclure les users avec droits égaux à NoRights ?

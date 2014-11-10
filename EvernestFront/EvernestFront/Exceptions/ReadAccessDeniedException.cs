@@ -1,5 +1,7 @@
 ﻿
 
+using System;
+
 namespace EvernestFront.Exceptions
 {
     class ReadAccessDeniedException : AccessDeniedException
@@ -12,7 +14,7 @@ namespace EvernestFront.Exceptions
         /// <param name="user"></param>
         /// <param name="userRights"></param>
 
-        internal ReadAccessDeniedException(string stream, string user, AccessRights userRights)
+        internal ReadAccessDeniedException(Int64 stream, Int64 user, AccessRights userRights)
             : base(stream, user, userRights) { }
     }
 }

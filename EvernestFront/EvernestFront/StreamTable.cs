@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using EvernestFront.Exceptions;
 
@@ -6,8 +7,8 @@ namespace EvernestFront
 {
     static class StreamTable
     {
-        private static readonly Dictionary<string, Stream> Table = new Dictionary<string, Stream>();
-
+        private static readonly Dictionary<string, Stream> TableByName = new Dictionary<string, Stream>();
+        private static readonly Dictionary<Int64, Stream> TableById= new Dictionary<Int64, Stream>();
         /// <summary>
         /// Does nothing if name is available.
         /// Throws a StreamNameTakenException if it is taken.
@@ -16,7 +17,7 @@ namespace EvernestFront
         /// <param name="name"></param>
         internal static void CheckNameIsFree(string name)
         {
-            if (Table.ContainsKey(name))
+            if (TableByName.ContainsKey(name))
                 throw new StreamNameTakenException(name);
         }
 
@@ -24,27 +25,38 @@ namespace EvernestFront
         /// Adds a new stream called name if name is available.
         /// </summary>
         /// <exception cref="StreamNameTakenException"></exception>
-        /// <param name="name"></param>
         /// <param name="str"></param>
         
-        internal static void Add(string name, Stream str)
+        internal static void Add(Stream str)
         {
-            if (Table.ContainsKey(name))
-                throw new StreamNameTakenException(name);
-            Table.Add(name, str);
+            CheckNameIsFree(str.Name);
+            TableByName.Add(str.Name,str);
+            TableById.Add(str.Id, str);
         }
 
         /// <summary>
         /// Returns the stream named name, if it exists.
         /// </summary>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
-        /// <param name="name"></param>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <param name="id"></param>
         /// <returns></returns>
-        internal static Stream GetStream(string name)
+        internal static Stream GetStream(Int64 id)
         {
-            if (Table.ContainsKey(name))
-                return Table[name];
-            throw new StreamNameDoesNotExistException(name);
+            if (TableById.ContainsKey(id))
+                return TableById[id];
+            throw new StreamIdDoesNotExistException(id);
+        }
+
+        /// <summary>
+        /// Returns the name of the stream whose ID is id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        internal static string NameOfId(Int64 id)
+        {
+            Stream str = GetStream(id);
+            return str.Name;
         }
     }
 }

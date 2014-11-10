@@ -34,7 +34,8 @@ namespace EvernestFront
             var stream = new Stream(streamName);
             var id = stream.Id;
             StreamTable.Add(stream);
-            // ajouter droits de User
+            var usr = UserTable.GetUser(user);
+            UserRight.SetRight(usr, stream, Users.CreatorRights);
             return id;
         }
 

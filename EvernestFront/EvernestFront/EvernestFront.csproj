@@ -39,12 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Answers\Answer.cs" />
-    <Compile Include="Answers\PullRandom.cs" />
-    <Compile Include="Answers\PullRange.cs" />
-    <Compile Include="Answers\Push.cs" />
-    <Compile Include="Answers\CreateStream.cs" />
-    <Compile Include="Answers\SetRights.cs" />
     <Compile Include="CheckRights.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Exceptions\AccessDeniedException.cs" />
@@ -59,13 +53,7 @@
     <Compile Include="Exceptions\WriteAccessDeniedException.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Process.cs" />
-    <Compile Include="Requests\CreateStream.cs" />
-    <Compile Include="Requests\Request.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Requests\PullRange.cs" />
-    <Compile Include="Requests\PullRandom.cs" />
-    <Compile Include="Requests\Push.cs" />
-    <Compile Include="Requests\SetRights.cs" />
     <Compile Include="RightsTable.cs" />
     <Compile Include="Stream.cs" />
     <Compile Include="StreamTable.cs" />

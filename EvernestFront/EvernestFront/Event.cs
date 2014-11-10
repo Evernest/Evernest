@@ -8,5 +8,11 @@ namespace EvernestFront
 {
     public class Event
     {
+        public Int64 ID { get; private set; }
+
+        public String Message { get; private set; }
+
+        public String ParentStream { get; private set; }
+
     }
 }

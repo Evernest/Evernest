@@ -15,7 +15,7 @@ namespace EvernestFront
         /// Does nothing if name is available.
         /// Throws a StreamNameTakenException if it is taken.
         /// </summary>
-        /// <exception cref="StreamNameTakenException"
+        /// <exception cref="StreamNameTakenException"></exception>
         /// <param name="name"></param>
         internal static void CheckNameIsFree(string name)
         {
@@ -26,9 +26,10 @@ namespace EvernestFront
         /// <summary>
         /// Adds a new stream called name if name is available.
         /// </summary>
-        /// <exception cref="StreamNameTakenException"
+        /// <exception cref="StreamNameTakenException"></exception>
         /// <param name="name"></param>
         /// <param name="str"></param>
+        
         internal static void Add(string name, Stream str)
         {
             if (Table.ContainsKey(name))
@@ -39,7 +40,7 @@ namespace EvernestFront
         /// <summary>
         /// Returns the stream named name, if it exists.
         /// </summary>
-        /// <exception cref="StreamNameDoesNotExistException"
+        /// <exception cref="StreamNameDoesNotExistException"></exception>
         /// <param name="name"></param>
         /// <returns></returns>
         internal static Stream GetStream(string name)

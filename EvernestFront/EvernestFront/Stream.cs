@@ -12,19 +12,18 @@ namespace EvernestFront
 
         internal Stream()
         {
-            throw new NotImplementedException();
                 // TODO : appeler Martin NewStorage()
         }
 
 
-        internal Answers.PullRandom PullRandom()
+        internal Event PullRandom()
         {
                     throw new NotImplementedException();
                     // TODO : appeler Back
                     // TODO : attendre réponse
         }
 
-        internal Answers.PullRange PullRange(int from, int to)
+        internal List<Event> PullRange(int from, int to)
         {
                     throw new NotImplementedException();
                     // TODO : appeler Back
@@ -32,7 +31,7 @@ namespace EvernestFront
             
         }
 
-        internal Answers.Push Push(Event eventToPush)
+        internal void Push(string message)
         {
                     throw new NotImplementedException();
                     // TODO : appeler Back

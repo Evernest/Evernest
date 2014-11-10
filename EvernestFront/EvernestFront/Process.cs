@@ -14,10 +14,13 @@ namespace EvernestFront
         /// <param name="user"></param>
         /// <param name="streamName"></param>
         /// <returns></returns>
-        public static Answers.CreateStream CreateStream(string user, string streamName)
+        /// <exception cref="StreamNameTakenException"></exception>
+        public static void CreateStream(string user, string streamName)
         {
-            var request = new Requests.CreateStream(user, streamName);
-            return request.Process();
+            RightsTable.AddStream(user, streamName);
+            var stream = new Stream();
+            StreamTable.Add(streamName, stream);
+            return;
         }
 
         /// <summary>
@@ -26,10 +29,13 @@ namespace EvernestFront
         /// <param name="user"></param>
         /// <param name="streamName"></param>
         /// <returns></returns>
-        public static Answers.PullRandom PullRandom(string user, string streamName)
+        /// <exception cref="AccessDeniedException"></exception>
+        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        public static Event PullRandom(string user, string streamName)
         {
-            var request = new Requests.PullRandom(user, streamName);
-            return request.Process();
+            CheckRights.CheckCanRead(user, streamName);
+            Stream stream = StreamTable.GetStream(streamName);
+            return stream.PullRandom();
         }
 
         /// <summary>
@@ -40,10 +46,13 @@ namespace EvernestFront
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public static Answers.PullRange PullRange(string user, string streamName, int from, int to)
+        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="AccessDeniedException"></exception>
+        public static List<Event> PullRange(string user, string streamName, int from, int to)
         {
-            var request = new Requests.PullRange(user, streamName, from, to);
-            return request.Process();
+            CheckRights.CheckCanRead(user, streamName);
+            Stream stream = StreamTable.GetStream(streamName);
+            return stream.PullRange(from, to);
         }
 
         /// <summary>
@@ -53,10 +62,14 @@ namespace EvernestFront
         /// <param name="streamName"></param>
         /// <param name="eventToPush"></param>
         /// <returns></returns>
-        public static Answers.Push Push(string user, string streamName, Event eventToPush)
+        /// <exception cref="AccessDeniedException"></exception>
+        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        public static void Push(string user, string streamName, string message)
         {
-            var request = new Requests.Push(user, streamName, eventToPush);
-            return request.Process();
+            CheckRights.CheckCanWrite(user, streamName);
+            Stream stream = StreamTable.GetStream(streamName);
+            stream.Push(message);
+            return;
         }
 
         /// <summary>
@@ -67,10 +80,14 @@ namespace EvernestFront
         /// <param name="targetUser"></param>
         /// <param name="rights"></param>
         /// <returns></returns>
-        public static Answers.SetRights SetRights(string user, string streamName, string targetUser, AccessRights rights)
+        /// <exception cref="AccessDeniedException"></exception>
+        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="UnregisteredUserException"></exception>
+        public static void SetRights(string user, string streamName, string targetUser, AccessRights rights)
         {
-            var request = new Requests.SetRights(user, streamName, targetUser, rights);
-            return request.Process();
+            CheckRights.CheckCanAdmin(user, streamName);
+            RightsTable.SetRights(targetUser,streamName, rights);
+            return;
         }
     }
 }

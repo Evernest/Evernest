@@ -200,3 +200,7 @@ FakesAssemblies/
 
 # NCover
 **/*.boltdata/*
+
+
+EvernestAzureCloudService/ServiceConfiguration.Cloud.cscfg
+

@@ -15,12 +15,11 @@ namespace EvernestWeb
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
-
-            EvernestWebAPI.WebApiConfig.Register(GlobalConfiguration.Configuration);
-
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            DebugValuesConfig.Init();
         }
     }
 }

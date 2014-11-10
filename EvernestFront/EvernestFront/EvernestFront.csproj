@@ -55,6 +55,7 @@
     <Compile Include="Source.cs" />
     <Compile Include="SourceTable.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="UserRight.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Exceptions\StreamIdDoesNotExistException.cs" />
     <Compile Include="Exceptions\StreamNameTakenException.cs" />
     <Compile Include="AccessRights.cs" />
+    <Compile Include="UserTable.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

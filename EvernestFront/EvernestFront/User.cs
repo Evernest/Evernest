@@ -13,10 +13,16 @@ namespace EvernestFront
 
         public List<Source> Sources { get; private set; }
 
-        public List<KeyValuePair<int, AccessRights>> Streams
+        public List<KeyValuePair<int, AccessRights>> RelatedStreams
         {
             get { throw new NotImplementedException(); }
-            private set { throw new NotImplementedException(); }
+        }
+
+        internal List<UserRight> UserRights;
+
+        internal UserRight GetUserRightOnStream(Stream str)
+        {
+            return UserRights.Find(x => x.Stream == str);
         }
 
         //change this ? Factor with Stream.nextId() ?

@@ -12,28 +12,28 @@ namespace EvernestFront
 
         private string Name { get; set; }
 
-        internal AccessRights Rights { get; private set; }
+        internal AccessRights Right { get; private set; }
 
         //base64 encoded int
         internal string Key { get; set; } 
 
-        internal Source(int id, int userId, int streamId, string name, AccessRights rights)
+        internal Source(int id, int userId, int streamId, string name, AccessRights right)
         {
             Id = id;
             UserId = userId;
             StreamId = streamId;
             Name = name;
-            Rights = rights;
+            Right = right;
             Key = Keys.NewKey();
         }
-        internal Source(int id, int userId, int streamId, string name, AccessRights rights, string key)
+        internal Source(int id, int userId, int streamId, string name, AccessRights right, string key)
         {
             Id = id;
             UserId = userId;
             StreamId = streamId;
             Name = name;
             Key = key;
-            Rights = rights;
+            Right = right;
         }
 
 

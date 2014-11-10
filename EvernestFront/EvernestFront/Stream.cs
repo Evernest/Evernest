@@ -15,6 +15,8 @@ namespace EvernestFront
 
         public int LastEventId { get; private set; }
 
+        internal List<UserRight> UserRights { get; private set; }
+
         // un champ privé contenant un objet du Back
 
         // provisoire

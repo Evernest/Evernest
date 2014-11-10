@@ -35,18 +35,18 @@ Pour chaque paire utilisateur/stream, l'utilisateur a un des droits suivants sur
 Ces droits sont définis dans l'enum public AccessRights.
 
 Le frontend maintient une table des droits des utilisateurs sur les streams, les méthodes pour la consulter et la modifier 
-sont dans la classe Users. Ces méthodes lèvent des exceptions (spécifiées dans leurs commentaires)
+sont aussi dans la classe Process. Ces méthodes lèvent des exceptions (spécifiées dans leurs commentaires)
 en cas d'échec.
 
 Exemples :
 	
-	void Users.SetRights(string user, string streamName, string targetUser, AccessRights rights)
-	void Users.AddUser(string userToAdd)
-	void Users.AddStream(string userCreatingStream, string streamToCreate)
-	List<KeyValuePair<string, AccessRights>> Users.StreamsOfUser(string user)
-	List<KeyValuePair<string, AccessRights>> Users.UsersOfStream(string userAsking, string stream)
+	void Process.SetRights(string user, string streamName, string targetUser, AccessRights rights)
+	void Process.AddUser(string userToAdd)
+	void Process.AddStream(string userCreatingStream, string streamToCreate)
+	List<KeyValuePair<string, AccessRights>> Process.StreamsOfUser(string user) (non implementée)
+	List<KeyValuePair<string, AccessRights>> Process.UsersOfStream(string userAsking, string stream) (non implémentée) 
 
-Modifications à faire : créer un super-utilisateur système ? (une constante publique Users.RootUser existe mais le reste n'est pas implémenté)
+Modifications à faire : créer un super-utilisateur système ? (une constante publique Process.RootUser existe mais le reste n'est pas implémenté)
 
 #Gestion des droits des sources
 

@@ -8,7 +8,7 @@ passer par le back-end (tout sauf ce qui concerne les droits des utilisateurs), 
 	void Process.Push(string user, string streamName, Event eventToPush	)
 	Event Process.PullRandom(string user, string streamName)
 	List<Event> Process.PullRange(string user, string streamName, string eventIdFrom, string eventIdTo)
-	void Process.CreateStream(string user, string streamName)
+	Int64 Process.CreateStream(string user, string streamName)
 
 L'idée est donc que pour chaque requête d'un client, le site Web appelle la méthode concernée. 
 
@@ -41,7 +41,7 @@ en cas d'échec.
 Exemples :
 	
 	void Process.SetRights(string user, string streamName, string targetUser, AccessRights rights)
-	void Process.AddUser(string userToAdd)
+	Int64 Process.AddUser(string userToAdd)
 	void Process.AddStream(string userCreatingStream, string streamToCreate)
 	List<KeyValuePair<string, AccessRights>> Process.StreamsOfUser(string user) (non implementée)
 	List<KeyValuePair<string, AccessRights>> Process.UsersOfStream(string userAsking, string stream) (non implémentée) 

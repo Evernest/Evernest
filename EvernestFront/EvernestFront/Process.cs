@@ -72,20 +72,20 @@ namespace EvernestFront
         }
 
         /// <summary>
-        /// Requests to push eventToPush to stream streamId.
+        /// Requests to push an event containing message to stream streamId. Returns the id of the generated event.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="streamId"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        /// <exception cref="AccessDeniedException"></exception>
+        /// <exception cref="WriteAccessDeniedException"></exception>
         /// <exception cref="StreamIdDoesNotExistException"></exception>
-        public static void Push(Int64 user, Int64 streamId, string message)
+        /// <exception cref="UserIdDoesNotExistException"></exception>
+        public static int Push(Int64 user, Int64 streamId, string message)
         {
             CheckRights.CheckCanWrite(user, streamId);
             Stream stream = StreamTable.GetStream(streamId);
-            stream.Push(message);
-            return;
+            return stream.Push(message);
         }
 
         /// <summary>

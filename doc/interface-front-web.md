@@ -1,11 +1,11 @@
-#Requêtes, réponses
+﻿#Requêtes, réponses
 
 La classe Process (à renommer ? le nom n'est peut-être pas très clair) contient, pour chaque type de requête devant 
 passer par le back-end (tout sauf ce qui concerne les droits des utilisateurs), une méthode statique appropriée.
 
  Par exemple :
 
-	void Process.Push(string user, string streamName, Event eventToPush	)
+	int Process.Push(string user, string streamName, Event eventToPush	)
 	Event Process.PullRandom(string user, string streamName)
 	List<Event> Process.PullRange(string user, string streamName, string eventIdFrom, string eventIdTo)
 	Int64 Process.CreateStream(string user, string streamName)

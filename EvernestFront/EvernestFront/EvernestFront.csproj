@@ -45,6 +45,7 @@
     <Compile Include="Exceptions\AdminAccessDeniedException.cs" />
     <Compile Include="Exceptions\CannotDestituteAdminException.cs" />
     <Compile Include="Exceptions\FrontException.cs" />
+    <Compile Include="Exceptions\InvalidEventIdException.cs" />
     <Compile Include="Exceptions\ReadAccessDeniedException.cs" />
     <Compile Include="Exceptions\UnregisteredUserException.cs" />
     <Compile Include="Exceptions\UserIdDoesNotExistException.cs" />

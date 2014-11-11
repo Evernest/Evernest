@@ -20,26 +20,27 @@ namespace EvernestFront
         // un champ privé contenant un objet du Back
 
         // provisoire
-        private static Int64 _next;
-        private static Int64 NextId() { _next++; return _next; }
+        private static Int64 _next = 0;
+        private static Int64 NextId() { return ++_next; }
 
         internal Stream(string name)
         {
             Id = NextId();
             Name = name;
             Count = 0;
-            LastEventId = 0; //?
+            LastEventId = -1; //?
             // TODO : appeler Back
         }
 
         private int ActualEventId(int eventId)
         {
-            if (eventId < 0)
-                eventId = eventId + (LastEventId + 1);
-            if ((eventId >= 0) && (eventId <= LastEventId))
-                return eventId;
+            var id = eventId;
+            if (id < 0)
+                id = id + (LastEventId + 1);
+            if ((id >= 0) && (id <= LastEventId))
+                return id;
             else
-                throw new Exception("id d'event invalide dans un pull ; pas encore d'exception spécifique créée");
+                throw new InvalidEventIdException(id,this);
         }
 
         internal Event PullRandom()
@@ -48,15 +49,15 @@ namespace EvernestFront
             int id = random.Next(LastEventId+1);
                     
             // TODO : appeler Back
-            return Event.DummyEvent(Name);
+            return Event.DummyEvent(id,this);
         }
 
         internal Event Pull(int eventId)
         {
-            eventId = ActualEventId(eventId);
+            int id = ActualEventId(eventId);
 
             // appeler Back
-            return Event.DummyEvent(Name);
+            return Event.DummyEvent(id,this);
         }
 
         internal List<Event> PullRange(int fromEventId, int toEventId)
@@ -65,23 +66,25 @@ namespace EvernestFront
             toEventId = ActualEventId(toEventId);
 
             var eventList = new List<Event>();
-            for (int i = fromEventId; i <= toEventId; i++)
+            for (int id = fromEventId; id <= toEventId; id++)
             {
                 // appeler Back
-                eventList.Add(Event.DummyEvent(Name));
+                eventList.Add(Event.DummyEvent(id,this));
             }
 
             return eventList;
             
         }
 
-        internal void Push(string message)
+        internal int Push(string message)
         {
+            int eventId = LastEventId + 1;
     
             // TODO : appeler Back 
 
-            // actualiser Count et LastEventId
-            
+            Count++;
+            LastEventId++;
+            return eventId;
         }
 
 

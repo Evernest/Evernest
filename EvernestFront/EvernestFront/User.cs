@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EvernestFront
 {
@@ -13,9 +14,12 @@ namespace EvernestFront
 
         public List<Source> Sources { get; private set; }
 
-        public List<KeyValuePair<int, AccessRights>> RelatedStreams
+        public List<KeyValuePair<Int64, AccessRights>> RelatedStreams
         {
-            get { throw new NotImplementedException(); }
+            get 
+            {
+                return (List<KeyValuePair<Int64, AccessRights>>)UserRights.Select(x => x.ToStreamIdAndRight());
+            }
         }
 
         internal List<UserRight> UserRights;

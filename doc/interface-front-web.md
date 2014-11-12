@@ -7,7 +7,8 @@ passer par le back-end (tout sauf ce qui concerne les droits des utilisateurs), 
 
 	int Process.Push(string user, string streamName, Event eventToPush	)
 	Event Process.PullRandom(string user, string streamName)
-	List<Event> Process.PullRange(string user, string streamName, string eventIdFrom, string eventIdTo)
+	Event Process.Pull(string user, string streamName, int eventId)
+	List<Event> Process.PullRange(string user, string streamName, int eventIdFrom, int eventIdTo)
 	Int64 Process.CreateStream(string user, string streamName)
 
 L'idée est donc que pour chaque requête d'un client, le site Web appelle la méthode concernée. 
@@ -43,8 +44,8 @@ Exemples :
 	void Process.SetRights(string user, string streamName, string targetUser, AccessRights rights)
 	Int64 Process.AddUser(string userToAdd)
 	void Process.AddStream(string userCreatingStream, string streamToCreate)
-	List<KeyValuePair<string, AccessRights>> Process.StreamsOfUser(string user) (non implementée)
-	List<KeyValuePair<string, AccessRights>> Process.UsersOfStream(string userAsking, string stream) (non implémentée) 
+	List<KeyValuePair<string, AccessRights>> Process.RelatedStreams(string user)
+	List<KeyValuePair<string, AccessRights>> Process.RelatedUsers(string userAsking, string stream)
 
 Modifications à faire : créer un super-utilisateur système ? (une constante publique Process.RootUser existe mais le reste n'est pas implémenté)
 

@@ -43,5 +43,15 @@ namespace EvernestFront
             userRight.Right = right;
             // factorisation : vérifier ici si on destitue un admin ? (c'est fait ailleurs)
         }
+
+        internal KeyValuePair<Int64, AccessRights> ToStreamIdAndRight()
+        {
+            return new KeyValuePair<Int64, AccessRights> (Stream.Id,Right);
+        }
+
+        internal KeyValuePair<Int64, AccessRights> ToUserIdAndRight()
+        {
+            return new KeyValuePair<Int64, AccessRights>(User.Id, Right);
+        }
     }
 }

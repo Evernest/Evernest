@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 //using EvernestFront.Answers;
 using EvernestFront.Exceptions;
 
@@ -89,5 +90,12 @@ namespace EvernestFront
         }
 
 
+        public List<KeyValuePair<Int64, AccessRights>> RelatedUsers
+        {
+            get
+            {
+                return (List<KeyValuePair<Int64, AccessRights>>)UserRights.Select(x => x.ToUserIdAndRight());
+            }
+        }
     }
 }

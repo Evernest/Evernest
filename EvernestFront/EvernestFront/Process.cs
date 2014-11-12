@@ -141,15 +141,13 @@ namespace EvernestFront
         /// <summary>
         /// Returns a list of all streams on which user has rights, and the associated AccessRights.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="UserIdDoesNotExistException"></exception>
-        static public List<KeyValuePair<string, AccessRights>> StreamsOfUser(Int64 user)
+        static public List<KeyValuePair<Int64, AccessRights>> RelatedStreams(Int64 userId)
         {
-            throw new NotImplementedException();
-            //if (!RightsTableByUser.ContainsUser(user))
-            //    throw new UnregisteredUserException(user);
-            //return RightsTableByUser.StreamsOfUser(user);
+            User user = UserTable.GetUser(userId);
+            return user.RelatedStreams;
 
             //TODO : exclure les streams avec droits égaux à NoRights ?
         }
@@ -157,20 +155,18 @@ namespace EvernestFront
         /// <summary>
         /// Returns a list of all users who have rights on stream, and the associated AccessRights. User must have admin rights.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="stream"></param>
+        /// <param name="userId"></param>
+        /// <param name="streamId"></param>
         /// <returns></returns>
         /// <exception cref="UserIdDoesNotExistException"></exception>
         /// <exception cref="StreamIdDoesNotExistException"></exception>
         /// <exception cref="AccessDeniedException"></exception>
-        static public List<KeyValuePair<string, AccessRights>> UsersOfStream(Int64 user, Int64 stream)
+        static public List<KeyValuePair<Int64, AccessRights>> RelatedUsers(Int64 userId, Int64 streamId)
         {
-            throw new NotImplementedException();
-
-            //if (!RightsTableByStream.ContainsStream(stream))
-            //    throw new StreamIdDoesNotExistException(stream);
-            //CheckRights.CheckCanAdmin(user, stream);
-            //return RightsTableByStream.UsersOfStream(stream);
+            var user = UserTable.GetUser(userId);
+            var stream = StreamTable.GetStream(streamId);
+            CheckRights.CheckCanAdmin(user, stream);
+            return stream.RelatedUsers;
 
             //TODO : exclure les users avec droits égaux à NoRights ?
         }

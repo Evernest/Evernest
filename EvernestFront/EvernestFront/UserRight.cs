@@ -33,7 +33,7 @@ namespace EvernestFront
 
         static internal void SetRight(User user, Stream stream, AccessRights right)
         {
-            var userRight = user.UserRights.Find(x => x.Stream == stream);
+            var userRight = user.UserRights.Find(x => x.Stream == stream); 
             if (userRight == null)
             {
                 userRight = new UserRight(user, stream);

@@ -56,5 +56,11 @@ namespace EvernestFront
             Stream str = GetStream(id);
             return str.Name;
         }
+
+        internal static void Clear()
+        {
+            TableByName.Clear();
+            TableById.Clear();
+        }
     }
 }

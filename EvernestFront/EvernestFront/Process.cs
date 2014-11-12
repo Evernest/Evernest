@@ -98,7 +98,7 @@ namespace EvernestFront
         /// <returns></returns>
         /// <exception cref="AccessDeniedException"></exception>
         /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="UnregisteredUserException"></exception>
+        /// <exception cref="UserIdDoesNotExistException"></exception>
         public static void SetRights(Int64 user, Int64 streamId, Int64 targetUser, AccessRights rights)
         {
             CheckRights.CheckCanAdmin(user, streamId);
@@ -111,7 +111,7 @@ namespace EvernestFront
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        /// <exception cref="UnregisteredUserException"></exception>
+        /// <exception cref="UserIdDoesNotExistException"></exception>
         static public List<KeyValuePair<string, AccessRights>> StreamsOfUser(Int64 user)
         {
             throw new NotImplementedException();

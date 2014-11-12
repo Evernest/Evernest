@@ -34,6 +34,7 @@ namespace EvernestFront
             Id = NextId();
             Name = name;
             Key = Keys.NewKey();
+            UserRights=new List<UserRight>();
         }
 
         internal void AddSource(Source source)

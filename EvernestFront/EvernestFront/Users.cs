@@ -20,11 +20,11 @@ namespace EvernestFront
         /// <summary>
         /// Sets the rights of targetUser for stream streamName to rights. User must have admin rights.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="stream"></param>
-        /// <param name="targetUser"></param>
+        /// <param name="userId"></param>
+        /// <param name="streamId"></param>
+        /// <param name="targetUserId"></param>
         /// <param name="rights"></param>
-        /// <exception cref="UnregisteredUserException"></exception>
+        /// <exception cref="UserIdDoesNotExistException"></exception>
         /// <exception cref="AccessDeniedException"></exception>
         /// <exception cref="StreamIdDoesNotExistException"></exception>
         static internal void SetRights(Int64 userId, Int64 streamId, Int64 targetUserId, AccessRights rights)
@@ -41,7 +41,7 @@ namespace EvernestFront
         /// <summary>
         /// Returns the rights of user about stream.
         /// </summary>
-        /// <exception cref="UnregisteredUserException"></exception>
+        /// <exception cref="UserIdDoesNotExistException"></exception>
         /// <exception cref="StreamIdDoesNotExistException"></exception>
         /// <param name="streamId"></param>
         /// <param name="userId"></param>

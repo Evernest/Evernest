@@ -29,6 +29,7 @@ namespace EvernestFront
             Name = name;
             Count = 0;
             LastEventId = -1; //?
+            UserRights = new List<UserRight>();
             // TODO : appeler Back
         }
 

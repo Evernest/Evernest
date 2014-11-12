@@ -61,6 +61,12 @@ namespace EvernestFront
             return usr.Name;
         }
 
+        internal static void Clear()
+        {
+            TableByName.Clear();
+            TableById.Clear();
+        }
+
 
     }
 }

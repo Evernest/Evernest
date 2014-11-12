@@ -138,6 +138,20 @@ namespace EvernestFront
             // TODO : update la stream historique
         }
 
+
+
+        
+        public static void CreateSource(Int64 userId, Int64 streamId, String sourceName, AccessRights right)
+        {
+            var user = UserTable.GetUser(userId);
+            var stream = StreamTable.GetStream(streamId);
+            var source = new Source(user, stream, sourceName, right);
+            user.AddSource(source);
+            SourceTable.AddSource(source);
+            // TODO : vérifier si le nom est pris
+        }
+
+
         /// <summary>
         /// Returns a list of all streams on which user has rights, and the associated AccessRights.
         /// </summary>
@@ -160,7 +174,7 @@ namespace EvernestFront
         /// <returns></returns>
         /// <exception cref="UserIdDoesNotExistException"></exception>
         /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="AccessDeniedException"></exception>
+        /// <exception cref="AdminAccessDeniedException"></exception>
         static public List<KeyValuePair<Int64, AccessRights>> RelatedUsers(Int64 userId, Int64 streamId)
         {
             var user = UserTable.GetUser(userId);

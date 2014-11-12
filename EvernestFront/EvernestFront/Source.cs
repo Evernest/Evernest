@@ -4,38 +4,37 @@ namespace EvernestFront
 {
     public class Source
     {
-        public int Id { get; private set; }
+        public Int64 Id { get; private set; }
 
-        public int UserId { get; private set; }
+        public Int64 UserId { get { return User.Id; } }
 
-        public int StreamId { get; private set; }
+        public Int64 StreamId { get { return Stream.Id; } }
 
-        private string Name { get; set; }
+        public String Name { get; private set; }
+
+        internal User User { get; private set; }
+
+        internal Stream Stream { get; private set; }
 
         internal AccessRights Right { get; private set; }
 
         //base64 encoded int
-        internal string Key { get; set; } 
+        internal string Key { get; set; }
 
-        internal Source(int id, int userId, int streamId, string name, AccessRights right)
+        // provisoire
+        private static Int64 _next = 0;
+        private static Int64 NextId() { return ++_next; }
+
+        internal Source(User usr, Stream strm, string name, AccessRights right)
         {
-            Id = id;
-            UserId = userId;
-            StreamId = streamId;
+            Id = NextId();
+            User = usr;
+            Stream = strm;
             Name = name;
             Right = right;
             Key = Keys.NewKey();
         }
-        internal Source(int id, int userId, int streamId, string name, AccessRights right, string key)
-        {
-            Id = id;
-            UserId = userId;
-            StreamId = streamId;
-            Name = name;
-            Key = key;
-            Right = right;
-        }
-
+        
 
     }
 }

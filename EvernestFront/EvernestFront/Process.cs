@@ -127,7 +127,6 @@ namespace EvernestFront
         /// <exception cref="CannotDestituteAdminException"></exception>
         /// <exception cref="StreamIdDoesNotExistException"></exception>
         /// <exception cref="UserIdDoesNotExistException"></exception>
-
         public static void SetRights(Int64 userId, Int64 streamId, Int64 targetUserId, AccessRights rights)
         {
             var user = UserTable.GetUser(userId);
@@ -153,13 +152,92 @@ namespace EvernestFront
         }
 
 
+
+        /// <summary>
+        /// Requests to pull a random event from the stream of the source.
+        /// </summary>
+        /// <param name="sourceKey"></param>
+        /// <returns></returns>
+        /// <exception cref="AccessDeniedException"></exception>
+        public static Event PullRandom(KeyType sourceKey)
+        {
+            Source src = SourceTable.GetSource(sourceKey);
+            src.CheckCanRead();
+            return src.Stream.PullRandom();
+        }
+
+        /// <summary>
+        /// Requests to pull event with ID eventId from the stream of the source.
+        /// </summary>
+        /// <param name="sourceKey"></param>
+        /// <param name="eventId"></param>
+        /// <returns></returns>
+        /// <exception cref="UserIdDoesNotExistException"></exception>
+        /// <exception cref="InvalidEventIdException"></exception>
+        public static Event Pull(KeyType sourceKey, int eventId)
+        {
+            Source src = SourceTable.GetSource(sourceKey);
+            src.CheckCanRead();
+            return src.Stream.Pull(eventId);
+        }
+
+        /// <summary>
+        /// Requests to pull events in range [from, to] from the stream of the source (inclusive).
+        /// </summary>
+        /// <param name="sourceKey"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        /// <exception cref="ReadAccessDeniedException"></exception>
+        /// <exception cref="InvalidEventIdException"></exception>
+        public static List<Event> PullRange(KeyType sourceKey, int from, int to)
+        {
+            Source src = SourceTable.GetSource(sourceKey);
+            src.CheckCanRead();
+            return src.Stream.PullRange(from, to);
+        }
+
+        /// <summary>
+        /// Requests to push an event containing message to the stream of the source. Returns the id of the generated event.
+        /// </summary>
+        /// <param name="sourceKey"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        /// <exception cref="WriteAccessDeniedException"></exception>
+        public static int Push(KeyType sourceKey, string message)
+        {
+            Source src = SourceTable.GetSource(sourceKey);
+            src.CheckCanWrite();
+            return src.Stream.Push(message);
+        }
+
+        /// <summary>
+        /// Changes access rights of targetUser over the stream of the source. The source and its user must have admin rights.
+        /// </summary>
+        /// <param name="sourceKey"></param>
+        /// <param name="targetUserId"></param>
+        /// <param name="rights"></param>
+        /// <returns></returns>
+        /// <exception cref="AdminAccessDeniedException"></exception>
+        /// <exception cref="CannotDestituteAdminException"></exception>
+        /// <exception cref="UserIdDoesNotExistException"></exception>
+        public static void SetRights(KeyType sourceKey, Int64 targetUserId, AccessRights rights)
+        {
+            Source src = SourceTable.GetSource(sourceKey);
+            var targetUser = UserTable.GetUser(targetUserId);
+            src.CheckCanAdmin();
+            CheckRights.CheckRightsCanBeModified(targetUser, src.Stream);
+            UserRight.SetRight(targetUser, src.Stream, rights);
+            // TODO : update la stream historique
+        }
+
+
         /// <summary>
         /// Returns a list of all streams on which user has rights, and the associated AccessRights.
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
         /// <exception cref="UserIdDoesNotExistException"></exception>
-
         static public List<KeyValuePair<Int64, AccessRights>> RelatedStreams(Int64 userId)
         {
             User user = UserTable.GetUser(userId);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EvernestFront.Exceptions;
 
 namespace EvernestFront
 {
@@ -18,7 +19,7 @@ namespace EvernestFront
         {
             get 
             {
-                return (List<KeyValuePair<long, AccessRights>>)UserRights.Select(x => x.ToStreamIdAndRight());
+                return new List<KeyValuePair<long, AccessRights>>(UserRights.Select(x => x.ToStreamIdAndRight()));
             }
         }
 
@@ -39,6 +40,7 @@ namespace EvernestFront
             Name = name;
             Key = Keys.NewKey();
             UserRights=new List<UserRight>();
+            Sources = new List<Source>();
         }
 
         internal void AddSource(Source source)
@@ -58,14 +60,24 @@ namespace EvernestFront
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Checks if user already has a source called name and throws an exception if he does.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <exception cref="SourceNameTakenException"></exception>
+        internal void CheckSourceNameIsFree(string name)
+        {
+            if (Sources.Exists(x => x.Name == name))
+                throw new SourceNameTakenException(Id,name);
+        }
 
 
 //        Id int: User identifier.
 //UserName string: User personnal name.
 //Password hash: Hash of user password concatenated to PasswordSalt.
 //PasswordSalt hash: Random string used to avoid pattern recognition in password hash.
-//Name string: User personnal name.
-//FirstName string: User personnal first name.
+//Name string: User personal name.
+//FirstName string: User personal first name.
 //RelatedStreams {Stream} list: List of streams that are related to this user. A related stream is a stream that is either readable, writable or administrated by the user.
 //OwnedSources {Stream} list: List of streams that are administrated by this user.
     }

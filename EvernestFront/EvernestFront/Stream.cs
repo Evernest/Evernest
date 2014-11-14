@@ -94,7 +94,7 @@ namespace EvernestFront
         {
             get
             {
-                return (List<KeyValuePair<Int64, AccessRights>>)UserRights.Select(x => x.ToUserIdAndRight());
+                return new List<KeyValuePair<Int64, AccessRights>>(UserRights.Select(x => x.ToUserIdAndRight()));
             }
         }
     }

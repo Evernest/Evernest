@@ -20,7 +20,7 @@ namespace EvernestFront
         internal AccessRights Right { get; private set; }
 
         //base64 encoded int
-        internal string Key { get; set; }
+        public string Key { get; private set; }
 
         // provisoire
         private static Int64 _next = 0;

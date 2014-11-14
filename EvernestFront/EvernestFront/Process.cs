@@ -139,16 +139,28 @@ namespace EvernestFront
         }
 
 
-
         
-        public static void CreateSource(Int64 userId, Int64 streamId, String sourceName, AccessRights right)
+        /// <summary>
+        /// User userId creates a source with rights right on stream streamId.
+        /// Returns the key of the newly created source.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="streamId"></param>
+        /// <param name="sourceName"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        /// <exception cref="SourceNameTakenException"></exception>
+        /// <exception cref="UserIdDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        public static KeyType CreateSource(Int64 userId, Int64 streamId, String sourceName, AccessRights right)
         {
             var user = UserTable.GetUser(userId);
+            user.CheckSourceNameIsFree(sourceName);
             var stream = StreamTable.GetStream(streamId);
             var source = new Source(user, stream, sourceName, right);
             user.AddSource(source);
             SourceTable.AddSource(source);
-            // TODO : vérifier si le nom est pris
+            return source.Key;
         }
 
 

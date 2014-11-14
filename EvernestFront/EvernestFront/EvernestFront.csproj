@@ -47,6 +47,7 @@
     <Compile Include="Exceptions\FrontException.cs" />
     <Compile Include="Exceptions\InvalidEventIdException.cs" />
     <Compile Include="Exceptions\ReadAccessDeniedException.cs" />
+    <Compile Include="Exceptions\SourceNameTakenException.cs" />
     <Compile Include="Exceptions\UserIdDoesNotExistException.cs" />
     <Compile Include="Exceptions\UserNameTakenException.cs" />
     <Compile Include="Keys.cs" />

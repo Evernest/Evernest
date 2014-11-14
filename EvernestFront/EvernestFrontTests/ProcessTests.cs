@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using EvernestFront;
 using EvernestFront.Exceptions;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
+using KeyType = System.String;
 
 namespace EvernestFrontTests
 {
@@ -15,6 +17,7 @@ namespace EvernestFrontTests
         private const string StreamName = "streamName";
         private const string UserName2 = "userName2";
         private const string Message = "message";
+        private const string SourceName = "sourceName";
 
         [SetUp]
         public void Initialize()
@@ -150,8 +153,64 @@ namespace EvernestFrontTests
         public void Push_StreamIdDoesNotExist()
         {
             long userId = Process.AddUser(UserName);
-            long streamId = 42; //does not exist in StreamTable
+            const long streamId = 42; //does not exist in StreamTable
             int eventId = Process.Push(userId, streamId, Message);
         }
+
+        [Test]
+        public void CreateSource_Success()
+        {
+            long userId = Process.AddUser(UserName);
+            long streamId = Process.CreateStream(userId, StreamName);
+            KeyType key = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadWrite);
+
+            KeyType key2 = Process.CreateSource(userId, streamId, "source2", AccessRights.ReadWrite);
+            Assert.AreNotEqual(key,key2);
+        }
+
+        [Test]
+        [ExpectedException(typeof (SourceNameTakenException))]
+        public void CreateSource_SourceNameTaken()
+        {
+            long userId = Process.AddUser(UserName);
+            long streamId = Process.CreateStream(userId, StreamName);
+            KeyType key = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadWrite);
+            KeyType key2 = Process.CreateSource(userId, streamId, SourceName, AccessRights.Admin);
+        }
+
+
+        [Test]
+        public void RelatedStreams_Success()
+        {
+            long userId = Process.AddUser(UserName);
+            const string streamName2 = "streamName2";
+            long streamId = Process.CreateStream(userId, StreamName);
+            long streamId2 = Process.CreateStream(userId, streamName2);
+            var actualList = Process.RelatedStreams(userId);
+            Assert.IsNotNull(actualList);
+            var expected1 = new KeyValuePair<long, AccessRights>(streamId, UserRight.CreatorRights);
+            var expected2 = new KeyValuePair<long,AccessRights>(streamId2, UserRight.CreatorRights);
+            Assert.Contains(expected1, actualList);
+            Assert.Contains(expected2,actualList);
+            Assert.AreEqual(actualList.Count, 2);
+
+        }
+
+        [Test]
+        public void RelatedUsers_Success()
+        {
+            long userId = Process.AddUser(UserName);
+            long userId2 = Process.AddUser(UserName2);
+            long streamId = Process.CreateStream(userId, StreamName);
+            Process.SetRights(userId,streamId,userId2,AccessRights.ReadOnly);
+            var actualList = Process.RelatedUsers(userId, streamId);
+            var expected1 = new KeyValuePair<long, AccessRights>(userId, UserRight.CreatorRights);
+            var expected2 = new KeyValuePair<long, AccessRights>(userId2, AccessRights.ReadOnly);
+            Assert.IsNotNull(actualList);
+            Assert.Contains(expected1,actualList);
+            Assert.Contains(expected2,actualList);
+            Assert.AreEqual(actualList.Count,2);
+        }
+
     }
 }

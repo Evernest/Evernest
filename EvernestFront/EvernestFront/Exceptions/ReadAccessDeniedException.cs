@@ -16,5 +16,8 @@ namespace EvernestFront.Exceptions
 
         internal ReadAccessDeniedException(Int64 stream, Int64 user, AccessRights userRights)
             : base(stream, user, userRights) { }
+
+        internal ReadAccessDeniedException(Source src)
+            : base(src) { }
     }
 }

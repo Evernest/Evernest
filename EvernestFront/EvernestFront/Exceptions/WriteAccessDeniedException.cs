@@ -17,5 +17,8 @@ namespace EvernestFront.Exceptions
 
         internal WriteAccessDeniedException(Int64 stream, Int64 user, AccessRights rights)
             : base(stream, user, rights) { }
+
+        internal WriteAccessDeniedException(Source src)
+            : base(src) { }
     }
 }

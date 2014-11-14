@@ -17,7 +17,7 @@ namespace EvernestFront
 
 
 
-        static bool CanRead(AccessRights rights)
+        static internal bool CanRead(AccessRights rights)
         {
             switch (rights)
             {
@@ -34,7 +34,7 @@ namespace EvernestFront
             }
         }
 
-        static bool CanWrite(AccessRights rights)
+        static internal bool CanWrite(AccessRights rights)
         {
             switch (rights)
             {
@@ -51,7 +51,7 @@ namespace EvernestFront
             }
         }
 
-        static bool CanAdmin(AccessRights rights)
+        static internal bool CanAdmin(AccessRights rights)
         {
             switch (rights)
             {

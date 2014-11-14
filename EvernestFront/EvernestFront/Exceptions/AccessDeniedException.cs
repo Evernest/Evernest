@@ -8,6 +8,7 @@ namespace EvernestFront.Exceptions
         public Int64 StreamId { get; private set; }
         public Int64 User { get; private set; }
         public AccessRights UserRights { get; private set; }
+        public Int64? SourceId { get; private set; }
 
         /// <summary>
         /// Constructor for AccessDeniedException.
@@ -21,7 +22,15 @@ namespace EvernestFront.Exceptions
             StreamId = argStreamId;
             User = argUser;
             UserRights = argUserRights;
+            SourceId = null;
         }
 
+        protected AccessDeniedException(Source src)
+        {
+            StreamId = src.Stream.Id;
+            User = src.User.Id;
+            UserRights = src.Right;
+            SourceId = src.Id;
+        }
     }
 }

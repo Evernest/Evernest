@@ -16,5 +16,8 @@ namespace EvernestFront.Exceptions
         /// 
         internal AdminAccessDeniedException(Int64 stream, Int64 user, AccessRights userRights)
             : base(stream, user, userRights) { }
+
+        internal AdminAccessDeniedException(Source src)
+            : base(src) { }
     }
 }

@@ -14,11 +14,11 @@ namespace EvernestFront
 
         public List<Source> Sources { get; private set; }
 
-        public List<KeyValuePair<Int64, AccessRights>> RelatedStreams
+        public List<KeyValuePair<long, AccessRights>> RelatedStreams
         {
             get 
             {
-                return (List<KeyValuePair<Int64, AccessRights>>)UserRights.Select(x => x.ToStreamIdAndRight());
+                return (List<KeyValuePair<long, AccessRights>>)UserRights.Select(x => x.ToStreamIdAndRight());
             }
         }
 

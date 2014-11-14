@@ -84,69 +84,7 @@ namespace EvernestFront
                     throw new Exception("CheckRights.CanAdmin : cas non traité");
             }
         }
-
-
-        /// <summary>
-        /// Returns if and only if user can read on stream.
-        /// </summary>
-        /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="ReadAccessDeniedException"></exception>
-        /// <param name="user"></param>
-        /// <param name="stream"></param>
-        static internal void CheckCanRead(Int64 user, Int64 stream)
-        {
-            var rights = Users.GetRights(user, stream);
-            if (CanRead(rights))
-                return;
-            else
-                throw new ReadAccessDeniedException(stream, user, rights);
-        }
-
-        /// <summary>
-        /// Returns if and only if user can write on stream.
-        /// </summary>
-        /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="WriteAccessDeniedException"></exception>
-        /// <param name="user"></param>
-        /// <param name="stream"></param>
-        static internal void CheckCanWrite(Int64 user, Int64 stream)
-        {
-            var rights = Users.GetRights(user, stream);
-            if (CanWrite(rights))
-                return;
-            else
-                throw new WriteAccessDeniedException(stream, user, rights);
-        }
-
-        /// <summary>
-        /// Returns if and only if user can administrate stream.
-        /// </summary>
-        /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="AdminAccessDeniedException"></exception>
-        /// <param name="user"></param>
-        /// <param name="stream"></param>
-        static internal void CheckCanAdmin(Int64 user, Int64 stream)
-        {
-            var rights = Users.GetRights(user, stream);
-            if (CanAdmin(rights))
-                return;
-            else
-                throw new AdminAccessDeniedException(stream, user, rights);
-        }
-
-        static internal void CheckRightsCanBeModified(Int64 user, Int64 stream)
-        {
-            var rights = Users.GetRights(user, stream);
-            if (CanBeModified(rights))
-                return;
-            else
-                throw new CannotDestituteAdminException(stream, user);
-        }
-
-
+        
 
         /// <summary>
         /// Returns if and only if user can read on stream.

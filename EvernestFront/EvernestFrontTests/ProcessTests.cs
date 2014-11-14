@@ -60,7 +60,7 @@ namespace EvernestFrontTests
             User user = UserTable.GetUser(userId);
             Stream stream = StreamTable.GetStream(streamId);
             AccessRights rights = UserRight.GetRight(user, stream);
-            Assert.AreEqual(rights, Users.CreatorRights);
+            Assert.AreEqual(rights, UserRight.CreatorRights);
         }
 
         [Test]
@@ -143,6 +143,15 @@ namespace EvernestFrontTests
 
             long user2 = Process.AddUser(UserName2);
             int eventId = Process.Push(user2, streamId, Message);
+        }
+
+        [Test]
+        [ExpectedException(typeof (StreamIdDoesNotExistException))]
+        public void Push_StreamIdDoesNotExist()
+        {
+            long userId = Process.AddUser(UserName);
+            long streamId = 42; //does not exist in StreamTable
+            int eventId = Process.Push(userId, streamId, Message);
         }
     }
 }

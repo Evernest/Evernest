@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EvernestFront
 {
@@ -14,6 +11,16 @@ namespace EvernestFront
 
         internal AccessRights Right { get; set; }
 
+
+        /// <summary>
+        /// When adding a new stream, AccessRights to set for its creator.
+        /// </summary>
+        public const AccessRights CreatorRights = AccessRights.Admin;
+
+        /// <summary>
+        /// RootUser has rights to do anything. (/!\ pas encore implémenté)
+        /// </summary>
+        public const string RootUser = "RootUser";
 
         UserRight(User usr, Stream strm)
         {
@@ -44,14 +51,14 @@ namespace EvernestFront
             // factorisation : vérifier ici si on destitue un admin ? (c'est fait ailleurs)
         }
 
-        internal KeyValuePair<Int64, AccessRights> ToStreamIdAndRight()
+        internal KeyValuePair<long, AccessRights> ToStreamIdAndRight()
         {
-            return new KeyValuePair<Int64, AccessRights> (Stream.Id,Right);
+            return new KeyValuePair<long, AccessRights>(Stream.Id,Right);
         }
 
-        internal KeyValuePair<Int64, AccessRights> ToUserIdAndRight()
+        internal KeyValuePair<long, AccessRights> ToUserIdAndRight()
         {
-            return new KeyValuePair<Int64, AccessRights>(User.Id, Right);
+            return new KeyValuePair<long, AccessRights>(User.Id, Right);
         }
     }
 }

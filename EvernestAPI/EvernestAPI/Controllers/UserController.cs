@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,31 +10,15 @@ namespace EvernestAPI.Controllers
 {
     public class UserController : ApiController
     {
-        // GET: api/User
-        public IEnumerable<string> Get()
+        // GET: /User/{userId}
+        public Hashtable Get(int userId)
         {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET: api/User/5
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST: api/User
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT: api/User/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE: api/User/5
-        public void Delete(int id)
-        {
+            var response = new Hashtable();
+            response["method"] = "GET";
+            response["controller"] = "UserController";
+            response["sourceId"] = userId;
+            response["action"] = "Get";
+            return response;
         }
     }
 }

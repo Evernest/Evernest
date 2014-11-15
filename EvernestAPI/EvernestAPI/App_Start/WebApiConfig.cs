@@ -17,8 +17,9 @@ namespace EvernestAPI
             // We'll have to support content-type application/json. <-- TODO
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 
+
             /**
-             * Stream Get
+             * Stream
              */
 
             config.Routes.MapHttpRoute(
@@ -49,10 +50,6 @@ namespace EvernestAPI
                 defaults: new {controller = "Stream"}
                 );
 
-            /**
-             * Stream Post
-             */
-
             config.Routes.MapHttpRoute(
                 name: "StreamPostEvent",
                 routeTemplate: "Stream/{streamId}/Push", // Effectivement, c'est la même que StreamGet
@@ -60,8 +57,9 @@ namespace EvernestAPI
                 defaults: new {controller = "Stream"}
                 );
 
+            
             /**
-             * Source Get
+             * Source
              */
 
             config.Routes.MapHttpRoute(
@@ -71,13 +69,20 @@ namespace EvernestAPI
                 defaults: new {controller = "Source"}
                 );
 
-            /**
-             * Source New
-             */
-
             config.Routes.MapHttpRoute(
                 name: "SourceNew",
                 routeTemplate: "Source/New",
+                constraints: new {},
+                defaults: new {controller = "Source"}
+                );
+
+            /**
+             * User
+             */
+
+            config.Routes.MapHttpRoute(
+                name: "UserGet",
+                routeTemplate: "User/{userId}",
                 constraints: new {},
                 defaults: new {controller = "Source"}
                 );

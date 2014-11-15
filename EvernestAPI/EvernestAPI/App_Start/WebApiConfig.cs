@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
@@ -12,33 +13,41 @@ namespace EvernestAPI
     {
         public static void Register(HttpConfiguration config)
         {
-             config.Routes.MapHttpRoute(
-                name: "PullGetRange",
-                routeTemplate: "{controller}/{streamId}/{action}/{id}/{id2}",
-                constraints: new { id = @"\d+", id2 = @"\d+"},
-                defaults: new { id = RouteParameter.Optional, id2 = RouteParameter.Optional }
-            );
+            // In order to use JsonFormatter for API's output.
+            // We'll have to support content-type application/json. <-- TODO
+            config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 
-             config.Routes.MapHttpRoute(
-                 name: "PullGetOne",
-                 routeTemplate: "{controller}/{streamId}/{action}/{id}",
-                 constraints: new { id = @"\d+"},
-                 defaults: new { id = RouteParameter.Optional }
-             );
+            /**
+             * Stream Get
+             */
+            
+            config.Routes.MapHttpRoute(
+                name: "StreamGet",
+                routeTemplate: "{controller}/{streamId}/{action}",
+                constraints: new {},
+                defaults: new {controller = "Stream"}
+                );
 
-             config.Routes.MapHttpRoute(
-                 name: "PullGetRandom",
-                 routeTemplate: "{controller}/{streamId}/{action}"
-                 );
-            // Uncomment the following line of code to enable query support for actions with an IQueryable or IQueryable<T> return type.
-            // To avoid processing unexpected or malicious queries, use the validation settings on QueryableAttribute to validate incoming queries.
-            // For more information, visit http://go.microsoft.com/fwlink/?LinkId=279712.
-            //config.EnableQuerySupport();
+            config.Routes.MapHttpRoute(
+                name: "StreamGetRandom",
+                routeTemplate: "{controller}/{streamId}/{action}/{random}",
+                constraints: new {random = @"Random"},
+                defaults: new {controller = "Stream"}
+                );
 
-            // To disable tracing in your application, please comment out or remove the following line of code
-            // For more information, refer to: http://www.asp.net/web-api
-            //config.EnableSystemDiagnosticsTracing();
+            config.Routes.MapHttpRoute(
+                name: "StreamGetOne",
+                routeTemplate: "{controller}/{streamId}/{action}/{id}",
+                constraints: new {id = @"\d+"},
+                defaults: new {controller = "Stream"}
+                );
 
-                   }
+            config.Routes.MapHttpRoute(
+                name: "StreamGetRange",
+                routeTemplate: "{controller}/{streamId}/{action}/{startId}/{stopId}",
+                constraints: new {startId = @"\d+", stopId = @"\d+"},
+                defaults: new {controller = "Stream"}
+                );
+        }
     }
 }

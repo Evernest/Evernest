@@ -20,34 +20,68 @@ namespace EvernestAPI
             /**
              * Stream Get
              */
-            
+
             config.Routes.MapHttpRoute(
                 name: "StreamGet",
-                routeTemplate: "{controller}/{streamId}/{action}",
+                routeTemplate: "Stream/{streamId}",
                 constraints: new {},
                 defaults: new {controller = "Stream"}
                 );
 
             config.Routes.MapHttpRoute(
                 name: "StreamGetRandom",
-                routeTemplate: "{controller}/{streamId}/{action}/{random}",
+                routeTemplate: "Stream/{streamId}/Pull/{random}",
                 constraints: new {random = @"Random"},
                 defaults: new {controller = "Stream"}
                 );
 
             config.Routes.MapHttpRoute(
                 name: "StreamGetOne",
-                routeTemplate: "{controller}/{streamId}/{action}/{id}",
+                routeTemplate: "Stream/{streamId}/Pull/{id}",
                 constraints: new {id = @"\d+"},
                 defaults: new {controller = "Stream"}
                 );
 
             config.Routes.MapHttpRoute(
                 name: "StreamGetRange",
-                routeTemplate: "{controller}/{streamId}/{action}/{startId}/{stopId}",
+                routeTemplate: "Stream/{streamId}/Pull/{startId}/{stopId}",
                 constraints: new {startId = @"\d+", stopId = @"\d+"},
                 defaults: new {controller = "Stream"}
                 );
+
+            /**
+             * Stream Post
+             */
+
+            config.Routes.MapHttpRoute(
+                name: "StreamPostEvent",
+                routeTemplate: "Stream/{streamId}/Push", // Effectivement, c'est la même que StreamGet
+                constraints: new {},
+                defaults: new {controller = "Stream"}
+                );
+
+            /**
+             * Source Get
+             */
+
+            config.Routes.MapHttpRoute(
+                name: "SourceGet",
+                routeTemplate: "Source/{sourceId}",
+                constraints: new {},
+                defaults: new {controller = "Source"}
+                );
+
+            /**
+             * Source New
+             */
+
+            config.Routes.MapHttpRoute(
+                name: "SourceNew",
+                routeTemplate: "Source/New",
+                constraints: new {},
+                defaults: new {controller = "Source"}
+                );
+
         }
     }
 }

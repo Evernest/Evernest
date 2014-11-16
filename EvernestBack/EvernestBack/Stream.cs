@@ -9,7 +9,7 @@ using System.Configuration;
 
 namespace EvernestBack
 {
-    class Stream
+    class Stream:IStream
     {
         private CloudBlobClient blobClient;
         private WriteLocker writeLock;

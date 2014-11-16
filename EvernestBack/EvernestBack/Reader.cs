@@ -7,7 +7,7 @@ namespace EvernestBack
 {
     class Reader:Agent
     {
-        public Reader(String message, Int64 requestID, Stream feedback)
+        public Reader(String message, UInt64 requestID, Stream feedback)
             :base(message, requestID, feedback)
         {
             

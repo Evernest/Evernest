@@ -4,12 +4,13 @@ Evernest API
 
 
  * Overview
-    - JSON
-    - Access by Object
  * Authentication
-    - Keys and Rights
-    - Usage jailing
-    - Key mechanism for sources and user
+ * Data selection (partials)
+ * Cursoring
+ * Visibility
+ * Rate limits
+    - Limitation on returned data length
+    - Quota Cost
  * API Objects
     - General comments
     - Event
@@ -20,14 +21,6 @@ Evernest API
     - UserRight
  * Request/Response overview
  * API Endpoints
- * Data selection (partials)
- * Paging
-    - Cursoring
-    - Since/After
- * Visibility
- * Rate limits
-    - Limitation on returned data length
-    - Quota Cost
  * High-level
     - Statistics
     - Search
@@ -61,6 +54,70 @@ Although it wants to insure this jailing, the API allow you to do everything fro
  * Although you can distribute your keys between programs as you wish, and even have a single key with rights uppon all your streams, don't do so. A key must have priviledges on streams related to one project at a time.
 
  * Never use your User key in programs meant to be packaged. This key is an administration key and must used by your administration tools only.
+
+
+
+## Data selection (partials)
+
+Returned data may be heavy, especially event ranges, and you may not be interested in each field that the API can potentially return.
+
+For example, since `Event` object contains a `ParentStream` field containing a `Stream` object, a range of event would contain a lot of redundant information.
+
+And the field `RelatedStreams` from `User` object may take more time to be computed on server side and so costs more quota units.
+
+That's why you can perform so called *partial requests*, e.g. a request with a `Selector` field specifying which fields you want the server to give back to you.
+
+To get only the `Foo` field, try `Selector=Foo`.
+
+But this `Foo` field can have on its turn multiple subfields`. You can get only the `Bar` subfield of the `Foo` field with `Selector=Foo.Bar`.
+
+To select many fields, separate them with a comma (,): `Selector=Foo.Bar,Foo.Baz`. You can also factorize parent field and use parenthesis (()): `Selector=Foo(Bar,Baz)`.
+
+This notation, refered as `Parent.Field` form in the followings, is used in this document to describe expected input data, visibility rules and default selectors.
+
+
+
+## Cursoring
+
+### Negative index
+
+The most common use case of Evernest API is to pull event ranges. It is quite simple to do : just get `/Stream/12/Pull/10/20` to get the events from stream 12 whose Ids are between 10 and 20.
+
+But you may want to get the last events from a stream. The Evernest API provides an easy way to do so, using negative Ids to specify that it should be counted from the last Ids instead of being counted from the first one.
+
+For instance, get `/Stream/12/Pull/-10/-1` get the last 10 events from stream 12.
+
+Note that you can also manually compute the Ids thanks to the `LastEventId` field from `Stream` object.
+
+### Paging
+
+Where it becomes tricky is when you want to get so many data that it is not possible to do it in a single request, whether because you exceed the rate limits or your program can't handle too many data at once.
+
+For example, you could want to get the last 200 elements 10 by 10. You can either manually get all the `/Stream/12/Pull/-{n}/-{n-9}` for n from 200 to 10 or use the `Page` field to iterate over request pages, like so:
+
+`/Stream/12/Pull/-200/-1?Page={n}` with `n` starting at 0 and stoping when you want (e.g. when request return empty lists).
+
+By default, the number of items per page is set to the maximum according to rate limits. If you want to force it, use the `Count` field: `/Stream/12/Pull/-200/-1?Page={n}&Count=10`.
+
+### Racing
+
+The point is that new events could have been append to the stream during the sequence of request, so that it shifts all negative Ids and so you would have some common events in different requests results.
+
+To avoid that, you can provide a `Before` field not to get event whose Id is after a given Id. Set it to the last processed event Id and get for instance `/Stream/12/Pull/-200/-1?Count=10&Before=894`. It will returns at most 10 events which are in the last 200 events and whose Ids are before 894.
+
+On the contrary, you might want to get only new events. You can use the `After` field for that.
+
+Note that this is directly inspired by [the Twitter cursoring](https://dev.twitter.com/rest/public/timelines).
+
+
+## Visibility
+
+*todo*
+
+## Rate limits
+
+*todo*
+
 
 
 ## API Objects
@@ -384,9 +441,10 @@ Each endpoint is presented with a uniform information. The following subsections
 
 #### URL
 
-The *URL* field indicates what method you should use to access the endpoint. Note that this is just an indication. You can replace a POST request by a GET request with options inside the query string.
+The *URL* field indicates what method you should use to access the endpoint.
+You can use either POST or GET methods. POST requests must encode data as JSON and GET requests options are inside the query string in the `Parent.Field` form.
 
-To do so, encode each JSON field in the `Parent(Field)` form. For example, the following POST body would be encoded as `?Event(Content)=This%20is%20a%20new%20event!`
+For example, the following POST body would be encoded as `?Event.Content=This%20is%20a%20new%20event!`
 
 ```
 {
@@ -398,9 +456,11 @@ To do so, encode each JSON field in the `Parent(Field)` form. For example, the f
 
 #### Input data
 
-The *Input data* describes the information that the request could be provided. It is encoded in the `Parent(Field)` form.
+The *Input data* describes the information that the request could be provided. It is encoded in the `Parent.Field` form.
 
 Mandatory fields are explicitely signaled by the **[required]** tag.
+
+If the request contains undocumented fields, they are silently ignored.
 
 When not specified, no input data is processed.
 
@@ -422,7 +482,7 @@ When not specified, all lists are empty.
 
 Get stream by its Id.
 
-**URL:** `GET /Stream/{StreamId}`
+**URL:** `/Stream/{StreamId}`
 
 **Required rights:** `Read` right on the stream.
 
@@ -432,7 +492,7 @@ Get stream by its Id.
 
 Get a random event from stream `{StreamId}`
 
-**URL:** `GET /Stream/{StreamId}/Pull/Random`
+**URL:** `/Stream/{StreamId}/Pull/Random`
 
 **Required rights:** `Read` right on the stream.
 
@@ -444,7 +504,7 @@ Get an event from `{StreamId}` by its Id.
 
 If `{Id}` is negative, `{LastEventId}` is added to it so that it is counted from the end of the stream.
 
-**URL:** `GET /Stream/{StreamId}/Pull/{Id}`
+**URL:** `/Stream/{StreamId}/Pull/{Id}`
 
 **Required rights:** `Read` right on the stream.
 
@@ -456,7 +516,7 @@ Get all events from stream `{StreamId}` whose Ids are between `{StartId}` and `{
 
 If these Ids are negatives, `{LastEventId}` is added to them so that they are counted from the end of the stream.
 
-**URL:** `GET /Stream/{StreamId}/Pull/{StartId}/{StopId}`
+**URL:** `/Stream/{StreamId}/Pull/{StartId}/{StopId}`
 
 **Input data:**
 
@@ -469,11 +529,12 @@ If these Ids are negatives, `{LastEventId}` is added to them so that they are co
 
 #### Post a new event
 
-**URL:** `POST /Stream/{StreamId}/Push`
+**URL:** `/Stream/{StreamId}/Push`
 
 **Input data:**
 
- * `Event(Content)` *string* **[required]**: New event content.
+ * `Event.Content` *string* **[required]**: New event content.
+ * `Content` *string*: Alias of `Event.Content`.
 
 **Required rights:** `Write` right on the stream
 
@@ -490,17 +551,45 @@ Host: api.evernest.org
 }
 ```
 
+```
+GET /Stream/19/Push?Content=This%20is%20a%20new%20event! HTTP/1.1
+Host: api.evernest.org
+```
+
 ### Sources
 
 #### Get source info
 
 Get source by its Id.
 
-**URL:** `GET /Source/{SourceId}`
+**URL:** `/Source/{SourceId}`
 
 **Required rights:** `Read` or `Right` right on a stream in common between both the used key and the target source.
 
 **Returned value:** single Source
+
+
+#### Create source
+
+Create a new Source.
+
+**URL:** `/Source/New`
+
+**Input data:**
+
+ * `Source.Name` *string*: New source name.
+ * `Name` *string*: Alias of `Source.Name`.
+
+**Required rights:** Only the user key can create a new source.
+
+**Returned value:** single Source (the new Source)
+
+**Example:**
+
+```
+GET /Source/New?Name=Test%20Source HTTP/1.1
+Host: api.evernest.org
+```
 
 
 ### Users
@@ -509,72 +598,81 @@ Get source by its Id.
 
 Get user by its Id.
 
-**URL:** `GET /User/{UserId}`
+**URL:** `/User/{UserId}`
 
 **Returned value:** single User
 
 *todo*: Returned fields depending on rights (common stream)
 
 
+### Rights
+
+#### Get rights for a Source/Stream pair
+
+Get right associated to a Source/Stream pair.
+
+**URL:** `/Right/{SourceId}/{StreamId}`
+
+**Returned value:** single Right
 
 
-## Data selection (partials)
+#### Set rights for a Source/Stream pair
 
-*todo*
+Set right associated to a Source/Stream pair.
 
-## Paging
+**URL:** `/Right/{SourceId}/{StreamId}/Set/{Right}`
 
-*todo*
+`{Right}` is one of the following values:
 
-## Visibility
+ * `None`
+ * `ReadOnly`
+ * `WriteOnly`
+ * `ReadWrite`
+ * `Admin`
 
-*todo*
+**Required rights:** The key must have `Admin` rights on the stream to edit related rights.
 
-## Rate limits
 
-*todo*
+
+### User Rights
+
+#### Get user rights for a User/Stream pair
+
+Get right associated to a User/Stream pair.
+
+**URL:** `/UserRight/{UserId}/{StreamId}`
+
+**Required rights:** The requesting user must be related to the stream to be able to see these rights.
+
+**Returned value:** single UserRight
+
+
+#### Set user rights for a User/Stream pair
+
+Set user right associated to a User/Stream pair.
+
+**URL:** `/UserRight/{UserId}/{StreamId}/Set/{Right}`
+
+`{Right}` is one of the following values:
+
+ * `None`
+ * `ReadOnly`
+ * `WriteOnly`
+ * `ReadWrite`
+ * `Admin`
+
+**Required rights:** The requesting user must have `Admin` rights on the stream to edit related rights.
+
 
 ## High-level
 
 *todo*
 
+Statistics?
+Search?
+
 ## Best practices
 
 *todo*
 
-## Request template
-
-## Visibility rules
-
-Say what is hidden?
-
-### From a source key
-
-If rule not set to `None`, can see other sources in relation with the stream.
-See source = `Id, ParentUser`
-
-
-### From a user key
-
-Do anything the user can do.
-Must be used for administration only. Exists for people wanting to create Evernest client, not for applications.
-
-
-
-## Granting rights
-
-A user cannot give more rights to its sources than it has on a stream.
-What if rights change?
-
-
-## Core principles
-
- * Personal accounts
- * Jail usages
-
-
-## High-level API
-
-Statistics?
-Search?
 

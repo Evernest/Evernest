@@ -10,7 +10,7 @@ namespace EvernestBack
     {
         private WriteLocker writer;
 
-        public Producer(String message, Int64 requestId, 
+        public Producer(String message, UInt64 requestId, 
             WriteLocker writeLocker, Stream feedback)
             :base(message, requestId, feedback)
         {

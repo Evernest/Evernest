@@ -1,2 +1,3 @@
 [config]
+solution = Evernest.sln
 project = EvernestWeb/EvernestWeb/EvernestWeb.csproj

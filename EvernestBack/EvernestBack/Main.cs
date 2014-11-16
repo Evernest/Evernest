@@ -1,13 +1,15 @@
 using System;
 
+
 namespace EvernestBack
 {
     class Test
     {
         static void Main(string[] args)
         {
-            Stream s = new Stream();
-            s.Push("Banane", 1);
+            //AzureStorageClient client = new AzureStorageClient();
+            //Stream s = client.GetStream("test1");
+
             Console.Read();
         }
     }

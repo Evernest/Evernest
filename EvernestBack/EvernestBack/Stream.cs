@@ -11,39 +11,26 @@ namespace EvernestBack
 {
     class Stream:IStream
     {
-        private CloudBlobClient blobClient;
+        private CloudBlockBlob blob;
         private WriteLocker writeLock;
+        private UInt64 currentId;
 
-        public Stream()
+        public Stream( CloudBlockBlob blob )
         {
-            // Create the blob client
-            CloudStorageAccount storageAccount = null;
-            try
-            {
-                // TODO
-                string connectionString = ConfigurationManager.AppSettings.Get(0);
-                storageAccount = CloudStorageAccount.Parse(connectionString);
-            }
-            catch (NullReferenceException e)
-            {
-                Console.Error.WriteLine("Erreur de configuration du storageAccount");
-                Console.Error.WriteLine("Method : {0}", e.TargetSite);
-                Console.Error.WriteLine("Message : {0}", e.Message);
-                Console.Error.WriteLine("Source : {0}", e.Source);
-                return;
-            }
-            blobClient = storageAccount.CreateCloudBlobClient();
 
-            writeLock = new WriteLocker(blobClient);
+            writeLock = new WriteLocker(blob);
+            currentId = 0;
         }
 
-
-        public void Push(String message, Int64 id)
+        public UInt64 Push(String message)
         {
-            Agent p = new Producer(message, id, writeLock, this);
+            UInt64 tmp = currentId;
+            Agent p = new Producer(message, currentId, writeLock, this);
+            currentId++;
+            return tmp;
         }
 
-        public void Pull(Int64 id)
+        public void Pull(UInt64 id)
         {
             Agent r = new Reader(null, id, this);
         }

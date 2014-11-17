@@ -8,19 +8,16 @@ namespace EvernestBack
 {
     class Producer:Agent
     {
-        private WriteLocker writer;
 
-        public Producer(String message, UInt64 requestId, 
-            WriteLocker writeLocker, EventStream feedback)
-            :base(message, requestId, feedback)
+        public Producer(String message, UInt64 requestID, EventStream feedback)
+            :base(message, requestID, feedback)
         {
-            this.writer = writeLocker;
-            write();
         }
-        
-        private void write()
+
+        public static void Create(String message, UInt64 requestID, WriteLocker writeLocker, EventStream feedback)
         {
-            writer.Register(this);
+            Producer newProducer = new Producer(message, requestID, feedback);
+            writeLocker.Register(newProducer);
         }
 
         public override void Processed()

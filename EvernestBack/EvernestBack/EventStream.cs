@@ -15,25 +15,29 @@ namespace EvernestBack
     class EventStream
     {
         private WriteLocker writeLock;
-        private UInt64 currentId;
+        private UInt64 pushReqID;
+        private UInt64 pullReqID;
 
         public EventStream( CloudBlockBlob blob )
         {
             writeLock = new WriteLocker(blob);
-            currentId = 0;
+            pushReqID = pullReqID = 0;
         }
 
         public UInt64 Push(String message)
         {
-            UInt64 tmp = currentId;
-            Agent p = new Producer(message, currentId, writeLock, this);
-            currentId++;
+            UInt64 tmp = pushReqID;
+            Producer.Create(message, pushReqID, writeLock, this);
+            pushReqID++;
             return tmp;
         }
 
-        public void Pull(UInt64 id)
+        public UInt64 Pull()
         {
-            Agent r = new Reader(null, id, this);
+            UInt64 tmp = pullReqID;
+            Agent r = new Reader(null, pullReqID, this);
+            pullReqID++;
+            return tmp;
         }
 
         public void StreamDeliver(Agent agent)

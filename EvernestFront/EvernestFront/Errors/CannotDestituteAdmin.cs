@@ -3,7 +3,7 @@ using System;
 
 namespace EvernestFront.Errors
 {
-    class CannotDestituteAdmin : FrontException
+    class CannotDestituteAdmin : FrontError
     {
         public Int64 Stream { get; private set; }
         public Int64 User { get; private set; }

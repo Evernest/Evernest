@@ -3,7 +3,7 @@ using System;
 
 namespace EvernestFront.Errors
 {
-    public abstract class AccessDenied : FrontException
+    public abstract class AccessDenied : FrontError
     {
         public Int64 StreamId { get; private set; }
         public Int64 User { get; private set; }

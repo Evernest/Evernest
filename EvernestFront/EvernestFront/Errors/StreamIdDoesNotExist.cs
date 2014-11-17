@@ -4,7 +4,7 @@ using System;
 
 namespace EvernestFront.Errors
 {
-    public class StreamIdDoesNotExist : FrontException
+    public class StreamIdDoesNotExist : FrontError
     { 
         public Int64 StreamId { get; private set; }
         /// <summary>

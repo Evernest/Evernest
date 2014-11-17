@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvernestFront.Errors
 {
-    public class SourceNameTaken : FrontException
+    public class SourceNameTaken : FrontError
     {
         //user UserId already owns a source called SourceName, he cannot create another one.
 

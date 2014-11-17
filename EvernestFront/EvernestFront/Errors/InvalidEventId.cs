@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvernestFront.Errors
 {
-    class InvalidEventId : FrontException
+    class InvalidEventId : FrontError
     {
         public Int64 StreamId { get; private set; }
 

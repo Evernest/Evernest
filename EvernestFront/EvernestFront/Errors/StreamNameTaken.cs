@@ -1,7 +1,7 @@
 ﻿
 namespace EvernestFront.Errors
 {
-    public class StreamNameTaken : FrontException
+    public class StreamNameTaken : FrontError
     {
         public string StreamName { get; private set; }
         /// <summary>

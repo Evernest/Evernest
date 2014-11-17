@@ -15,6 +15,13 @@ namespace EvernestWeb.Controllers
             return View();
         }
 
+        public ActionResult Storage()
+        {
+            ViewBag.Message = "Store your logs.";
+
+            return View();
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your app description page.";

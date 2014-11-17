@@ -1,0 +1,36 @@
+﻿@model EvernestWeb.Models.RegisterExternalLoginModel
+@{
+    ViewBag.Title = "S'inscrire";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>Associez votre compte @ViewBag.ProviderDisplayName.</h2>
+</hgroup>
+
+@using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl })) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>Formulaire d’association</legend>
+        <p>
+            Vous êtes authentifié avec <strong>@ViewBag.ProviderDisplayName</strong>.
+            Veuillez entrer un nom d’utilisateur pour le site ci-dessous, puis cliquer sur le bouton Confirmer pour terminer
+            la connexion.
+        </p>
+        <ol>
+            <li class="name">
+                @Html.LabelFor(m => m.UserName)
+                @Html.TextBoxFor(m => m.UserName)
+                @Html.ValidationMessageFor(m => m.UserName)
+            </li>
+        </ol>
+        @Html.HiddenFor(m => m.ExternalLoginData)
+        <input type="submit" value="S'inscrire" />
+    </fieldset>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -269,7 +269,7 @@ It owns sources and administrates streams.
  * `Name` *string*: User personnal name.
  * `FirstName` *string*: User personnal first name.
  * `RelatedStreams` *{Stream} list*: List of streams that are related to this user. A related stream is a stream that is either readable, writable or administrated by the user.
- * `OwnedSources` *{Stream} list*: List of streams that are administrated by this user.
+ * `OwnedSources` *{Source} list*: List of sources that are administrated by this user.
 
 
 #### Constraints

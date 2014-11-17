@@ -1,5 +1,8 @@
 ﻿
 
+# Doxygen
+doc/doxygen/html
+doc/doxygen/latex
 
 
 # Emacs

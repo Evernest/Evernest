@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using EvernestFront.Exceptions;
-using KeyType=System.String; //base64 encoded int
 
 namespace EvernestFront
 {
@@ -152,7 +151,7 @@ namespace EvernestFront
         /// <exception cref="SourceNameTakenException"></exception>
         /// <exception cref="UserIdDoesNotExistException"></exception>
         /// <exception cref="StreamIdDoesNotExistException"></exception>
-        public static KeyType CreateSource(Int64 userId, Int64 streamId, String sourceName, AccessRights right)
+        public static String CreateSource(Int64 userId, Int64 streamId, String sourceName, AccessRights right)
         {
             var user = UserTable.GetUser(userId);
             user.CheckSourceNameIsFree(sourceName);
@@ -171,7 +170,8 @@ namespace EvernestFront
         /// <param name="sourceKey"></param>
         /// <returns></returns>
         /// <exception cref="AccessDeniedException"></exception>
-        public static Event PullRandom(KeyType sourceKey)
+        /// <exception cref="SourceKeyDoesNotExistException"></exception>
+        public static Event PullRandom(String sourceKey)
         {
             Source src = SourceTable.GetSource(sourceKey);
             src.CheckCanRead();
@@ -186,7 +186,8 @@ namespace EvernestFront
         /// <returns></returns>
         /// <exception cref="UserIdDoesNotExistException"></exception>
         /// <exception cref="InvalidEventIdException"></exception>
-        public static Event Pull(KeyType sourceKey, int eventId)
+        /// <exception cref="SourceKeyDoesNotExistException"></exception>
+        public static Event Pull(String sourceKey, int eventId)
         {
             Source src = SourceTable.GetSource(sourceKey);
             src.CheckCanRead();
@@ -202,7 +203,8 @@ namespace EvernestFront
         /// <returns></returns>
         /// <exception cref="ReadAccessDeniedException"></exception>
         /// <exception cref="InvalidEventIdException"></exception>
-        public static List<Event> PullRange(KeyType sourceKey, int from, int to)
+        /// <exception cref="SourceKeyDoesNotExistException"></exception>
+        public static List<Event> PullRange(String sourceKey, int from, int to)
         {
             Source src = SourceTable.GetSource(sourceKey);
             src.CheckCanRead();
@@ -216,7 +218,8 @@ namespace EvernestFront
         /// <param name="message"></param>
         /// <returns></returns>
         /// <exception cref="WriteAccessDeniedException"></exception>
-        public static int Push(KeyType sourceKey, string message)
+        /// <exception cref="SourceKeyDoesNotExistException"></exception>
+        public static int Push(String sourceKey, string message)
         {
             Source src = SourceTable.GetSource(sourceKey);
             src.CheckCanWrite();
@@ -233,7 +236,8 @@ namespace EvernestFront
         /// <exception cref="AdminAccessDeniedException"></exception>
         /// <exception cref="CannotDestituteAdminException"></exception>
         /// <exception cref="UserIdDoesNotExistException"></exception>
-        public static void SetRights(KeyType sourceKey, Int64 targetUserId, AccessRights rights)
+        /// <exception cref="SourceKeyDoesNotExistException"></exception>
+        public static void SetRights(String sourceKey, Int64 targetUserId, AccessRights rights)
         {
             Source src = SourceTable.GetSource(sourceKey);
             var targetUser = UserTable.GetUser(targetUserId);

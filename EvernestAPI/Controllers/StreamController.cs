@@ -54,9 +54,23 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("PullRandom")]
-        public string PullRandom(int id)
+        public Hashtable PullRandom(int id)
         {
-            return String.Format("/Stream/{0}/PullRandom", id);
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+            var key = nvc["key"];
+            if (key == null)
+            {
+                ans["Status"] = "Error";
+                ans["FieldErrors"] = new List<string> { "Key" };
+            }
+            else
+            {
+                var eve = Process.PullRandom(key);
+                ans["Status"] = "Success";
+                ans["Events"] = new List<Event> { eve };
+            };
+            return ans;
         }
 
         // /Stream/{id}/Push

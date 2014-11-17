@@ -7,10 +7,17 @@ namespace EvernestBack
     {
         static void Main(string[] args)
         {
-            //AzureStorageClient client = new AzureStorageClient();
-            //Stream s = client.GetStream("test1");
-
-            Console.Read();
+            UInt64 MessageIndex = 100;
+            IStream Stream = new RAMStream();
+            Stream.Push("Banane", a => {
+                Console.WriteLine("ACK" + a.RequestID) ; 
+                    MessageIndex = a.RequestID;
+                }
+            );
+            Stream.Pull(MessageIndex, a =>
+            {
+                Console.WriteLine(a.Message);
+            });
         }
     }
 }

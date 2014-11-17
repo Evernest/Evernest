@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using KeyType = System.String; //base 64 int
 using EvernestFront.Exceptions;
 
 namespace EvernestFront
 {
     class SourceTable
     {
-        private static readonly Dictionary<KeyType, Source> Table = new Dictionary<KeyType, Source>();
+        private static readonly Dictionary<String, Source> Table = new Dictionary<String, Source>();
 
         internal static void AddSource(Source source)
         {
             Table.Add(source.Key,source);
         }
 
-        internal static Source GetSource(KeyType key)
+        internal static Source GetSource(String key)
         {
             if (Table.ContainsKey(key))
                 return Table[key];
-            else throw new SourceKeyDoesNotExistException();
+            else throw new SourceKeyDoesNotExistException(key);
         }
 
         internal static void Clear()

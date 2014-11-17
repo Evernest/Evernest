@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+using System;
 
 namespace EvernestFront.Exceptions
 {
@@ -16,7 +14,10 @@ namespace EvernestFront.Exceptions
         /// <param name="user"></param>
         /// <param name="userRights"></param>
 
-        internal ReadAccessDeniedException(string stream, string user, AccessRights userRights)
+        internal ReadAccessDeniedException(Int64 stream, Int64 user, AccessRights userRights)
             : base(stream, user, userRights) { }
+
+        internal ReadAccessDeniedException(Source src)
+            : base(src) { }
     }
 }

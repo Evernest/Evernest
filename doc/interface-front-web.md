@@ -1,14 +1,15 @@
-#Requêtes, réponses
+﻿#Requêtes, réponses
 
 La classe Process (à renommer ? le nom n'est peut-être pas très clair) contient, pour chaque type de requête devant 
 passer par le back-end (tout sauf ce qui concerne les droits des utilisateurs), une méthode statique appropriée.
 
  Par exemple :
 
-	void Process.Push(string user, string streamName, Event eventToPush	)
+	int Process.Push(string user, string streamName, Event eventToPush	)
 	Event Process.PullRandom(string user, string streamName)
-	List<Event> Process.PullRange(string user, string streamName, string eventIdFrom, string eventIdTo)
-	void Process.CreateStream(string user, string streamName)
+	Event Process.Pull(string user, string streamName, int eventId)
+	List<Event> Process.PullRange(string user, string streamName, int eventIdFrom, int eventIdTo)
+	Int64 Process.CreateStream(string user, string streamName)
 
 L'idée est donc que pour chaque requête d'un client, le site Web appelle la méthode concernée. 
 
@@ -35,18 +36,18 @@ Pour chaque paire utilisateur/stream, l'utilisateur a un des droits suivants sur
 Ces droits sont définis dans l'enum public AccessRights.
 
 Le frontend maintient une table des droits des utilisateurs sur les streams, les méthodes pour la consulter et la modifier 
-sont dans la classe Users. Ces méthodes lèvent des exceptions (spécifiées dans leurs commentaires)
+sont aussi dans la classe Process. Ces méthodes lèvent des exceptions (spécifiées dans leurs commentaires)
 en cas d'échec.
 
 Exemples :
 	
-	void Users.SetRights(string user, string streamName, string targetUser, AccessRights rights)
-	void Users.AddUser(string userToAdd)
-	void Users.AddStream(string userCreatingStream, string streamToCreate)
-	List<KeyValuePair<string, AccessRights>> Users.StreamsOfUser(string user)
-	List<KeyValuePair<string, AccessRights>> Users.UsersOfStream(string userAsking, string stream)
+	void Process.SetRights(string user, string streamName, string targetUser, AccessRights rights)
+	Int64 Process.AddUser(string userToAdd)
+	void Process.AddStream(string userCreatingStream, string streamToCreate)
+	List<KeyValuePair<string, AccessRights>> Process.RelatedStreams(string user)
+	List<KeyValuePair<string, AccessRights>> Process.RelatedUsers(string userAsking, string stream)
 
-Modifications à faire : créer un super-utilisateur système ? (une constante publique Users.RootUser existe mais le reste n'est pas implémenté)
+Modifications à faire : créer un super-utilisateur système ? (une constante publique Process.RootUser existe mais le reste n'est pas implémenté)
 
 #Gestion des droits des sources
 

@@ -269,7 +269,7 @@ It owns sources and administrates streams.
  * `Name` *string*: User personnal name.
  * `FirstName` *string*: User personnal first name.
  * `RelatedStreams` *{Stream} list*: List of streams that are related to this user. A related stream is a stream that is either readable, writable or administrated by the user.
- * `OwnedSources` *{Stream} list*: List of streams that are administrated by this user.
+ * `OwnedSources` *{Source} list*: List of sources that are administrated by this user.
 
 
 #### Constraints
@@ -640,7 +640,7 @@ Set right associated to a Source/Stream pair.
 
 Get right associated to a User/Stream pair.
 
-**URL:** `/Right/{UserId}/{StreamId}`
+**URL:** `/UserRight/{UserId}/{StreamId}`
 
 **Required rights:** The requesting user must be related to the stream to be able to see these rights.
 
@@ -651,7 +651,7 @@ Get right associated to a User/Stream pair.
 
 Set user right associated to a User/Stream pair.
 
-**URL:** `/Right/{UserId}/{StreamId}/Set/{Right}`
+**URL:** `/UserRight/{UserId}/{StreamId}/Set/{Right}`
 
 `{Right}` is one of the following values:
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+using System;
 
 namespace EvernestFront.Exceptions
 {
@@ -15,9 +13,12 @@ namespace EvernestFront.Exceptions
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="user"></param>
-        /// <param name="userRights"></param>
+        /// <param name="rights"></param>
 
-        internal WriteAccessDeniedException(string stream, string user, AccessRights rights)
+        internal WriteAccessDeniedException(Int64 stream, Int64 user, AccessRights rights)
             : base(stream, user, rights) { }
+
+        internal WriteAccessDeniedException(Source src)
+            : base(src) { }
     }
 }

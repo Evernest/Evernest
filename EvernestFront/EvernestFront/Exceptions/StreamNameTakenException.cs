@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace EvernestFront.Exceptions
 {
     public class StreamNameTakenException : FrontException

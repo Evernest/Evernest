@@ -1,105 +1,149 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using System.Data.SqlTypes;
 using EvernestFront.Exceptions;
+using System;
 
 namespace EvernestFront
 {
+    //Checking stream and user existence should be done before calling anything from this class.
+
     static class CheckRights
     {
-        static private AccessRights GetRights(string user, string stream)
+        //static private AccessRights GetRights(string user, string stream)
+        //{
+        //    return RightsTableByUser.GetRights(user, stream);
+        //    // sécurité ?
+        //}
+
+
+
+        static internal bool CanRead(AccessRights rights)
         {
-            return RightsTableByUser.GetRights(user, stream);
-            // sécurité ?
+            switch (rights)
+            {
+                case (AccessRights.NoRights):
+                case (AccessRights.WriteOnly):
+                    return false;
+                case (AccessRights.ReadOnly):
+                case (AccessRights.ReadWrite):
+                case (AccessRights.Admin):
+                case (AccessRights.Root):
+                    return true;
+                default:
+                    throw new Exception("CheckRights.CanRead : cas non traité");
+            }
         }
 
+        static internal bool CanWrite(AccessRights rights)
+        {
+            switch (rights)
+            {
+                case (AccessRights.NoRights):
+                case (AccessRights.ReadOnly):
+                    return false;
+                case (AccessRights.WriteOnly):
+                case (AccessRights.ReadWrite):
+                case (AccessRights.Admin):
+                case (AccessRights.Root):
+                    return true;
+                default:
+                    throw new Exception("CheckRights.CanWrite : cas non traité");
+            }
+        }
 
+        static internal bool CanAdmin(AccessRights rights)
+        {
+            switch (rights)
+            {
+                case (AccessRights.NoRights):
+                case (AccessRights.WriteOnly):
+                case (AccessRights.ReadOnly):
+                case (AccessRights.ReadWrite):
+                    return false;
+                case (AccessRights.Admin):
+                case (AccessRights.Root):
+                    return true;
+                default:
+                    throw new Exception("CheckRights.CanAdmin : cas non traité");
+            }
+        }
+
+        static bool CanBeModified(AccessRights rights)
+        {
+            switch (rights)
+            {
+                case (AccessRights.NoRights):
+                case (AccessRights.WriteOnly):
+                case (AccessRights.ReadOnly):
+                case (AccessRights.ReadWrite):
+                    return true;
+                case (AccessRights.Admin):
+                case (AccessRights.Root):
+                    return false;
+                default:
+                    throw new Exception("CheckRights.CanAdmin : cas non traité");
+            }
+        }
+        
 
         /// <summary>
         /// Returns if and only if user can read on stream.
         /// </summary>
         /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="ReadAccessDeniedException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanRead(string user, string stream)
+        static internal void CheckCanRead(User user, Stream stream)
         {
-            var rights = GetRights(user, stream);
-            switch (rights)
-            {
-                case (AccessRights.NoRights):
-                case (AccessRights.WriteOnly):
-                    throw new ReadAccessDeniedException(stream, user, rights);
-                case (AccessRights.ReadOnly):
-                case (AccessRights.ReadWrite):
-                case (AccessRights.Admin):
-                case (AccessRights.Root):
-                    return;
-            }
+            var rights = UserRight.GetRight(user, stream);
+            if (CanRead(rights))
+                return;
+            else
+                throw new ReadAccessDeniedException(stream.Id, user.Id, rights);
         }
 
         /// <summary>
         /// Returns if and only if user can write on stream.
         /// </summary>
         /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="WriteAccessDeniedException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanWrite(string user, string stream)
+        static internal void CheckCanWrite(User user, Stream stream)
         {
-            var rights = GetRights(user, stream);
-            switch (rights)
-            {
-                case (AccessRights.NoRights):
-                case (AccessRights.ReadOnly):
-                    throw new WriteAccessDeniedException(stream, user, rights);
-                case (AccessRights.WriteOnly):
-                case (AccessRights.ReadWrite):
-                case (AccessRights.Admin):
-                case (AccessRights.Root):
-                    return;
-            }
+            var rights = UserRight.GetRight(user, stream);
+            if (CanWrite(rights))
+                return;
+            else
+                throw new WriteAccessDeniedException(stream.Id, user.Id, rights);
         }
 
         /// <summary>
         /// Returns if and only if user can administrate stream.
         /// </summary>
         /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamNameDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="AdminAccessDeniedException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanAdmin(string user, string stream)
+        static internal void CheckCanAdmin(User user, Stream stream)
         {
-            var rights = GetRights(user, stream);
-            switch (rights)
-            {
-                case (AccessRights.NoRights):
-                case (AccessRights.ReadOnly):
-                case (AccessRights.WriteOnly):
-                case (AccessRights.ReadWrite):
-                    throw new AdminAccessDeniedException(stream, user, rights);
-                case (AccessRights.Admin):
-                case (AccessRights.Root):    
-                    return;
-            }
+            var rights = UserRight.GetRight(user, stream);
+            if (CanAdmin(rights))
+                return;
+            else
+                throw new AdminAccessDeniedException(stream.Id, user.Id, rights);
         }
 
-        static internal void CheckRightsCanBeModified(string user, string stream)
+        static internal void CheckRightsCanBeModified(User user, Stream stream)
         {
-            var rights = GetRights(user, stream);
-            switch (rights)
-            {
-                case (AccessRights.Admin):
-                case (AccessRights.Root):
-                    throw new CannotDestituteAdminException(stream, user);
-                case (AccessRights.NoRights):
-                case (AccessRights.ReadOnly):
-                case (AccessRights.WriteOnly):
-                case (AccessRights.ReadWrite):
-                    return;
-            }
+            var rights = UserRight.GetRight(user, stream);
+            if (CanBeModified(rights))
+                return;
+            else
+                throw new CannotDestituteAdminException(stream.Id, user.Id);
         }
 
     }

@@ -9,7 +9,7 @@ namespace EvernestBack
         {
             AzureStorageClient client = new AzureStorageClient();
             EventStream s = client.GetEventStream("test1");
-            s.Push("hello world");
+            // s.Push("hello world"); TODO : BROKEN, use delegate now.
             Console.Read();
         }
     }

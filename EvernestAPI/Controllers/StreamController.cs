@@ -26,7 +26,8 @@ namespace EvernestAPI.Controllers
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var ans = new Hashtable();
-            if (nvc["key"] == null)
+            string key = nvc["key"];
+            if (key == null)
                 {
                     ans["Status"] = "Error";
                     List<string> errors = new List<string>();
@@ -35,7 +36,6 @@ namespace EvernestAPI.Controllers
                 }
             else
                 {
-                    string key = nvc["key"];
                     Event eve = Process.Pull(key, arg);
                     ans["Status"] = "Success";
                     List<Event> aux = new List<Event>();

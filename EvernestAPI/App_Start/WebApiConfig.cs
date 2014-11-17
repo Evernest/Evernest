@@ -17,111 +17,38 @@ namespace EvernestAPI
             // We'll have to support content-type application/json. <-- TODO
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 
-
             /**
              * Stream
              */
 
-            config.Routes.MapHttpRoute(
-                name: "StreamGet",
-                routeTemplate: "{controller}/{streamId}",
-                constraints: new {},
-                defaults: new {controller = "Stream"}
-                );
+            // GET: /Stream/{streamId}
+            // GET: /Stream/{streamId}/Pull/{random}
+            // GET: /Stream/{streamId}/Pull/{id}
+            // GET: /Stream/{streamId}/Pull/{startId}/{stopId}
+
+            // POST: /Stream/{streamId}/Push
 
             config.Routes.MapHttpRoute(
-                name: "StreamGetRandom",
-                routeTemplate: "{controller}/{streamId}/Pull/{random}",
-                constraints: new {random = @"Random"},
-                defaults: new {controller = "Stream"}
-                );
-
-            config.Routes.MapHttpRoute(
-                name: "StreamGetOne",
-                routeTemplate: "{controller}/{streamId}/Pull/{id}",
-                constraints: new {id = @"\d+"},
-                defaults: new {controller = "Stream"}
-                );
-
-            config.Routes.MapHttpRoute(
-                name: "StreamGetRange",
-                routeTemplate: "{controller}/{streamId}/Pull/{startId}/{stopId}",
-                constraints: new {startId = @"\d+", stopId = @"\d+"},
-                defaults: new {controller = "Stream"}
-                );
-
-            config.Routes.MapHttpRoute(
-                name: "StreamPostEvent",
-                routeTemplate: "{controller}/{streamId}/Push", // Effectivement, c'est la même que StreamGet
-                constraints: new {},
-                defaults: new {controller = "Stream"}
-                );
-
-            
-            /**
-             * Source
-             */
-
-            config.Routes.MapHttpRoute(
-                name: "SourceGet",
-                routeTemplate: "{controller}/{sourceId}",
-                constraints: new {},
-                defaults: new {controller = "Source"}
-                );
-
-            config.Routes.MapHttpRoute(
-                name: "SourceNew",
-                routeTemplate: "{controller}/New",
-                constraints: new {},
-                defaults: new {controller = "Source"}
-                );
-
-            /**
-             * User
-             */
-
-            config.Routes.MapHttpRoute(
-                name: "UserGet",
-                routeTemplate: "{controller}/{userId}",
-                constraints: new {},
-                defaults: new {controller = "User"}
-                );
-
-            /**
-             * Right
-             */
-
-            config.Routes.MapHttpRoute(
-                name: "RightGet",
-                routeTemplate: "{controller}/{sourceId}/{streamId}",
+                name: "NoArg",
+                routeTemplate: "{controller}/{id}/{action}",
                 constraints: new { },
-                defaults: new { controller = "Right" }
+                defaults: new { }
                 );
 
             config.Routes.MapHttpRoute(
-                name: "RightSet",
-                routeTemplate: "{controller}/{sourceId}/{streamId}/set/{right}",
-                constraints: new {right = @"None|ReadOnly|WriteOnly|ReadWrite|Admin"},
-                defaults: new {controller = "Right"}
-                );
-
-            /**
-             * UserRight
-             */
-
-            config.Routes.MapHttpRoute(
-                name: "UserRightGet",
-                routeTemplate: "{controller}/{userId}/{streamId}",
+                name: "OneArg",
+                routeTemplate: "{controller}/{id}/{action}/{arg}",
                 constraints: new { },
-                defaults: new { controller = "UserRight" }
+                defaults: new { }
                 );
 
             config.Routes.MapHttpRoute(
-                name: "UserRightSet",
-                routeTemplate: "{controller}/{userId}/{streamId}/set/{right}",
-                constraints: new {right = @"None|ReadOnly|WriteOnly|ReadWrite|Admin"},
-                defaults: new {controller = "UserRight"}
+                name: "TwoArg",
+                routeTemplate: "{controller}/{id}/{action}/{firstArg}/{secondArg}",
+                constraints: new { },
+                defaults: new { }
                 );
+
         }
     }
 }

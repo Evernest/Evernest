@@ -11,56 +11,66 @@ namespace EvernestBack
         public UInt64 RequestID { get; private set; }
         public String Message { get; protected set; }
 
-        internal Agent(String Message, UInt64 RequestID, Action<IAgent> Callback)
+        internal Agent(String Message, UInt64 RequestID, 
+            Action<IAgent> Callback)
         {            
             this.Message = Message;
             this.RequestID = RequestID;
             this.Callback = Callback;
         }
 
-        private void Reverse(Byte[] array, int offset, int count)
+        private void Reverse(Byte[] Array, int Offset, int Count)
         {
-            Byte tmp;
-            for (UInt16 i = 0; i < count; i++)
+            Byte Tmp;
+            for (UInt16 i = 0; i < Count; i++)
             {
-                tmp = array[offset + i];
-                array[offset + i] = array[offset + count - 1 - i];
-                array[offset + count - 1 - i] = tmp;
+                Tmp = Array[Offset + i];
+                Array[Offset + i] = Array[Offset + Count - 1 - i];
+                Array[Offset + Count - 1 - i] = Tmp;
             }
         }
 
-        public Byte[] Serialize(out UInt16 buffSize)
+        public Byte[] Serialize(out UInt16 BuffSize)
         {
-            buffSize = (UInt16) System.Text.Encoding.Unicode.GetByteCount(Message);
-            Byte[] finalBytes = new Byte[buffSize+sizeof(UInt64)+sizeof(UInt16)];
-            Byte[] reqIDBytes = BitConverter.GetBytes(RequestID);
-            Byte[] msgLengthBytes = BitConverter.GetBytes(buffSize);
-            System.Text.Encoding.Unicode.GetBytes(Message, 0, Message.Length, finalBytes, (Int32) sizeof(UInt64)+sizeof(UInt16));
-            if(!BitConverter.IsLittleEndian) // ensure we use little-endianness
+            BuffSize = 
+                (UInt16) System.Text.Encoding.Unicode.GetByteCount(Message);
+
+            Byte[] FinalBytes = 
+                new Byte[BuffSize+sizeof(UInt64)+sizeof(UInt16)];
+
+            Byte[] ReqIDBytes = BitConverter.GetBytes(RequestID);
+            Byte[] MsgLengthBytes = BitConverter.GetBytes(BuffSize);
+            System.Text.Encoding.Unicode.GetBytes(Message, 0, Message.Length, 
+                FinalBytes, (Int32) sizeof(UInt64)+sizeof(UInt16));
+            // ensure we use little-endianness
+            if(!BitConverter.IsLittleEndian) 
             {
-                Reverse(reqIDBytes, 0, sizeof(UInt64));
-                Reverse(msgLengthBytes, 0, sizeof(UInt16));
+                Reverse(ReqIDBytes, 0, sizeof(UInt64));
+                Reverse(MsgLengthBytes, 0, sizeof(UInt16));
             }
-            System.Buffer.BlockCopy(reqIDBytes, 0, finalBytes, 0, sizeof(UInt64));
-            System.Buffer.BlockCopy(msgLengthBytes, 0, finalBytes, sizeof(UInt64), sizeof(UInt16));
-            buffSize += sizeof(UInt64)+sizeof(UInt16);
-            return finalBytes;
+            System.Buffer.BlockCopy(ReqIDBytes, 0, FinalBytes, 0, 
+                sizeof(UInt64));
+            System.Buffer.BlockCopy(MsgLengthBytes, 0, FinalBytes, 
+                sizeof(UInt64), sizeof(UInt16));
+            BuffSize += sizeof(UInt64)+sizeof(UInt16);
+            return FinalBytes;
         }
 
-        public void ReadFromStream(System.IO.Stream input) //should check whether an error happen when reading
+        public void ReadFromStream(System.IO.Stream Input) 
+            //should check whether an error happen when reading
         {
-            Byte[] buffer = new Byte[sizeof(UInt64)];
-            input.Read(buffer, 0, sizeof(UInt64));
+            Byte[] Buffer = new Byte[sizeof(UInt64)];
+            Input.Read(Buffer, 0, sizeof(UInt64));
             if (!BitConverter.IsLittleEndian)
-                Reverse(buffer, 0, sizeof(UInt64));
-            RequestID = BitConverter.ToUInt64(buffer, 0);
-            input.Read(buffer, 0, sizeof(UInt16));
+                Reverse(Buffer, 0, sizeof(UInt64));
+            RequestID = BitConverter.ToUInt64(Buffer, 0);
+            Input.Read(Buffer, 0, sizeof(UInt16));
             if (!BitConverter.IsLittleEndian)
-                Reverse(buffer, 0, sizeof(UInt16));
-            UInt16 msgLength = BitConverter.ToUInt16(buffer, 0);
-            Byte[] msgBuffer = new Byte[msgLength];
-            input.Read(msgBuffer, 0, msgLength);
-            Message = System.Text.Encoding.Unicode.GetString(msgBuffer);
+                Reverse(Buffer, 0, sizeof(UInt16));
+            UInt16 MsgLength = BitConverter.ToUInt16(Buffer, 0);
+            Byte[] MsgBuffer = new Byte[MsgLength];
+            Input.Read(MsgBuffer, 0, MsgLength);
+            Message = System.Text.Encoding.Unicode.GetString(MsgBuffer);
         }
 
         internal void Processed()
@@ -68,7 +78,7 @@ namespace EvernestBack
             Callback(this);
         }
 
-        internal void ProcessFailed(String feedbackMessage)
+        internal void ProcessFailed(String FeedbackMessage)
         {
             //TODO
         }

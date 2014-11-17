@@ -1,35 +1,25 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace EvernestAPI.Controllers
 {
     public class SourceController : ApiController
     {
-        // GET: /Source/{sourceId}
-        public Hashtable Get(int sourceId)
+        // /Source/{id}
+        [HttpGet]
+        [HttpPost]
+        public String Default(int id)
         {
-            var response = new Hashtable();
-            response["method"] = "GET";
-            response["controller"] = "SourceController";
-            response["sourceId"] = sourceId;
-            response["action"] = "Get";
-            return response;
+            return String.Format("/Source/{0}", id);
         }
 
-        // POST: /Source/New
-        public Hashtable Post()
+        // /Source/New
+        [HttpGet]
+        [HttpPost]
+        [ActionName("New")]
+        public String New()
         {
-            var response = new Hashtable();
-            response["method"] = "POST";
-            response["controller"] = "SourceController";
-            response["action"] = "Post";
-            response["notes"] = "I don't know how to read JSon body. Yet.";
-            return response;
+            return String.Format("/Source/New");
         }
     }
 }

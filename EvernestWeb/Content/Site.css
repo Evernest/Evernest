@@ -137,9 +137,12 @@ footer {
 
 .site-title a, .site-title a:hover, .site-title a:active {
     background: none;
-    color: #c8c8c8;
+    color: transparent;
     outline: none;
+    font-size: 5.3em;
     text-decoration: none;
+    background: url("../Icone/logo.png") no-repeat left top local;
+    background-size: 100% 100%;
 }
 
 

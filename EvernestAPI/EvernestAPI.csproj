@@ -197,7 +197,6 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\RightController.cs" />
     <Compile Include="Controllers\SourceController.cs" />
     <Compile Include="Controllers\StreamController.cs" />
@@ -278,6 +277,12 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EvernestFront\EvernestFront\EvernestFront.csproj">
+      <Project>{955f313d-19ed-4f17-904b-4d95a4ee7e74}</Project>
+      <Name>EvernestFront</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

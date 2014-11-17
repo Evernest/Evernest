@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using EvernestFront;
@@ -13,45 +9,63 @@ namespace EvernestAPI.Controllers
 {
     public class StreamController : ApiController
     {
-        // GET: /Stream/{id}
-        // GET: /Stream/{id}/Pull/{random}
-        // GET: /Stream/{id}/Pull/{arg}
-        // GET: /Stream/{id}/Pull/{arg0}/{arg1}
-        
-        // POST: /Stream/{streamId}/Push
 
+        // /Stream/{id}
         [HttpGet]
         [HttpPost]
-        public Hashtable Pull(int id, int arg)
+        public string Default(int id)
+        {
+            return String.Format("/Stream/{0}", id);
+        }
+
+        // /Stream/{id}/Pull/{arg0}
+        [HttpGet]
+        [HttpPost]
+        [ActionName("Pull")]
+        public Hashtable Pull(int id, int arg0)
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var ans = new Hashtable();
-            string key = nvc["key"];
+            var key = nvc["key"];
             if (key == null)
                 {
                     ans["Status"] = "Error";
-                    List<string> errors = new List<string>();
-                    errors.Add("Key");
-                    ans["FieldErrors"] = errors;
+                    ans["FieldErrors"] = new List<string> {"Key"};
                 }
             else
                 {
-                    Event eve = Process.Pull(key, arg);
+                    var eve = Process.Pull(key, arg0);
                     ans["Status"] = "Success";
-                    List<Event> aux = new List<Event>();
-                    aux.Add(eve);
-                    ans["Events"] = aux;                 
+                    ans["Events"] = new List<Event> {eve};
                 };
             return ans;
         }
 
-        
-
+        // /Stream/{id}/Pull/{arg0}/{arg1}
         [HttpGet]
         [HttpPost]
+        [ActionName("Pull")]
+        public string Pull(int id, int arg0, int arg1)
+        {
+            return String.Format("/Stream/{0}/Pull/{1}/{2}", id, arg0, arg1);
+        }
+
+        // /Stream/{id}/PullRandom
+        [HttpGet]
+        [HttpPost]
+        [ActionName("PullRandom")]
         public string PullRandom(int id)
         {
-            return "pull random";
+            return String.Format("/Stream/{0}/PullRandom", id);
+        }
+
+        // /Stream/{id}/Push
+        [HttpGet]
+        [HttpPost]
+        [ActionName("Push")]
+        public string Push(int id)
+        {
+            return String.Format("/Stream/{0}/Push", id);
         }
 
     }

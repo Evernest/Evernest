@@ -21,12 +21,11 @@ namespace EvernestBack
             currentId = 0;
         }
 
-        public UInt64 Push(String message, Action<IAgent> Callback)
+        public void Push(String message, Action<IAgent> Callback)
         {
             UInt64 tmp = currentId;
             Agent p = new Producer(message, currentId, writeLock, Callback);
             currentId++;
-            return tmp;
         }
 
         public void Pull(UInt64 id, Action<IAgent> Callback)

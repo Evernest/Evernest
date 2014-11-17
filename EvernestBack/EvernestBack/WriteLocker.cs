@@ -15,10 +15,13 @@ namespace EvernestBack
 
 		private BlockingCollection<Producer> waitingProducers = new BlockingCollection<Producer>();
         private CloudBlockBlob blob;
+        private CloudBlobStream writeStream;
 
         public WriteLocker(CloudBlockBlob blob)
         {
             this.blob = blob;
+            blob.StreamWriteSizeInBytes = 65536; //64KiB for now, totally arbitrary
+            writeStream = blob.OpenWrite();
         }
 
         public void Store()
@@ -37,6 +40,7 @@ namespace EvernestBack
 
         private void StoreToCloud(Producer prod)
         {
+
             // TODO
         }
 

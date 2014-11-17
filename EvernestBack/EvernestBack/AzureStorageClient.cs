@@ -38,7 +38,7 @@ namespace EvernestBack
             streamContainer.CreateIfNotExists();
         }
 
-        public Stream GetStream( String streamStrId )
+        public IStream GetStream( String streamStrId )
         {
             CloudBlockBlob blob = streamContainer.GetBlockBlobReference(streamStrId);
             return new Stream( blob );

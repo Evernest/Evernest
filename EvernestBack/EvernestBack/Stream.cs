@@ -11,7 +11,7 @@ namespace EvernestBack
 {
     class Stream:IStream
     {
-        private CloudBlockBlob blob;
+        private CloudBlockBlob blob; // TODO : Remove ?
         private WriteLocker writeLock;
         private UInt64 currentId;
 

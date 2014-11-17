@@ -5,26 +5,26 @@ using System.Text;
 
 namespace EvernestBack
 {
-    abstract class Agent
+    public abstract class Agent:IAgent
     {
+        private Action<IAgent> Callback;
 
-        protected UInt64 RequestID { get; private set; }
 
-        protected Action<Agent> Callback;
-        public String Message { get; protected set; }
+        public UInt64 RequestID {get; private set; }
+        public String Message {get; protected set; }
 
-        protected Agent(String Message, UInt64 RequestID, Action<Agent> Callback)
+        internal Agent(String Message, UInt64 RequestID, Action<IAgent> Callback)
         {
             this.RequestID = RequestID;
             this.Callback = Callback;
         }
 
-        public void Processed()
+        internal void Processed()
         {
             Callback(this);
         }
 
-        public void ProcessFailed(String feedBackMessage)
+        internal void ProcessFailed(String feedBackMessage)
         {
             // TODO
         }

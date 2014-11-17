@@ -41,8 +41,8 @@ namespace EvernestBack
         private void StoreToCloud(Producer prod)
         {
             // TODO
-            Console.WriteLine("Store producer {0} to Cloud.", prod.requestID);
-            Console.WriteLine(prod.message);
+            Console.WriteLine("Store producer {0} to Cloud.", prod.RequestID);
+            Console.WriteLine(prod.RequestID);
         }
 
         public void Register(Producer producer)

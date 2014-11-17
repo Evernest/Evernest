@@ -8,7 +8,7 @@ namespace EvernestBack
     // Interface between Back-end and Front-end parts
     public interface IStream
     {
-        void Push(String message, Int64 id);
-        void Pull(Int64 id);
+        UInt64 Push(String message, Action<IAgent> Callback);
+        void Pull(UInt64 id, Action<IAgent> Callback);
     }
 }

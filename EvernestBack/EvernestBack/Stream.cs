@@ -17,12 +17,11 @@ namespace EvernestBack
 
         public Stream( CloudBlockBlob blob )
         {
-
             writeLock = new WriteLocker(blob);
             currentId = 0;
         }
 
-        public UInt64 Push(String message, Action<Agent> Callback)
+        public UInt64 Push(String message, Action<IAgent> Callback)
         {
             UInt64 tmp = currentId;
             Agent p = new Producer(message, currentId, writeLock, Callback);
@@ -30,9 +29,9 @@ namespace EvernestBack
             return tmp;
         }
 
-        public void Pull(UInt64 id)
+        public void Pull(UInt64 id, Action<IAgent> Callback)
         {
-            Agent r = new Reader(null, id, this);
+            Agent r = new Reader(null, id, Callback);
         }
     }
 }

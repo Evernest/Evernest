@@ -7,7 +7,7 @@ namespace EvernestBack
 {
     class Reader:Agent
     {
-        public Reader(String Message, UInt64 RequestID, Action<Agent> Callback)
+        public Reader(String Message, UInt64 RequestID, Action<IAgent> Callback)
             :base(Message, RequestID, Callback)
         {
             

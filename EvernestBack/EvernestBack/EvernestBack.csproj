@@ -74,7 +74,8 @@
   <ItemGroup>
     <Compile Include="Agent.cs" />
     <Compile Include="AzureStorageClient.cs" />
-    <Compile Include="IStorage.cs" />
+    <Compile Include="IAgent.cs" />
+    <Compile Include="IStream.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Producer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

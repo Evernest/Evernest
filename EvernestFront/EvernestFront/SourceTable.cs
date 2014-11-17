@@ -17,5 +17,10 @@ namespace EvernestFront
         {
             return Table[key];
         }
+
+        internal static void Clear()
+        {
+            Table.Clear();
+        }
     }
 }

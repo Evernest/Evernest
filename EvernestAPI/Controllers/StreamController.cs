@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using EvernestFront;
 
 namespace EvernestAPI.Controllers
 {
@@ -14,25 +15,37 @@ namespace EvernestAPI.Controllers
     {
         // GET: /Stream/{id}
         // GET: /Stream/{id}/Pull/{random}
-        // GET: /Stream/{id}/Pull/{id}
+        // GET: /Stream/{id}/Pull/{arg}
         // GET: /Stream/{id}/Pull/{arg0}/{arg1}
         
         // POST: /Stream/{streamId}/Push
 
         [HttpGet]
         [HttpPost]
-        public string Pull(int id)
+        public Hashtable Pull(int id, int arg)
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
-            return nvc["example"];
+            var ans = new Hashtable();
+            if (nvc["key"] == null)
+                {
+                    ans["Status"] = "Error";
+                    List<string> errors = new List<string>();
+                    errors.Add("Key");
+                    ans["FieldErrors"] = errors;
+                }
+            else
+                {
+                    string key = nvc["key"];
+                    Event eve = Process.Pull(key, arg);
+                    ans["Status"] = "Success";
+                    List<Event> aux = new List<Event>();
+                    aux.Add(eve);
+                    ans["Events"] = aux;                 
+                };
+            return ans;
         }
 
-        [HttpGet]
-        [HttpPost]
-        public int Pull(int id, int arg)
-        {
-            return arg;
-        }
+        
 
         [HttpGet]
         [HttpPost]

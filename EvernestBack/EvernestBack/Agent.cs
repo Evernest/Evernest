@@ -8,21 +8,25 @@ namespace EvernestBack
     abstract class Agent
     {
 
-        protected UInt64 requestID { get; private set; }
+        protected UInt64 RequestID { get; private set; }
 
-        protected Action<Agent> callback;
-        public String message { get; protected set; }
+        protected Action<Agent> Callback;
+        public String Message { get; protected set; }
 
-        protected Agent(String Message, UInt64 requestID, Action<Agent> Callback)
+        protected Agent(String Message, UInt64 RequestID, Action<Agent> Callback)
         {
-            this.requestID = requestID;
-            this.callback = Callback;
+            this.RequestID = RequestID;
+            this.Callback = Callback;
         }
 
-        abstract public void Processed();
+        public void Processed()
+        {
+            Callback(this);
+        }
 
         public void ProcessFailed(String feedBackMessage)
         {
+            // TODO
         }
 
     }

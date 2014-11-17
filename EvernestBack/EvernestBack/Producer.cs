@@ -22,11 +22,5 @@ namespace EvernestBack
         {
             writer.Register(this);
         }
-
-        public override void Processed()
-        {
-            this.message = "ACK" + this.requestID;
-            base.callback(this);
-        }
     }
 }

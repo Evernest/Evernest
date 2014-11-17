@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using KeyType = System.String; //base 64 int
+using EvernestFront.Exceptions;
 
 namespace EvernestFront
 {
@@ -15,7 +16,9 @@ namespace EvernestFront
 
         internal static Source GetSource(KeyType key)
         {
-            return Table[key];
+            if (Table.ContainsKey(key))
+                return Table[key];
+            else throw new SourceKeyDoesNotExistException();
         }
 
         internal static void Clear()

@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using EvernestFront;
 using EvernestFront.Exceptions;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
-using KeyType = System.String;
 
 namespace EvernestFrontTests
 {
@@ -161,9 +161,9 @@ namespace EvernestFrontTests
         {
             long userId = Process.AddUser(UserName);
             long streamId = Process.CreateStream(userId, StreamName);
-            KeyType key = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadWrite);
+            String key = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadWrite);
 
-            KeyType key2 = Process.CreateSource(userId, streamId, "source2", AccessRights.ReadWrite);
+            String key2 = Process.CreateSource(userId, streamId, "source2", AccessRights.ReadWrite);
             Assert.AreNotEqual(key, key2);
         }
 

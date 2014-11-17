@@ -11,7 +11,7 @@ namespace EvernestBack
         private WriteLocker writer;
 
         public Producer(String message, UInt64 requestId, 
-            WriteLocker writeLocker, Stream feedback)
+            WriteLocker writeLocker, EventStream feedback)
             :base(message, requestId, feedback)
         {
             this.writer = writeLocker;

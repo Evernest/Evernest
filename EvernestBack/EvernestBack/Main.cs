@@ -7,7 +7,7 @@ namespace EvernestBack
         static void Main(string[] args)
         {
             AzureStorageClient client = new AzureStorageClient();
-            Stream s = client.GetStream("test1");
+            EventStream s = client.GetEventStream("test1");
             Console.Read();
         }
     }

@@ -9,13 +9,13 @@ using System.Configuration;
 
 namespace EvernestBack
 {
-    class Stream
+    class EventStream
     {
         private CloudBlockBlob blob;
         private WriteLocker writeLock;
         private UInt64 currentId;
 
-        public Stream( CloudBlockBlob blob )
+        public EventStream( CloudBlockBlob blob )
         {
             writeLock = new WriteLocker(blob);
             currentId = 0;

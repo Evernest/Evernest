@@ -12,7 +12,7 @@ namespace EvernestBack
     class AzureStorageClient
     {
         private CloudBlobClient blobClient;
-        private Dictionary<String, Stream> openedStreams;
+        private Dictionary<String, EventStream> openedStreams;
         private CloudBlobContainer streamContainer;
 
         public AzureStorageClient()
@@ -39,12 +39,12 @@ namespace EvernestBack
             streamContainer.CreateIfNotExists();
         }
 
-        public Stream GetStream( String streamStrId )
+        public EventStream GetEventStream( String streamStrId )
         {
-            Stream stream;
+            EventStream stream;
             if( !openedStreams.TryGetValue(streamStrId, out stream) )
             {
-                stream = new Stream(streamContainer.GetBlockBlobReference(streamStrId));
+                stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId));
                 openedStreams.Add(streamStrId, stream);
             }
             return stream;

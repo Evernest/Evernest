@@ -75,7 +75,7 @@
     <Compile Include="Producer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reader.cs" />
-    <Compile Include="Stream.cs" />
+    <Compile Include="EventStream.cs" />
     <Compile Include="WriteLocker.cs" />
   </ItemGroup>
   <ItemGroup>

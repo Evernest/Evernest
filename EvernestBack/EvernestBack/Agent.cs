@@ -8,10 +8,10 @@ namespace EvernestBack
     abstract class Agent
     {
         protected UInt64 requestID { get; private set; }
-        protected Stream feedback;
+        protected EventStream feedback;
         public String message { get; protected set; }
 
-        protected Agent(String Message, UInt64 requestID, Stream feedback)
+        protected Agent(String Message, UInt64 requestID, EventStream feedback)
         {
             this.requestID = requestID;
             this.feedback = feedback;

@@ -9,10 +9,11 @@ using System.Configuration;
 
 namespace EvernestBack
 {
-    /* EventStream represents an instance of a stream of events and should be matched to a single blob
+    /**
+     * EventStream represents an instance of a stream of events and should be matched to a single blob
      * should be created with AzureStorageClient
      */
-    class EventStream
+    class EventStream:IStream
     {
         private WriteLocker writeLock;
         private UInt64 currentId;
@@ -25,11 +26,11 @@ namespace EvernestBack
 
 
         // Push : Give a string, return an ID with the Callback
-        public void Push(String message, Action<IAgent> Callback)
+        public UInt64 Push(String message, Action<IAgent> Callback)
         {
-            UInt64 tmp = currentId;
             Agent p = new Producer(message, currentId, writeLock, Callback);
             currentId++;
+            return currentId-1;
         }
 
 

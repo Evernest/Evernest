@@ -9,7 +9,7 @@ using System.Configuration;
 
 namespace EvernestBack
 {
-    /*
+    /**
      * AzureStorageClient represents a client connection with the azure storage service 
      * see it as an EventStream factory
      */

@@ -17,6 +17,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestAPI", "EvernestAPI\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestBack", "EvernestBack\EvernestBack.csproj", "{98FB2D5C-0689-4F34-9B04-DE94992EB906}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestWeb", "EvernestWeb\EvernestWeb.csproj", "{5F230F98-725B-4917-B94D-385101FFF73F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{227A8633-C1CE-443C-A447-6241DF8EF155} = {227A8633-C1CE-443C-A447-6241DF8EF155}
+		{955F313D-19ED-4F17-904B-4D95A4EE7E74} = {955F313D-19ED-4F17-904B-4D95A4EE7E74}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +45,10 @@ Global
 		{98FB2D5C-0689-4F34-9B04-DE94992EB906}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98FB2D5C-0689-4F34-9B04-DE94992EB906}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98FB2D5C-0689-4F34-9B04-DE94992EB906}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F230F98-725B-4917-B94D-385101FFF73F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F230F98-725B-4917-B94D-385101FFF73F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F230F98-725B-4917-B94D-385101FFF73F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F230F98-725B-4917-B94D-385101FFF73F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

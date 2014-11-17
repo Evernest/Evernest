@@ -5,6 +5,10 @@ using System.Text;
 
 namespace EvernestBack
 {
+    /* The role of the Agent class is to implement common processes used by 
+     * both Reader and Producer. That is for instance : the Callback procedure 
+     * when processed, the RequestID and Message logic, etc...
+     */
     abstract class Agent:IAgent
     {
         private Action<IAgent> Callback;

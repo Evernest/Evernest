@@ -9,6 +9,10 @@ using System.Configuration;
 
 namespace EvernestBack
 {
+    /*
+     * AzureStorageClient represents a client connection with the azure storage service 
+     * see it as an EventStream factory
+     */
     class AzureStorageClient
     {
         private CloudBlobClient blobClient;
@@ -17,6 +21,7 @@ namespace EvernestBack
 
         public AzureStorageClient()
         {
+            openedStreams = new Dictionary<String,EventStream>();
             // Create the blob client
             CloudStorageAccount storageAccount = null;
             try

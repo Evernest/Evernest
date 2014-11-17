@@ -25,7 +25,7 @@ namespace EvernestBack
 
         public override void Processed()
         {
-            this.message = "ACK" + this.requestID;
+            this.Message = "ACK" + this.RequestID;
             base.feedback.StreamDeliver(this);
         }
     }

@@ -13,7 +13,7 @@ namespace EvernestBack
             
         }
         
-        private void read()
+        private void Read()
         {
             //TODO
             // message = "Aller chercher le message sur le blob"

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
@@ -40,6 +41,9 @@ namespace EvernestBack
 
         private void StoreToCloud(Producer prod)
         {
+            UInt16 size;
+            Byte[] bytes = prod.Serialize(out size);
+            outputStream.Write(bytes, 0, size);
         }
 
         public void Register(Producer producer)

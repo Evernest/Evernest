@@ -9,9 +9,11 @@ using System.Configuration;
 
 namespace EvernestBack
 {
+    /* EventStream represents an instance of a stream of events and should be matched to a single blob
+     * should be created with AzureStorageClient
+     */
     class EventStream
     {
-        private CloudBlockBlob blob;
         private WriteLocker writeLock;
         private UInt64 currentId;
 
@@ -36,7 +38,7 @@ namespace EvernestBack
 
         public void StreamDeliver(Agent agent)
         {
-            Console.WriteLine(agent.message);
+            Console.WriteLine(agent.Message);
         }
     }
 }

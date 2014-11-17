@@ -22,10 +22,10 @@ namespace EvernestBack
             currentId = 0;
         }
 
-        public UInt64 Push(String message)
+        public UInt64 Push(String message, Action<Agent> Callback)
         {
             UInt64 tmp = currentId;
-            Agent p = new Producer(message, currentId, writeLock, this);
+            Agent p = new Producer(message, currentId, writeLock, Callback);
             currentId++;
             return tmp;
         }
@@ -33,11 +33,6 @@ namespace EvernestBack
         public void Pull(UInt64 id)
         {
             Agent r = new Reader(null, id, this);
-        }
-
-        public void StreamDeliver(Agent agent)
-        {
-            Console.WriteLine(agent.message);
         }
     }
 }

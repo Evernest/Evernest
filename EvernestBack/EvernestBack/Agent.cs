@@ -10,13 +10,13 @@ namespace EvernestBack
 
         protected UInt64 requestID { get; private set; }
 
-        protected Stream feedback;
+        protected Action<Agent> callback;
         public String message { get; protected set; }
 
-        protected Agent(String Message, UInt64 requestID, Stream feedback)
+        protected Agent(String Message, UInt64 requestID, Action<Agent> Callback)
         {
             this.requestID = requestID;
-            this.feedback = feedback;
+            this.callback = Callback;
         }
 
         abstract public void Processed();
@@ -24,5 +24,6 @@ namespace EvernestBack
         public void ProcessFailed(String feedBackMessage)
         {
         }
+
     }
 }

@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Agent.cs" />
+    <Compile Include="AzureStorageClient.cs" />
     <Compile Include="IStorage.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Producer.cs" />

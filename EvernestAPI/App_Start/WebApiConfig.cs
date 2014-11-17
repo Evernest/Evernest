@@ -24,35 +24,35 @@ namespace EvernestAPI
 
             config.Routes.MapHttpRoute(
                 name: "StreamGet",
-                routeTemplate: "Stream/{streamId}",
+                routeTemplate: "{controller}/{streamId}",
                 constraints: new {},
                 defaults: new {controller = "Stream"}
                 );
 
             config.Routes.MapHttpRoute(
                 name: "StreamGetRandom",
-                routeTemplate: "Stream/{streamId}/Pull/{random}",
+                routeTemplate: "{controller}/{streamId}/Pull/{random}",
                 constraints: new {random = @"Random"},
                 defaults: new {controller = "Stream"}
                 );
 
             config.Routes.MapHttpRoute(
                 name: "StreamGetOne",
-                routeTemplate: "Stream/{streamId}/Pull/{id}",
+                routeTemplate: "{controller}/{streamId}/Pull/{id}",
                 constraints: new {id = @"\d+"},
                 defaults: new {controller = "Stream"}
                 );
 
             config.Routes.MapHttpRoute(
                 name: "StreamGetRange",
-                routeTemplate: "Stream/{streamId}/Pull/{startId}/{stopId}",
+                routeTemplate: "{controller}/{streamId}/Pull/{startId}/{stopId}",
                 constraints: new {startId = @"\d+", stopId = @"\d+"},
                 defaults: new {controller = "Stream"}
                 );
 
             config.Routes.MapHttpRoute(
                 name: "StreamPostEvent",
-                routeTemplate: "Stream/{streamId}/Push", // Effectivement, c'est la même que StreamGet
+                routeTemplate: "{controller}/{streamId}/Push", // Effectivement, c'est la même que StreamGet
                 constraints: new {},
                 defaults: new {controller = "Stream"}
                 );
@@ -64,14 +64,14 @@ namespace EvernestAPI
 
             config.Routes.MapHttpRoute(
                 name: "SourceGet",
-                routeTemplate: "Source/{sourceId}",
+                routeTemplate: "{controller}/{sourceId}",
                 constraints: new {},
                 defaults: new {controller = "Source"}
                 );
 
             config.Routes.MapHttpRoute(
                 name: "SourceNew",
-                routeTemplate: "Source/New",
+                routeTemplate: "{controller}/New",
                 constraints: new {},
                 defaults: new {controller = "Source"}
                 );
@@ -82,7 +82,7 @@ namespace EvernestAPI
 
             config.Routes.MapHttpRoute(
                 name: "UserGet",
-                routeTemplate: "User/{userId}",
+                routeTemplate: "{controller}/{userId}",
                 constraints: new {},
                 defaults: new {controller = "User"}
                 );
@@ -93,14 +93,14 @@ namespace EvernestAPI
 
             config.Routes.MapHttpRoute(
                 name: "RightGet",
-                routeTemplate: "Right/{sourceId}/{streamId}",
+                routeTemplate: "{controller}/{sourceId}/{streamId}",
                 constraints: new { },
                 defaults: new { controller = "Right" }
                 );
 
             config.Routes.MapHttpRoute(
                 name: "RightSet",
-                routeTemplate: "Right/{sourceId}/{streamId}/set/{right}",
+                routeTemplate: "{controller}/{sourceId}/{streamId}/set/{right}",
                 constraints: new {right = @"None|ReadOnly|WriteOnly|ReadWrite|Admin"},
                 defaults: new {controller = "Right"}
                 );
@@ -111,14 +111,14 @@ namespace EvernestAPI
 
             config.Routes.MapHttpRoute(
                 name: "UserRightGet",
-                routeTemplate: "UserRight/{userId}/{streamId}",
+                routeTemplate: "{controller}/{userId}/{streamId}",
                 constraints: new { },
                 defaults: new { controller = "UserRight" }
                 );
 
             config.Routes.MapHttpRoute(
                 name: "UserRightSet",
-                routeTemplate: "UserRight/{userId}/{streamId}/set/{right}",
+                routeTemplate: "{controller}/{userId}/{streamId}/set/{right}",
                 constraints: new {right = @"None|ReadOnly|WriteOnly|ReadWrite|Admin"},
                 defaults: new {controller = "UserRight"}
                 );

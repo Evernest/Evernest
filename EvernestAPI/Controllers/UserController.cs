@@ -20,5 +20,15 @@ namespace EvernestAPI.Controllers
             response["action"] = "Get";
             return response;
         }
+
+        public Hashtable Post(int userId)
+        {
+            var response = new Hashtable();
+            response["method"] = "POST";
+            response["controller"] = "UserController";
+            response["sourceId"] = userId;
+            response["action"] = "Post";
+            return response;
+        }
     }
 }

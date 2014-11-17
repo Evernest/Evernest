@@ -17,6 +17,13 @@ namespace EvernestAPI
                 constraints: new {},
                 defaults: new {action = "Default", arg0 = RouteParameter.Optional, arg1 = RouteParameter.Optional}
                 );
+
+            config.Routes.MapHttpRoute(
+                name: "RightsRoute",
+                routeTemplate: "{controller}/{id}/{streamId}/{action}/{right}",
+                constraints: new {right = @"None|ReadOnly|WriteOnly|ReadWrite|Admin"},
+                defaults: new {action="Get", right=RouteParameter.Optional}
+                );
         }
     }
 }

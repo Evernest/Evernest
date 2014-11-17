@@ -1,38 +1,25 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace EvernestAPI.Controllers
 {
     public class RightController : ApiController
     {
-        // GET: /Right/{sourceId}/{streamId}
-        public Hashtable Get(int sourceId, int streamId)
+        // /Right/{id}/{streamId}
+        [HttpGet]
+        [HttpPost]
+        public String Get(int id, int streamId)
         {
-            var response = new Hashtable();
-            response["method"] = "GET";
-            response["controller"] = "RightController";
-            response["sourceId"] = sourceId;
-            response["streamId"] = streamId;
-            response["action"] = "Get";
-            return response;
+            return String.Format("/Right/{0}/{1}", id, streamId);
         }
 
-        // GET: /Right/{sourceId}/{streamId}/Set/{right}
-        public Hashtable Get(int sourceId, int streamId, string right)
+        // /Right/{id}/{streamId}/Set/{right}
+        [HttpGet]
+        [HttpPost]
+        [ActionName("Set")]
+        public String Set(int id, int streamId, string right)
         {
-            var response = new Hashtable();
-            response["method"] = "GET";
-            response["controller"] = "RightController";
-            response["action"] = "Get";
-            response["sourceId"] = sourceId;
-            response["streamId"] = streamId;
-            response["right"] = right;
-            return response;
+            return String.Format("/Right/{0}/{1}/Set/{2}", id, streamId, right);
         }
     }
 }

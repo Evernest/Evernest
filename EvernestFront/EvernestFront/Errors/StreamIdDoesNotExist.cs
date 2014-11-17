@@ -2,16 +2,16 @@
 
 using System;
 
-namespace EvernestFront.Exceptions
+namespace EvernestFront.Errors
 {
-    public class StreamIdDoesNotExistException : FrontException
+    public class StreamIdDoesNotExist : FrontException
     { 
         public Int64 StreamId { get; private set; }
         /// <summary>
         /// Constructor for StreamNameDoesNotExistException.
         /// </summary>
         /// <param name="id"></param>
-        internal StreamIdDoesNotExistException(Int64 id)
+        internal StreamIdDoesNotExist(Int64 id)
         {
             StreamId = id;  
         }

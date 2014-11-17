@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvernestFront.Exceptions
+namespace EvernestFront.Errors
 {
-    public class SourceNameTakenException : FrontException
+    public class SourceNameTaken : FrontException
     {
         //user UserId already owns a source called SourceName, he cannot create another one.
 
@@ -18,7 +18,7 @@ namespace EvernestFront.Exceptions
         /// </summary>
         /// <param name="user"></param>
         /// <param name="source"></param>
-        internal SourceNameTakenException(Int64 user, string source)
+        internal SourceNameTaken(Int64 user, string source)
         {
             UserId = user;
             SourceName = source;

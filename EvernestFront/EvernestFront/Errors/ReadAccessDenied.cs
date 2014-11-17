@@ -2,9 +2,9 @@
 
 using System;
 
-namespace EvernestFront.Exceptions
+namespace EvernestFront.Errors
 {
-    class ReadAccessDeniedException : AccessDeniedException
+    class ReadAccessDenied : AccessDenied
     {
         /// <summary>
         /// Constructor for ReadAccessDeniedException.
@@ -14,10 +14,10 @@ namespace EvernestFront.Exceptions
         /// <param name="user"></param>
         /// <param name="userRights"></param>
 
-        internal ReadAccessDeniedException(Int64 stream, Int64 user, AccessRights userRights)
+        internal ReadAccessDenied(Int64 stream, Int64 user, AccessRights userRights)
             : base(stream, user, userRights) { }
 
-        internal ReadAccessDeniedException(Source src)
+        internal ReadAccessDenied(Source src)
             : base(src) { }
     }
 }

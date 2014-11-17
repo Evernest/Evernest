@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EvernestFront.Exceptions;
+using EvernestFront.Errors;
 
 namespace EvernestFront
 {
@@ -64,11 +64,11 @@ namespace EvernestFront
         /// Checks if user already has a source called name and throws an exception if he does.
         /// </summary>
         /// <param name="name"></param>
-        /// <exception cref="SourceNameTakenException"></exception>
+        /// <exception cref="SourceNameTaken"></exception>
         internal void CheckSourceNameIsFree(string name)
         {
             if (Sources.Exists(x => x.Name == name))
-                throw new SourceNameTakenException(Id,name);
+                throw new SourceNameTaken(Id,name);
         }
 
 

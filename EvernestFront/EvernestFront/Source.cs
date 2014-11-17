@@ -1,4 +1,4 @@
-﻿using EvernestFront.Exceptions;
+﻿using EvernestFront.Errors;
 using System;
 
 namespace EvernestFront
@@ -42,40 +42,40 @@ namespace EvernestFront
         /// <summary>
         /// Returns if and only if the source can read on its stream.
         /// </summary>
-        /// <exception cref="ReadAccessDeniedException"></exception>
+        /// <exception cref="ReadAccessDenied"></exception>
         internal void CheckCanRead()
         {
             CheckRights.CheckCanRead(User, Stream);
             if (CheckRights.CanRead(Right))
                 return;
             else
-                throw new ReadAccessDeniedException(this);
+                throw new ReadAccessDenied(this);
         }
 
         /// <summary>
         /// Returns if and only if the source can write on its stream.
         /// </summary>
-        /// <exception cref="WriteAccessDeniedException"></exception>
+        /// <exception cref="WriteAccessDenied"></exception>
         internal void CheckCanWrite()
         {
             CheckRights.CheckCanWrite(User, Stream);
             if (CheckRights.CanWrite(Right))
                 return;
             else
-                throw new WriteAccessDeniedException(this);
+                throw new WriteAccessDenied(this);
         }
 
         /// <summary>
         /// Returns if and only if the source can admin its stream.
         /// </summary>
-        /// <exception cref="WriteAccessDeniedException"></exception>
+        /// <exception cref="WriteAccessDenied"></exception>
         internal void CheckCanAdmin()
         {
             CheckRights.CheckCanAdmin(User, Stream);
             if (CheckRights.CanAdmin(Right))
                 return;
             else
-                throw new AdminAccessDeniedException(this);
+                throw new AdminAccessDenied(this);
         }
 
     }

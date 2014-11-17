@@ -1,9 +1,9 @@
 ﻿
 using System;
 
-namespace EvernestFront.Exceptions
+namespace EvernestFront.Errors
 {
-    public abstract class AccessDeniedException : FrontException
+    public abstract class AccessDenied : FrontException
     {
         public Int64 StreamId { get; private set; }
         public Int64 User { get; private set; }
@@ -17,7 +17,7 @@ namespace EvernestFront.Exceptions
         /// <param name="argUser"></param>
         /// <param name="argUserRights"></param>
         
-        protected AccessDeniedException(Int64 argStreamId, Int64 argUser, AccessRights argUserRights)
+        protected AccessDenied(Int64 argStreamId, Int64 argUser, AccessRights argUserRights)
         {
             StreamId = argStreamId;
             User = argUser;
@@ -25,7 +25,7 @@ namespace EvernestFront.Exceptions
             SourceId = null;
         }
 
-        protected AccessDeniedException(Source src)
+        protected AccessDenied(Source src)
         {
             StreamId = src.Stream.Id;
             User = src.User.Id;

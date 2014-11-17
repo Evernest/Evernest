@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using EvernestFront.Exceptions;
+using EvernestFront.Errors;
 
 namespace EvernestFront
 {
@@ -13,12 +13,12 @@ namespace EvernestFront
         /// Does nothing if name is available.
         /// Throws a StreamNameTakenException if it is taken.
         /// </summary>
-        /// <exception cref="StreamNameTakenException"></exception>
+        /// <exception cref="StreamNameTaken"></exception>
         /// <param name="name"></param>
         internal static void CheckNameIsFree(string name)
         {
             if (TableByName.ContainsKey(name))
-                throw new StreamNameTakenException(name);
+                throw new StreamNameTaken(name);
         }
 
         /// <summary>
@@ -35,14 +35,14 @@ namespace EvernestFront
         /// <summary>
         /// Returns the stream named name, if it exists.
         /// </summary>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExist"></exception>
         /// <param name="id"></param>
         /// <returns></returns>
         internal static Stream GetStream(Int64 id)
         {
             if (TableById.ContainsKey(id))
                 return TableById[id];
-            throw new StreamIdDoesNotExistException(id);
+            throw new StreamIdDoesNotExist(id);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace EvernestFront
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="StreamIdDoesNotExist"></exception>
         internal static string NameOfId(Int64 id)
         {
             Stream str = GetStream(id);

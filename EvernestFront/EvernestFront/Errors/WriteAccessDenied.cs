@@ -2,9 +2,9 @@
 
 using System;
 
-namespace EvernestFront.Exceptions
+namespace EvernestFront.Errors
 {
-    class WriteAccessDeniedException : AccessDeniedException
+    class WriteAccessDenied : AccessDenied
     {
 
         /// <summary>
@@ -15,10 +15,10 @@ namespace EvernestFront.Exceptions
         /// <param name="user"></param>
         /// <param name="rights"></param>
 
-        internal WriteAccessDeniedException(Int64 stream, Int64 user, AccessRights rights)
+        internal WriteAccessDenied(Int64 stream, Int64 user, AccessRights rights)
             : base(stream, user, rights) { }
 
-        internal WriteAccessDeniedException(Source src)
+        internal WriteAccessDenied(Source src)
             : base(src) { }
     }
 }

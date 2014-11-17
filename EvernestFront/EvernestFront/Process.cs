@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using EvernestFront.Exceptions;
-using KeyType=System.String; //base64 encoded int
+using EvernestFront.Errors;
 
 namespace EvernestFront
 {
@@ -12,7 +11,7 @@ namespace EvernestFront
         /// Registers a new user and returns its ID.
         /// </summary>
         /// <param name="user"></param>
-        /// <exception cref="UserNameTakenException"></exception>
+        /// <exception cref="UserNameTaken"></exception>
         static public Int64 AddUser(string user)
         {
             UserTable.CheckNameIsFree(user);
@@ -27,8 +26,8 @@ namespace EvernestFront
         /// <param name="user"></param>
         /// <param name="streamName"></param>
         /// <returns></returns>
-        /// <exception cref="StreamNameTakenException"></exception>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
+        /// <exception cref="StreamNameTaken"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
         public static Int64 CreateStream(Int64 user, string streamName)
         {
             StreamTable.CheckNameIsFree(streamName);
@@ -47,9 +46,9 @@ namespace EvernestFront
         /// <param name="userId"></param>
         /// <param name="streamId"></param>
         /// <returns></returns>
-        /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
+        /// <exception cref="AccessDenied"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
+        /// <exception cref="StreamIdDoesNotExist"></exception>
         public static Event PullRandom(Int64 userId, Int64 streamId)
         {
             User user = UserTable.GetUser(userId);
@@ -65,10 +64,10 @@ namespace EvernestFront
         /// <param name="streamId"></param>
         /// <param name="eventId"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="ReadAccessDeniedException"></exception>
-        /// <exception cref="InvalidEventIdException"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
+        /// <exception cref="StreamIdDoesNotExist"></exception>
+        /// <exception cref="ReadAccessDenied"></exception>
+        /// <exception cref="InvalidEventId"></exception>
         public static Event Pull(Int64 userId, Int64 streamId, int eventId)
         {
             User user = UserTable.GetUser(userId);
@@ -85,10 +84,10 @@ namespace EvernestFront
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="ReadAccessDeniedException"></exception>
-        /// <exception cref="InvalidEventIdException"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
+        /// <exception cref="StreamIdDoesNotExist"></exception>
+        /// <exception cref="ReadAccessDenied"></exception>
+        /// <exception cref="InvalidEventId"></exception>
         public static List<Event> PullRange(Int64 userId, Int64 streamId, int from, int to)
         {
             User user = UserTable.GetUser(userId);
@@ -104,9 +103,9 @@ namespace EvernestFront
         /// <param name="streamId"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        /// <exception cref="WriteAccessDeniedException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
+        /// <exception cref="WriteAccessDenied"></exception>
+        /// <exception cref="StreamIdDoesNotExist"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
         public static int Push(Int64 userId, Int64 streamId, string message)
         {
             User user = UserTable.GetUser(userId);
@@ -123,10 +122,10 @@ namespace EvernestFront
         /// <param name="targetUserId"></param>
         /// <param name="rights"></param>
         /// <returns></returns>
-        /// <exception cref="AdminAccessDeniedException"></exception>
-        /// <exception cref="CannotDestituteAdminException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
+        /// <exception cref="AdminAccessDenied"></exception>
+        /// <exception cref="CannotDestituteAdmin"></exception>
+        /// <exception cref="StreamIdDoesNotExist"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
         public static void SetRights(Int64 userId, Int64 streamId, Int64 targetUserId, AccessRights rights)
         {
             var user = UserTable.GetUser(userId);
@@ -149,10 +148,10 @@ namespace EvernestFront
         /// <param name="sourceName"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        /// <exception cref="SourceNameTakenException"></exception>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        public static KeyType CreateSource(Int64 userId, Int64 streamId, String sourceName, AccessRights right)
+        /// <exception cref="SourceNameTaken"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
+        /// <exception cref="StreamIdDoesNotExist"></exception>
+        public static String CreateSource(Int64 userId, Int64 streamId, String sourceName, AccessRights right)
         {
             var user = UserTable.GetUser(userId);
             user.CheckSourceNameIsFree(sourceName);
@@ -170,8 +169,8 @@ namespace EvernestFront
         /// </summary>
         /// <param name="sourceKey"></param>
         /// <returns></returns>
-        /// <exception cref="AccessDeniedException"></exception>
-        public static Event PullRandom(KeyType sourceKey)
+        /// <exception cref="AccessDenied"></exception>
+        public static Event PullRandom(String sourceKey)
         {
             Source src = SourceTable.GetSource(sourceKey);
             src.CheckCanRead();
@@ -184,9 +183,9 @@ namespace EvernestFront
         /// <param name="sourceKey"></param>
         /// <param name="eventId"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
-        /// <exception cref="InvalidEventIdException"></exception>
-        public static Event Pull(KeyType sourceKey, int eventId)
+        /// <exception cref="UserIdDoesNotExist"></exception>
+        /// <exception cref="InvalidEventId"></exception>
+        public static Event Pull(String sourceKey, int eventId)
         {
             Source src = SourceTable.GetSource(sourceKey);
             src.CheckCanRead();
@@ -200,9 +199,9 @@ namespace EvernestFront
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        /// <exception cref="ReadAccessDeniedException"></exception>
-        /// <exception cref="InvalidEventIdException"></exception>
-        public static List<Event> PullRange(KeyType sourceKey, int from, int to)
+        /// <exception cref="ReadAccessDenied"></exception>
+        /// <exception cref="InvalidEventId"></exception>
+        public static List<Event> PullRange(String sourceKey, int from, int to)
         {
             Source src = SourceTable.GetSource(sourceKey);
             src.CheckCanRead();
@@ -215,8 +214,8 @@ namespace EvernestFront
         /// <param name="sourceKey"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        /// <exception cref="WriteAccessDeniedException"></exception>
-        public static int Push(KeyType sourceKey, string message)
+        /// <exception cref="WriteAccessDenied"></exception>
+        public static int Push(String sourceKey, string message)
         {
             Source src = SourceTable.GetSource(sourceKey);
             src.CheckCanWrite();
@@ -230,10 +229,10 @@ namespace EvernestFront
         /// <param name="targetUserId"></param>
         /// <param name="rights"></param>
         /// <returns></returns>
-        /// <exception cref="AdminAccessDeniedException"></exception>
-        /// <exception cref="CannotDestituteAdminException"></exception>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
-        public static void SetRights(KeyType sourceKey, Int64 targetUserId, AccessRights rights)
+        /// <exception cref="AdminAccessDenied"></exception>
+        /// <exception cref="CannotDestituteAdmin"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
+        public static void SetRights(String sourceKey, Int64 targetUserId, AccessRights rights)
         {
             Source src = SourceTable.GetSource(sourceKey);
             var targetUser = UserTable.GetUser(targetUserId);
@@ -249,7 +248,7 @@ namespace EvernestFront
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
         static public List<KeyValuePair<Int64, AccessRights>> RelatedStreams(Int64 userId)
         {
             User user = UserTable.GetUser(userId);
@@ -264,9 +263,9 @@ namespace EvernestFront
         /// <param name="userId"></param>
         /// <param name="streamId"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="AdminAccessDeniedException"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
+        /// <exception cref="StreamIdDoesNotExist"></exception>
+        /// <exception cref="AdminAccessDenied"></exception>
         static public List<KeyValuePair<Int64, AccessRights>> RelatedUsers(Int64 userId, Int64 streamId)
         {
             var user = UserTable.GetUser(userId);

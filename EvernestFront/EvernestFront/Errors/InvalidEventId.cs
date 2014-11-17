@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvernestFront.Exceptions
+namespace EvernestFront.Errors
 {
-    class InvalidEventIdException : FrontException
+    class InvalidEventId : FrontException
     {
         public Int64 StreamId { get; private set; }
 
@@ -16,7 +16,7 @@ namespace EvernestFront.Exceptions
         /// Constructor for InvalidEventIdException.
         /// </summary>
         /// <param name="id"></param>
-        internal InvalidEventIdException(int evId, Stream strm)
+        internal InvalidEventId(int evId, Stream strm)
         {
             StreamId = strm.Id;
             EventId = evId;

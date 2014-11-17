@@ -2,9 +2,9 @@
 
 using System;
 
-namespace EvernestFront.Exceptions
+namespace EvernestFront.Errors
 {
-    class AdminAccessDeniedException : AccessDeniedException
+    class AdminAccessDenied : AccessDenied
     {
         /// <summary>
         /// Constructor for AdminAccessDeniedException.
@@ -14,10 +14,10 @@ namespace EvernestFront.Exceptions
         /// <param name="user"></param>
         /// <param name="userRights"></param>
         /// 
-        internal AdminAccessDeniedException(Int64 stream, Int64 user, AccessRights userRights)
+        internal AdminAccessDenied(Int64 stream, Int64 user, AccessRights userRights)
             : base(stream, user, userRights) { }
 
-        internal AdminAccessDeniedException(Source src)
+        internal AdminAccessDenied(Source src)
             : base(src) { }
     }
 }

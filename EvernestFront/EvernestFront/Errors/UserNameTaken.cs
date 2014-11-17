@@ -1,15 +1,15 @@
 ﻿
 
-namespace EvernestFront.Exceptions
+namespace EvernestFront.Errors
 {
-    class UserNameTakenException : FrontException
+    class UserNameTaken : FrontException
     {
         public string UserName { get; private set; }
         /// <summary>
         /// Constructor for UserNameTakenException.
         /// </summary>
         /// <param name="name"></param>
-        internal UserNameTakenException(string name)
+        internal UserNameTaken(string name)
         {
             UserName = name;
         }

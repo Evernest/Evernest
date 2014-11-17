@@ -1,14 +1,14 @@
 ﻿
-namespace EvernestFront.Exceptions
+namespace EvernestFront.Errors
 {
-    public class StreamNameTakenException : FrontException
+    public class StreamNameTaken : FrontException
     {
         public string StreamName { get; private set; }
         /// <summary>
         /// Constructor for StreamNameTakenException.
         /// </summary>
         /// <param name="name"></param>
-        internal StreamNameTakenException(string name)
+        internal StreamNameTaken(string name)
         {
             StreamName = name;
         }

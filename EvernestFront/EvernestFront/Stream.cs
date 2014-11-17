@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 //using EvernestFront.Answers;
-using EvernestFront.Exceptions;
+using EvernestFront.Errors;
 
 namespace EvernestFront
 {
@@ -42,7 +42,7 @@ namespace EvernestFront
             if ((id >= 0) && (id <= LastEventId))
                 return id;
             else
-                throw new InvalidEventIdException(id,this);
+                throw new InvalidEventId(id,this);
         }
 
         internal Event PullRandom()

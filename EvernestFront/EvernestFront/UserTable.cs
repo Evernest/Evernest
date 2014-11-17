@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EvernestFront.Exceptions;
+using EvernestFront.Errors;
 
 namespace EvernestFront
 {
@@ -16,12 +16,12 @@ namespace EvernestFront
         /// Does nothing if name is available.
         /// Throws a UserNameTakenException if it is taken.
         /// </summary>
-        /// <exception cref="UserNameTakenException"></exception>
+        /// <exception cref="UserNameTaken"></exception>
         /// <param name="name"></param>
         internal static void CheckNameIsFree(string name)
         {
             if (TableByName.ContainsKey(name))
-                throw new UserNameTakenException(name);
+                throw new UserNameTaken(name);
         }
 
         /// <summary>
@@ -39,14 +39,14 @@ namespace EvernestFront
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
+        /// <exception cref="UserIdDoesNotExist"></exception>
         internal static User GetUser(Int64 id)
         {
             if (TableById.ContainsKey(id))
                 return TableById[id];
             else
             {
-                throw new UserIdDoesNotExistException(id);
+                throw new UserIdDoesNotExist(id);
             }
         }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EvernestFront.Exceptions;
+using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
@@ -17,7 +17,7 @@ namespace EvernestFront.Answers
             Streams = streams;
         }
 
-        internal RelatedStreams(String msg)
-            : base(msg) { }
+        internal RelatedStreams(FrontError err)
+            : base(err) { }
     }
 }

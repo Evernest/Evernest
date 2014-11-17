@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EvernestFront.Exceptions;
+using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
@@ -18,7 +18,7 @@ namespace EvernestFront.Answers
         
         //TODO : protected string requestID;
 
-        public String ErrorMessage { get; protected set; }
+        public FrontError Error { get; protected set; }
 
         /// <summary>
         /// Default constructor for class Answer : allows for constructors without a parameter in subclasses.
@@ -32,11 +32,11 @@ namespace EvernestFront.Answers
         /// <summary>
         /// Sets field success to false and field exception to exn.
         /// </summary>
-        /// <param name="msg"></param>
-        protected Answer(ErrorType msg)
+        /// <param name="err"></param>
+        protected Answer(FrontError err)
         {
             Success = false;
-            ErrorMessage = msg;
+            Error = err;
         }
     }
 }

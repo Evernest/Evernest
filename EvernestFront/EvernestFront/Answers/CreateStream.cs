@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EvernestFront.Exceptions;
+using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
@@ -12,9 +12,9 @@ namespace EvernestFront.Answers
         /// <summary>
         /// Sets field success to false and field exception to exn.
         /// </summary>
-        /// <param name="exn"></param>
-        internal CreateStream(String msg)
-            : base(msg) { }
+        /// <param name="err"></param>
+        internal CreateStream(FrontError err)
+            : base(err) { }
         /// <summary>
         /// Sets field success to true. To change it to false, an exception parameter must be passed.
         /// </summary>

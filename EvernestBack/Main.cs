@@ -7,9 +7,10 @@ namespace EvernestBack
     {
         static void Main(string[] args)
         {
-            AzureStorageClient client = new AzureStorageClient();
-            EventStream s = client.GetEventStream("test1");
-            // s.Push("hello world"); TODO : BROKEN, use delegate now.
+            UInt64 index=100;
+            RAMStream Stream = new RAMStream();
+            Stream.Push("Test", a => index = a.RequestID);
+            Stream.Pull(index, a => Console.WriteLine(a.Message + ". ID : " + a.RequestID));
             Console.Read();
         }
     }

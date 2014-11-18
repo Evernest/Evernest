@@ -18,9 +18,9 @@ namespace EvernestBack
         private WriteLocker writeLock;
         private UInt64 currentId;
 
-        public EventStream( CloudBlockBlob blob )
+        public EventStream( CloudBlockBlob blob, int BlobSize)
         {
-            writeLock = new WriteLocker(blob);
+            writeLock = new WriteLocker(blob, BlobSize);
             currentId = 0;
         }
 

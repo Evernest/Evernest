@@ -17,13 +17,13 @@ namespace EvernestAPI
                 constraints: new
                 {
                     id = @"\d+",
-                    action = @"[a-zA-Z]*" // Note the star to make action optional
+                    action = @"[a-zA-Z]*", // Note the star to make action optional
+                    arg0 = @"\d*", // Note the star to make action optional
+                    arg1 = @"\d*", // Note the star to make action optional
                 },
                 defaults: new
                 {
                     action = "Default",
-                    arg0 = RouteParameter.Optional,
-                    arg1 = RouteParameter.Optional
                 }
                 );
 
@@ -38,7 +38,7 @@ namespace EvernestAPI
                 defaults: new
                 {
                     action = "Get",
-                    right = RouteParameter.Optional
+                    right = RouteParameter.Optional,
                 }
                 );
 
@@ -47,12 +47,22 @@ namespace EvernestAPI
              */
 
             config.Routes.MapHttpRoute(
+                name: "APIStreamPullRandom",
+                routeTemplate: "{controller}/{id}/{action}/Random",
+                constraints: new
+                {
+                    id = @"\d+",
+                },
+                defaults: new {}
+                );
+            
+            config.Routes.MapHttpRoute(
                 name: "APISourceNew",
                 routeTemplate: "{controller}/New",
                 constraints: new {},
                 defaults: new
                 {
-                    action="New"
+                    action="New",
                 }
                 );
         }

@@ -22,7 +22,7 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Pull")]
-        public Hashtable Pull(int id, int arg0)
+        public Hashtable PullOne(int id, int arg0)
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var ans = new Hashtable();
@@ -45,15 +45,15 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Pull")]
-        public string Pull(int id, int arg0, int arg1)
+        public string PullRange(int id, int arg0, int arg1)
         {
             return String.Format("/Stream/{0}/Pull/{1}/{2}", id, arg0, arg1);
         }
 
-        // /Stream/{id}/PullRandom
+        // /Stream/{id}/Pull/Random
         [HttpGet]
         [HttpPost]
-        [ActionName("PullRandom")]
+        [ActionName("Pull")]
         public Hashtable PullRandom(int id)
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);

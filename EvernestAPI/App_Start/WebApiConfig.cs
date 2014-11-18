@@ -12,17 +12,48 @@ namespace EvernestAPI
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 
             config.Routes.MapHttpRoute(
-                name: "APIRoute",
+                name: "APIDefault",
                 routeTemplate: "{controller}/{id}/{action}/{arg0}/{arg1}",
-                constraints: new {},
-                defaults: new {action = "Default", arg0 = RouteParameter.Optional, arg1 = RouteParameter.Optional}
+                constraints: new
+                {
+                    id = @"\d+",
+                    action = @"[a-zA-Z]*" // Note the star to make action optional
+                },
+                defaults: new
+                {
+                    action = "Default",
+                    arg0 = RouteParameter.Optional,
+                    arg1 = RouteParameter.Optional
+                }
                 );
 
             config.Routes.MapHttpRoute(
-                name: "RightsRoute",
+                name: "APIRight",
                 routeTemplate: "{controller}/{id}/{streamId}/{action}/{right}",
-                constraints: new {right = @"None|ReadOnly|WriteOnly|ReadWrite|Admin"},
-                defaults: new {action="Get", right=RouteParameter.Optional}
+                constraints: new
+                {
+                    id = @"\d+",
+                    streamId = @"\d+",
+                },
+                defaults: new
+                {
+                    action = "Get",
+                    right = RouteParameter.Optional
+                }
+                );
+
+            /**
+             * Particular cases
+             */
+
+            config.Routes.MapHttpRoute(
+                name: "APISourceNew",
+                routeTemplate: "{controller}/New",
+                constraints: new {},
+                defaults: new
+                {
+                    action="New"
+                }
                 );
         }
     }

@@ -26,11 +26,10 @@ namespace EvernestBack
 
 
         // Push : Give a string, return an ID with the Callback
-        public UInt64 Push(String message, Action<IAgent> Callback)
+        public void Push(String message, Action<IAgent> Callback)
         {
             Agent p = new Producer(message, currentId, writeLock, Callback);
             currentId++;
-            return currentId-1;
         }
 
 

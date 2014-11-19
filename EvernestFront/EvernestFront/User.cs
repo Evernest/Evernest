@@ -11,7 +11,7 @@ namespace EvernestFront
 
         public string Name { get; private set; }
 
-        private string Key { get; set; } //base64 encoded int
+        internal string Key { get; set; } //base64 encoded int
 
         public List<Source> Sources { get; private set; }
 

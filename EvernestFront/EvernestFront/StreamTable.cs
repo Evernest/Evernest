@@ -9,16 +9,15 @@ namespace EvernestFront
     {
         private static readonly Dictionary<string, Stream> TableByName = new Dictionary<string, Stream>();
         private static readonly Dictionary<Int64, Stream> TableById= new Dictionary<Int64, Stream>();
-        /// <summary>
-        /// Does nothing if name is available.
-        /// Throws a StreamNameTakenException if it is taken.
-        /// </summary>
-        /// <exception cref="StreamNameTaken"></exception>
-        /// <param name="name"></param>
-        internal static void CheckNameIsFree(string name)
+      
+        internal static bool NameIsFree(string name)
         {
-            if (TableByName.ContainsKey(name))
-                throw new StreamNameTaken(name);
+            return (TableByName.ContainsKey(name));
+        }
+
+        public static bool StreamIdExists(long streamId)
+        {
+            return TableById.ContainsKey(streamId);
         }
 
         /// <summary>
@@ -33,24 +32,21 @@ namespace EvernestFront
         }
 
         /// <summary>
-        /// Returns the stream named name, if it exists.
+        /// Returns the stream with ID id. Stream ID existence should be checked beforehand !
         /// </summary>
         /// <exception cref="StreamIdDoesNotExist"></exception>
         /// <param name="id"></param>
         /// <returns></returns>
         internal static Stream GetStream(Int64 id)
         {
-            if (TableById.ContainsKey(id))
                 return TableById[id];
-            throw new StreamIdDoesNotExist(id);
         }
 
         /// <summary>
-        /// Returns the name of the stream whose ID is id.
+        /// Returns the name of the stream whose ID is id. Stream ID existence should be checked beforehand !
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// <exception cref="StreamIdDoesNotExist"></exception>
         internal static string NameOfId(Int64 id)
         {
             Stream str = GetStream(id);
@@ -62,5 +58,7 @@ namespace EvernestFront
             TableByName.Clear();
             TableById.Clear();
         }
+
+        
     }
 }

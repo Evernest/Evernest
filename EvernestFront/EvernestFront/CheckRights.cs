@@ -94,13 +94,10 @@ namespace EvernestFront
         /// <exception cref="ReadAccessDenied"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanRead(User user, Stream stream)
+        static internal bool CheckCanRead(User user, Stream stream)
         {
             var rights = UserRight.GetRight(user, stream);
-            if (CanRead(rights))
-                return;
-            else
-                throw new ReadAccessDenied(stream.Id, user.Id, rights);
+            return CanRead(rights);
         }
 
         /// <summary>
@@ -111,13 +108,10 @@ namespace EvernestFront
         /// <exception cref="WriteAccessDenied"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanWrite(User user, Stream stream)
+        static internal bool CheckCanWrite(User user, Stream stream)
         {
             var rights = UserRight.GetRight(user, stream);
-            if (CanWrite(rights))
-                return;
-            else
-                throw new WriteAccessDenied(stream.Id, user.Id, rights);
+            return (CanWrite(rights));
         }
 
         /// <summary>
@@ -128,22 +122,16 @@ namespace EvernestFront
         /// <exception cref="AdminAccessDenied"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanAdmin(User user, Stream stream)
+        static internal bool CheckCanAdmin(User user, Stream stream)
         {
             var rights = UserRight.GetRight(user, stream);
-            if (CanAdmin(rights))
-                return;
-            else
-                throw new AdminAccessDenied(stream.Id, user.Id, rights);
+            return (CanAdmin(rights));
         }
 
-        static internal void CheckRightsCanBeModified(User user, Stream stream)
+        static internal bool CheckRightsCanBeModified(User user, Stream stream)
         {
             var rights = UserRight.GetRight(user, stream);
-            if (CanBeModified(rights))
-                return;
-            else
-                throw new CannotDestituteAdmin(stream.Id, user.Id);
+            return CanBeModified(rights);
         }
 
     }

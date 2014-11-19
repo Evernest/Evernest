@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//using EvernestFront.Answers;
+using EvernestFront.Answers;
 using EvernestFront.Errors;
 
 namespace EvernestFront
@@ -39,46 +39,64 @@ namespace EvernestFront
             var id = eventId;
             if (id < 0)
                 id = id + (LastEventId + 1);
-            if ((id >= 0) && (id <= LastEventId))
-                return id;
-            else
-                throw new InvalidEventId(id,this);
+            return id;
         }
 
-        internal Event PullRandom()
+        private bool IsEventIdValid(int id)
+        {
+            return ((id >= 0) && (id <= LastEventId));
+        }
+
+        internal PullRandom PullRandom()
         {
             var random = new Random();
             int id = random.Next(LastEventId+1);
                     
             // TODO : appeler Back
-            return Event.DummyEvent(id,this);
+            return new PullRandom(Event.DummyEvent(id, this));
         }
 
-        internal Event Pull(int eventId)
+        internal Pull Pull(int eventId)
         {
             int id = ActualEventId(eventId);
 
-            // appeler Back
-            return Event.DummyEvent(id,this);
+            // call back-end
+
+            if (IsEventIdValid(id))
+             return new Pull(Event.DummyEvent(id,this));
+            else
+            {
+                return new Pull(new InvalidEventId(id,this));
+            }
         }
 
-        internal List<Event> PullRange(int fromEventId, int toEventId)
+        internal PullRange PullRange(int fromEventId, int toEventId)
         {
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
-
-            var eventList = new List<Event>();
-            for (int id = fromEventId; id <= toEventId; id++)
+            if (IsEventIdValid(fromEventId) & IsEventIdValid(toEventId))
             {
-                // appeler Back
-                eventList.Add(Event.DummyEvent(id,this));
+                var eventList = new List<Event>();
+                for (int id = fromEventId; id <= toEventId; id++)
+                 {
+                    // call back-end
+                    eventList.Add(Event.DummyEvent(id, this));
+                 }
+                return new PullRange(eventList);
             }
-
-            return eventList;
-            
+            else
+            {  
+                if (IsEventIdValid(fromEventId))
+                    return new PullRange(new InvalidEventId(toEventId,this));
+                else
+                {
+                    return new PullRange(new InvalidEventId(fromEventId,this));
+                }
+            }
         }
+    
 
-        internal int Push(string message)
+        internal Push Push(string message)
         {
             int eventId = LastEventId + 1;
     
@@ -86,15 +104,15 @@ namespace EvernestFront
 
             Count++;
             LastEventId++;
-            return eventId;
+            return new Push(eventId);
         }
 
 
-        public List<KeyValuePair<Int64, AccessRights>> RelatedUsers
+        public RelatedUsers RelatedUsers
         {
             get
             {
-                return new List<KeyValuePair<Int64, AccessRights>>(UserRights.Select(x => x.ToUserIdAndRight()));
+                return new RelatedUsers(new List<KeyValuePair<Int64, AccessRights>>(UserRights.Select(x => x.ToUserIdAndRight())));
             }
         }
     }

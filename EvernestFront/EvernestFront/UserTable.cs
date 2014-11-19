@@ -18,10 +18,15 @@ namespace EvernestFront
         /// </summary>
         /// <exception cref="UserNameTaken"></exception>
         /// <param name="name"></param>
-        internal static void CheckNameIsFree(string name)
+        internal static bool NameIsFree(string name)
         {
-            if (TableByName.ContainsKey(name))
-                throw new UserNameTaken(name);
+            return (TableByName.ContainsKey(name));
+
+        }
+
+        internal static bool UserIdExists(Int64 id)
+        {
+            return (TableById.ContainsKey(id));
         }
 
         /// <summary>
@@ -35,23 +40,17 @@ namespace EvernestFront
         }
 
         /// <summary>
-        /// Gets user whose ID is id.
+        /// Gets user whose ID is id. User ID existence should be checked beforehand !
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExist"></exception>
         internal static User GetUser(Int64 id)
         {
-            if (TableById.ContainsKey(id))
-                return TableById[id];
-            else
-            {
-                throw new UserIdDoesNotExist(id);
-            }
+            return TableById[id];
         }
 
         /// <summary>
-        /// Returns the name of the user whose ID is id.
+        /// Returns the name of the user whose ID is id. User ID existence should be checked beforehand !
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

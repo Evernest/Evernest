@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EvernestFront.Errors;
+using EvernestFront.Answers;
 
 namespace EvernestFront
 {
@@ -11,33 +12,37 @@ namespace EvernestFront
         /// Registers a new user and returns its ID.
         /// </summary>
         /// <param name="user"></param>
-        /// <exception cref="UserNameTaken"></exception>
-        static public Int64 AddUser(string user)
+        static public AddUser AddUser(string user)
         {
-            UserTable.CheckNameIsFree(user);
-            var usr = new User(user);
-            UserTable.Add(usr);
-            return usr.Id;
+            if (UserTable.NameIsFree(user))
+            {
+                var usr = new User(user);
+                UserTable.Add(usr);
+                return new AddUser(usr.Name, usr.Id, usr.Key);
+            }
+            else
+            {
+                return new AddUser(new UserNameTaken(user));
+            }
         }
 
         /// <summary>
-        /// Requests the creation of a stream called streamName, with user as admin, and returns its ID if successful.
+        /// Requests the creation of a stream called streamName, with userId as admin, and returns its ID.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="userId"></param>
         /// <param name="streamName"></param>
         /// <returns></returns>
-        /// <exception cref="StreamNameTaken"></exception>
-        /// <exception cref="UserIdDoesNotExist"></exception>
-        public static Int64 CreateStream(Int64 user, string streamName)
+        public static CreateStream CreateStream(Int64 userId, string streamName)
         {
-            StreamTable.CheckNameIsFree(streamName);
-            var usr = UserTable.GetUser(user);
-
+            if (!StreamTable.NameIsFree(streamName))
+                return new CreateStream(new StreamNameTaken(streamName));
+            if (!UserTable.UserIdExists(userId))
+                return new CreateStream(new UserIdDoesNotExist(userId));
+            var usr = UserTable.GetUser(userId);
             var stream = new Stream(streamName);
-
             StreamTable.Add(stream);
             UserRight.SetRight(usr, stream, UserRight.CreatorRights);
-            return stream.Id;
+            return new CreateStream(stream.Id);
         }
 
         /// <summary>
@@ -46,15 +51,20 @@ namespace EvernestFront
         /// <param name="userId"></param>
         /// <param name="streamId"></param>
         /// <returns></returns>
-        /// <exception cref="AccessDenied"></exception>
-        /// <exception cref="UserIdDoesNotExist"></exception>
-        /// <exception cref="StreamIdDoesNotExist"></exception>
-        public static Event PullRandom(Int64 userId, Int64 streamId)
+        public static PullRandom PullRandom(Int64 userId, Int64 streamId)
         {
+            if (!UserTable.UserIdExists(userId))
+                return new PullRandom(new UserIdDoesNotExist(userId));
+            if (!StreamTable.StreamIdExists(streamId))
+                return new PullRandom(new StreamIdDoesNotExist(streamId));
             User user = UserTable.GetUser(userId);
             Stream stream = StreamTable.GetStream(streamId);
-            CheckRights.CheckCanRead(user, stream);
-            return stream.PullRandom();
+            if (CheckRights.CheckCanRead(user, stream))
+                return stream.PullRandom();
+            else
+            {
+                return new Answers.PullRandom(new ReadAccessDenied(streamId, userId));
+            }
         }
 
         /// <summary>
@@ -64,16 +74,20 @@ namespace EvernestFront
         /// <param name="streamId"></param>
         /// <param name="eventId"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExist"></exception>
-        /// <exception cref="StreamIdDoesNotExist"></exception>
-        /// <exception cref="ReadAccessDenied"></exception>
-        /// <exception cref="InvalidEventId"></exception>
-        public static Event Pull(Int64 userId, Int64 streamId, int eventId)
+        public static Pull Pull(Int64 userId, Int64 streamId, int eventId)
         {
+            if (!UserTable.UserIdExists(userId))
+                return new Pull(new UserIdDoesNotExist(userId));
+            if (!StreamTable.StreamIdExists(streamId))
+                return new Pull(new StreamIdDoesNotExist(streamId));
             User user = UserTable.GetUser(userId);
             Stream stream = StreamTable.GetStream(streamId);
-            CheckRights.CheckCanRead(user, stream);
-            return stream.Pull(eventId);
+            if (CheckRights.CheckCanRead(user, stream))
+                return stream.Pull(eventId);                    //eventID validity is checked here
+            else
+            {
+                return new Pull(new ReadAccessDenied(streamId,userId));
+            }
         }
 
         /// <summary>
@@ -84,16 +98,20 @@ namespace EvernestFront
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExist"></exception>
-        /// <exception cref="StreamIdDoesNotExist"></exception>
-        /// <exception cref="ReadAccessDenied"></exception>
-        /// <exception cref="InvalidEventId"></exception>
-        public static List<Event> PullRange(Int64 userId, Int64 streamId, int from, int to)
+        public static PullRange PullRange(Int64 userId, Int64 streamId, int from, int to)
         {
+            if (!UserTable.UserIdExists(userId))
+                return new PullRange(new UserIdDoesNotExist(userId));
+            if (!StreamTable.StreamIdExists(streamId))
+                return new PullRange(new StreamIdDoesNotExist(streamId));
             User user = UserTable.GetUser(userId);
             Stream stream = StreamTable.GetStream(streamId);
-            CheckRights.CheckCanRead(user, stream);
-            return stream.PullRange(from, to);
+            if (CheckRights.CheckCanRead(user, stream))
+                return stream.PullRange(from, to);          //Validity of from and to is checked here
+            else
+            {
+                return new PullRange(new ReadAccessDenied(streamId, userId));
+            }
         }
 
         /// <summary>

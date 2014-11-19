@@ -8,17 +8,22 @@ using EvernestFront.Errors;
 namespace EvernestFront.Answers
 {
     public class CreateStream:Answer
-    {  
+    {
+        public Int64 StreamId { get; private set; }
+        
         /// <summary>
-        /// Sets field success to false and field exception to exn.
+        /// Sets Success to false and field Error to err.
         /// </summary>
         /// <param name="err"></param>
         internal CreateStream(FrontError err)
             : base(err) { }
         /// <summary>
-        /// Sets field success to true. To change it to false, an exception parameter must be passed.
+        /// Sets Success to true.
         /// </summary>
-        internal CreateStream()
-            : base () { }
+        internal CreateStream(long id)
+            : base ()
+        {
+            StreamId = id;
+        }
     }
 }

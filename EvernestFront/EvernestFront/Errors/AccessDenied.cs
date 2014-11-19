@@ -7,7 +7,6 @@ namespace EvernestFront.Errors
     {
         public Int64 StreamId { get; private set; }
         public Int64 User { get; private set; }
-        public AccessRights UserRights { get; private set; }
         public Int64? SourceId { get; private set; }
 
         /// <summary>
@@ -15,13 +14,11 @@ namespace EvernestFront.Errors
         /// </summary>
         /// <param name="argStreamId"></param>
         /// <param name="argUser"></param>
-        /// <param name="argUserRights"></param>
         
-        protected AccessDenied(Int64 argStreamId, Int64 argUser, AccessRights argUserRights)
+        protected AccessDenied(Int64 argStreamId, Int64 argUser)
         {
             StreamId = argStreamId;
             User = argUser;
-            UserRights = argUserRights;
             SourceId = null;
         }
 
@@ -29,7 +26,6 @@ namespace EvernestFront.Errors
         {
             StreamId = src.Stream.Id;
             User = src.User.Id;
-            UserRights = src.Right;
             SourceId = src.Id;
         }
     }

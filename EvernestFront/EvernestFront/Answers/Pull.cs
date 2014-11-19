@@ -8,7 +8,7 @@ using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
-    class Pull : Answer
+    public class Pull : Answer
     {
         public Event EventPulled {get; private set;}
         /// <summary>

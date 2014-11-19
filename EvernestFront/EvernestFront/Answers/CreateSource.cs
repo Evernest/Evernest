@@ -5,7 +5,7 @@ using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
-    class CreateSource : Answer
+    public class CreateSource : Answer
     {
         public String Key { get; private set; }
 

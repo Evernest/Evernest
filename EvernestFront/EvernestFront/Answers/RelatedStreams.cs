@@ -9,9 +9,9 @@ namespace EvernestFront.Answers
 {
     public class RelatedStreams : Answer
     {
-        public List<KeyValuePair<string, AccessRights>> Streams { get; private set; }
+        public List<KeyValuePair<Int64, AccessRights>> Streams { get; private set; }
 
-        internal RelatedStreams(List<KeyValuePair<string, AccessRights>> streams)
+        internal RelatedStreams(List<KeyValuePair<Int64, AccessRights>> streams)
             : base()
         {
             Streams = streams;

@@ -74,33 +74,27 @@ namespace EvernestFront
         {
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
-            if (IsEventIdValid(fromEventId) & IsEventIdValid(toEventId))
+            if (!IsEventIdValid(fromEventId))
+                return new PullRange(new InvalidEventId(fromEventId, this));
+            if (!IsEventIdValid(toEventId))
+                return new PullRange(new InvalidEventId(toEventId, this));
+            var eventList = new List<Event>();
+            for (int id = fromEventId; id <= toEventId; id++)
             {
-                var eventList = new List<Event>();
-                for (int id = fromEventId; id <= toEventId; id++)
-                 {
-                    // call back-end
-                    eventList.Add(Event.DummyEvent(id, this));
-                 }
-                return new PullRange(eventList);
+                // call back-end
+                eventList.Add(Event.DummyEvent(id, this));
             }
-            else
-            {  
-                if (IsEventIdValid(fromEventId))
-                    return new PullRange(new InvalidEventId(toEventId,this));
-                else
-                {
-                    return new PullRange(new InvalidEventId(fromEventId,this));
-                }
-            }
+            return new PullRange(eventList);
         }
-    
+
+
+
 
         internal Push Push(string message)
         {
             int eventId = LastEventId + 1;
     
-            // TODO : appeler Back 
+            // TODO : call back-end
 
             Count++;
             LastEventId++;
@@ -108,11 +102,11 @@ namespace EvernestFront
         }
 
 
-        public RelatedUsers RelatedUsers
+        public List<KeyValuePair<Int64, AccessRights>> RelatedUsers
         {
             get
             {
-                return new RelatedUsers(new List<KeyValuePair<Int64, AccessRights>>(UserRights.Select(x => x.ToUserIdAndRight())));
+                return new List<KeyValuePair<Int64, AccessRights>>(UserRights.Select(x => x.ToUserIdAndRight()));
             }
         }
     }

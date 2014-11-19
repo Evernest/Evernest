@@ -20,7 +20,7 @@ namespace EvernestFront
         /// <param name="name"></param>
         internal static bool NameIsFree(string name)
         {
-            return (TableByName.ContainsKey(name));
+            return (!TableByName.ContainsKey(name));
 
         }
 

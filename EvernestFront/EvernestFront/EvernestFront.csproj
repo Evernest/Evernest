@@ -46,6 +46,7 @@
     <Compile Include="Answers\RelatedUsers.cs" />
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="CheckRights.cs" />
+    <Compile Include="Errors\SourceKeyDoesNotExist.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Errors\AccessDenied.cs" />
     <Compile Include="Errors\AdminAccessDenied.cs" />

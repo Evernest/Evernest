@@ -65,10 +65,9 @@ namespace EvernestFront
         /// </summary>
         /// <param name="name"></param>
         /// <exception cref="SourceNameTaken"></exception>
-        internal void CheckSourceNameIsFree(string name)
+        internal bool CheckSourceNameIsFree(string name)
         {
-            if (Sources.Exists(x => x.Name == name))
-                throw new SourceNameTaken(Id,name);
+            return (!Sources.Exists(x => x.Name == name));
         }
 
 

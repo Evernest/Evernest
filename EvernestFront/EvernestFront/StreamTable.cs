@@ -12,7 +12,7 @@ namespace EvernestFront
       
         internal static bool NameIsFree(string name)
         {
-            return (TableByName.ContainsKey(name));
+            return (!TableByName.ContainsKey(name));
         }
 
         public static bool StreamIdExists(long streamId)

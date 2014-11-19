@@ -39,43 +39,22 @@ namespace EvernestFront
 
 
 
-        /// <summary>
-        /// Returns if and only if the source can read on its stream.
-        /// </summary>
-        /// <exception cref="ReadAccessDenied"></exception>
-        internal void CheckCanRead()
+
+        internal bool CheckCanRead()
         {
-            CheckRights.CheckCanRead(User, Stream);
-            if (CheckRights.CanRead(Right))
-                return;
-            else
-                throw new ReadAccessDenied(this);
+            return (CheckRights.CheckCanRead(User, Stream) & CheckRights.CanRead(Right));
         }
 
-        /// <summary>
-        /// Returns if and only if the source can write on its stream.
-        /// </summary>
-        /// <exception cref="WriteAccessDenied"></exception>
-        internal void CheckCanWrite()
+
+        internal bool CheckCanWrite()
         {
-            CheckRights.CheckCanWrite(User, Stream);
-            if (CheckRights.CanWrite(Right))
-                return;
-            else
-                throw new WriteAccessDenied(this);
+            return (CheckRights.CheckCanWrite(User, Stream) & CheckRights.CanWrite(Right));
         }
 
-        /// <summary>
-        /// Returns if and only if the source can admin its stream.
-        /// </summary>
-        /// <exception cref="WriteAccessDenied"></exception>
-        internal void CheckCanAdmin()
+
+        internal bool CheckCanAdmin()
         {
-            CheckRights.CheckCanAdmin(User, Stream);
-            if (CheckRights.CanAdmin(Right))
-                return;
-            else
-                throw new AdminAccessDenied(this);
+            return (CheckRights.CheckCanAdmin(User, Stream) & CheckRights.CanAdmin(Right));
         }
 
     }

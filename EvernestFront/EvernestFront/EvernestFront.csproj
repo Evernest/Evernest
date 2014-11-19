@@ -40,6 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckRights.cs" />
+    <Compile Include="Contract\RightSet.cs" />
+    <Compile Include="Contract\StreamCreated.cs" />
+    <Compile Include="Contract\UserAdded.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Exceptions\AccessDeniedException.cs" />
     <Compile Include="Exceptions\AdminAccessDeniedException.cs" />

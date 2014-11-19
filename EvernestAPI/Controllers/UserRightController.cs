@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Web;
 using System.Web.Http;
 
 namespace EvernestAPI.Controllers
@@ -8,18 +10,46 @@ namespace EvernestAPI.Controllers
         // /UserRight/{id}/{streamId}
         [HttpGet]
         [HttpPost]
-        public String Get(int id, int streamId)
+        [ActionName("Default")]
+        public Hashtable Get(int id, int streamId)
         {
-            return String.Format("/UserRight/{0}/{1}", id, streamId);
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Source";
+            debug["Method"] = "Get";
+            debug["id"] = id;
+            debug["streamId"] = streamId;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
 
         // /UserRight/{id}/{streamId}/Set/{right}
         [HttpGet]
         [HttpPost]
         [ActionName("Set")]
-        public String Set(int id, int streamId, string right)
+        public Hashtable Set(int id, int streamId, string right)
         {
-            return String.Format("/UserRight/{0}/{1}/Set/{2}", id, streamId, right);
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Source";
+            debug["Method"] = "Set";
+            debug["id"] = id;
+            debug["streamId"] = streamId;
+            debug["right"] = right;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
     }
 }

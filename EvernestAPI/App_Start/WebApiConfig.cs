@@ -7,23 +7,23 @@ namespace EvernestAPI
     {
         public static void Register(HttpConfiguration config)
         {
-            // In order to use JsonFormatter for API's output.
-            // We'll have to support content-type application/json. <-- TODO
             config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 
             config.Routes.MapHttpRoute(
-                name: "APIDefault",
+                name: "APIStream",
                 routeTemplate: "{controller}/{id}/{action}/{arg0}/{arg1}",
                 constraints: new
                 {
                     id = @"\d+",
                     action = @"[a-zA-Z]*", // Note the star to make action optional
-                    arg0 = @"\d*", // Note the star to make action optional
-                    arg1 = @"\d*", // Note the star to make action optional
+                    arg0 = @"\d*", // Note the star to make arg0 optional
+                    arg1 = @"\d*", // Note the star to make arg1 optional
                 },
                 defaults: new
                 {
                     action = "Default",
+                    arg0 = RouteParameter.Optional,
+                    arg1 = RouteParameter.Optional,
                 }
                 );
 
@@ -34,10 +34,12 @@ namespace EvernestAPI
                 {
                     id = @"\d+",
                     streamId = @"\d+",
+                    action = @"[a-zA-Z]*", // Note the star to make action optional
+                    right = @"(None|ReadOnly|WriteOnly|ReadWrite|Admin)?", // Note the ? to make right optional
                 },
                 defaults: new
                 {
-                    action = "Get",
+                    action = "Default",
                     right = RouteParameter.Optional,
                 }
                 );
@@ -55,7 +57,7 @@ namespace EvernestAPI
                 },
                 defaults: new {}
                 );
-            
+          
             config.Routes.MapHttpRoute(
                 name: "APISourceNew",
                 routeTemplate: "{controller}/New",

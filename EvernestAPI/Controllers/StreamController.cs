@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
@@ -13,9 +12,22 @@ namespace EvernestAPI.Controllers
         // /Stream/{id}
         [HttpGet]
         [HttpPost]
-        public string Default(int id)
+        [ActionName("Default")]
+        public Hashtable Default(int id)
         {
-            return String.Format("/Stream/{0}", id);
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Stream";
+            debug["Method"] = "Default";
+            debug["id"] = id;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
 
         // /Stream/{id}/Pull/{arg0}
@@ -26,6 +38,17 @@ namespace EvernestAPI.Controllers
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Stream";
+            debug["Method"] = "PullOne";
+            debug["id"] = id;
+            debug["arg0"] = arg0;
+            debug["nvc"] = nvc;            
+            ans["Debug"] = debug;
+            // END DEBUG //
+
             var key = nvc["key"];
             if (key == null)
                 {
@@ -45,9 +68,23 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Pull")]
-        public string PullRange(int id, int arg0, int arg1)
+        public Hashtable PullRange(int id, int arg0, int arg1)
         {
-            return String.Format("/Stream/{0}/Pull/{1}/{2}", id, arg0, arg1);
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Stream";
+            debug["Method"] = "PullRange";
+            debug["id"] = id;
+            debug["arg0"] = arg0;
+            debug["arg1"] = arg1;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
 
         // /Stream/{id}/Pull/Random
@@ -57,7 +94,17 @@ namespace EvernestAPI.Controllers
         public Hashtable PullRandom(int id)
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
-            var ans = new Hashtable();
+            var ans = new Hashtable();            
+            
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Stream";
+            debug["Method"] = "PullRandom";
+            debug["id"] = id;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+            
             var key = nvc["key"];
             if (key == null)
             {
@@ -77,9 +124,21 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Push")]
-        public string Push(int id)
+        public Hashtable Push(int id)
         {
-            return String.Format("/Stream/{0}/Push", id);
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+            
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Stream";
+            debug["Method"] = "Push";
+            debug["id"] = id;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
 
     }

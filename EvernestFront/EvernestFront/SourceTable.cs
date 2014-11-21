@@ -18,7 +18,7 @@ namespace EvernestFront
         {
             if (Table.ContainsKey(key))
                 return Table[key];
-            else throw new SourceKeyDoesNotExistException();
+            else throw new Exception("SourceKeyDoesNotExist"); // exceptions to be removed soon
         }
 
         internal static void Clear()

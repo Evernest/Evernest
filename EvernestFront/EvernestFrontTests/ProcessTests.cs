@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using EvernestFront;
-using EvernestFront.Exceptions;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using Assert = NUnit.Framework.Assert;
 using KeyType = System.String;
+using EvernestFront.Answers;
+using EvernestFront.Errors;
 
 namespace EvernestFrontTests
 {
@@ -18,6 +22,44 @@ namespace EvernestFrontTests
         private const string Message = "message";
         private const string SourceName = "sourceName";
 
+        internal static long GetUserId_AssertSuccess(string userName)
+        {
+            AddUser ans = Process.AddUser(userName);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+            return ans.UserId;
+        }
+
+        internal static long GetStreamId_AssertSuccess(long userId, string streamName)
+        {
+            CreateStream ans = Process.CreateStream(userId, streamName);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+            return ans.StreamId;
+        }
+
+        int GetEventId_AssertSuccess(long userId, long streamId, String message)
+        {
+            Push ans = Process.Push(userId, streamId, message);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+            return ans.MessageId;
+        }
+
+        internal static void ErrorAssert<TError>(Answer ans)
+        {
+            Assert.IsFalse(ans.Success);
+            Assert.IsNotNull(ans.Error);
+            Assert.IsInstanceOf<TError>(ans.Error);
+        }
+
+        internal static void SetRights_AssertSuccess(long userId, long streamId, long targetUser, AccessRights rights)
+        {
+            SetRights ans = Process.SetRights(userId, streamId, targetUser, rights);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+        }
+
         [SetUp]
         public void Initialize()
         {
@@ -28,8 +70,7 @@ namespace EvernestFrontTests
         [Test]
         public void AddUser_Success()
         {
-            long userId = Process.AddUser(UserName);
-
+            long userId = GetUserId_AssertSuccess(UserName);
             //check that the user has been added to UserTable using internal methods
 
             User user = UserTable.GetUser(userId);
@@ -39,23 +80,24 @@ namespace EvernestFrontTests
 
             //check that IDs are distinct
 
-            long userId2 = Process.AddUser(UserName2);
+            long userId2 = GetUserId_AssertSuccess(UserName2);
             Assert.AreNotEqual(userId, userId2);
         }
 
+
         [Test]
-        [ExpectedException(typeof (UserNameTakenException))]
         public void AddUser_UserNameTaken()
         {
-            long userId = Process.AddUser(UserName);
-            long userId2 = Process.AddUser(UserName);
+            long userId = GetUserId_AssertSuccess(UserName);
+            AddUser ans = Process.AddUser(UserName);
+            ErrorAssert<UserNameTaken>(ans);
         }
 
         [Test]
         public void CreateStream_Success()
         {
-            long userId = Process.AddUser(UserName);
-            long streamId = Process.CreateStream(userId, StreamName);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
 
             //check that the user has creator rights using internal methods...
 
@@ -66,126 +108,133 @@ namespace EvernestFrontTests
         }
 
         [Test]
-        [ExpectedException(typeof (UserIdDoesNotExistException))]
         public void CreateStream_UserIdDoesNotExist()
         {
-            const long bogusUserId = 42;
-            long streamId = Process.CreateStream(bogusUserId, StreamName);
+            const long bogusUserId = 42; //does not exist in UserTable
+            CreateStream ans = Process.CreateStream(bogusUserId, StreamName);
+            ErrorAssert<UserIdDoesNotExist>(ans);
         }
 
         [Test]
-        [ExpectedException(typeof (StreamNameTakenException))]
         public void CreateStream_StreamNameTaken()
         {
-            long user = Process.AddUser(UserName);
-            long user2 = Process.AddUser(UserName2);
+            long user = GetUserId_AssertSuccess(UserName);
+            long user2 = GetUserId_AssertSuccess(UserName2);
 
-            long streamId = Process.CreateStream(user, StreamName);
-            long stream2 = Process.CreateStream(user2, StreamName);
+            long streamId = GetStreamId_AssertSuccess(user, StreamName);
+            CreateStream ans = Process.CreateStream(user2, StreamName);
+            ErrorAssert<StreamNameTaken>(ans);
         }
 
         [Test]
         public void SetRights_Success()
         {
-            long creator = Process.AddUser("creator");
-            long reader = Process.AddUser("reader");
-            //long writer = Process.AddUser("writer");
-            //long readwriter = Process.AddUser("readwriter");
-            long admin = Process.AddUser("admin");
-            //long outsider = Process.AddUser("outsider");
+            long creator = GetUserId_AssertSuccess("creator");
+            long reader = GetUserId_AssertSuccess("reader");
+            //long writer = GetUserId_AssertSuccess("writer");
+            //long readwriter = GetUserId_AssertSuccess("readwriter");
+            long admin = GetUserId_AssertSuccess("admin");
+            //long outsider = GetUserId_AssertSuccess("outsider");
 
-            long streamId = Process.CreateStream(creator, StreamName);
-            Process.SetRights(creator, streamId, admin, AccessRights.Admin);
-            Process.SetRights(admin, streamId, reader, AccessRights.ReadOnly);
-            Process.SetRights(creator, streamId, reader, AccessRights.ReadWrite);
+            long streamId = GetStreamId_AssertSuccess(creator, StreamName);
+            SetRights_AssertSuccess(creator, streamId, admin, AccessRights.Admin);
+            SetRights_AssertSuccess(admin, streamId, reader, AccessRights.ReadOnly);
+            SetRights_AssertSuccess(creator, streamId, reader, AccessRights.ReadWrite);
         }
 
         [Test]
-        [ExpectedException(typeof (AdminAccessDeniedException))]
         public void SetRights_AdminAccessDenied()
         {
-            long creator = Process.AddUser("creator");
-            long reader = Process.AddUser("reader");
-            long streamId = Process.CreateStream(creator, StreamName);
-            Process.SetRights(creator, streamId, reader, AccessRights.ReadOnly);
+            long creator = GetUserId_AssertSuccess("creator");
+            long reader = GetUserId_AssertSuccess("reader");
+            long streamId = GetStreamId_AssertSuccess(creator, StreamName);
+            SetRights_AssertSuccess(creator, streamId, reader, AccessRights.ReadOnly);
 
-            Process.SetRights(reader, streamId, reader, AccessRights.ReadWrite);
+            SetRights ans = Process.SetRights(reader, streamId, reader, AccessRights.ReadWrite);
+            ErrorAssert<AdminAccessDenied>(ans);
         }
 
         [Test]
-        [ExpectedException(typeof (CannotDestituteAdminException))]
         public void SetRights_CannotDestituteAdmin()
         {
-            long creator = Process.AddUser("creator");
-            long evilAdmin = Process.AddUser("evilAdmin");
-            long streamId = Process.CreateStream(creator, StreamName);
-            Process.SetRights(creator, streamId, evilAdmin, AccessRights.Admin);
+            long creator = GetUserId_AssertSuccess("creator");
+            long evilAdmin = GetUserId_AssertSuccess("evilAdmin");
+            long streamId = GetStreamId_AssertSuccess(creator, StreamName);
+            SetRights_AssertSuccess(creator, streamId, evilAdmin, AccessRights.Admin);
 
-            Process.SetRights(evilAdmin, streamId, creator, AccessRights.NoRights);
+            SetRights ans = Process.SetRights(evilAdmin, streamId, creator, AccessRights.NoRights);
+            ErrorAssert<CannotDestituteAdmin>(ans);
         }
 
         [Test]
         public void Push_Success()
         {
-            long userId = Process.AddUser(UserName);
-            long streamId = Process.CreateStream(userId, StreamName);
-            int eventId = Process.Push(userId, streamId, Message);
-            int eventId2 = Process.Push(userId, streamId, Message);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            int eventId2 = GetEventId_AssertSuccess(userId, streamId, Message);
             Assert.AreEqual(eventId, 0);
             Assert.AreEqual(eventId2, 1);
 
         }
 
         [Test]
-        [ExpectedException(typeof (WriteAccessDeniedException))]
         public void Push_WriteAccessDenied()
         {
-            long userId = Process.AddUser(UserName);
-            long streamId = Process.CreateStream(userId, StreamName);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
 
-            long user2 = Process.AddUser(UserName2);
-            int eventId = Process.Push(user2, streamId, Message);
+            long user2 = GetUserId_AssertSuccess(UserName2);
+            Push ans = Process.Push(user2, streamId, Message);
+            ErrorAssert<WriteAccessDenied>(ans);
         }
 
         [Test]
-        [ExpectedException(typeof (StreamIdDoesNotExistException))]
         public void Push_StreamIdDoesNotExist()
         {
-            long userId = Process.AddUser(UserName);
+            long userId = GetUserId_AssertSuccess(UserName);
             const long streamId = 42; //does not exist in StreamTable
-            Process.Push(userId, streamId, Message);
+            Push ans = Process.Push(userId, streamId, Message);
+            ErrorAssert<StreamIdDoesNotExist>(ans);
         }
 
         [Test]
         public void CreateSource_Success()
         {
-            long userId = Process.AddUser(UserName);
-            long streamId = Process.CreateStream(userId, StreamName);
-            KeyType key = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadWrite);
-
-            KeyType key2 = Process.CreateSource(userId, streamId, "source2", AccessRights.ReadWrite);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
+            CreateSource ans = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadWrite);
+            Assert.IsTrue(ans.Success);
+            String key = ans.Key;
+            Assert.IsNotNull(key);
+            CreateSource ans2=Process.CreateSource(userId, streamId, "source2", AccessRights.ReadWrite);
+            Assert.IsTrue(ans2.Success);
+            String key2 = ans2.Key;
+            Assert.IsNotNull(key2);
             Assert.AreNotEqual(key, key2);
         }
 
         [Test]
-        [ExpectedException(typeof (SourceNameTakenException))]
         public void CreateSource_SourceNameTaken()
         {
-            long userId = Process.AddUser(UserName);
-            long streamId = Process.CreateStream(userId, StreamName);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
             Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadWrite);
-            Process.CreateSource(userId, streamId, SourceName, AccessRights.Admin);
+            CreateSource ans = Process.CreateSource(userId, streamId, SourceName, AccessRights.Admin);
+            ErrorAssert<SourceNameTaken>(ans);
         }
 
 
         [Test]
         public void RelatedStreams_Success()
         {
-            long userId = Process.AddUser(UserName);
+            long userId = GetUserId_AssertSuccess(UserName);
             const string streamName2 = "streamName2";
-            long streamId = Process.CreateStream(userId, StreamName);
-            long streamId2 = Process.CreateStream(userId, streamName2);
-            var actualList = Process.RelatedStreams(userId);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
+            long streamId2 = GetStreamId_AssertSuccess(userId, streamName2);
+            RelatedStreams ans = Process.RelatedStreams(userId);
+            Assert.IsTrue(ans.Success);
+            var actualList = ans.Streams;
             Assert.IsNotNull(actualList);
             var expected1 = new KeyValuePair<long, AccessRights>(streamId, UserRight.CreatorRights);
             var expected2 = new KeyValuePair<long, AccessRights>(streamId2, UserRight.CreatorRights);
@@ -198,11 +247,13 @@ namespace EvernestFrontTests
         [Test]
         public void RelatedUsers_Success()
         {
-            long userId = Process.AddUser(UserName);
-            long userId2 = Process.AddUser(UserName2);
-            long streamId = Process.CreateStream(userId, StreamName);
-            Process.SetRights(userId, streamId, userId2, AccessRights.ReadOnly);
-            var actualList = Process.RelatedUsers(userId, streamId);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long userId2 = GetUserId_AssertSuccess(UserName2);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
+            SetRights_AssertSuccess(userId, streamId, userId2, AccessRights.ReadOnly);
+            RelatedUsers ans = Process.RelatedUsers(userId, streamId);
+            Assert.IsTrue(ans.Success);
+            var actualList = ans.Users;
             var expected1 = new KeyValuePair<long, AccessRights>(userId, UserRight.CreatorRights);
             var expected2 = new KeyValuePair<long, AccessRights>(userId2, AccessRights.ReadOnly);
             Assert.IsNotNull(actualList);
@@ -214,45 +265,54 @@ namespace EvernestFrontTests
         [Test]
         public void PullRandom_Success()
         {
-            long userId = Process.AddUser(UserName);
-            long streamId = Process.CreateStream(userId, StreamName);
-            int eventId = Process.Push(userId, streamId, Message);
-            Event pulledRandom = Process.PullRandom(userId, streamId);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            PullRandom ans = Process.PullRandom(userId, streamId);
+            Assert.IsTrue(ans.Success);
+            Event pulledRandom = ans.EventPulled;
             Assert.IsNotNull(pulledRandom);
             Assert.AreEqual(eventId, pulledRandom.Id);
+            //Assert.AreEqual(pulledRandom.Message,Message); will work when we connect to back-end
         }
 
         [Test]
         public void Pull_Success()
         {
-            long userId = Process.AddUser(UserName);
-            long streamId = Process.CreateStream(userId, StreamName);
-            int eventId = Process.Push(userId, streamId, Message);
-            Event pulledById = Process.Pull(userId, streamId, eventId);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            Pull ans = Process.Pull(userId, streamId, eventId);
+            Assert.IsTrue(ans.Success);
+            Event pulledById = ans.EventPulled;
             Assert.IsNotNull(pulledById);
+            //Assert.AreEqual(pulledById.Message, Message); will work when we connect to back-end
         }
 
         [Test]
         public void PullRange_Success()
         {
-            long userId = Process.AddUser(UserName);
-            long streamId = Process.CreateStream(userId, StreamName);
-            int eventId = Process.Push(userId, streamId, Message);
-            int eventId2 = Process.Push(userId, streamId, Message);
-            var pulled = Process.PullRange(userId, streamId, eventId, eventId2);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            int eventId2 = GetEventId_AssertSuccess(userId, streamId, Message);
+            PullRange ans = Process.PullRange(userId, streamId, eventId, eventId2);
+            Assert.IsTrue(ans.Success);
+            var pulled = ans.Events;
             Assert.AreEqual(pulled.Count,2);
         }
 
         [Test]
-        [ExpectedException(typeof (ReadAccessDeniedException))]
         public void Pull_ReadAccessDenied()
         {
-            long userId = Process.AddUser(UserName);
-            long streamId = Process.CreateStream(userId, StreamName);
-            int eventId = Process.Push(userId, streamId, Message);
-            long userId2 = Process.AddUser(UserName2);
-            Process.SetRights(userId,streamId,userId2,AccessRights.WriteOnly);
-            Process.Pull(userId2, streamId, eventId);
+            long userId = GetUserId_AssertSuccess(UserName);
+            long streamId = GetStreamId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            long userId2 = GetUserId_AssertSuccess(UserName2);
+            SetRights_AssertSuccess(userId,streamId,userId2,AccessRights.WriteOnly);
+            
+            Pull ans = Process.Pull(userId2, streamId, eventId);
+            ErrorAssert<ReadAccessDenied>(ans);
         }
 }      
 }

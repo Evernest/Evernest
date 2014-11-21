@@ -158,7 +158,7 @@ namespace EvernestFront
             var targetUser = UserTable.GetUser(targetUserId);
             if (!CheckRights.CheckCanAdmin(user, stream))
                 return new SetRights(new AdminAccessDenied(streamId,userId));
-            if (!CheckRights.CheckRightsCanBeModified(user, stream))
+            if (!CheckRights.CheckRightsCanBeModified(targetUser, stream))
                 return new SetRights(new CannotDestituteAdmin(streamId,targetUserId));
             UserRight.SetRight(targetUser, stream, rights);
             // TODO : update history stream

@@ -66,6 +66,12 @@
     <Compile Include="AccessRights.cs" />
     <Compile Include="UserTable.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\EvernestBack\EvernestBack.csproj">
+      <Project>{98fb2d5c-0689-4f34-9b04-de94992eb906}</Project>
+      <Name>EvernestBack</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

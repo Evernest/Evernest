@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EvernestFront.Answers;
 using EvernestFront.Errors;
+using EvernestBack;
 
 namespace EvernestFront
 {
@@ -18,6 +19,8 @@ namespace EvernestFront
 
         internal List<UserRight> UserRights { get; private set; }
 
+        private readonly RAMStream _backStream;
+        
         // un champ privé contenant un objet du Back
 
         // provisoire
@@ -31,7 +34,7 @@ namespace EvernestFront
             Count = 0;
             LastEventId = -1; //?
             UserRights = new List<UserRight>();
-            // TODO : appeler Back
+            _backStream = new RAMStream();
         }
 
         private int ActualEventId(int eventId)
@@ -51,9 +54,9 @@ namespace EvernestFront
         {
             var random = new Random();
             int id = random.Next(LastEventId+1);
-                    
-            // TODO : appeler Back
-            return new PullRandom(Event.DummyEvent(id, this));
+            Event pulledEvent=null;       
+            _backStream.Pull((ulong)id, ( a => pulledEvent = new Event(id,a.Message,this)));  //TODO : change this when we implement fire-and-forget with website
+            return new PullRandom(pulledEvent);
         }
 
         internal Pull Pull(int eventId)
@@ -63,11 +66,16 @@ namespace EvernestFront
             // call back-end
 
             if (IsEventIdValid(id))
-             return new Pull(Event.DummyEvent(id,this));
+            {
+                Event pulledEvent = null;
+                _backStream.Pull((ulong)id, (a=>pulledEvent = new Event(id, a.Message,this))); //TODO : change this
+                return new Pull(pulledEvent);
+            }
             else
             {
                 return new Pull(new InvalidEventId(id,this));
             }
+           
         }
 
         internal PullRange PullRange(int fromEventId, int toEventId)
@@ -81,8 +89,11 @@ namespace EvernestFront
             var eventList = new List<Event>();
             for (int id = fromEventId; id <= toEventId; id++)
             {
-                // call back-end
-                eventList.Add(Event.DummyEvent(id, this));
+                Pull ans = Pull(id);
+                if (!ans.Success)
+                    throw new Exception();  //this should never happen : both fromEventId and toEventId are valid, so id should be valid.
+                Event pulledEvent = ans.EventPulled; //TODO : change this when PullRange gets implemented in back-end
+                eventList.Add(pulledEvent);
             }
             return new PullRange(eventList);
         }
@@ -93,9 +104,9 @@ namespace EvernestFront
         internal Push Push(string message)
         {
             int eventId = LastEventId + 1;
-    
             // TODO : call back-end
 
+            _backStream.Push(message, (a => Console.WriteLine(a.RequestID)));  //TODO : change callback
             Count++;
             LastEventId++;
             return new Push(eventId);

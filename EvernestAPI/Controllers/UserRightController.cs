@@ -1,38 +1,55 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 
 namespace EvernestAPI.Controllers
 {
     public class UserRightController : ApiController
     {
-        // GET: /UserRight/{userId}/{streamId}
-        public Hashtable Get(int userId, int streamId)
+        // /UserRight/{id}/{streamId}
+        [HttpGet]
+        [HttpPost]
+        [ActionName("Default")]
+        public Hashtable Get(int id, int streamId)
         {
-            var response = new Hashtable();
-            response["method"] = "GET";
-            response["controller"] = "UserRightController";
-            response["userId"] = userId;
-            response["streamId"] = streamId;
-            response["action"] = "Get";
-            return response;
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Source";
+            debug["Method"] = "Get";
+            debug["id"] = id;
+            debug["streamId"] = streamId;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
 
-        // GET: /Right/{userId}/{streamId}/Set/{right}
-        public Hashtable Get(int userId, int streamId, string right)
+        // /UserRight/{id}/{streamId}/Set/{right}
+        [HttpGet]
+        [HttpPost]
+        [ActionName("Set")]
+        public Hashtable Set(int id, int streamId, string right)
         {
-            var response = new Hashtable();
-            response["method"] = "GET";
-            response["controller"] = "UserRightController";
-            response["action"] = "Get";
-            response["userId"] = userId;
-            response["streamId"] = streamId;
-            response["right"] = right;
-            return response;
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Source";
+            debug["Method"] = "Set";
+            debug["id"] = id;
+            debug["streamId"] = streamId;
+            debug["right"] = right;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
     }
 }

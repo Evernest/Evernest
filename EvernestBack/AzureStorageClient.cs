@@ -9,13 +9,19 @@ using System.Configuration;
 
 namespace EvernestBack
 {
+    /**
+     * AzureStorageClient represents a client connection with the azure storage service 
+     * see it as an EventStream factory
+     */
     class AzureStorageClient
     {
         private CloudBlobClient blobClient;
-        CloudBlobContainer streamContainer;
+        private Dictionary<String, EventStream> openedStreams;
+        private CloudBlobContainer streamContainer;
 
         public AzureStorageClient()
         {
+            openedStreams = new Dictionary<String,EventStream>();
             // Create the blob client
             CloudStorageAccount storageAccount = null;
             try
@@ -38,11 +44,18 @@ namespace EvernestBack
             streamContainer.CreateIfNotExists();
         }
 
-        public Stream GetStream( String streamStrId )
+
+        public EventStream GetEventStream( String streamStrId )
         {
-            CloudBlockBlob blob = streamContainer.GetBlockBlobReference(streamStrId);
-            return new Stream( blob );
+            EventStream stream;
+            if( !openedStreams.TryGetValue(streamStrId, out stream) )
+            {
+                stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId));
+                openedStreams.Add(streamStrId, stream);
+            }
+            return stream;
         }
+        //missing something to close streams
 
     }
 }

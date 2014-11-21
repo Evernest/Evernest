@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
 namespace EvernestFront
 {
     class SourceTable
     {
         private static readonly Dictionary<String, Source> Table = new Dictionary<String, Source>();
+
 
         internal static bool SourceKeyExists(String key)
         {

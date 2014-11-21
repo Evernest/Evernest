@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using EvernestFront;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using Assert = NUnit.Framework.Assert;
-using KeyType = System.String;
 using EvernestFront.Answers;
 using EvernestFront.Errors;
 

@@ -2,7 +2,7 @@
 
 namespace EvernestFront.Errors
 {
-    class UserNameTaken : FrontError
+    public class UserNameTaken : FrontError
     {
         public string UserName { get; private set; }
         /// <summary>

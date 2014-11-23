@@ -4,7 +4,7 @@ using System;
 
 namespace EvernestFront.Errors
 {
-    class WriteAccessDenied : AccessDenied
+    public class WriteAccessDenied : AccessDenied
     {
 
         /// <summary>

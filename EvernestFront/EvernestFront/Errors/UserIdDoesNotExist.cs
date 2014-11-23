@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvernestFront.Errors
 {
-    class UserIdDoesNotExist : FrontError
+    public class UserIdDoesNotExist : FrontError
     {
         public Int64 Id { get; private set; }
 

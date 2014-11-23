@@ -4,7 +4,7 @@ using System;
 
 namespace EvernestFront.Errors
 {
-    class ReadAccessDenied : AccessDenied
+    public class ReadAccessDenied : AccessDenied
     {
         /// <summary>
         /// Constructor for ReadAccessDeniedException.

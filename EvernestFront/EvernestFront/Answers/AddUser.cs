@@ -12,17 +12,19 @@ namespace EvernestFront.Answers
         public String UserName { get; private set; }
         public Int64 UserId { get; private set; }
         public String UserKey { get; private set; }
+        public String Password { get; private set; }
 
 
         internal AddUser(FrontError err)
             : base(err) { }
 
-        internal AddUser(string name, Int64 id, string key)
+        internal AddUser(string name, Int64 id, string key, string password)
             : base()
         {
             UserName = name;
             UserId = id;
             UserKey = key;
+            Password = password;
         }
     }
 }

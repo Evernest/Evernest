@@ -4,7 +4,7 @@ using System;
 
 namespace EvernestFront.Errors
 {
-    class AdminAccessDenied : AccessDenied
+    public class AdminAccessDenied : AccessDenied
     {
         /// <summary>
         /// Constructor for AdminAccessDeniedException.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Runtime.CompilerServices;
 using EvernestFront.Errors;
 using EvernestFront.Answers;
@@ -18,9 +19,10 @@ namespace EvernestFront
         {
             if (UserTable.NameIsFree(user))
             {
-                var usr = new User(user);
+                var password = Keys.NewPassword();
+                var usr = new User(user,password);
                 UserTable.Add(usr);
-                return new AddUser(usr.Name, usr.Id, usr.Key);
+                return new AddUser(usr.Name, usr.Id, usr.Key, password);
             }
             else
             {
@@ -308,9 +310,6 @@ namespace EvernestFront
         /// <param name="userId"></param>
         /// <param name="streamId"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExist"></exception>
-        /// <exception cref="StreamIdDoesNotExist"></exception>
-        /// <exception cref="AdminAccessDenied"></exception>
         static public RelatedUsers RelatedUsers(Int64 userId, Int64 streamId)
         {
             if (!UserTable.UserIdExists(userId))
@@ -330,10 +329,13 @@ namespace EvernestFront
         {
             if (UserTable.NameIsFree(userName))
                 return new IdentifyUser(new UserNameDoesNotExist(userName));
-            var user = UserTable.GetUser(userName);                                   //TODO : actually check password
-            //if (user.Password!=password)                                            //not implemented
-            //    return new IdentifyUser(new InvalidPassword(userName,password));    //not implemented
-            return new IdentifyUser(user.Id);
+            var user = UserTable.GetUser(userName);                                
+            if (user.Identify(password))
+                return new IdentifyUser(user.Id);
+            else
+            {
+                return new IdentifyUser(new WrongPassword(userName,password));
+            }
         }
     }
 }

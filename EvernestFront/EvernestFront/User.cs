@@ -49,10 +49,7 @@ namespace EvernestFront
             UserRights=new List<UserRight>();
             Sources = new List<Source>();
             PasswordSalt = System.Text.Encoding.ASCII.GetBytes(Keys.NewSalt());
-            var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
-            var hmacMD5 = new HMACMD5(PasswordSalt);
-            var saltedHash = hmacMD5.ComputeHash(passwordBytes);
-            SaltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
+            this.SetPassword(password);
         }
 
         internal void AddSource(Source source)
@@ -90,7 +87,14 @@ namespace EvernestFront
             return (SaltedPasswordHash.Equals(saltedHash));
         }
 
-
+        internal void SetPassword(string password)
+        {
+            // TODO : check that password is ASCII
+            var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
+            var hmacMD5 = new HMACMD5(PasswordSalt);
+            var saltedHash = hmacMD5.ComputeHash(passwordBytes);
+            SaltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
+        }
 //        Id int: User identifier.
 //UserName string: User personnal name.
 //Password hash: Hash of user password concatenated to PasswordSalt.

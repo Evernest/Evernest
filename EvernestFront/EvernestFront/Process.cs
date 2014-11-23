@@ -337,5 +337,13 @@ namespace EvernestFront
                 return new IdentifyUser(new WrongPassword(userName,password));
             }
         }
+
+        static public SetPassword SetPassword(Int64 userId, string newPassword)
+        {
+            if (!UserTable.UserIdExists(userId))
+                return new SetPassword(new UserIdDoesNotExist(userId));
+            var user = UserTable.GetUser(userId);
+            return user.SetPassword(newPassword);
+        }
     }
 }

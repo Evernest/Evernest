@@ -44,9 +44,11 @@
     <Compile Include="Answers\PullRange.cs" />
     <Compile Include="Answers\RelatedStreams.cs" />
     <Compile Include="Answers\RelatedUsers.cs" />
+    <Compile Include="Answers\SetPassword.cs" />
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="Answers\IdentifyUser.cs" />
     <Compile Include="CheckRights.cs" />
+    <Compile Include="Errors\InvalidString.cs" />
     <Compile Include="Errors\SourceKeyDoesNotExist.cs" />
     <Compile Include="Errors\WrongPassword.cs" />
     <Compile Include="Event.cs" />

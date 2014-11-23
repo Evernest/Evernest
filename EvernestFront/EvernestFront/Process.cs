@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using EvernestFront.Errors;
 using EvernestFront.Answers;
 
@@ -322,6 +324,16 @@ namespace EvernestFront
             return new RelatedUsers(stream.RelatedUsers);
 
             //TODO : exclure les users avec droits égaux à NoRights ?
+        }
+
+        static public IdentifyUser IdentifyUser(string userName, string password)
+        {
+            if (UserTable.NameIsFree(userName))
+                return new IdentifyUser(new UserNameDoesNotExist(userName));
+            var user = UserTable.GetUser(userName);                                   //TODO : actually check password
+            //if (user.Password!=password)                                            //not implemented
+            //    return new IdentifyUser(new InvalidPassword(userName,password));    //not implemented
+            return new IdentifyUser(user.Id);
         }
     }
 }

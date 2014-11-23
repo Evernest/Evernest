@@ -12,12 +12,7 @@ namespace EvernestFront
         private static readonly Dictionary<string, User> TableByName = new Dictionary<string, User>();
         private static readonly Dictionary<Int64, User> TableById = new Dictionary<Int64, User>();
 
-        /// <summary>
-        /// Does nothing if name is available.
-        /// Throws a UserNameTakenException if it is taken.
-        /// </summary>
-        /// <exception cref="UserNameTaken"></exception>
-        /// <param name="name"></param>
+       
         internal static bool NameIsFree(string name)
         {
             return (!TableByName.ContainsKey(name));
@@ -47,6 +42,16 @@ namespace EvernestFront
         internal static User GetUser(Int64 id)
         {
             return TableById[id];
+        }
+
+        /// <summary>
+        /// Gets user called name. Username existence should be checked beforehand !
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        internal static User GetUser(string name)
+        {
+            return TableByName[name];
         }
 
         /// <summary>

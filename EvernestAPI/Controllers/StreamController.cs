@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
 using EvernestFront;
+using Newtonsoft.Json;
+using EvernestAPI.Models;
 
 namespace EvernestAPI.Controllers
 {
@@ -127,6 +129,11 @@ namespace EvernestAPI.Controllers
         public Hashtable Push(int id)
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var httpContent = Request.Content;
+            var asyncContent = httpContent.ReadAsStringAsync().Result;
+
+            Hashtable json = Tools.parseBody(Request);
+
             var ans = new Hashtable();
             
             // BEGIN DEBUG //
@@ -134,7 +141,8 @@ namespace EvernestAPI.Controllers
             debug["Controller"] = "Stream";
             debug["Method"] = "Push";
             debug["id"] = id;
-            debug["nvc"] = nvc;
+            //debug["nvc"] = nvc;
+            debug["body"] = json;
             ans["Debug"] = debug;
             // END DEBUG //
 

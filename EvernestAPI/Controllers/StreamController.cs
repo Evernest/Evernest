@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
@@ -57,7 +58,10 @@ namespace EvernestAPI.Controllers
                 }
             else
                 {
-                    var eve = Process.Pull(key, arg0);
+                    var pullAnswer = Process.Pull(key, arg0);
+                    if (!pullAnswer.Success)
+                        throw new NotImplementedException();
+                    var eve = pullAnswer.EventPulled; //eve is not null at this point
                     ans["Status"] = "Success";
                     ans["Events"] = new List<Event> {eve};
                 };
@@ -113,7 +117,10 @@ namespace EvernestAPI.Controllers
             }
             else
             {
-                var eve = Process.PullRandom(key);
+                var pullRandomAnswer = Process.PullRandom(key);
+                if (!pullRandomAnswer.Success)
+                    throw new NotImplementedException();
+                var eve = pullRandomAnswer.EventPulled; //not null
                 ans["Status"] = "Success";
                 ans["Events"] = new List<Event> { eve };
             };

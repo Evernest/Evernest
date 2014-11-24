@@ -7,21 +7,16 @@ namespace EvernestBack
 {
     class Reader:Agent
     {
-        public Reader(String message, UInt64 requestID, Stream feedback)
-            :base(message, requestID, feedback)
+        public Reader(String Message, UInt64 RequestID, Action<IAgent> Callback)
+            :base(Message, RequestID, Callback)
         {
             
         }
         
-        private void read()
+        private void Read()
         {
             //TODO
-            // message = "Aller chercher le message sur le blob"
-        }
-
-        public override void Processed()
-        {
-            base.feedback.StreamDeliver(this);
+            // message = "Pull from blob"
         }
     }
 }

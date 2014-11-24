@@ -1,6 +1,6 @@
 ﻿@model EvernestWeb.Models.LocalPasswordModel
 @{
-    ViewBag.Title = "Gérer le compte";
+    ViewBag.Title = "Manage Account";
 }
 
 <hgroup class="title">
@@ -11,6 +11,8 @@
 
 <p>Vous êtes connecté en tant que <strong>@User.Identity.Name</strong>.</p>
 
+<p>@Html.ActionLink("Manage your Store.","Index", "Store")</p>
+
 @if (ViewBag.HasLocalPassword)
 {
     @Html.Partial("_ChangePasswordPartial")
@@ -20,13 +22,14 @@ else
     @Html.Partial("_SetPasswordPartial")
 }
 
-<section id="externalLogins">
+<!--
+    <section id="externalLogins">
     @Html.Action("RemoveExternalLogins")
 
     <h3>Ajouter une connexion externe</h3>
     @Html.Action("ExternalLoginsList", new { ReturnUrl = ViewBag.ReturnUrl })
 </section>
-
+-->
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

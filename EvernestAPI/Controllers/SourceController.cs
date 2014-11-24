@@ -1,35 +1,51 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 
 namespace EvernestAPI.Controllers
 {
     public class SourceController : ApiController
     {
-        // GET: /Source/{sourceId}
-        public Hashtable Get(int sourceId)
+        // /Source/{id}
+        [HttpGet]
+        [HttpPost]
+        [ActionName("Default")]
+        public Hashtable Default(int id)
         {
-            var response = new Hashtable();
-            response["method"] = "GET";
-            response["controller"] = "SourceController";
-            response["sourceId"] = sourceId;
-            response["action"] = "Get";
-            return response;
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Source";
+            debug["Method"] = "Default";
+            debug["id"] = id;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
 
-        // POST: /Source/New
-        public Hashtable Post()
+        // /Source/New
+        [HttpGet]
+        [HttpPost]
+        [ActionName("New")]
+        public Hashtable New()
         {
-            var response = new Hashtable();
-            response["method"] = "POST";
-            response["controller"] = "SourceController";
-            response["action"] = "Post";
-            response["notes"] = "I don't know how to read JSon body. Yet.";
-            return response;
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Source";
+            debug["Method"] = "New";
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
     }
 }

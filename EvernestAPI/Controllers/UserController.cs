@@ -1,34 +1,31 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 
 namespace EvernestAPI.Controllers
 {
     public class UserController : ApiController
     {
-        // GET: /User/{userId}
-        public Hashtable Get(int userId)
+        // /User/{id}
+        [HttpGet]
+        [HttpPost]
+        [ActionName("Default")]
+        public Hashtable Default(int id)
         {
-            var response = new Hashtable();
-            response["method"] = "GET";
-            response["controller"] = "UserController";
-            response["sourceId"] = userId;
-            response["action"] = "Get";
-            return response;
-        }
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
 
-        public Hashtable Post(int userId)
-        {
-            var response = new Hashtable();
-            response["method"] = "POST";
-            response["controller"] = "UserController";
-            response["sourceId"] = userId;
-            response["action"] = "Post";
-            return response;
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "User";
+            debug["Method"] = "Default";
+            debug["id"] = id;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
     }
 }

@@ -46,6 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Answers\Pull.cs" />
+    <Compile Include="Answers\PullRandom.cs" />
+    <Compile Include="Answers\PullRange.cs" />
+    <Compile Include="Answers\RelatedStreams.cs" />
+    <Compile Include="Answers\RelatedUsers.cs" />
+    <Compile Include="Answers\SetPassword.cs" />
+    <Compile Include="Answers\SetRights.cs" />
+    <Compile Include="Answers\IdentifyUser.cs" />
     <Compile Include="CheckRights.cs" />
     <Compile Include="Contract\Diff\IDiff.cs" />
     <Compile Include="Contract\Diff\RightSet.cs" />
@@ -54,19 +62,28 @@
     <Compile Include="Contract\StreamData.cs" />
     <Compile Include="Contract\Diff\UserAdded.cs" />
     <Compile Include="Contract\UserData.cs" />
+    <Compile Include="Errors\InvalidString.cs" />
+    <Compile Include="Errors\SourceKeyDoesNotExist.cs" />
+    <Compile Include="Errors\WrongPassword.cs" />
     <Compile Include="Event.cs" />
-    <Compile Include="Exceptions\AccessDeniedException.cs" />
-    <Compile Include="Exceptions\AdminAccessDeniedException.cs" />
-    <Compile Include="Exceptions\CannotDestituteAdminException.cs" />
-    <Compile Include="Exceptions\FrontException.cs" />
-    <Compile Include="Exceptions\InvalidEventIdException.cs" />
-    <Compile Include="Exceptions\ReadAccessDeniedException.cs" />
-    <Compile Include="Exceptions\SourceNameTakenException.cs" />
-    <Compile Include="Exceptions\UserIdDoesNotExistException.cs" />
-    <Compile Include="Exceptions\UserNameTakenException.cs" />
+    <Compile Include="Errors\AccessDenied.cs" />
+    <Compile Include="Errors\AdminAccessDenied.cs" />
+    <Compile Include="Errors\CannotDestituteAdmin.cs" />
+    <Compile Include="Errors\FrontError.cs" />
+    <Compile Include="Errors\InvalidEventId.cs" />
+    <Compile Include="Errors\ReadAccessDenied.cs" />
+    <Compile Include="Errors\SourceNameTaken.cs" />
+    <Compile Include="Errors\UserIdDoesNotExist.cs" />
+    <Compile Include="Errors\UserNameDoesNotExist.cs" />
+    <Compile Include="Errors\UserNameTaken.cs" />
+    <Compile Include="Answers\Answer.cs" />
+    <Compile Include="Answers\Push.cs" />
+    <Compile Include="Answers\AddUser.cs" />
+    <Compile Include="Answers\CreateStream.cs" />
+    <Compile Include="Answers\CreateSource.cs" />
     <Compile Include="Keys.cs" />
-    <Compile Include="Exceptions\WriteAccessDeniedException.cs" />
     <Compile Include="Contract\Tables.cs" />
+    <Compile Include="Errors\WriteAccessDenied.cs" />
     <Compile Include="Source.cs" />
     <Compile Include="SourceTable.cs" />
     <Compile Include="User.cs" />
@@ -76,16 +93,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stream.cs" />
     <Compile Include="StreamTable.cs" />
-    <Compile Include="Exceptions\StreamIdDoesNotExistException.cs" />
-    <Compile Include="Exceptions\StreamNameTakenException.cs" />
+    <Compile Include="Errors\StreamIdDoesNotExist.cs" />
+    <Compile Include="Errors\StreamNameTaken.cs" />
     <Compile Include="AccessRights.cs" />
     <Compile Include="UserTable.cs" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\..\EvernestBack\EvernestBack.csproj">
+      <Project>{98fb2d5c-0689-4f34-9b04-de94992eb906}</Project>
+      <Name>EvernestBack</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

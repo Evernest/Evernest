@@ -6,27 +6,21 @@ using System.Text;
 
 namespace EvernestBack
 {
-    class Producer:Agent
+    class Producer : Agent
     {
         private WriteLocker writer;
 
-        public Producer(String message, UInt64 requestId, 
-            WriteLocker writeLocker, Stream feedback)
-            :base(message, requestId, feedback)
+        internal Producer(String message, UInt64 requestId,
+            WriteLocker writeLocker, Action<IAgent> Callback)
+            : base(message, requestId, Callback)
         {
             this.writer = writeLocker;
             write();
         }
-        
+
         private void write()
         {
             writer.Register(this);
-        }
-
-        public override void Processed()
-        {
-            this.message = "ACK" + this.requestID;
-            base.feedback.StreamDeliver(this);
         }
     }
 }

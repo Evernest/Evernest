@@ -6,13 +6,6 @@ namespace EvernestFront.Errors
 {
     public class WriteAccessDenied : AccessDenied
     {
-
-        /// <summary>
-        /// Constructor for WriteAccessDeniedException.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="user"></param>
-
         internal WriteAccessDenied(Int64 stream, Int64 user)
             : base(stream, user) { }
 

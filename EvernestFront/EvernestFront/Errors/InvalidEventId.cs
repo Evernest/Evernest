@@ -12,10 +12,6 @@ namespace EvernestFront.Errors
 
         public int EventId { get; private set; }
 
-        /// <summary>
-        /// Constructor for InvalidEventIdException.
-        /// </summary>
-        /// <param name="id"></param>
         internal InvalidEventId(int evId, Stream strm)
         {
             StreamId = strm.Id;

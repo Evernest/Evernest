@@ -10,10 +10,7 @@ namespace EvernestFront.Answers
     public class PullRandom : Answer
     {
         public Event EventPulled {get; private set;}
-        /// <summary>
-        /// Sets field success to false and field exception to exn.
-        /// </summary>
-        /// <param name="err"></param>
+
         internal PullRandom(FrontError err)
         :base(err)
         {

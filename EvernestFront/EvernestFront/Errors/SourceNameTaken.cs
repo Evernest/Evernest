@@ -13,11 +13,6 @@ namespace EvernestFront.Errors
         public Int64 UserId { get; private set; }
         public string SourceName { get; private set; }
 
-        /// <summary>
-        /// Constructor for SourceNameTakenException.
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="source"></param>
         internal SourceNameTaken(Int64 user, string source)
         {
             UserId = user;

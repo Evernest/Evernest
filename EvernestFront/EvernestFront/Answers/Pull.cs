@@ -11,10 +11,7 @@ namespace EvernestFront.Answers
     public class Pull : Answer
     {
         public Event EventPulled {get; private set;}
-        /// <summary>
-        /// Sets field success to false and field exception to exn.
-        /// </summary>
-        /// <param name="err"></param>
+
         internal Pull(FrontError err)
         :base(err)
         {

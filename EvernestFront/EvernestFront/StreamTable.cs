@@ -34,7 +34,6 @@ namespace EvernestFront
         /// <summary>
         /// Returns the stream with ID id. Stream ID existence should be checked beforehand !
         /// </summary>
-        /// <exception cref="StreamIdDoesNotExist"></exception>
         /// <param name="id"></param>
         /// <returns></returns>
         internal static Stream GetStream(Int64 id)

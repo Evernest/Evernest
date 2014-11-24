@@ -89,9 +89,6 @@ namespace EvernestFront
         /// <summary>
         /// Returns if and only if user can read on stream.
         /// </summary>
-        /// <exception cref="AccessDenied"></exception>
-        /// <exception cref="StreamIdDoesNotExist"></exception>
-        /// <exception cref="ReadAccessDenied"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
         static internal bool CheckCanRead(User user, Stream stream)
@@ -103,9 +100,6 @@ namespace EvernestFront
         /// <summary>
         /// Returns if and only if user can write on stream.
         /// </summary>
-        /// <exception cref="AccessDenied"></exception>
-        /// <exception cref="StreamIdDoesNotExist"></exception>
-        /// <exception cref="WriteAccessDenied"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
         static internal bool CheckCanWrite(User user, Stream stream)
@@ -117,9 +111,6 @@ namespace EvernestFront
         /// <summary>
         /// Returns if and only if user can administrate stream.
         /// </summary>
-        /// <exception cref="AccessDenied"></exception>
-        /// <exception cref="StreamIdDoesNotExist"></exception>
-        /// <exception cref="AdminAccessDenied"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
         static internal bool CheckCanAdmin(User user, Stream stream)

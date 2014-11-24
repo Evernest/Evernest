@@ -10,10 +10,7 @@ namespace EvernestFront.Answers
     public class Push : Answer
     {
         public int MessageId { get; private set; }
-        /// <summary>
-        /// Sets field success to false and field exception to exn.
-        /// </summary>
-        /// <param name="err"></param>
+
         internal Push(FrontError err)
             : base(err) { }
 

@@ -9,17 +9,10 @@ namespace EvernestFront.Answers
 {
     public class SetRights:Answer
     {
-        /// <summary>
-        /// Sets field success to false and field exception to exn.
-        /// </summary>
-        /// <param name="err"></param>
         internal SetRights(FrontError err)
             : base(err) { }
         
-        
-        /// <summary>
-        /// Sets field success to true. To change it to false, an exception parameter must be passed.
-        /// </summary>
+       
         internal SetRights()
             : base() { }
       

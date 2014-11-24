@@ -26,7 +26,7 @@ namespace EvernestFront.Answers
 
 
         /// <summary>
-        /// Sets field success to false and field exception to exn.
+        /// Sets property Success to false and Error to err.
         /// </summary>
         /// <param name="err"></param>
         protected Answer(FrontError err)

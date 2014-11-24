@@ -11,10 +11,7 @@ namespace EvernestFront.Answers
     {
         //TODO : tableau d'events ? liste ? chaîne JSON ?
         public List<Event> Events { get; private set; }
-        /// <summary>
-        /// Sets field success to false and field exception to exn.
-        /// </summary>
-        /// <param name="err"></param>
+
         internal PullRange(FrontError err)
             :base(err)
         {

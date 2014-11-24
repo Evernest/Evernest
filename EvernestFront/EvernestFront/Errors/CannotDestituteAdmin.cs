@@ -9,7 +9,7 @@ namespace EvernestFront.Errors
         public Int64 User { get; private set; }
 
         /// <summary>
-        /// Constructor for CannotDestituteAdminException.
+        /// Constructor for CannotDestituteAdmin.
         /// Synopsis : user has admin rights over stream : these rights cannot be modified.
         /// </summary>
         /// <param name="stream"></param>

@@ -38,8 +38,8 @@ namespace EvernestFront.Contract
             UserName = name;
             UserId = id;
             Key = key;
-            RelatedStreams = ImmutableDictionary<long, AccessRights>.Empty;
-            OwnedSources = ImmutableDictionary<long, long>.Empty;
+            RelatedStreams = strms;
+            OwnedSources = srcs;
         }
 
 

@@ -41,6 +41,15 @@ namespace EvernestFront.Contract
             _streamNameToId = strmNtI;
         }
 
+        internal UserData GetUser(long userId)
+        {
+            UserData user;
+            if (_userTable.TryGetValue(userId, out user))
+                return user;
+            else
+                throw new NotImplementedException("Tables.GetUser");
+        }
+
         internal Tables AddUser(UserData user)
         {
             var usrTbl = _userTable.Add(user.UserId, user);

@@ -131,18 +131,15 @@ footer {
 .site-title {
     color: #c8c8c8;
     font-family: Rockwell, Consolas, "Courier New", Courier, monospace;
-    font-size: 2.3em;
     margin: 0;
 }
 
 .site-title a, .site-title a:hover, .site-title a:active {
-    background: none;
-    color: transparent;
-    outline: none;
-    font-size: 5.3em;
-    text-decoration: none;
-    background: url("../Icone/logo.png") no-repeat left top local;
-    background-size: 100% 100%;
+    background: url("../Icone/logo.png") no-repeat left top;
+    display: block;
+    width: 502px;
+    height: 195px;
+    text-indent: -9999px;
 }
 
 

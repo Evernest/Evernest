@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using EvernestFront.Contract;
-using EvernestFront.Contract.DataModified;
+using EvernestFront.Contract.Diff;
 
 namespace EvernestFront.Projection
 {
@@ -10,7 +10,7 @@ namespace EvernestFront.Projection
 
 
 
-        static void HandleDataModified(IDataModified dm)
+        static void HandleDataModified(IDiff dm)
         {
             if (dm is UserAdded)
                 HandleUserAdded(dm as UserAdded);

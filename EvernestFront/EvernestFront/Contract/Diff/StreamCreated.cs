@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.DataModified
+namespace EvernestFront.Contract.Diff
 {
     [DataContract]
-    class StreamCreated : IDataModified
+    class StreamCreated : IDiff
     {
         [DataMember]
         internal string StreamName;

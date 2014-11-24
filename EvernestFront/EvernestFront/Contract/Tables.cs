@@ -8,44 +8,44 @@ namespace EvernestFront.Contract
     class Tables
     {
         [DataMember]
-        readonly ImmutableDictionary<long, UserData> UserTable;
+        readonly ImmutableDictionary<long, UserData> _userTable;
         [DataMember]
-        readonly ImmutableDictionary<long, StreamData> StreamTable;
+        readonly ImmutableDictionary<long, StreamData> _streamTable;
         [DataMember]
-        readonly ImmutableDictionary<string, int> SourceTable; //int should be Contract.Source when it is implemented
+        readonly ImmutableDictionary<string, int> _sourceTable; //int should be Contract.Source when it is implemented
 
         [DataMember]
-        readonly ImmutableDictionary<string, long> UserNameToId;
+        readonly ImmutableDictionary<string, long> _userNameToId;
         [DataMember]
-        readonly ImmutableDictionary<string, long> StreamNameToId;
+        readonly ImmutableDictionary<string, long> _streamNameToId;
 
 
 
         internal Tables()
         {
-            UserTable = ImmutableDictionary<long, UserData>.Empty;
-            StreamTable = ImmutableDictionary<long, StreamData>.Empty;
-            SourceTable = ImmutableDictionary<string, int>.Empty;
-            UserNameToId = ImmutableDictionary<string, long>.Empty;
-            StreamNameToId = ImmutableDictionary<string, long>.Empty;
+            _userTable = ImmutableDictionary<long, UserData>.Empty;
+            _streamTable = ImmutableDictionary<long, StreamData>.Empty;
+            _sourceTable = ImmutableDictionary<string, int>.Empty;
+            _userNameToId = ImmutableDictionary<string, long>.Empty;
+            _streamNameToId = ImmutableDictionary<string, long>.Empty;
         }
 
         private Tables(ImmutableDictionary<long, UserData> usrTbl, ImmutableDictionary<long, StreamData> strmTbl,
             ImmutableDictionary<string, int> srcTbl, ImmutableDictionary<string, long> usrNtI,
             ImmutableDictionary<string, long> strmNtI)
         {
-            UserTable = usrTbl;
-            StreamTable = strmTbl;
-            SourceTable = srcTbl;
-            UserNameToId = usrNtI;
-            StreamNameToId = strmNtI;
+            _userTable = usrTbl;
+            _streamTable = strmTbl;
+            _sourceTable = srcTbl;
+            _userNameToId = usrNtI;
+            _streamNameToId = strmNtI;
         }
 
         internal Tables AddUser(UserData user)
         {
-            var usrTbl = UserTable.Add(user.UserId, user);
-            var usrNameToId = UserNameToId.Add(user.UserName, user.UserId);
-            return new Tables(usrTbl,StreamTable,SourceTable,usrNameToId,StreamNameToId);
+            var usrTbl = _userTable.Add(user.UserId, user);
+            var usrNameToId = _userNameToId.Add(user.UserName, user.UserId);
+            return new Tables(usrTbl,_streamTable,_sourceTable,usrNameToId,_streamNameToId);
         }
 
         /// <summary>
@@ -55,22 +55,22 @@ namespace EvernestFront.Contract
         /// <returns></returns>
         internal Tables AddStream(StreamData stream)
         {
-            var strmTbl = StreamTable.Add(stream.StreamId, stream);
-            var strmNtI = StreamNameToId.Add(stream.StreamName, stream.StreamId);
-            return new Tables(UserTable, strmTbl, SourceTable, UserNameToId, strmNtI);
+            var strmTbl = _streamTable.Add(stream.StreamId, stream);
+            var strmNtI = _streamNameToId.Add(stream.StreamName, stream.StreamId);
+            return new Tables(_userTable, strmTbl, _sourceTable, _userNameToId, strmNtI);
         }
 
         internal Tables SetRight(long userId, long streamId, AccessRights right)
         {
             UserData user;
-            if (UserTable.TryGetValue(userId, out user))
+            if (_userTable.TryGetValue(userId, out user))
             {
                 StreamData stream;
-                if (StreamTable.TryGetValue(streamId, out stream))
+                if (_streamTable.TryGetValue(streamId, out stream))
                 {
-                    var usrTbl = UserTable.Add(userId, user.SetRight(streamId, right));
-                    var strmTbl = StreamTable.Add(streamId, stream.SetRight(userId, right));
-                    return new Tables(usrTbl, strmTbl, SourceTable, UserNameToId, StreamNameToId);
+                    var usrTbl = _userTable.Add(userId, user.SetRight(streamId, right));
+                    var strmTbl = _streamTable.Add(streamId, stream.SetRight(userId, right));
+                    return new Tables(usrTbl, strmTbl, _sourceTable, _userNameToId, _streamNameToId);
                 }
                 else
                     throw new Exception();

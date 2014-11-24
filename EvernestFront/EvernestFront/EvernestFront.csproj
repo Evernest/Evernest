@@ -47,13 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckRights.cs" />
-    <Compile Include="Contract\DataModified\DataModifiedEnum.cs" />
-    <Compile Include="Contract\DataModified\IDataModified.cs" />
-    <Compile Include="Contract\DataModified\RightSet.cs" />
+    <Compile Include="Contract\Diff\IDiff.cs" />
+    <Compile Include="Contract\Diff\RightSet.cs" />
     <Compile Include="Contract\RightTable.cs" />
-    <Compile Include="Contract\DataModified\StreamCreated.cs" />
+    <Compile Include="Contract\Diff\StreamCreated.cs" />
     <Compile Include="Contract\StreamData.cs" />
-    <Compile Include="Contract\DataModified\UserAdded.cs" />
+    <Compile Include="Contract\Diff\UserAdded.cs" />
     <Compile Include="Contract\UserData.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Exceptions\AccessDeniedException.cs" />

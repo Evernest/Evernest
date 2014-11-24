@@ -1,15 +1,15 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.DataModified
+namespace EvernestFront.Contract.Diff
 {
     [DataContract]
-    internal class UserAdded : IDataModified
+    internal class UserAdded : IDiff
     {
         [DataMember]
         internal readonly string UserName;
         [DataMember]
         internal readonly long UserId;
         [DataMember]
-        internal readonly string Key; //?
+        internal readonly string Key;
     }
 }

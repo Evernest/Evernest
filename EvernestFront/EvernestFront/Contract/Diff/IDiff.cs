@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvernestFront.Contract.DataModified
+namespace EvernestFront.Contract.Diff
 {
-    internal interface IDataModified
+    internal interface IDiff
     {
     }
 }

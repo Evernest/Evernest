@@ -90,6 +90,18 @@ namespace EvernestAPI.Controllers
             ans["Debug"] = debug;
             // END DEBUG //
 
+            var key = nvc["key"];
+            if (key == null)
+            {
+                ans["Status"] = "Error";
+                ans["FieldErrors"] = new List<string> { "Key" };
+            }
+            else
+            {
+                ans["Status"] = "Success";
+                ans["Events"] = new List<Event>();
+                ans["Events"] = Process.PullRange(key, arg0, arg1);
+            }
             return ans;
         }
 

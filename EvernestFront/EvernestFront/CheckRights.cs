@@ -1,6 +1,6 @@
 ﻿
 using System.Data.SqlTypes;
-using EvernestFront.Exceptions;
+using EvernestFront.Errors;
 using System;
 
 namespace EvernestFront
@@ -89,61 +89,40 @@ namespace EvernestFront
         /// <summary>
         /// Returns if and only if user can read on stream.
         /// </summary>
-        /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="ReadAccessDeniedException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanRead(User user, Stream stream)
+        static internal bool CheckCanRead(User user, Stream stream)
         {
             var rights = UserRight.GetRight(user, stream);
-            if (CanRead(rights))
-                return;
-            else
-                throw new ReadAccessDeniedException(stream.Id, user.Id, rights);
+            return CanRead(rights);
         }
 
         /// <summary>
         /// Returns if and only if user can write on stream.
         /// </summary>
-        /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="WriteAccessDeniedException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanWrite(User user, Stream stream)
+        static internal bool CheckCanWrite(User user, Stream stream)
         {
             var rights = UserRight.GetRight(user, stream);
-            if (CanWrite(rights))
-                return;
-            else
-                throw new WriteAccessDeniedException(stream.Id, user.Id, rights);
+            return (CanWrite(rights));
         }
 
         /// <summary>
         /// Returns if and only if user can administrate stream.
         /// </summary>
-        /// <exception cref="AccessDeniedException"></exception>
-        /// <exception cref="StreamIdDoesNotExistException"></exception>
-        /// <exception cref="AdminAccessDeniedException"></exception>
         /// <param name="user"></param>
         /// <param name="stream"></param>
-        static internal void CheckCanAdmin(User user, Stream stream)
+        static internal bool CheckCanAdmin(User user, Stream stream)
         {
             var rights = UserRight.GetRight(user, stream);
-            if (CanAdmin(rights))
-                return;
-            else
-                throw new AdminAccessDeniedException(stream.Id, user.Id, rights);
+            return (CanAdmin(rights));
         }
 
-        static internal void CheckRightsCanBeModified(User user, Stream stream)
+        static internal bool CheckRightsCanBeModified(User user, Stream stream)
         {
             var rights = UserRight.GetRight(user, stream);
-            if (CanBeModified(rights))
-                return;
-            else
-                throw new CannotDestituteAdminException(stream.Id, user.Id);
+            return CanBeModified(rights);
         }
 
     }

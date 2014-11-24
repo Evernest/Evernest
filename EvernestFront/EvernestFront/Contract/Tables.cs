@@ -8,89 +8,40 @@ namespace EvernestFront.Contract
     class Tables
     {
         [DataMember]
-        readonly ImmutableDictionary<long, UserData> _userTable;
+        internal ImmutableDictionary<long, UserContract> UserTable;
         [DataMember]
-        readonly ImmutableDictionary<long, StreamData> _streamTable;
+        internal ImmutableDictionary<long, StreamContract> StreamTable;
         [DataMember]
-        readonly ImmutableDictionary<string, int> _sourceTable; //int should be Contract.Source when it is implemented
+        internal ImmutableDictionary<string, int> SourceTable; //int should be Contract.Source when it is implemented
 
         [DataMember]
-        readonly ImmutableDictionary<string, long> _userNameToId;
+        internal ImmutableDictionary<string, long> UserNameToId;
         [DataMember]
-        readonly ImmutableDictionary<string, long> _streamNameToId;
+        internal ImmutableDictionary<string, long> StreamNameToId;
 
 
 
         internal Tables()
         {
-            _userTable = ImmutableDictionary<long, UserData>.Empty;
-            _streamTable = ImmutableDictionary<long, StreamData>.Empty;
-            _sourceTable = ImmutableDictionary<string, int>.Empty;
-            _userNameToId = ImmutableDictionary<string, long>.Empty;
-            _streamNameToId = ImmutableDictionary<string, long>.Empty;
+            UserTable = ImmutableDictionary<long, UserContract>.Empty;
+            StreamTable = ImmutableDictionary<long, StreamContract>.Empty;
+            SourceTable = ImmutableDictionary<string, int>.Empty;
+            UserNameToId = ImmutableDictionary<string, long>.Empty;
+            StreamNameToId = ImmutableDictionary<string, long>.Empty;
         }
 
-        private Tables(ImmutableDictionary<long, UserData> usrTbl, ImmutableDictionary<long, StreamData> strmTbl,
+        internal Tables(ImmutableDictionary<long, UserContract> usrTbl, ImmutableDictionary<long, StreamContract> strmTbl,
             ImmutableDictionary<string, int> srcTbl, ImmutableDictionary<string, long> usrNtI,
             ImmutableDictionary<string, long> strmNtI)
         {
-            _userTable = usrTbl;
-            _streamTable = strmTbl;
-            _sourceTable = srcTbl;
-            _userNameToId = usrNtI;
-            _streamNameToId = strmNtI;
+            UserTable = usrTbl;
+            StreamTable = strmTbl;
+            SourceTable = srcTbl;
+            UserNameToId = usrNtI;
+            StreamNameToId = strmNtI;
         }
 
-        internal UserData GetUser(long userId)
-        {
-            UserData user;
-            if (_userTable.TryGetValue(userId, out user))
-                return user;
-            else
-                throw new NotImplementedException("Tables.GetUser");
-        }
-
-        internal Tables AddUser(UserData user)
-        {
-            var usrTbl = _userTable.Add(user.UserId, user);
-            var usrNameToId = _userNameToId.Add(user.UserName, user.UserId);
-            return new Tables(usrTbl,_streamTable,_sourceTable,usrNameToId,_streamNameToId);
-        }
-
-        /// <summary>
-        /// Returns a new Tables object containing data about stream. /!\ Does not set admin right to the creator.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        internal Tables AddStream(StreamData stream)
-        {
-            var strmTbl = _streamTable.Add(stream.StreamId, stream);
-            var strmNtI = _streamNameToId.Add(stream.StreamName, stream.StreamId);
-            return new Tables(_userTable, strmTbl, _sourceTable, _userNameToId, strmNtI);
-        }
-
-        internal Tables SetRight(long userId, long streamId, AccessRights right)
-        {
-            UserData user;
-            if (_userTable.TryGetValue(userId, out user))
-            {
-                StreamData stream;
-                if (_streamTable.TryGetValue(streamId, out stream))
-                {
-                    var usrTbl = _userTable.Add(userId, user.SetRight(streamId, right));
-                    var strmTbl = _streamTable.Add(streamId, stream.SetRight(userId, right));
-                    return new Tables(usrTbl, strmTbl, _sourceTable, _userNameToId, _streamNameToId);
-                }
-                else
-                    throw new Exception();
-                    // exception because this should not happen : existence of streamId should have been already tested
-                    // TODO: document this
-            }
-            else
-                throw new Exception();
-            // exception because this should not happen : existence of userId should have been already tested
-            // TODO: document this
-        }
+        
 
     }
 }

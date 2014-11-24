@@ -1,15 +1,21 @@
 ﻿using System.Runtime.Serialization;
+using EvernestFront.Errors;
 
 namespace EvernestFront.Contract.Diff
 {
     [DataContract]
     internal class UserAdded : IDiff
     {
+        
         [DataMember]
-        internal readonly string UserName;
+        internal long UserId { get; set; }
         [DataMember]
-        internal readonly long UserId;
-        [DataMember]
-        internal readonly string Key;
+        internal UserContract UserContract { get; set; }
+
+        internal UserAdded(long userId, UserContract userContract)
+        {
+            UserId = userId;
+            UserContract = userContract;
+        }
     }
 }

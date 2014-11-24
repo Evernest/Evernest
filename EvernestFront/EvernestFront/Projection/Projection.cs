@@ -9,9 +9,9 @@ namespace EvernestFront.Projection
         static Tables _tables;
 
 
-        static internal UserData GetUser(long userId)
+        static internal UserContract GetUserContract(long userId)
         {
-            return _tables.GetUser(userId);
+            return ReadTables.GetUserContract(_tables, userId);
         }
 
         static internal void HandleDiff(IDiff dm)
@@ -22,24 +22,30 @@ namespace EvernestFront.Projection
                 HandleStreamCreated(dm as StreamCreated);
             else if (dm is RightSet)
                 HandleRightSet(dm as RightSet);
+            else if (dm is PasswordSet)
+                HandlePasswordSet(dm as PasswordSet);
         }
 
         static void HandleUserAdded(UserAdded ua)
         {
-            var user = new UserData(ua.UserName, ua.UserId, ua.Key);
-            _tables = _tables.AddUser(user);
+            _tables = MakeTables.AddUser(_tables, ua.UserId, ua.UserContract);
         }
 
         static void HandleStreamCreated(StreamCreated sc)
         {
-            var stream = new StreamData(sc.StreamName, sc.StreamId);
-            var tbls = _tables.AddStream(stream);
-            _tables = tbls.SetRight(sc.CreatorId, sc.StreamId, AccessRights.Admin); //should be a const, but in which class?
+            var tbls = MakeTables.AddStream(_tables, sc.StreamId, sc.StreamContract);
+            _tables = MakeTables.SetRight(tbls, sc.CreatorId, sc.StreamId, AccessRights.Admin); 
+            //TODO: use a constant for AccessRights.Admin
         }
 
         static void HandleRightSet(RightSet rs)
         {
-            _tables = _tables.SetRight(rs.targetId, rs.streamId, rs.right);
+            _tables = MakeTables.SetRight(_tables, rs.targetId, rs.streamId, rs.right);
+        }
+
+        static void HandlePasswordSet(PasswordSet ps)
+        {
+            _tables = MakeTables.SetPassword(_tables, ps.UserId, ps.SaltedPasswordHash);
         }
 
     }

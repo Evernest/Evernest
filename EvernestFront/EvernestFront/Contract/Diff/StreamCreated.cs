@@ -5,13 +5,14 @@ namespace EvernestFront.Contract.Diff
     [DataContract]
     class StreamCreated : IDiff
     {
-        [DataMember]
-        internal string StreamName;
+        
         [DataMember]
         internal long StreamId;
         [DataMember]
+        internal StreamContract StreamContract;
+        [DataMember]
         internal long CreatorId;
-
+        
         
     }
 }

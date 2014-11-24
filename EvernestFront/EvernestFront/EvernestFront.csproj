@@ -56,12 +56,12 @@
     <Compile Include="Answers\IdentifyUser.cs" />
     <Compile Include="CheckRights.cs" />
     <Compile Include="Contract\Diff\IDiff.cs" />
+    <Compile Include="Contract\Diff\PasswordSet.cs" />
     <Compile Include="Contract\Diff\RightSet.cs" />
-    <Compile Include="Contract\RightTable.cs" />
     <Compile Include="Contract\Diff\StreamCreated.cs" />
-    <Compile Include="Contract\StreamData.cs" />
+    <Compile Include="Contract\StreamContract.cs" />
     <Compile Include="Contract\Diff\UserAdded.cs" />
-    <Compile Include="Contract\UserData.cs" />
+    <Compile Include="Contract\UserContract.cs" />
     <Compile Include="Errors\InvalidString.cs" />
     <Compile Include="Errors\SourceKeyDoesNotExist.cs" />
     <Compile Include="Errors\WrongPassword.cs" />
@@ -84,6 +84,10 @@
     <Compile Include="Keys.cs" />
     <Compile Include="Contract\Tables.cs" />
     <Compile Include="Errors\WriteAccessDenied.cs" />
+    <Compile Include="Projection\MakeStreamContract.cs" />
+    <Compile Include="Projection\MakeTables.cs" />
+    <Compile Include="Projection\MakeUserContract.cs" />
+    <Compile Include="Projection\ReadTables.cs" />
     <Compile Include="Source.cs" />
     <Compile Include="SourceTable.cs" />
     <Compile Include="User.cs" />

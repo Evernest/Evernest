@@ -15,13 +15,13 @@ namespace EvernestFront
     {
         public Int64 Id { get; private set; }
 
-        public string Name { get { return _userConctract.UserName; } }
+        public string Name { get { return _userContract.UserName; } }
 
-        internal String SaltedPasswordHash { get { return _userConctract.SaltedPasswordHash; } }
+        internal String SaltedPasswordHash { get { return _userContract.SaltedPasswordHash; } }
 
-        internal byte[] PasswordSalt { get { return _userConctract.PasswordSalt; } }
+        internal byte[] PasswordSalt { get { return _userContract.PasswordSalt; } }
 
-        internal string Key { get { return _userConctract.Key; } } //base64 encoded int
+        internal string Key { get { return _userContract.Key; } } //base64 encoded int
 
         public List<Source> Sources { get{throw new NotImplementedException("User.Sources");} }
 
@@ -37,11 +37,11 @@ namespace EvernestFront
        
 
 
-        private UserContract _userConctract;
+        private UserContract _userContract;
 
         internal void UpdateUserContract()
         {
-            _userConctract = Projection.Projection.GetUserContract(Id);
+            _userContract = Projection.Projection.GetUserContract(Id);
         }
 
 

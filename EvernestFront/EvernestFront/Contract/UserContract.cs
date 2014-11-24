@@ -35,43 +35,6 @@ namespace EvernestFront.Contract
             OwnedSources = srcs;
         }
 
-        //[DataMember]
-        //internal readonly string UserName;
-        //[DataMember]
-        //internal readonly long UserId;
-        //[DataMember]
-        //internal readonly string Key;
-        //[DataMember]
-        //internal readonly ImmutableDictionary<long, AccessRights> RelatedStreams;
-        //[DataMember]
-        //internal readonly ImmutableDictionary<long, long> OwnedSources;
-        // more to come
-
-        //internal UserData(string name, long id, string key)
-        //{
-        //    UserName = name;
-        //    UserId = id;
-        //    Key = key;
-        //    RelatedStreams = ImmutableDictionary<long, AccessRights>.Empty;
-        //    OwnedSources = ImmutableDictionary<long, long>.Empty;
-        //}
-
-        //private UserData(string name, long id, string key, ImmutableDictionary<long, AccessRights> strms,
-        //    ImmutableDictionary<long, long> srcs)
-        //{
-        //    UserName = name;
-        //    UserId = id;
-        //    Key = key;
-        //    RelatedStreams = strms;
-        //    OwnedSources = srcs;
-        //}
-
-
-        //internal UserContract SetRight(long streamId, AccessRights right)
-        //{
-        //    var strms = RelatedStreams.Add(streamId, right);
-        //    return new UserContract(UserName,UserId,Key,strms,OwnedSources);
-        //}
-
+       
     }
 }

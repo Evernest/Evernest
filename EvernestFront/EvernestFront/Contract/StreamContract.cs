@@ -25,24 +25,5 @@ namespace EvernestFront.Contract
             BackStream = bs;
         }
 
-        //internal StreamData(string name, long id)
-        //{
-        //    StreamName = name;
-        //    StreamId = id;
-        //    RelatedUsers = ImmutableDictionary<long, AccessRights>.Empty;
-        //}
-
-        //private StreamData(string name, long id, ImmutableDictionary<long, AccessRights> users)
-        //{
-        //    StreamName = name;
-        //    StreamId = id;
-        //    RelatedUsers = users;
-        //}
-
-        //internal StreamData SetRight(long userId, AccessRights right)
-        //{
-        //    var users = RelatedUsers.Add(userId, right);
-        //    return new StreamData(StreamName, StreamId, users);
-        //}
     }
 }

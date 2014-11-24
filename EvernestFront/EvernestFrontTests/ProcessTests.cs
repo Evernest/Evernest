@@ -312,5 +312,43 @@ namespace EvernestFrontTests
             Pull ans = Process.Pull(userId2, streamId, eventId);
             ErrorAssert<ReadAccessDenied>(ans);
         }
+
+        [Test]
+        public void IdentifyUser_Success()
+        {
+            AddUser user = Process.AddUser(UserName);
+            Assert.IsTrue(user.Success);
+            IdentifyUser ans = Process.IdentifyUser(UserName, user.Password);
+            Assert.IsTrue(ans.Success);
+        }
+
+        [Test]
+        public void IdentifyUser_WrongPassword()
+        {
+            AddUser addUser = Process.AddUser(UserName);
+            Assert.IsTrue(addUser.Success);
+            IdentifyUser ans = Process.IdentifyUser(UserName, "BadPassword");
+            ErrorAssert<WrongPassword>(ans);
+        }
+
+        [Test]
+        public void SetPassword_Success()
+        {
+            long userId = GetUserId_AssertSuccess(UserName);
+            const string newPassword = "NewPassword";
+            SetPassword setPassword = Process.SetPassword(userId, newPassword);
+            Assert.IsTrue(setPassword.Success);
+            IdentifyUser ans = Process.IdentifyUser(UserName, newPassword);
+            Assert.IsTrue(ans.Success);
+        }
+
+        [Test]
+        public void SetPassword_InvalidString()
+        {
+            long userId = GetUserId_AssertSuccess(UserName);
+            const string badString = "£££££"; //non ASCII
+            SetPassword setPassword = Process.SetPassword(userId, badString);
+            ErrorAssert<InvalidString>(setPassword);
+        }
 }      
 }

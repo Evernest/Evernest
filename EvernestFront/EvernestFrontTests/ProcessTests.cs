@@ -350,5 +350,15 @@ namespace EvernestFrontTests
             SetPassword setPassword = Process.SetPassword(userId, badString);
             ErrorAssert<InvalidString>(setPassword);
         }
+
+        [Test]
+        public void AddUser_WithPassword()
+        {
+            const string password = "Password";
+            AddUser addUser = Process.AddUser(UserName, password);
+            Assert.IsTrue(addUser.Success);
+            IdentifyUser ans = Process.IdentifyUser(UserName, password);
+            Assert.IsTrue(ans.Success);
+        }
 }      
 }

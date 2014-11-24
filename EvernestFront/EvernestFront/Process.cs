@@ -17,10 +17,15 @@ namespace EvernestFront
         /// <param name="user"></param>
         static public AddUser AddUser(string user)
         {
+            return AddUser(user, Keys.NewPassword());
+        }
+
+
+        static public AddUser AddUser(string user, string password)
+        {
             if (UserTable.NameIsFree(user))
             {
-                var password = Keys.NewPassword();
-                var usr = new User(user,password);
+                var usr = new User(user, password);
                 UserTable.Add(usr);
                 return new AddUser(usr.Name, usr.Id, usr.Key, password);
             }
@@ -29,7 +34,6 @@ namespace EvernestFront
                 return new AddUser(new UserNameTaken(user));
             }
         }
-
         /// <summary>
         /// Requests the creation of a stream called streamName, with userId as admin, and returns its ID.
         /// </summary>

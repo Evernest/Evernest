@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EvernestFront.Exceptions;
+using EvernestFront.Errors;
 
 namespace EvernestFront
 {
@@ -12,16 +12,16 @@ namespace EvernestFront
         private static readonly Dictionary<string, User> TableByName = new Dictionary<string, User>();
         private static readonly Dictionary<Int64, User> TableById = new Dictionary<Int64, User>();
 
-        /// <summary>
-        /// Does nothing if name is available.
-        /// Throws a UserNameTakenException if it is taken.
-        /// </summary>
-        /// <exception cref="UserNameTakenException"></exception>
-        /// <param name="name"></param>
-        internal static void CheckNameIsFree(string name)
+       
+        internal static bool NameIsFree(string name)
         {
-            if (TableByName.ContainsKey(name))
-                throw new UserNameTakenException(name);
+            return (!TableByName.ContainsKey(name));
+
+        }
+
+        internal static bool UserIdExists(Int64 id)
+        {
+            return (TableById.ContainsKey(id));
         }
 
         /// <summary>
@@ -35,23 +35,27 @@ namespace EvernestFront
         }
 
         /// <summary>
-        /// Gets user whose ID is id.
+        /// Gets user whose ID is id. User ID existence should be checked beforehand !
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        /// <exception cref="UserIdDoesNotExistException"></exception>
         internal static User GetUser(Int64 id)
         {
-            if (TableById.ContainsKey(id))
-                return TableById[id];
-            else
-            {
-                throw new UserIdDoesNotExistException(id);
-            }
+            return TableById[id];
         }
 
         /// <summary>
-        /// Returns the name of the user whose ID is id.
+        /// Gets user called name. Username existence should be checked beforehand !
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        internal static User GetUser(string name)
+        {
+            return TableByName[name];
+        }
+
+        /// <summary>
+        /// Returns the name of the user whose ID is id. User ID existence should be checked beforehand !
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

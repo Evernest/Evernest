@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using EvernestFront.Exceptions;
 
 namespace EvernestFront
 {
@@ -8,16 +7,25 @@ namespace EvernestFront
     {
         private static readonly Dictionary<String, Source> Table = new Dictionary<String, Source>();
 
+
+        internal static bool SourceKeyExists(String key)
+        {
+            return Table.ContainsKey(key);
+        }
+
         internal static void AddSource(Source source)
         {
             Table.Add(source.Key,source);
         }
 
+        /// <summary>
+        /// Key existence should be checked beforehand !
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         internal static Source GetSource(String key)
         {
-            if (Table.ContainsKey(key))
-                return Table[key];
-            else throw new SourceKeyDoesNotExistException(key);
+            return Table[key];
         }
 
         internal static void Clear()

@@ -6,13 +6,44 @@ namespace EvernestFront.Projection
 {
     static class Projection
     {
-        static Tables _tables;
+        static private Tables _tables;
 
 
-        static internal UserContract GetUserContract(long userId)
+        static internal bool TryGetUserContract(long userId, out UserContract userContract)
         {
-            return ReadTables.GetUserContract(_tables, userId);
+            return ReadTables.GetUserContract(_tables, userId, out userContract);
         }
+
+        static internal bool TryGetStreamContract(long streamId, out StreamContract streamContract)
+        {
+            return ReadTables.GetStreamContract(_tables, streamId, out streamContract);
+        }
+
+        static internal bool UserIdExists(long userId)
+        {
+            UserContract userContract;
+            return ReadTables.GetUserContract(_tables, userId, out userContract);
+        }
+        static internal bool StreamIdExists(long streamId)
+        {
+            StreamContract streamContract;
+            return ReadTables.GetStreamContract(_tables, streamId, out streamContract);
+        }
+        internal static bool UserNameExists(string userName)
+        {
+            long userId;
+            return ReadTables.TryGetUserId(_tables, userName, out userId);
+        }
+        internal static bool StreamNameExists(string streamName)
+        {
+            long streamId;
+            return ReadTables.TryGetStreamId(_tables, streamName, out streamId);
+        }
+
+
+
+
+
 
         static internal void HandleDiff(IDiff dm)
         {
@@ -20,27 +51,27 @@ namespace EvernestFront.Projection
                 HandleUserAdded(dm as UserAdded);
             else if (dm is StreamCreated)
                 HandleStreamCreated(dm as StreamCreated);
-            else if (dm is RightSet)
-                HandleRightSet(dm as RightSet);
+            else if (dm is UserRightSet)
+                HandleRightSet(dm as UserRightSet);
             else if (dm is PasswordSet)
                 HandlePasswordSet(dm as PasswordSet);
         }
 
         static void HandleUserAdded(UserAdded ua)
         {
-            _tables = MakeTables.AddUser(_tables, ua.UserId, ua.UserContract);
+            _tables = MakeTables.AddUserContract(_tables, ua.UserId, ua.UserContract);
         }
 
         static void HandleStreamCreated(StreamCreated sc)
         {
-            var tbls = MakeTables.AddStream(_tables, sc.StreamId, sc.StreamContract);
+            var tbls = MakeTables.AddStreamContract(_tables, sc.StreamId, sc.StreamContract);
             _tables = MakeTables.SetRight(tbls, sc.CreatorId, sc.StreamId, AccessRights.Admin); 
             //TODO: use a constant for AccessRights.Admin
         }
 
-        static void HandleRightSet(RightSet rs)
+        static void HandleRightSet(UserRightSet rs)
         {
-            _tables = MakeTables.SetRight(_tables, rs.targetId, rs.streamId, rs.right);
+            _tables = MakeTables.SetRight(_tables, rs.TargetId, rs.StreamId, rs.Right);
         }
 
         static void HandlePasswordSet(PasswordSet ps)

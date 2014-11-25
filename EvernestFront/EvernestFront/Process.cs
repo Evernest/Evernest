@@ -11,47 +11,53 @@ namespace EvernestFront
     public static class Process
     {
 
-        /// <summary>
-        /// Registers a new user and returns its ID.
-        /// </summary>
-        /// <param name="user"></param>
-        static public AddUser AddUser(string user)
-        {
-            return AddUser(user, Keys.NewPassword());
-        }
+        ///now in User
+        ///// <summary>
+        ///// Registers a new user and returns its ID.
+        ///// </summary>
+        ///// <param name="user"></param>
+        //static public AddUser AddUser(string user)
+        //{
+        //    return AddUser(user, Keys.NewPassword());
+        //}
 
 
-        static public AddUser AddUser(string user, string password)
-        {
-            if (UserTable.NameIsFree(user))
-            {
-                var usr = new User(user, password);
-                UserTable.Add(usr);
-                return new AddUser(usr.Name, usr.Id, usr.Key, password);
-            }
-            else
-            {
-                return new AddUser(new UserNameTaken(user));
-            }
-        }
-        /// <summary>
-        /// Requests the creation of a stream called streamName, with userId as admin, and returns its ID.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="streamName"></param>
-        /// <returns></returns>
-        public static CreateStream CreateStream(Int64 userId, string streamName)
-        {
-            if (!StreamTable.NameIsFree(streamName))
-                return new CreateStream(new StreamNameTaken(streamName));
-            if (!UserTable.UserIdExists(userId))
-                return new CreateStream(new UserIdDoesNotExist(userId));
-            var usr = UserTable.GetUser(userId);
-            var stream = new Stream(streamName);
-            StreamTable.Add(stream);
-            UserRight.SetRight(usr, stream, UserRight.CreatorRights);
-            return new CreateStream(stream.Id);
-        }
+        
+        ///now in User
+        //static public AddUser AddUser(string user, string password)
+        //{
+        //    if (UserTable.NameIsFree(user))
+        //    {
+        //        var usr = new User(user, password);
+        //        UserTable.Add(usr);
+        //        return new AddUser(usr.Name, usr.Id, usr.Key, password);
+        //    }
+        //    else
+        //    {
+        //        return new AddUser(new UserNameTaken(user));
+        //    }
+        //}
+
+        
+        ///now in Stream
+        ///// <summary>
+        ///// Requests the creation of a stream called streamName, with userId as admin, and returns its ID.
+        ///// </summary>
+        ///// <param name="userId"></param>
+        ///// <param name="streamName"></param>
+        ///// <returns></returns>
+        //public static CreateStream CreateStream(Int64 userId, string streamName)
+        //{
+        //    if (!StreamTable.NameIsFree(streamName))
+        //        return new CreateStream(new StreamNameTaken(streamName));
+        //    if (!UserTable.UserIdExists(userId))
+        //        return new CreateStream(new UserIdDoesNotExist(userId));
+        //    var usr = UserTable.GetUser(userId);
+        //    var stream = new Stream(streamName);
+        //    StreamTable.Add(stream);
+        //    UserRight.SetRight(usr, stream, UserRight.CreatorRights);
+        //    return new CreateStream(stream.Id);
+        //}
 
         /// <summary>
         /// Requests to pull a random event from stream streamId.

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using EvernestFront.Answers;
+using EvernestFront.Contract;
+using EvernestFront.Contract.Diff;
 using EvernestFront.Errors;
 using EvernestBack;
+using EvernestFront.Projection;
 
 namespace EvernestFront
 {
@@ -11,30 +14,70 @@ namespace EvernestFront
     {
         public Int64 Id { get; private set; }
 
-        public string Name { get; private set; }
+        public string Name { get { return _streamContract.StreamName; } }
 
-        public int Count { get; private set; }
+        public int Count { get { return (int)BackStream.Index; } }
 
-        public int LastEventId { get; private set; }
+        public int LastEventId { get { return Count-1; } }
 
-        internal List<UserRight> UserRights { get; private set; }
+        public List<KeyValuePair<long, AccessRights>> RelatedUsers
+        {
+            get
+            {
+                throw new NotImplementedException("Stream.RelatedUsers");
+            }
+        }
 
-        private readonly RAMStream _backStream;
+        private RAMStream BackStream { get { return _streamContract.BackStream; } }
+
+        private StreamContract _streamContract;
+
+        internal void UpdateStreamContract()
+        {
+            StreamContract sc;
+            if (Projection.Projection.TryGetStreamContract(Id, out sc))
+                _streamContract = sc;
+            //else?
+        }
         
-        // un champ privé contenant un objet du Back
 
-        // provisoire
+        //public string Name { get; private set; }
+        //public int Count { get; private set; }
+        //public int LastEventId { get; private set; }
+        internal List<UserRight> UserRights { get; private set; } //to be removed
+        //private readonly RAMStream _backStream;
+        
+
+        // temporary
         private static Int64 _next = 0;
         private static Int64 NextId() { return ++_next; }
 
         internal Stream(string name)
         {
             Id = NextId();
-            Name = name;
-            Count = 0;
-            LastEventId = -1; //?
-            UserRights = new List<UserRight>();
-            _backStream = new RAMStream();
+            //Name = name;
+            //Count = 0;
+            //LastEventId = -1; //?
+            //UserRights = new List<UserRight>();
+            //BackStream = new RAMStream();
+        }
+
+        public static CreateStream CreateStream(long creatorId, string streamName)
+        {
+            if (Projection.Projection.StreamNameExists(streamName))
+                return new CreateStream(new StreamNameTaken(streamName));
+            if (!Projection.Projection.UserIdExists(creatorId))
+                return new CreateStream(new UserIdDoesNotExist(creatorId));
+
+            var id = NextId();
+
+            var backStream = new RAMStream();
+
+            var streamContract = MakeStreamContract.NewStreamContract(streamName, backStream);
+            var streamCreated = new StreamCreated(id, streamContract, creatorId);
+
+            Projection.Projection.HandleDiff(streamCreated);
+            return new CreateStream(id);
         }
 
         private int ActualEventId(int eventId)
@@ -55,7 +98,7 @@ namespace EvernestFront
             var random = new Random();
             int id = random.Next(LastEventId+1);
             Event pulledEvent=null;       
-            _backStream.Pull((ulong)id, ( a => pulledEvent = new Event(id,a.Message,this)));  //TODO : change this when we implement fire-and-forget with website
+            BackStream.Pull((ulong)id, ( a => pulledEvent = new Event(id,a.Message,this)));  //TODO : change this when we implement fire-and-forget with website
             return new PullRandom(pulledEvent);
         }
 
@@ -68,7 +111,7 @@ namespace EvernestFront
             if (IsEventIdValid(id))
             {
                 Event pulledEvent = null;
-                _backStream.Pull((ulong)id, (a=>pulledEvent = new Event(id, a.Message,this))); //TODO : change this
+                BackStream.Pull((ulong)id, (a=>pulledEvent = new Event(id, a.Message,this))); //TODO : change this
                 return new Pull(pulledEvent);
             }
             else
@@ -106,19 +149,13 @@ namespace EvernestFront
             int eventId = LastEventId + 1;
             // TODO : call back-end
 
-            _backStream.Push(message, (a => Console.WriteLine(a.RequestID)));  //TODO : change callback
-            Count++;
-            LastEventId++;
+            BackStream.Push(message, (a => Console.WriteLine(a.RequestID)));  //TODO : change callback
+            //Count++;
+            //LastEventId++;
             return new Push(eventId);
         }
 
 
-        public List<KeyValuePair<Int64, AccessRights>> RelatedUsers
-        {
-            get
-            {
-                return new List<KeyValuePair<Int64, AccessRights>>(UserRights.Select(x => x.ToUserIdAndRight()));
-            }
-        }
+        
     }
 }

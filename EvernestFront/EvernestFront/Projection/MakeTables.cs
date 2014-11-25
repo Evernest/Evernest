@@ -11,7 +11,7 @@ namespace EvernestFront.Projection
     {
         
 
-        internal static Tables AddUser(Tables tbls, long userId, UserContract userContract)
+        internal static Tables AddUserContract(Tables tbls, long userId, UserContract userContract)
         {
             var usrTbl = tbls.UserTable.Add(userId, userContract);
             var usrNameToId = tbls.UserNameToId.Add(userContract.UserName, userId);
@@ -25,7 +25,7 @@ namespace EvernestFront.Projection
         /// <param name="streamId"></param>
         /// <param name="streamContract"></param>
         /// <returns></returns>
-        internal static Tables AddStream(Tables tbls, long streamId, StreamContract streamContract)
+        internal static Tables AddStreamContract(Tables tbls, long streamId, StreamContract streamContract)
         {
             var strmTbl = tbls.StreamTable.Add(streamId, streamContract);
             var strmNtI = tbls.StreamNameToId.Add(streamContract.StreamName, streamId);

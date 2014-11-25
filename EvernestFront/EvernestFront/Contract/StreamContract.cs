@@ -15,10 +15,12 @@ namespace EvernestFront.Contract
         internal string StreamName { get; set; }
         [DataMember]
         internal ImmutableDictionary<long, AccessRights> RelatedUsers { get; set; }
-        [DataMember]
-        internal int BackStream { get; set; } //TODO: change type
+        //[DataMember]
+        internal EvernestBack.RAMStream BackStream { get; set; }
+        //this is a temporary simulator of backend
+        //the actual class should have a contract
 
-        internal StreamContract(string name, ImmutableDictionary<long, AccessRights> users, int bs)
+        internal StreamContract(string name, ImmutableDictionary<long, AccessRights> users, EvernestBack.RAMStream bs)
         {
             StreamName = name;
             RelatedUsers = users;

@@ -12,7 +12,12 @@ namespace EvernestFront.Contract.Diff
         internal StreamContract StreamContract;
         [DataMember]
         internal long CreatorId;
-        
-        
+
+        internal StreamCreated(long streamId, StreamContract sc, long creatorId)
+        {
+            StreamId = streamId;
+            StreamContract = sc;
+            CreatorId = creatorId;
+        }
     }
 }

@@ -41,7 +41,10 @@ namespace EvernestFront
 
         internal void UpdateUserContract()
         {
-            _userContract = Projection.Projection.GetUserContract(Id);
+            UserContract uc;
+            if (Projection.Projection.TryGetUserContract(Id, out uc))
+                _userContract = uc;
+            //else?
         }
 
 
@@ -49,29 +52,58 @@ namespace EvernestFront
 
         //change this ? Factor with Stream.nextId() ?
         private static Int64 _next;
-        private Int64 NextId() { _next++; return _next; }
+        private static Int64 NextId() { _next++; return _next; }
 
         //TODO : refactor hashing and conversions between string/bytes
 
 
 
 
-        internal User(string name, string password)
+        internal User(long userId, UserContract userContract)
         {
-            //name availability already checked?
-            Id = NextId();
+            Id = userId;
+            _userContract = userContract;
+        }
 
-            var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
-            var hmacMD5 = new HMACMD5(PasswordSalt);
-            var saltedHash = hmacMD5.ComputeHash(passwordBytes);
-            var saltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
-            var passwordSalt = System.Text.Encoding.ASCII.GetBytes(Keys.NewSalt());
-            var key = Keys.NewKey();
-            var userContract = MakeUserContract.NewUserContract(name, saltedPasswordHash, passwordSalt, key);
+        static public User GetUser(long userId)
+        {
+            UserContract userContract;
+            if (Projection.Projection.TryGetUserContract(userId, out userContract))
+                return new User(userId, userContract);
+            else
+                throw new NotImplementedException();
+        }
 
-            var userAdded = new UserAdded(Id, userContract);
-            Projection.Projection.HandleDiff(userAdded); 
-            //TODO: diff should be written in a stream, then sent back to be processed
+        static public AddUser AddUser(string name)
+        {
+            return AddUser(name, Keys.NewPassword());
+        }
+
+        static public AddUser AddUser(string name, string password)
+        {
+            if (!Projection.Projection.UserNameExists(name))
+            {
+                var id = NextId();
+
+                var passwordSalt = System.Text.Encoding.ASCII.GetBytes(Keys.NewSalt());
+
+                var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
+                var hmacMD5 = new HMACMD5(passwordSalt);
+                var saltedHash = hmacMD5.ComputeHash(passwordBytes);
+                var saltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
+
+                var key = Keys.NewKey();
+
+                var userContract = MakeUserContract.NewUserContract(name, saltedPasswordHash, passwordSalt, key);
+                var userAdded = new UserAdded(id, userContract);
+
+                Projection.Projection.HandleDiff(userAdded);
+                //TODO: diff should be written in a stream, then sent back to be processed
+
+                return new AddUser(name, id, key, password);
+            }
+            else
+                return new AddUser(new UserNameTaken(name));
         }
 
 

@@ -3,15 +3,15 @@
 namespace EvernestFront.Contract.Diff
 {
     [DataContract]
-    class RightSet : IDiff
+    class UserRightSet : IDiff
     {
         [DataMember]
-        internal long adminId;
+        internal long AdminId;
         [DataMember]
-        internal long streamId;
+        internal long StreamId;
         [DataMember]
-        internal long targetId;
+        internal long TargetId;
         [DataMember]
-        internal AccessRights right;
+        internal AccessRights Right;
     }
 }

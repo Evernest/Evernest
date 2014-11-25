@@ -21,8 +21,12 @@ pas intéressantes au moment de la création a priori.
 	static Answers.AddUser User.AddUser(string userName)
 un mot de passe est généré
 
+	static Answers.IdentifyUser User.IdentifyUser(string userName, string password)
+en cas de succès, la réponse contient pour l'instant juste l'id, on peut aussi mettre un objet User si vous préférez
+
 	static Answers.GetUser User.GetUser(long userId)
 en cas de succès, la réponse contient un objet User
+
 
 
  	long Id

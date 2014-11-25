@@ -12,14 +12,16 @@ ne valent pas null. Si Success est faux, c'est l'inverse et on peut transmettre 
 ---------------------------------------------------------------------------------------------------------------------------
 #Classe User
 
-  static Answers.AddUser User.AddUser(string userName, string password)
+	static Answers.AddUser User.AddUser(string userName, string password)
 en cas de succès, la réponse contient le nom, l'id, le mot de passe et la clé de l'utilisateur. On ne peut pas se contenter 
 de renvoyer un objet User car celui-ci ne contient pas le mot de passe (nécessaire pour la surcharge suivante). Si vous 
 préférez on peut mettre un objet User et le mot de passe à côté, mais de toute façon les autres propriétés d'un User ne sont 
 pas intéressantes au moment de la création a priori.
-  static Answers.AddUser User.AddUser(string userName)
+
+	static Answers.AddUser User.AddUser(string userName)
 un mot de passe est généré
-  static Answers.GetUser User.GetUser(long userId)
+
+	static Answers.GetUser User.GetUser(long userId)
 en cas de succès, la réponse contient un objet User
 
 
@@ -39,8 +41,6 @@ Cette propriété ne devrait peut-être pas être publique, mais il faut un moye
 	Answers.PullRange PullRange(long streamId, int eventIdFrom, int eventIdTo)
 
 	Answers.SetUserRights SetRights(long streamId, long targetUserId, AccessRights rights)
-
-Le User doit avoir les droits adéquats.
 
 	Answers.CreateSource CreateSource(string sourceName, long streamId, AccessRights rights)
 	Answers.SetSourceRights SetSourceRights(string sourceKey, AccessRights rights)
@@ -69,5 +69,5 @@ Le User doit avoir les droits adéquats.
 
 	Answers.SetUserRights SetRights(long targetUserId, AccessRights rights)
 
-Les sources sont identifiées directement par leut clé. Il n'y a pas d'id de stream à donner car chaque source est associée à 
+Les sources sont identifiées directement par leur clé. Il n'y a pas d'id de stream à donner car chaque source est associée à 
 une seule stream et donc agit toujours sur cette stream.

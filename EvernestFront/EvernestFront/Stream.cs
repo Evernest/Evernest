@@ -14,7 +14,7 @@ namespace EvernestFront
     {
         public Int64 Id { get; private set; }
 
-        public string Name { get { return _streamContract.StreamName; } }
+        public string Name { get { return StreamContract.StreamName; } }
 
         public int Count { get { return (int)BackStream.Index; } }
 
@@ -28,9 +28,22 @@ namespace EvernestFront
             }
         }
 
-        private RAMStream BackStream { get { return _streamContract.BackStream; } }
+        private RAMStream BackStream { get { return StreamContract.BackStream; } }
 
         private StreamContract _streamContract;
+
+        private StreamContract StreamContract
+        {
+            get
+            {
+                if (_streamContract==null)
+                    UpdateStreamContract();
+                if (_streamContract==null)
+                    throw new Exception("Stream.StreamContract");
+                    //wait?
+                return _streamContract;
+            }
+        }
 
         internal void UpdateStreamContract()
         {
@@ -61,6 +74,8 @@ namespace EvernestFront
             //UserRights = new List<UserRight>();
             //BackStream = new RAMStream();
         }
+
+        
 
         public static CreateStream CreateStream(long creatorId, string streamName)
         {
@@ -106,7 +121,6 @@ namespace EvernestFront
         {
             int id = ActualEventId(eventId);
 
-            // call back-end
 
             if (IsEventIdValid(id))
             {

@@ -151,33 +151,34 @@ namespace EvernestFront
             }
         }
 
-        /// <summary>
-        /// Changes access rights of targetUser over stream. User must have admin rights.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="streamId"></param>
-        /// <param name="targetUserId"></param>
-        /// <param name="rights"></param>
-        /// <returns></returns>
-        public static SetRights SetRights(Int64 userId, Int64 streamId, Int64 targetUserId, AccessRights rights)
-        {
-            if (!UserTable.UserIdExists(userId))
-                return new SetRights(new UserIdDoesNotExist(userId));
-            if (!UserTable.UserIdExists(targetUserId))
-                return new SetRights(new UserIdDoesNotExist(targetUserId));
-            if (!StreamTable.StreamIdExists(streamId))
-                return new SetRights(new StreamIdDoesNotExist(streamId));
-            var user = UserTable.GetUser(userId);
-            var stream = StreamTable.GetStream(streamId);
-            var targetUser = UserTable.GetUser(targetUserId);
-            if (!CheckRights.CheckCanAdmin(user, stream))
-                return new SetRights(new AdminAccessDenied(streamId,userId));
-            if (!CheckRights.CheckRightsCanBeModified(targetUser, stream))
-                return new SetRights(new CannotDestituteAdmin(streamId,targetUserId));
-            UserRight.SetRight(targetUser, stream, rights);
-            // TODO : update history stream
-            return new SetRights();
-        }
+        ///now in user
+        ///// <summary>
+        ///// Changes access rights of targetUser over stream. User must have admin rights.
+        ///// </summary>
+        ///// <param name="userId"></param>
+        ///// <param name="streamId"></param>
+        ///// <param name="targetUserId"></param>
+        ///// <param name="rights"></param>
+        ///// <returns></returns>
+        //public static SetRights SetRights(Int64 userId, Int64 streamId, Int64 targetUserId, AccessRights rights)
+        //{
+        //    if (!UserTable.UserIdExists(userId))
+        //        return new SetRights(new UserIdDoesNotExist(userId));
+        //    if (!UserTable.UserIdExists(targetUserId))
+        //        return new SetRights(new UserIdDoesNotExist(targetUserId));
+        //    if (!StreamTable.StreamIdExists(streamId))
+        //        return new SetRights(new StreamIdDoesNotExist(streamId));
+        //    var user = UserTable.GetUser(userId);
+        //    var stream = StreamTable.GetStream(streamId);
+        //    var targetUser = UserTable.GetUser(targetUserId);
+        //    if (!CheckRights.CheckCanAdmin(user, stream))
+        //        return new SetRights(new AdminAccessDenied(streamId,userId));
+        //    if (!CheckRights.CheckRightsCanBeModified(targetUser, stream))
+        //        return new SetRights(new CannotDestituteAdmin(streamId,targetUserId));
+        //    UserRight.SetRight(targetUser, stream, rights);
+        //    // TODO : update history stream
+        //    return new SetRights();
+        //}
 
 
         
@@ -273,6 +274,7 @@ namespace EvernestFront
             return src.Stream.Push(message);
         }
 
+
         /// <summary>
         /// Changes access rights of targetUser over the stream of the source. The source and its user must have admin rights.
         /// </summary>
@@ -335,25 +337,27 @@ namespace EvernestFront
             //TODO : exclure les users avec droits égaux à NoRights ?
         }
 
-        static public IdentifyUser IdentifyUser(string userName, string password)
-        {
-            if (UserTable.NameIsFree(userName))
-                return new IdentifyUser(new UserNameDoesNotExist(userName));
-            var user = UserTable.GetUser(userName);                                
-            if (user.Identify(password))
-                return new IdentifyUser(user.Id);
-            else
-            {
-                return new IdentifyUser(new WrongPassword(userName,password));
-            }
-        }
+        ///now in User
+        //static public IdentifyUser IdentifyUser(string userName, string password)
+        //{
+        //    if (UserTable.NameIsFree(userName))
+        //        return new IdentifyUser(new UserNameDoesNotExist(userName));
+        //    var user = UserTable.GetUser(userName);                                
+        //    if (user.Identify(password))
+        //        return new IdentifyUser(user.Id);
+        //    else
+        //    {
+        //        return new IdentifyUser(new WrongPassword(userName,password));
+        //    }
+        //}
 
-        static public SetPassword SetPassword(Int64 userId, string newPassword)
-        {
-            if (!UserTable.UserIdExists(userId))
-                return new SetPassword(new UserIdDoesNotExist(userId));
-            var user = UserTable.GetUser(userId);
-            return user.SetPassword(newPassword);
-        }
+        ///now in User
+        //static public SetPassword SetPassword(Int64 userId, string newPassword)
+        //{
+        //    if (!UserTable.UserIdExists(userId))
+        //        return new SetPassword(new UserIdDoesNotExist(userId));
+        //    var user = UserTable.GetUser(userId);
+        //    return user.SetPassword(newPassword);
+        //}
     }
 }

@@ -68,7 +68,7 @@ namespace EvernestFront
             }
         }
 
-        static bool CanBeModified(AccessRights rights)
+        static internal bool CanBeModified(AccessRights rights)
         {
             switch (rights)
             {

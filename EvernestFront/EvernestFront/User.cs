@@ -15,13 +15,13 @@ namespace EvernestFront
     {
         public Int64 Id { get; private set; }
 
-        public string Name { get { return _userContract.UserName; } }
+        public string Name { get { return UserContract.UserName; } }
 
-        internal String SaltedPasswordHash { get { return _userContract.SaltedPasswordHash; } }
+        internal String SaltedPasswordHash { get { return UserContract.SaltedPasswordHash; } }
 
-        internal byte[] PasswordSalt { get { return _userContract.PasswordSalt; } }
+        internal byte[] PasswordSalt { get { return UserContract.PasswordSalt; } }
 
-        internal string Key { get { return _userContract.Key; } } //base64 encoded int
+        internal string Key { get { return UserContract.Key; } } //base64 encoded int
 
         public List<Source> Sources { get{throw new NotImplementedException("User.Sources");} }
 
@@ -34,10 +34,21 @@ namespace EvernestFront
         }
 
         internal List<UserRight> UserRights; //to be removed 
-       
 
 
         private UserContract _userContract;
+        private UserContract UserContract
+        {
+            get
+            {
+                if (_userContract == null)
+                    UpdateUserContract();
+                if (_userContract == null)
+                    throw new Exception("User.UserContract");
+                    //should wait?
+                return _userContract;
+            }
+        }
 
         internal void UpdateUserContract()
         {
@@ -65,6 +76,9 @@ namespace EvernestFront
             _userContract = userContract;
         }
 
+
+
+
         static public User GetUser(long userId)
         {
             UserContract userContract;
@@ -72,6 +86,21 @@ namespace EvernestFront
                 return new User(userId, userContract);
             else
                 throw new NotImplementedException();
+        }
+
+        static public IdentifyUser IdentifyUser(string userName, string password)
+        {
+            long userId;
+            if (Projection.Projection.TryGetUserId(userName, out userId))
+            {
+                var user = GetUser(userId);
+                if (user.Identify(password))
+                    return new IdentifyUser(userId);
+                else
+                    return new IdentifyUser(new WrongPassword(userName, password));
+            }
+            else
+                return new IdentifyUser(new UserNameDoesNotExist(userName));
         }
 
         static public AddUser AddUser(string name)
@@ -107,6 +136,73 @@ namespace EvernestFront
         }
 
 
+        public SetPassword SetPassword(string password)
+        {
+            if (!(password.Equals(System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(password)))))
+                return new SetPassword(new InvalidString(password));
+            var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
+            var hmacMD5 = new HMACMD5(PasswordSalt);
+            var saltedHash = hmacMD5.ComputeHash(passwordBytes);
+            var saltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
+            var passwordSet = new PasswordSet(Id, saltedPasswordHash);
+            Projection.Projection.HandleDiff(passwordSet);
+            return new SetPassword(Id, password);
+        }
+
+        public SetRights SetRights(Int64 streamId, Int64 targetUserId, AccessRights right)
+        {
+            if (!Projection.Projection.UserIdExists(Id))
+                throw new Exception("User.SetRights");
+            if (!Projection.Projection.StreamIdExists(streamId))
+                return new SetRights(new StreamIdDoesNotExist(streamId));
+            if (!Projection.Projection.UserIdExists(targetUserId))
+                return new SetRights(new UserIdDoesNotExist(targetUserId));
+            
+            if (!CanAdmin(streamId))
+                return new SetRights(new AdminAccessDenied(streamId, Id));
+            if (!GetUser(targetUserId).IsNotAdmin(streamId))
+                return new SetRights(new CannotDestituteAdmin(streamId, targetUserId));
+
+            var userRightSet = new UserRightSet(Id, streamId, targetUserId, right);
+
+            Projection.Projection.HandleDiff(userRightSet);
+            //TODO: diff should be written in a stream, then sent back to be processed
+            
+            return new SetRights();
+        }
+
+
+
+
+
+        private AccessRights GetRight(long streamId)
+        {
+            UpdateUserContract();
+            AccessRights right;
+            if (UserContract.RelatedStreams.TryGetValue(streamId, out right))
+                return right;
+            else
+                return AccessRights.NoRights;
+        }
+        private bool CanRead(long streamId)
+        {
+            return CheckRights.CanRead(GetRight(streamId));
+        }
+        private bool CanWrite(long streamId)
+        {
+            return CheckRights.CanWrite(GetRight(streamId));
+        }
+        private bool CanAdmin(long streamId)
+        {
+            return CheckRights.CanAdmin(GetRight(streamId));
+        }
+        private bool IsNotAdmin(long streamId)
+        {
+            return CheckRights.CanBeModified(GetRight(streamId));
+        }
+
+
+
         internal void AddSource(Source source)
         {
             throw new NotImplementedException();
@@ -131,27 +227,15 @@ namespace EvernestFront
             throw new NotImplementedException();
         }
 
-        internal bool Identify(string password)
+        private bool Identify(string password)
         {
-
             var hmacMD5 = new HMACMD5(PasswordSalt);
             var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
             var saltedHash = System.Text.Encoding.ASCII.GetString(hmacMD5.ComputeHash(passwordBytes));
             return (SaltedPasswordHash.Equals(saltedHash));
         }
 
-        public SetPassword SetPassword(string password)
-        {
-            if (!(password.Equals(System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(password)))))
-                return new SetPassword(new InvalidString(password));
-            var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
-            var hmacMD5 = new HMACMD5(PasswordSalt);
-            var saltedHash = hmacMD5.ComputeHash(passwordBytes);
-            var saltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
-            var passwordSet = new PasswordSet(Id, saltedPasswordHash);
-            Projection.Projection.HandleDiff(passwordSet);
-            return new SetPassword(Id, password);
-        }
+        
 
 
 

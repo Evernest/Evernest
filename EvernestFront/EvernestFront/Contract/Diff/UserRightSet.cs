@@ -13,5 +13,13 @@ namespace EvernestFront.Contract.Diff
         internal long TargetId;
         [DataMember]
         internal AccessRights Right;
+
+        internal UserRightSet(long adminId, long streamId, long targetId, AccessRights right)
+        {
+            AdminId = adminId;
+            StreamId = streamId;
+            TargetId = targetId;
+            Right = right;
+        }
     }
 }

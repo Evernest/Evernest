@@ -9,12 +9,12 @@ namespace EvernestFront.Projection
 {
     static class ReadTables
     {
-        internal static bool GetUserContract(Tables tbls, long userId, out UserContract userContract)
+        internal static bool TryGetUserContract(Tables tbls, long userId, out UserContract userContract)
         {
             return tbls.UserTable.TryGetValue(userId, out userContract);
         }
 
-        internal static bool GetStreamContract(Tables tbls, long streamId, out StreamContract streamContract)
+        internal static bool TryGetStreamContract(Tables tbls, long streamId, out StreamContract streamContract)
         {
             return tbls.StreamTable.TryGetValue(streamId, out streamContract);
         }

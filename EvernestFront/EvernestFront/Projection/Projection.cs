@@ -11,23 +11,33 @@ namespace EvernestFront.Projection
 
         static internal bool TryGetUserContract(long userId, out UserContract userContract)
         {
-            return ReadTables.GetUserContract(_tables, userId, out userContract);
+            return ReadTables.TryGetUserContract(_tables, userId, out userContract);
         }
 
         static internal bool TryGetStreamContract(long streamId, out StreamContract streamContract)
         {
-            return ReadTables.GetStreamContract(_tables, streamId, out streamContract);
+            return ReadTables.TryGetStreamContract(_tables, streamId, out streamContract);
+        }
+
+        static internal bool TryGetUserId(string userName, out long userId)
+        {
+            return ReadTables.TryGetUserId(_tables, userName, out userId);
+        }
+
+        static internal bool TryGetStreamId(string streamName, out long streamId)
+        {
+            return ReadTables.TryGetStreamId(_tables, streamName, out streamId);
         }
 
         static internal bool UserIdExists(long userId)
         {
             UserContract userContract;
-            return ReadTables.GetUserContract(_tables, userId, out userContract);
+            return ReadTables.TryGetUserContract(_tables, userId, out userContract);
         }
         static internal bool StreamIdExists(long streamId)
         {
             StreamContract streamContract;
-            return ReadTables.GetStreamContract(_tables, streamId, out streamContract);
+            return ReadTables.TryGetStreamContract(_tables, streamId, out streamContract);
         }
         internal static bool UserNameExists(string userName)
         {

@@ -8,6 +8,10 @@ namespace EvernestFront.Projection
     {
         static private Tables _tables;
 
+        static internal void Clear()
+        {
+            _tables = new Tables();
+        }
 
         static internal bool TryGetUserContract(long userId, out UserContract userContract)
         {

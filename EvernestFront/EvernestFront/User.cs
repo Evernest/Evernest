@@ -77,16 +77,15 @@ namespace EvernestFront
         }
 
 
-
-
-        static public User GetUser(long userId)
+        static public GetUser GetUser(long userId)
         {
             UserContract userContract;
             if (Projection.Projection.TryGetUserContract(userId, out userContract))
-                return new User(userId, userContract);
+                return new GetUser(new User(userId, userContract));
             else
-                throw new NotImplementedException();
+                return new GetUser(new UserIdDoesNotExist(userId));
         }
+
 
         static public IdentifyUser IdentifyUser(string userName, string password)
         {

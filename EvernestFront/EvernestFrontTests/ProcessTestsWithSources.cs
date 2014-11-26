@@ -2,6 +2,7 @@
 using System.Dynamic;
 using System.Runtime.InteropServices;
 using EvernestFront;
+using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using EvernestFront.Answers;
@@ -57,7 +58,11 @@ namespace EvernestFrontTests
             StreamTable.Clear();
             SourceTable.Clear();
         }
-
+        [SetUp]
+        public void ClearProjection()
+        {
+            Projection.Clear();
+        }
 
         [Test]
         public void CreateSource_Success()
@@ -115,11 +120,12 @@ namespace EvernestFrontTests
         [Test]
         public void SetRights_UserCannotAdmin_AdminAccessDenied()
         {
-            long creator = UserTests.GetUserId_AssertSuccess("creator");
+            User creatorUser = UserTests.GetUser_AssertSuccess("creator");
+            long creator = creatorUser.Id; //TODO : change this (quick fix so that it builds)
             long reader = UserTests.GetUserId_AssertSuccess("reader");
             long stream = StreamTests.GetStreamId_AssertSuccess(creator, StreamName);
             var readerSource = GetSourceKey_AssertSuccess(reader, stream, SourceName, AccessRights.Admin);
-            UserTests.SetRights_AssertSuccess(creator, stream, reader, AccessRights.ReadOnly);
+            UserTests.SetRights_AssertSuccess(creatorUser, stream, reader, AccessRights.ReadOnly);
 
             SetRights ans = Process.SetRights(readerSource, reader, AccessRights.ReadWrite);
             Assert.IsFalse(ans.Success);

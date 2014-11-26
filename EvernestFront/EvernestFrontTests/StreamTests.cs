@@ -1,6 +1,7 @@
 ﻿using System;
 using EvernestFront;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
+using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using EvernestFront.Answers;
@@ -24,6 +25,12 @@ namespace EvernestFrontTests
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             return ans.StreamId;
+        }
+
+        [SetUp]
+        public void Initialize()
+        {
+            Projection.Clear();
         }
 
 

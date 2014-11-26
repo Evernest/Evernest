@@ -46,6 +46,14 @@ namespace EvernestFrontTests
             Assert.IsNull(ans.Error);
         }
 
+        int GetEventId_AssertSuccess(User user, long streamId, String message)
+        {
+            Push ans = user.Push(streamId, message);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+            return ans.MessageId;
+        }
+
         [SetUp]
         public void ResetTables()
         {
@@ -169,6 +177,91 @@ namespace EvernestFrontTests
 
             SetRights ans = evilAdmin.SetRights(streamId, creator.Id, AccessRights.NoRights);
             ProcessTests.ErrorAssert<CannotDestituteAdmin>(ans);
+        }
+
+        [Test]
+        public void Push_Success()
+        {
+            User user = GetUser_AssertSuccess(UserName);
+            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
+            int eventId2 = GetEventId_AssertSuccess(user, streamId, Message);
+            Assert.AreEqual(eventId, 0);
+            Assert.AreEqual(eventId2, 1);
+
+        }
+
+        [Test]
+        public void Push_WriteAccessDenied()
+        {
+            User user = GetUser_AssertSuccess(UserName);
+            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+
+            User user2 = GetUser_AssertSuccess(UserName2);
+            Push ans = user2.Push(streamId, Message);
+            ProcessTests.ErrorAssert<WriteAccessDenied>(ans);
+        }
+
+        [Test]
+        public void Push_StreamIdDoesNotExist()
+        {
+            User user = GetUser_AssertSuccess(UserName);
+            const long streamId = 42; //does not exist in StreamTable
+            Push ans = user.Push(streamId, Message);
+            ProcessTests.ErrorAssert<StreamIdDoesNotExist>(ans);
+        }
+
+        [Test]
+        public void PullRandom_Success()
+        {
+            User user = GetUser_AssertSuccess(UserName);
+            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
+            PullRandom ans = user.PullRandom(streamId);
+            Assert.IsTrue(ans.Success);
+            Event pulledRandom = ans.EventPulled;
+            Assert.IsNotNull(pulledRandom);
+            Assert.AreEqual(eventId, pulledRandom.Id);
+            Assert.AreEqual(pulledRandom.Message,Message); //will work when we connect to back-end : TODO 
+        }
+
+        [Test]
+        public void Pull_Success()
+        {
+            User user = GetUser_AssertSuccess(UserName);
+            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
+            Pull ans = user.Pull(streamId, eventId);
+            Assert.IsTrue(ans.Success);
+            Event pulledById = ans.EventPulled;
+            Assert.IsNotNull(pulledById);
+            Assert.AreEqual(pulledById.Message, Message); //will work when we connect to back-end : TODO
+        }
+
+        [Test]
+        public void PullRange_Success()
+        {
+            User user = GetUser_AssertSuccess(UserName);
+            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
+            int eventId2 = GetEventId_AssertSuccess(user, streamId, Message);
+            PullRange ans = user.PullRange(streamId, eventId, eventId2);
+            Assert.IsTrue(ans.Success);
+            var pulled = ans.Events;
+            Assert.AreEqual(pulled.Count, 2);
+        }
+
+        [Test]
+        public void Pull_ReadAccessDenied()
+        {
+            User user = GetUser_AssertSuccess(UserName);
+            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
+            User user2 = GetUser_AssertSuccess(UserName2);
+            SetRights_AssertSuccess(user, streamId, user2.Id, AccessRights.WriteOnly);
+           
+            Pull ans = user2.Pull(streamId, eventId);
+            ProcessTests.ErrorAssert<ReadAccessDenied>(ans);
         }
     }
 }

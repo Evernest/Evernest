@@ -23,13 +23,7 @@ namespace EvernestFrontTests
         
 
 
-        int GetEventId_AssertSuccess(long userId, long streamId, String message)
-        {
-            Push ans = Process.Push(userId, streamId, message);
-            Assert.IsTrue(ans.Success);
-            Assert.IsNull(ans.Error);
-            return ans.MessageId;
-        }
+       
 
         internal static void ErrorAssert<TError>(Answer ans)
         {
@@ -48,37 +42,7 @@ namespace EvernestFrontTests
         }
 
 
-        [Test]
-        public void Push_Success()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
-            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
-            int eventId2 = GetEventId_AssertSuccess(userId, streamId, Message);
-            Assert.AreEqual(eventId, 0);
-            Assert.AreEqual(eventId2, 1);
-
-        }
-
-        [Test]
-        public void Push_WriteAccessDenied()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
-
-            long user2 = UserTests.GetUserId_AssertSuccess(UserName2);
-            Push ans = Process.Push(user2, streamId, Message);
-            ErrorAssert<WriteAccessDenied>(ans);
-        }
-
-        [Test]
-        public void Push_StreamIdDoesNotExist()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            const long streamId = 42; //does not exist in StreamTable
-            Push ans = Process.Push(userId, streamId, Message);
-            ErrorAssert<StreamIdDoesNotExist>(ans);
-        }
+        
 
         [Test]
         public void CreateSource_Success()
@@ -129,10 +93,11 @@ namespace EvernestFrontTests
         [Test]
         public void RelatedUsers_Success()
         {
+            User user = UserTests.GetUser_AssertSuccess(UserName); //TODO : remove the rest
             long userId = UserTests.GetUserId_AssertSuccess(UserName);
             long userId2 = UserTests.GetUserId_AssertSuccess(UserName2);
             long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
-            UserTests.SetRights_AssertSuccess(userId, streamId, userId2, AccessRights.ReadOnly);
+            UserTests.SetRights_AssertSuccess(user, streamId, userId2, AccessRights.ReadOnly);
             RelatedUsers ans = Process.RelatedUsers(userId, streamId);
             Assert.IsTrue(ans.Success);
             var actualList = ans.Users;
@@ -144,89 +109,9 @@ namespace EvernestFrontTests
             Assert.AreEqual(actualList.Count, 2);
         }
 
-        [Test]
-        public void PullRandom_Success()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
-            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
-            PullRandom ans = Process.PullRandom(userId, streamId);
-            Assert.IsTrue(ans.Success);
-            Event pulledRandom = ans.EventPulled;
-            Assert.IsNotNull(pulledRandom);
-            Assert.AreEqual(eventId, pulledRandom.Id);
-            //Assert.AreEqual(pulledRandom.Message,Message); will work when we connect to back-end
-        }
-
-        [Test]
-        public void Pull_Success()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
-            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
-            Pull ans = Process.Pull(userId, streamId, eventId);
-            Assert.IsTrue(ans.Success);
-            Event pulledById = ans.EventPulled;
-            Assert.IsNotNull(pulledById);
-            //Assert.AreEqual(pulledById.Message, Message); will work when we connect to back-end
-        }
-
-        [Test]
-        public void PullRange_Success()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
-            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
-            int eventId2 = GetEventId_AssertSuccess(userId, streamId, Message);
-            PullRange ans = Process.PullRange(userId, streamId, eventId, eventId2);
-            Assert.IsTrue(ans.Success);
-            var pulled = ans.Events;
-            Assert.AreEqual(pulled.Count,2);
-        }
-
-        [Test]
-        public void Pull_ReadAccessDenied()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
-            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
-            long userId2 = UserTests.GetUserId_AssertSuccess(UserName2);
-            UserTests.SetRights_AssertSuccess(userId,streamId,userId2,AccessRights.WriteOnly);
-            
-            Pull ans = Process.Pull(userId2, streamId, eventId);
-            ErrorAssert<ReadAccessDenied>(ans);
-        }
+       
 
         
 
-        [Test]
-        public void SetPassword_Success()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            const string newPassword = "NewPassword";
-            SetPassword setPassword = Process.SetPassword(userId, newPassword);
-            Assert.IsTrue(setPassword.Success);
-            IdentifyUser ans = Process.IdentifyUser(UserName, newPassword);
-            Assert.IsTrue(ans.Success);
-        }
-
-        [Test]
-        public void SetPassword_InvalidString()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            const string badString = "£££££"; //non ASCII
-            SetPassword setPassword = Process.SetPassword(userId, badString);
-            ErrorAssert<InvalidString>(setPassword);
-        }
-
-        [Test]
-        public void AddUser_WithPassword()
-        {
-            const string password = "Password";
-            AddUser addUser = Process.AddUser(UserName, password);
-            Assert.IsTrue(addUser.Success);
-            IdentifyUser ans = Process.IdentifyUser(UserName, password);
-            Assert.IsTrue(ans.Success);
-        }
     }      
 }

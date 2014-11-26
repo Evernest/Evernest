@@ -248,11 +248,10 @@ namespace EvernestFront
         /// <summary>
         /// Requests to push an event containing message to stream streamId. Returns the id of the generated event.
         /// </summary>
-        /// <param name="userId"></param>
         /// <param name="streamId"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Push Push(Int64 userId, Int64 streamId, string message)
+        public Push Push(Int64 streamId, string message)
         {
             Stream stream;
             if (Projection.Projection.TryGetStream(streamId, out stream))

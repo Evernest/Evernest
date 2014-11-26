@@ -59,97 +59,97 @@ namespace EvernestFront
         //    return new CreateStream(stream.Id);
         //}
 
-        /// <summary>
-        /// Requests to pull a random event from stream streamId.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="streamId"></param>
-        /// <returns></returns>
-        public static PullRandom PullRandom(Int64 userId, Int64 streamId)
-        {
-            if (!UserTable.UserIdExists(userId))
-                return new PullRandom(new UserIdDoesNotExist(userId));
-            if (!StreamTable.StreamIdExists(streamId))
-                return new PullRandom(new StreamIdDoesNotExist(streamId));
-            User user = UserTable.GetUser(userId);
-            Stream stream = StreamTable.GetStream(streamId);
-            if (CheckRights.CheckCanRead(user, stream))
-                return stream.PullRandom();
-            else
-            {
-                return new Answers.PullRandom(new ReadAccessDenied(streamId, userId));
-            }
-        }
+        ///// <summary>
+        ///// Requests to pull a random event from stream streamId.
+        ///// </summary>
+        ///// <param name="userId"></param>
+        ///// <param name="streamId"></param>
+        ///// <returns></returns>
+        //public static PullRandom PullRandom(Int64 userId, Int64 streamId)
+        //{
+        //    if (!UserTable.UserIdExists(userId))
+        //        return new PullRandom(new UserIdDoesNotExist(userId));
+        //    if (!StreamTable.StreamIdExists(streamId))
+        //        return new PullRandom(new StreamIdDoesNotExist(streamId));
+        //    User user = UserTable.GetUser(userId);
+        //    Stream stream = StreamTable.GetStream(streamId);
+        //    if (CheckRights.CheckCanRead(user, stream))
+        //        return stream.PullRandom();
+        //    else
+        //    {
+        //        return new Answers.PullRandom(new ReadAccessDenied(streamId, userId));
+        //    }
+        //}
 
-        /// <summary>
-        /// Requests to pull event with ID eventId from stream streamId.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="streamId"></param>
-        /// <param name="eventId"></param>
-        /// <returns></returns>
-        public static Pull Pull(Int64 userId, Int64 streamId, int eventId)
-        {
-            if (!UserTable.UserIdExists(userId))
-                return new Pull(new UserIdDoesNotExist(userId));
-            if (!StreamTable.StreamIdExists(streamId))
-                return new Pull(new StreamIdDoesNotExist(streamId));
-            User user = UserTable.GetUser(userId);
-            Stream stream = StreamTable.GetStream(streamId);
-            if (CheckRights.CheckCanRead(user, stream))
-                return stream.Pull(eventId);                    //eventID validity is checked here
-            else
-            {
-                return new Pull(new ReadAccessDenied(streamId,userId));
-            }
-        }
+        ///// <summary>
+        ///// Requests to pull event with ID eventId from stream streamId.
+        ///// </summary>
+        ///// <param name="userId"></param>
+        ///// <param name="streamId"></param>
+        ///// <param name="eventId"></param>
+        ///// <returns></returns>
+        //public static Pull Pull(Int64 userId, Int64 streamId, int eventId)
+        //{
+        //    if (!UserTable.UserIdExists(userId))
+        //        return new Pull(new UserIdDoesNotExist(userId));
+        //    if (!StreamTable.StreamIdExists(streamId))
+        //        return new Pull(new StreamIdDoesNotExist(streamId));
+        //    User user = UserTable.GetUser(userId);
+        //    Stream stream = StreamTable.GetStream(streamId);
+        //    if (CheckRights.CheckCanRead(user, stream))
+        //        return stream.Pull(eventId);                    //eventID validity is checked here
+        //    else
+        //    {
+        //        return new Pull(new ReadAccessDenied(streamId,userId));
+        //    }
+        //}
 
-        /// <summary>
-        /// Requests to pull events in range [from, to] from stream streamId (inclusive).
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="streamId"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <returns></returns>
-        public static PullRange PullRange(Int64 userId, Int64 streamId, int from, int to)
-        {
-            if (!UserTable.UserIdExists(userId))
-                return new PullRange(new UserIdDoesNotExist(userId));
-            if (!StreamTable.StreamIdExists(streamId))
-                return new PullRange(new StreamIdDoesNotExist(streamId));
-            User user = UserTable.GetUser(userId);
-            Stream stream = StreamTable.GetStream(streamId);
-            if (CheckRights.CheckCanRead(user, stream))
-                return stream.PullRange(from, to);          //Validity of from and to is checked here
-            else
-            {
-                return new PullRange(new ReadAccessDenied(streamId, userId));
-            }
-        }
+        ///// <summary>
+        ///// Requests to pull events in range [from, to] from stream streamId (inclusive).
+        ///// </summary>
+        ///// <param name="userId"></param>
+        ///// <param name="streamId"></param>
+        ///// <param name="from"></param>
+        ///// <param name="to"></param>
+        ///// <returns></returns>
+        //public static PullRange PullRange(Int64 userId, Int64 streamId, int from, int to)
+        //{
+        //    if (!UserTable.UserIdExists(userId))
+        //        return new PullRange(new UserIdDoesNotExist(userId));
+        //    if (!StreamTable.StreamIdExists(streamId))
+        //        return new PullRange(new StreamIdDoesNotExist(streamId));
+        //    User user = UserTable.GetUser(userId);
+        //    Stream stream = StreamTable.GetStream(streamId);
+        //    if (CheckRights.CheckCanRead(user, stream))
+        //        return stream.PullRange(from, to);          //Validity of from and to is checked here
+        //    else
+        //    {
+        //        return new PullRange(new ReadAccessDenied(streamId, userId));
+        //    }
+        //}
 
-        /// <summary>
-        /// Requests to push an event containing message to stream streamId. Returns the id of the generated event.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="streamId"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public static Push Push(Int64 userId, Int64 streamId, string message)
-        {
-            if (!UserTable.UserIdExists(userId))
-                return new Push(new UserIdDoesNotExist(userId));
-            if (!StreamTable.StreamIdExists(streamId))
-                return new Push(new StreamIdDoesNotExist(streamId));
-            User user = UserTable.GetUser(userId);
-            Stream stream = StreamTable.GetStream(streamId);
-            if (CheckRights.CheckCanWrite(user, stream))
-                return stream.Push(message);
-            else
-            {
-                return new Push(new WriteAccessDenied(streamId, userId));
-            }
-        }
+        ///// <summary>
+        ///// Requests to push an event containing message to stream streamId. Returns the id of the generated event.
+        ///// </summary>
+        ///// <param name="userId"></param>
+        ///// <param name="streamId"></param>
+        ///// <param name="message"></param>
+        ///// <returns></returns>
+        //public static Push Push(Int64 userId, Int64 streamId, string message)
+        //{
+        //    if (!UserTable.UserIdExists(userId))
+        //        return new Push(new UserIdDoesNotExist(userId));
+        //    if (!StreamTable.StreamIdExists(streamId))
+        //        return new Push(new StreamIdDoesNotExist(streamId));
+        //    User user = UserTable.GetUser(userId);
+        //    Stream stream = StreamTable.GetStream(streamId);
+        //    if (CheckRights.CheckCanWrite(user, stream))
+        //        return stream.Push(message);
+        //    else
+        //    {
+        //        return new Push(new WriteAccessDenied(streamId, userId));
+        //    }
+        //}
 
         ///now in user
         ///// <summary>

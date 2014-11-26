@@ -92,11 +92,18 @@ namespace EvernestFront
             long userId;
             if (Projection.Projection.TryGetUserId(userName, out userId))
             {
-                var user = GetUser(userId);
-                if (user.Identify(password))
-                    return new IdentifyUser(userId);
+                User user;
+                if (Projection.Projection.TryGetUser(userId, out user))
+                {
+                    if (user.Identify(password))
+                        return new IdentifyUser(userId);
+                    else
+                        return new IdentifyUser(new WrongPassword(userName, password));
+                }
                 else
-                    return new IdentifyUser(new WrongPassword(userName, password));
+                    throw new Exception("User.IdentifyUser");
+                    //this should not happen since userId is read in the tables
+                
             }
             else
                 return new IdentifyUser(new UserNameDoesNotExist(userName));
@@ -150,16 +157,16 @@ namespace EvernestFront
 
         public SetRights SetRights(Int64 streamId, Int64 targetUserId, AccessRights right)
         {
-            if (!Projection.Projection.UserIdExists(Id))
-                throw new Exception("User.SetRights");
             if (!Projection.Projection.StreamIdExists(streamId))
                 return new SetRights(new StreamIdDoesNotExist(streamId));
-            if (!Projection.Projection.UserIdExists(targetUserId))
-                return new SetRights(new UserIdDoesNotExist(targetUserId));
-            
             if (!CanAdmin(streamId))
                 return new SetRights(new AdminAccessDenied(streamId, Id));
-            if (!GetUser(targetUserId).IsNotAdmin(streamId))
+            //reverse order? so a user who doesn't have the rights doesn't know whether the stream exists
+
+            User targetUser;
+            if (!Projection.Projection.TryGetUser(targetUserId, out targetUser))
+                return new SetRights(new UserIdDoesNotExist(targetUserId));
+            if (!targetUser.IsNotAdmin(streamId))
                 return new SetRights(new CannotDestituteAdmin(streamId, targetUserId));
 
             var userRightSet = new UserRightSet(Id, streamId, targetUserId, right);
@@ -170,7 +177,97 @@ namespace EvernestFront
             return new SetRights();
         }
 
+        /// <summary>
+        /// Requests to pull a random event from stream streamId.
+        /// </summary>
+        /// <param name="streamId"></param>
+        /// <returns></returns>
+        public PullRandom PullRandom(Int64 streamId)
+        {
+            Stream stream;
+            if (Projection.Projection.TryGetStream(streamId, out stream))
+            {
+                if (CanRead(streamId))
+                {
+                    return stream.PullRandom();
+                }
+                else
+                    return new PullRandom(new ReadAccessDenied(streamId, Id));
+            }
+            else
+                return new PullRandom(new StreamIdDoesNotExist(streamId));
 
+        }
+
+        /// <summary>
+        /// Requests to pull event with ID eventId from stream streamId.
+        /// </summary>
+        /// <param name="streamId"></param>
+        /// <param name="eventId"></param>
+        /// <returns></returns>
+        public Pull Pull(Int64 streamId, int eventId)
+        {
+            Stream stream;
+            if (Projection.Projection.TryGetStream(streamId, out stream))
+            {
+                if (CanRead(streamId))
+                {
+                    return stream.Pull(eventId);
+                }
+                else
+                    return new Pull(new ReadAccessDenied(streamId, Id));
+            }
+            else
+                return new Pull(new StreamIdDoesNotExist(streamId));
+        }
+
+        /// <summary>
+        /// Requests to pull events in range [from, to] from stream streamId (inclusive).
+        /// </summary>
+        /// <param></param>
+        /// <param name="streamId"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public PullRange PullRange(Int64 streamId, int from, int to)
+        {
+            Stream stream;
+            if (Projection.Projection.TryGetStream(streamId, out stream))
+            {
+                if (CanRead(streamId))
+                {
+                    return stream.PullRange(from, to);
+                }
+                else
+                    return new PullRange(new ReadAccessDenied(streamId, Id));
+            }
+            else
+                return new PullRange(new StreamIdDoesNotExist(streamId));
+        }
+
+        /// <summary>
+        /// Requests to push an event containing message to stream streamId. Returns the id of the generated event.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="streamId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public Push Push(Int64 userId, Int64 streamId, string message)
+        {
+            Stream stream;
+            if (Projection.Projection.TryGetStream(streamId, out stream))
+            {
+                if (CanWrite(streamId))
+                {
+                    return stream.Push(message);
+                    //TODO: add writer id to event
+                }
+                else
+                    return new Push(new WriteAccessDenied(streamId, Id));
+            }
+            else
+                return new Push(new StreamIdDoesNotExist(streamId));
+        }
 
 
 

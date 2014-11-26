@@ -9,6 +9,8 @@ propriété Error de type FrontError et des données. Si Success est vrai (la re
 ne valent pas null. Si Success est faux, c'est l'inverse et on peut transmettre l'erreur au client.
 
 
+
+
 ---------------------------------------------------------------------------------------------------------------------------
 #Classe User
 
@@ -39,25 +41,25 @@ Cette propriété ne devrait peut-être pas être publique, mais il faut un moye
 
 	Answers.SetPassword(string newPassword)
 
+	Answers.CreateStream CreateStream(string streamName)
 	Answers.Push Push(long streamId, string Message)
 	Answers.PullRandom Process.PullRandom(long streamId)
 	Answers.Pull Pull(long streamId, int eventId)
 	Answers.PullRange PullRange(long streamId, int eventIdFrom, int eventIdTo)
-
 	Answers.SetUserRights SetRights(long streamId, long targetUserId, AccessRights rights)
 
 	Answers.CreateSource CreateSource(string sourceName, long streamId, AccessRights rights)
-	Answers.SetSourceRights SetSourceRights(string sourceKey, AccessRights rights)
+	Answers.DeleteSource DeleteSource(string sourceName)
 
 
 ---------------------------------------------------------------------------------------------------------------------------
 #Classe Stream
 
-	static Answers.CreateStream Stream.CreateStream(long creatorId, string streamName)
 	static Answers.GetStream Stream.GetStream(long streamId)
 	
 	long Id
 	string Name
+	int Count
 	List<KeyValuePair<long, AccessRights>> RelatedUsers
 
 
@@ -65,6 +67,12 @@ Cette propriété ne devrait peut-être pas être publique, mais il faut un moye
 #Classe Source
 
 	static Answers.GetSource GetSource(string sourceKey)
+	
+	string Name
+	long UserId
+	long StreamId
+	string Key
+	AccessRights Rights
 
 	Answers.Push Push(string Message)
 	Answers.PullRandom Process.PullRandom()
@@ -72,6 +80,14 @@ Cette propriété ne devrait peut-être pas être publique, mais il faut un moye
 	Answers.PullRange PullRange(int eventIdFrom, int eventIdTo)
 
 	Answers.SetUserRights SetRights(long targetUserId, AccessRights rights)
+	
+	Answers.DeleteSource Delete()
 
 Les sources sont identifiées directement par leur clé. Il n'y a pas d'id de stream à donner car chaque source est associée à 
 une seule stream et donc agit toujours sur cette stream.
+
+
+---------------------------------------------------------------------------------------------------------------------------
+#Classe Event
+
+à définir

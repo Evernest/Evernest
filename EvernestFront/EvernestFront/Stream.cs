@@ -65,16 +65,12 @@ namespace EvernestFront
         private static Int64 _next = 0;
         private static Int64 NextId() { return ++_next; }
 
-        internal Stream(string name)
-        {
-            Id = NextId();
-            //Name = name;
-            //Count = 0;
-            //LastEventId = -1; //?
-            //UserRights = new List<UserRight>();
-            //BackStream = new RAMStream();
-        }
 
+        internal Stream(long streamId, StreamContract streamContract)
+        {
+            Id = streamId;
+            _streamContract = streamContract;
+        }
         
 
         public static CreateStream CreateStream(long creatorId, string streamName)
@@ -161,7 +157,6 @@ namespace EvernestFront
         internal Push Push(string message)
         {
             int eventId = LastEventId + 1;
-            // TODO : call back-end
 
             BackStream.Push(message, (a => Console.WriteLine(a.RequestID)));  //TODO : change callback
             //Count++;

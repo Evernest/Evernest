@@ -13,8 +13,8 @@ namespace EvernestFront.Projection
 
         internal static Tables AddUserContract(Tables tbls, long userId, UserContract userContract)
         {
-            var usrTbl = tbls.UserTable.Add(userId, userContract);
-            var usrNameToId = tbls.UserNameToId.Add(userContract.UserName, userId);
+            var usrTbl = tbls.UserTable.SetItem(userId, userContract);
+            var usrNameToId = tbls.UserNameToId.SetItem(userContract.UserName, userId);
             return new Tables(usrTbl, tbls.StreamTable, tbls.SourceTable, usrNameToId, tbls.StreamNameToId);
         }
 
@@ -27,8 +27,8 @@ namespace EvernestFront.Projection
         /// <returns></returns>
         internal static Tables AddStreamContract(Tables tbls, long streamId, StreamContract streamContract)
         {
-            var strmTbl = tbls.StreamTable.Add(streamId, streamContract);
-            var strmNtI = tbls.StreamNameToId.Add(streamContract.StreamName, streamId);
+            var strmTbl = tbls.StreamTable.SetItem(streamId, streamContract);
+            var strmNtI = tbls.StreamNameToId.SetItem(streamContract.StreamName, streamId);
             return new Tables(tbls.UserTable, strmTbl, tbls.SourceTable, tbls.UserNameToId, strmNtI);
         }
 
@@ -40,8 +40,8 @@ namespace EvernestFront.Projection
                 StreamContract streamContract;
                 if (tbls.StreamTable.TryGetValue(streamId, out streamContract))
                 {
-                    var usrTbl = tbls.UserTable.Add(userId, MakeUserContract.SetRight(userContract, streamId, right));
-                    var strmTbl = tbls.StreamTable.Add(streamId, MakeStreamContract.SetRight(streamContract, userId, right));
+                    var usrTbl = tbls.UserTable.SetItem(userId, MakeUserContract.SetRight(userContract, streamId, right));
+                    var strmTbl = tbls.StreamTable.SetItem(streamId, MakeStreamContract.SetRight(streamContract, userId, right));
                     return new Tables(usrTbl, strmTbl, tbls.SourceTable, tbls.UserNameToId, tbls.StreamNameToId);
                 }
                 else
@@ -61,7 +61,7 @@ namespace EvernestFront.Projection
             if (tbls.UserTable.TryGetValue(userId, out userContract))
             {
                 userContract = MakeUserContract.SetPassword(userContract, saltedPasswordHash);
-                var usrTbl = tbls.UserTable.Add(userId, userContract);
+                var usrTbl = tbls.UserTable.SetItem(userId, userContract);
                 return new Tables(usrTbl, tbls.StreamTable, tbls.SourceTable, tbls.UserNameToId, tbls.StreamNameToId);
             }
             else

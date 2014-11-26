@@ -26,7 +26,7 @@ namespace EvernestFront.Projection
 
         internal static UserContract SetRight(UserContract usrc, long streamId, AccessRights right)
         {
-            var strms = usrc.RelatedStreams.Add(streamId, right);
+            var strms = usrc.RelatedStreams.SetItem(streamId, right);
             return new UserContract(usrc.UserName, usrc.SaltedPasswordHash, 
                 usrc.PasswordSalt, usrc.Key, strms, usrc.OwnedSources);
         }

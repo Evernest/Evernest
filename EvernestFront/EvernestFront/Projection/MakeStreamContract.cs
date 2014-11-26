@@ -16,7 +16,7 @@ namespace EvernestFront.Projection
 
         static internal StreamContract SetRight(StreamContract strmc, long streamId, AccessRights right)
         {
-            var users = strmc.RelatedUsers.Add(streamId, right);
+            var users = strmc.RelatedUsers.SetItem(streamId, right);
             return new StreamContract(strmc.StreamName, users, strmc.BackStream);
         }
     }

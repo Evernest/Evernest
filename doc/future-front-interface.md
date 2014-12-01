@@ -24,7 +24,10 @@ pas intéressantes au moment de la création a priori.
 un mot de passe est généré
 
 	static Answers.IdentifyUser User.IdentifyUser(string userName, string password)
-en cas de succès, la réponse contient pour l'instant juste l'id, on peut aussi mettre un objet User si vous préférez
+	static Answers.IdentifyUser User.IdentifyUser(string userKey)
+en cas de succès, la réponse contient à la fois un objet User et l'id de l'User.
+
+/!\ Les objets User ne doivent pas être conservés : ils ne sont jamais mis à jour. Si on veut faire plusieurs actions, il faut stocker l'id et appeler GetUser pour chaque action. Par exemple, si vous créez une stream mais conservez l'objet User, celui-ci n'a pas les droits sur la stream créée.
 
 	static Answers.GetUser User.GetUser(long userId)
 en cas de succès, la réponse contient un objet User
@@ -42,8 +45,8 @@ Cette propriété ne devrait peut-être pas être publique, mais il faut un moye
 	Answers.SetPassword(string newPassword)
 
 	Answers.CreateStream CreateStream(string streamName)
-	Answers.Push Push(long streamId, string Message)
-	Answers.PullRandom Process.PullRandom(long streamId)
+	Answers.Push Push(long streamId, string message)
+	Answers.PullRandom PullRandom(long streamId)
 	Answers.Pull Pull(long streamId, int eventId)
 	Answers.PullRange PullRange(long streamId, int eventIdFrom, int eventIdTo)
 	Answers.SetUserRights SetRights(long streamId, long targetUserId, AccessRights rights)
@@ -67,6 +70,7 @@ Cette propriété ne devrait peut-être pas être publique, mais il faut un moye
 #Classe Source
 
 	static Answers.GetSource GetSource(string sourceKey)
+en cas de succès, la réponse contient un objet Source.
 	
 	string Name
 	long UserId
@@ -74,7 +78,7 @@ Cette propriété ne devrait peut-être pas être publique, mais il faut un moye
 	string Key
 	AccessRights Rights
 
-	Answers.Push Push(string Message)
+	Answers.Push Push(string message)
 	Answers.PullRandom Process.PullRandom()
 	Answers.Pull Pull(int eventId)
 	Answers.PullRange PullRange(int eventIdFrom, int eventIdTo)

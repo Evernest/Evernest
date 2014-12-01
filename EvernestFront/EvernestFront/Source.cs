@@ -27,7 +27,7 @@ namespace EvernestFront
 
         internal User User { get; private set; }
 
-        internal Stream Stream { get; private set; }
+        internal EventStream EventStream { get; private set; }
 
         
 
@@ -37,7 +37,7 @@ namespace EvernestFront
         private static Int64 _next = 0;
         private static Int64 NextId() { return ++_next; }
 
-        internal Source(User usr, Stream strm, string name, AccessRights right)
+        internal Source(User usr, EventStream strm, string name, AccessRights right)
         {
             //Id = NextId();
             //User = usr;
@@ -99,19 +99,19 @@ namespace EvernestFront
 
         internal bool CheckCanRead()
         {
-            return (CheckRights.CheckCanRead(User, Stream) & CheckRights.CanRead(Right));
+            return (CheckRights.CheckCanRead(User, EventStream) & CheckRights.CanRead(Right));
         }
 
 
         internal bool CheckCanWrite()
         {
-            return (CheckRights.CheckCanWrite(User, Stream) & CheckRights.CanWrite(Right));
+            return (CheckRights.CheckCanWrite(User, EventStream) & CheckRights.CanWrite(Right));
         }
 
 
         internal bool CheckCanAdmin()
         {
-            return (CheckRights.CheckCanAdmin(User, Stream) & CheckRights.CanAdmin(Right));
+            return (CheckRights.CheckCanAdmin(User, EventStream) & CheckRights.CanAdmin(Right));
         }
 
     }

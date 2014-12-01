@@ -10,35 +10,35 @@ namespace EvernestFront.Contract
         [DataMember]
         internal ImmutableDictionary<long, UserContract> UserTable;
         [DataMember]
-        internal ImmutableDictionary<long, StreamContract> StreamTable;
+        internal ImmutableDictionary<long, EventStreamContract> EventStreamTable;
         [DataMember]
         internal ImmutableDictionary<string, SourceContract> SourceTable;
 
         [DataMember]
         internal ImmutableDictionary<string, long> UserNameToId;
         [DataMember]
-        internal ImmutableDictionary<string, long> StreamNameToId;
+        internal ImmutableDictionary<string, long> EventStreamNameToId;
 
 
 
         internal Tables()
         {
             UserTable = ImmutableDictionary<long, UserContract>.Empty;
-            StreamTable = ImmutableDictionary<long, StreamContract>.Empty;
+            EventStreamTable = ImmutableDictionary<long, EventStreamContract>.Empty;
             SourceTable = ImmutableDictionary<string, SourceContract>.Empty;
             UserNameToId = ImmutableDictionary<string, long>.Empty;
-            StreamNameToId = ImmutableDictionary<string, long>.Empty;
+            EventStreamNameToId = ImmutableDictionary<string, long>.Empty;
         }
 
-        internal Tables(ImmutableDictionary<long, UserContract> usrTbl, ImmutableDictionary<long, StreamContract> strmTbl,
+        internal Tables(ImmutableDictionary<long, UserContract> usrTbl, ImmutableDictionary<long, EventStreamContract> strmTbl,
             ImmutableDictionary<string, SourceContract> srcTbl, ImmutableDictionary<string, long> usrNtI,
             ImmutableDictionary<string, long> strmNtI)
         {
             UserTable = usrTbl;
-            StreamTable = strmTbl;
+            EventStreamTable = strmTbl;
             SourceTable = srcTbl;
             UserNameToId = usrNtI;
-            StreamNameToId = strmNtI;
+            EventStreamNameToId = strmNtI;
         }
 
         

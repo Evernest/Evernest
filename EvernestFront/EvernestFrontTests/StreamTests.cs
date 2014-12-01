@@ -21,7 +21,7 @@ namespace EvernestFrontTests
 
         internal static long GetStreamId_AssertSuccess(long userId, string streamName)
         {
-            CreateStream ans = Stream.CreateStream(userId, streamName);
+            CreateEventStream ans = EventStream.CreateStream(userId, streamName);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             return ans.StreamId;
@@ -45,7 +45,7 @@ namespace EvernestFrontTests
         public void CreateStream_UserIdDoesNotExist()
         {
             const long bogusUserId = 42; //does not exist in UserTable
-            CreateStream ans = Stream.CreateStream(bogusUserId, StreamName);
+            CreateEventStream ans = EventStream.CreateStream(bogusUserId, StreamName);
             ProcessTests.ErrorAssert<UserIdDoesNotExist>(ans);
         }
 
@@ -56,8 +56,8 @@ namespace EvernestFrontTests
             long user2 = UserTests.GetUserId_AssertSuccess(UserName2);
 
             long streamId = StreamTests.GetStreamId_AssertSuccess(user, StreamName);
-            CreateStream ans = Stream.CreateStream(user2, StreamName);
-            ProcessTests.ErrorAssert<StreamNameTaken>(ans);
+            CreateEventStream ans = EventStream.CreateStream(user2, StreamName);
+            ProcessTests.ErrorAssert<EventStreamNameTaken>(ans);
         }
 
 

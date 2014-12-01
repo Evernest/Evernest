@@ -1,11 +1,11 @@
 ﻿
 namespace EvernestFront.Errors
 {
-    public class StreamNameTaken : FrontError
+    public class EventStreamNameTaken : FrontError
     {
         public string StreamName { get; private set; }
 
-        internal StreamNameTaken(string name)
+        internal EventStreamNameTaken(string name)
         {
             StreamName = name;
         }

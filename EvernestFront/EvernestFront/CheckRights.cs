@@ -90,10 +90,10 @@ namespace EvernestFront
         /// Returns if and only if user can read on stream.
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="stream"></param>
-        static internal bool CheckCanRead(User user, Stream stream)
+        /// <param name="eventStream"></param>
+        static internal bool CheckCanRead(User user, EventStream eventStream)
         {
-            var rights = UserRight.GetRight(user, stream);
+            var rights = UserRight.GetRight(user, eventStream);
             return CanRead(rights);
         }
 
@@ -101,10 +101,10 @@ namespace EvernestFront
         /// Returns if and only if user can write on stream.
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="stream"></param>
-        static internal bool CheckCanWrite(User user, Stream stream)
+        /// <param name="eventStream"></param>
+        static internal bool CheckCanWrite(User user, EventStream eventStream)
         {
-            var rights = UserRight.GetRight(user, stream);
+            var rights = UserRight.GetRight(user, eventStream);
             return (CanWrite(rights));
         }
 
@@ -112,16 +112,16 @@ namespace EvernestFront
         /// Returns if and only if user can administrate stream.
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="stream"></param>
-        static internal bool CheckCanAdmin(User user, Stream stream)
+        /// <param name="eventStream"></param>
+        static internal bool CheckCanAdmin(User user, EventStream eventStream)
         {
-            var rights = UserRight.GetRight(user, stream);
+            var rights = UserRight.GetRight(user, eventStream);
             return (CanAdmin(rights));
         }
 
-        static internal bool CheckRightsCanBeModified(User user, Stream stream)
+        static internal bool CheckRightsCanBeModified(User user, EventStream eventStream)
         {
-            var rights = UserRight.GetRight(user, stream);
+            var rights = UserRight.GetRight(user, eventStream);
             return CanBeModified(rights);
         }
 

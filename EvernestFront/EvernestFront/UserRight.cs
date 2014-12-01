@@ -7,7 +7,7 @@ namespace EvernestFront
     {
         internal User User { get; private set; }
 
-        internal Stream Stream { get; private set; }
+        internal EventStream EventStream { get; private set; }
 
         internal AccessRights Right { get; set; }
 
@@ -22,30 +22,30 @@ namespace EvernestFront
         /// </summary>
         public const string RootUser = "RootUser";
 
-        UserRight(User usr, Stream strm)
+        UserRight(User usr, EventStream strm)
         {
             User = usr;
-            Stream = strm;
+            EventStream = strm;
             Right = AccessRights.NoRights;
         }
 
 
-        static internal AccessRights GetRight(User user, Stream stream)
+        static internal AccessRights GetRight(User user, EventStream eventStream)
         {
-            var userRight = user.UserRights.Find(x => x.Stream == stream);
+            var userRight = user.UserRights.Find(x => x.EventStream == eventStream);
             if (userRight == null)
                 return AccessRights.NoRights;
             return userRight.Right;
         }
 
-        static internal void SetRight(User user, Stream stream, AccessRights right)
+        static internal void SetRight(User user, EventStream eventStream, AccessRights right)
         {
-            var userRight = user.UserRights.Find(x => x.Stream == stream); 
+            var userRight = user.UserRights.Find(x => x.EventStream == eventStream); 
             if (userRight == null)
             {
-                userRight = new UserRight(user, stream);
+                userRight = new UserRight(user, eventStream);
                 user.UserRights.Add(userRight);
-                stream.UserRights.Add(userRight);
+                eventStream.UserRights.Add(userRight);
             }
             userRight.Right = right;
             // factorisation : vérifier ici si on destitue un admin ? (c'est fait ailleurs)
@@ -53,7 +53,7 @@ namespace EvernestFront
 
         internal KeyValuePair<long, AccessRights> ToStreamIdAndRight()
         {
-            return new KeyValuePair<long, AccessRights>(Stream.Id,Right);
+            return new KeyValuePair<long, AccessRights>(EventStream.Id,Right);
         }
 
         internal KeyValuePair<long, AccessRights> ToUserIdAndRight()

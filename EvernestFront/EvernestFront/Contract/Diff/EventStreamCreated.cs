@@ -3,17 +3,17 @@
 namespace EvernestFront.Contract.Diff
 {
     [DataContract]
-    class StreamCreated : IDiff
+    class EventStreamCreated : IDiff
     {
         
         [DataMember]
         internal long StreamId;
         [DataMember]
-        internal StreamContract StreamContract;
+        internal EventStreamContract StreamContract;
         [DataMember]
         internal long CreatorId;
 
-        internal StreamCreated(long streamId, StreamContract sc, long creatorId)
+        internal EventStreamCreated(long streamId, EventStreamContract sc, long creatorId)
         {
             StreamId = streamId;
             StreamContract = sc;

@@ -18,7 +18,7 @@ namespace EvernestFront.Errors
 
         protected AccessDenied(Source src)
         {
-            StreamId = src.Stream.Id;
+            StreamId = src.EventStream.Id;
             User = src.User.Id;
             SourceId = src.Id;
         }

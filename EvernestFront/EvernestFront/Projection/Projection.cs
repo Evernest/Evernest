@@ -15,27 +15,14 @@ namespace EvernestFront.Projection
 
         
 
-        static internal bool TryGetStream(long streamId, out Stream stream)
-        {
-            StreamContract streamContract;
-            if (TryGetStreamContract(streamId, out streamContract))
-            {
-                stream = new Stream(streamId, streamContract);
-                return true;
-            }
-            else
-            {
-                stream = null;
-                return false;
-            }
-        }
+        
 
         static internal bool TryGetUserContract(long userId, out UserContract userContract)
         {
             return ReadTables.TryGetUserContract(_tables, userId, out userContract);
         }
 
-        static internal bool TryGetStreamContract(long streamId, out StreamContract streamContract)
+        static internal bool TryGetStreamContract(long streamId, out EventStreamContract streamContract)
         {
             return ReadTables.TryGetStreamContract(_tables, streamId, out streamContract);
         }
@@ -62,7 +49,7 @@ namespace EvernestFront.Projection
         }
         static internal bool StreamIdExists(long streamId)
         {
-            StreamContract streamContract;
+            EventStreamContract streamContract;
             return ReadTables.TryGetStreamContract(_tables, streamId, out streamContract);
         }
         internal static bool UserNameExists(string userName)
@@ -85,8 +72,8 @@ namespace EvernestFront.Projection
         {
             if (dm is UserAdded)
                 HandleUserAdded(dm as UserAdded);
-            else if (dm is StreamCreated)
-                HandleStreamCreated(dm as StreamCreated);
+            else if (dm is EventStreamCreated)
+                HandleStreamCreated(dm as EventStreamCreated);
             else if (dm is SourceCreated)
                 HandleSourceCreated(dm as SourceCreated);
             else if (dm is UserRightSet)
@@ -100,7 +87,7 @@ namespace EvernestFront.Projection
             _tables = MakeTables.AddUserContract(_tables, ua.UserId, ua.UserContract);
         }
 
-        static void HandleStreamCreated(StreamCreated sc)
+        static void HandleStreamCreated(EventStreamCreated sc)
         {
             var tbls = MakeTables.AddStreamContract(_tables, sc.StreamId, sc.StreamContract);
             _tables = MakeTables.SetRight(tbls, sc.CreatorId, sc.StreamId, AccessRights.Admin); 

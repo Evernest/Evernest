@@ -46,7 +46,7 @@ namespace EvernestFrontTests
             const string streamName2 = "streamName2";
             long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
             long streamId2 = StreamTests.GetStreamId_AssertSuccess(userId, streamName2);
-            RelatedStreams ans = Process.RelatedStreams(userId);
+            RelatedEventStreams ans = Process.RelatedStreams(userId);
             Assert.IsTrue(ans.Success);
             var actualList = ans.Streams;
             Assert.IsNotNull(actualList);

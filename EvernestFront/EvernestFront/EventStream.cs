@@ -10,7 +10,7 @@ using EvernestFront.Projection;
 
 namespace EvernestFront
 {
-    class Stream
+    class EventStream
     {
         public Int64 Id { get; private set; }
 
@@ -22,36 +22,13 @@ namespace EvernestFront
 
         public List<KeyValuePair<long, AccessRights>> RelatedUsers
         {
-            get
-            {
-                throw new NotImplementedException("Stream.RelatedUsers");
-            }
+            get { return StreamContract.RelatedUsers.ToList(); }
         }
 
         private RAMStream BackStream { get { return StreamContract.BackStream; } }
 
-        private StreamContract _streamContract;
+        private EventStreamContract StreamContract { get; set; }
 
-        private StreamContract StreamContract
-        {
-            get
-            {
-                if (_streamContract==null)
-                    UpdateStreamContract();
-                if (_streamContract==null)
-                    throw new Exception("Stream.StreamContract");
-                    //wait?
-                return _streamContract;
-            }
-        }
-
-        internal void UpdateStreamContract()
-        {
-            StreamContract sc;
-            if (Projection.Projection.TryGetStreamContract(Id, out sc))
-                _streamContract = sc;
-            //else?
-        }
         
 
         //public string Name { get; private set; }
@@ -66,29 +43,52 @@ namespace EvernestFront
         private static Int64 NextId() { return ++_next; }
 
 
-        internal Stream(long streamId, StreamContract streamContract)
+        private EventStream(long streamId, EventStreamContract streamContract)
         {
             Id = streamId;
-            _streamContract = streamContract;
+            StreamContract = streamContract;
         }
-        
 
-        public static CreateStream CreateStream(long creatorId, string streamName)
+        internal static bool TryGetStream(long streamId, out EventStream eventStream)
+        {
+            EventStreamContract streamContract;
+            if (Projection.Projection.TryGetStreamContract(streamId, out streamContract))
+            {
+                eventStream = new EventStream(streamId, streamContract);
+                return true;
+            }
+            else
+            {
+                eventStream = null;
+                return false;
+            }
+        }
+
+        public static GetEventStream GetStream(long streamId)
+        {
+            EventStream eventStream;
+            if (TryGetStream(streamId, out eventStream))
+                return new GetEventStream(eventStream);
+            else
+                return new GetEventStream(new EventStreamIdDoesNotExist(streamId));
+        }
+
+        public static CreateEventStream CreateStream(long creatorId, string streamName)
         {
             if (Projection.Projection.StreamNameExists(streamName))
-                return new CreateStream(new StreamNameTaken(streamName));
+                return new CreateEventStream(new EventStreamNameTaken(streamName));
             if (!Projection.Projection.UserIdExists(creatorId))
-                return new CreateStream(new UserIdDoesNotExist(creatorId));
+                return new CreateEventStream(new UserIdDoesNotExist(creatorId));
 
             var id = NextId();
 
             var backStream = new RAMStream();
 
-            var streamContract = MakeStreamContract.NewStreamContract(streamName, backStream);
-            var streamCreated = new StreamCreated(id, streamContract, creatorId);
+            var streamContract = MakeEventStreamContract.NewStreamContract(streamName, backStream);
+            var streamCreated = new EventStreamCreated(id, streamContract, creatorId);
 
             Projection.Projection.HandleDiff(streamCreated);
-            return new CreateStream(id);
+            return new CreateEventStream(id);
         }
 
         private int ActualEventId(int eventId)

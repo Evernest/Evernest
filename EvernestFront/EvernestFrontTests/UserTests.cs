@@ -208,7 +208,7 @@ namespace EvernestFrontTests
             User user = GetUser_AssertSuccess(UserName);
             const long streamId = 42; //does not exist in StreamTable
             Push ans = user.Push(streamId, Message);
-            ProcessTests.ErrorAssert<StreamIdDoesNotExist>(ans);
+            ProcessTests.ErrorAssert<EventStreamIdDoesNotExist>(ans);
         }
 
         [Test]

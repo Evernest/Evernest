@@ -48,11 +48,12 @@
   <ItemGroup>
     <Compile Include="Answers\DeleteSource.cs" />
     <Compile Include="Answers\GetSource.cs" />
+    <Compile Include="Answers\GetEventStream.cs" />
     <Compile Include="Answers\GetUser.cs" />
     <Compile Include="Answers\Pull.cs" />
     <Compile Include="Answers\PullRandom.cs" />
     <Compile Include="Answers\PullRange.cs" />
-    <Compile Include="Answers\RelatedStreams.cs" />
+    <Compile Include="Answers\RelatedEventStreams.cs" />
     <Compile Include="Answers\RelatedUsers.cs" />
     <Compile Include="Answers\SetPassword.cs" />
     <Compile Include="Answers\SetRights.cs" />
@@ -62,10 +63,10 @@
     <Compile Include="Contract\Diff\PasswordSet.cs" />
     <Compile Include="Contract\Diff\SourceCreated.cs" />
     <Compile Include="Contract\Diff\UserRightSet.cs" />
-    <Compile Include="Contract\Diff\StreamCreated.cs" />
+    <Compile Include="Contract\Diff\EventStreamCreated.cs" />
     <Compile Include="Contract\SourceContract.cs" />
-	<Compile Include="Contract\EventContract.cs" />
-    <Compile Include="Contract\StreamContract.cs" />
+    <Compile Include="Contract\EventContract.cs" />
+    <Compile Include="Contract\EventStreamContract.cs" />
     <Compile Include="Contract\Diff\UserAdded.cs" />
     <Compile Include="Contract\UserContract.cs" />
     <Compile Include="Errors\InvalidString.cs" />
@@ -85,12 +86,12 @@
     <Compile Include="Answers\Answer.cs" />
     <Compile Include="Answers\Push.cs" />
     <Compile Include="Answers\AddUser.cs" />
-    <Compile Include="Answers\CreateStream.cs" />
+    <Compile Include="Answers\CreateEventStream.cs" />
     <Compile Include="Answers\CreateSource.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="Contract\Tables.cs" />
     <Compile Include="Errors\WriteAccessDenied.cs" />
-    <Compile Include="Projection\MakeStreamContract.cs" />
+    <Compile Include="Projection\MakeEventStreamContract.cs" />
     <Compile Include="Projection\MakeTables.cs" />
     <Compile Include="Projection\MakeUserContract.cs" />
     <Compile Include="Projection\ReadTables.cs" />
@@ -101,10 +102,10 @@
     <Compile Include="Process.cs" />
     <Compile Include="Projection\Projection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Stream.cs" />
+    <Compile Include="EventStream.cs" />
     <Compile Include="StreamTable.cs" />
-    <Compile Include="Errors\StreamIdDoesNotExist.cs" />
-    <Compile Include="Errors\StreamNameTaken.cs" />
+    <Compile Include="Errors\EventStreamIdDoesNotExist.cs" />
+    <Compile Include="Errors\EventStreamNameTaken.cs" />
     <Compile Include="AccessRights.cs" />
     <Compile Include="UserTable.cs" />
   </ItemGroup>

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace EvernestFront.Contract
 {
     [DataContract]
-    class StreamContract
+    class EventStreamContract
     {
         [DataMember]
         internal string StreamName { get; set; }
@@ -20,7 +20,7 @@ namespace EvernestFront.Contract
         //this is a temporary simulator of backend
         //the actual class should have a contract
 
-        internal StreamContract(string name, ImmutableDictionary<long, AccessRights> users, EvernestBack.RAMStream bs)
+        internal EventStreamContract(string name, ImmutableDictionary<long, AccessRights> users, EvernestBack.RAMStream bs)
         {
             StreamName = name;
             RelatedUsers = users;

@@ -7,8 +7,8 @@ namespace EvernestFront
 {
     static class StreamTable
     {
-        private static readonly Dictionary<string, Stream> TableByName = new Dictionary<string, Stream>();
-        private static readonly Dictionary<Int64, Stream> TableById= new Dictionary<Int64, Stream>();
+        private static readonly Dictionary<string, EventStream> TableByName = new Dictionary<string, EventStream>();
+        private static readonly Dictionary<Int64, EventStream> TableById= new Dictionary<Int64, EventStream>();
       
         internal static bool NameIsFree(string name)
         {
@@ -25,7 +25,7 @@ namespace EvernestFront
         /// </summary>
         /// <param name="str"></param>
         
-        internal static void Add(Stream str)
+        internal static void Add(EventStream str)
         {
             TableByName.Add(str.Name,str);
             TableById.Add(str.Id, str);
@@ -36,7 +36,7 @@ namespace EvernestFront
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        internal static Stream GetStream(Int64 id)
+        internal static EventStream GetStream(Int64 id)
         {
                 return TableById[id];
         }
@@ -48,7 +48,7 @@ namespace EvernestFront
         /// <returns></returns>
         internal static string NameOfId(Int64 id)
         {
-            Stream str = GetStream(id);
+            EventStream str = GetStream(id);
             return str.Name;
         }
 

@@ -196,7 +196,7 @@ namespace EvernestFront
             if (!UserTable.UserIdExists(userId))
                 return new CreateSource(new UserIdDoesNotExist(userId));
             if (!StreamTable.StreamIdExists(streamId))
-                return new CreateSource(new StreamIdDoesNotExist(streamId));
+                return new CreateSource(new EventStreamIdDoesNotExist(streamId));
             var user = UserTable.GetUser(userId);
             if (!user.CheckSourceNameIsFree(sourceName))
                 return new CreateSource(new SourceNameTaken(userId, sourceName));
@@ -222,7 +222,7 @@ namespace EvernestFront
             Source src = SourceTable.GetSource(sourceKey);
             if (!src.CheckCanRead())
                 return new PullRandom(new ReadAccessDenied(src));
-            return src.Stream.PullRandom();
+            return src.EventStream.PullRandom();
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace EvernestFront
             Source src = SourceTable.GetSource(sourceKey);
             if (!src.CheckCanRead())
                 return new Pull(new ReadAccessDenied(src));
-            return src.Stream.Pull(eventId);            //eventID validity is checked here
+            return src.EventStream.Pull(eventId);            //eventID validity is checked here
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace EvernestFront
             Source src = SourceTable.GetSource(sourceKey);
             if (!src.CheckCanRead())
                 return new PullRange(new ReadAccessDenied(src));
-            return src.Stream.PullRange(from, to);
+            return src.EventStream.PullRange(from, to);
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace EvernestFront
             Source src = SourceTable.GetSource(sourceKey);
             if (!src.CheckCanWrite())
                 return new Push(new WriteAccessDenied(src));
-            return src.Stream.Push(message);
+            return src.EventStream.Push(message);
         }
 
 
@@ -290,7 +290,7 @@ namespace EvernestFront
                 return new SetRights(new UserIdDoesNotExist(targetUserId));
             var targetUser = UserTable.GetUser(targetUserId);
             Source src = SourceTable.GetSource(sourceKey);
-            Stream strm = src.Stream;
+            EventStream strm = src.EventStream;
             if (!src.CheckCanAdmin())
                 return new SetRights(new AdminAccessDenied(src));
             if (!CheckRights.CheckRightsCanBeModified(targetUser, strm))
@@ -306,12 +306,12 @@ namespace EvernestFront
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        static public RelatedStreams RelatedStreams(Int64 userId)
+        static public RelatedEventStreams RelatedStreams(Int64 userId)
         {
             if (!UserTable.UserIdExists(userId))
-                return new RelatedStreams(new UserIdDoesNotExist(userId));
+                return new RelatedEventStreams(new UserIdDoesNotExist(userId));
             User user = UserTable.GetUser(userId);
-            return new RelatedStreams(user.RelatedStreams);
+            return new RelatedEventStreams(user.RelatedStreams);
 
             //TODO : exclure les streams avec droits égaux à NoRights ?
         }
@@ -327,7 +327,7 @@ namespace EvernestFront
             if (!UserTable.UserIdExists(userId))
                 return new RelatedUsers(new UserIdDoesNotExist(userId));
             if (!StreamTable.StreamIdExists(streamId))
-                return new RelatedUsers(new StreamIdDoesNotExist(streamId));
+                return new RelatedUsers(new EventStreamIdDoesNotExist(streamId));
             var user = UserTable.GetUser(userId);
             var stream = StreamTable.GetStream(streamId);
             if (!CheckRights.CheckCanAdmin(user, stream))

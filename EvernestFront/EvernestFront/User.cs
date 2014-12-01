@@ -24,13 +24,11 @@ namespace EvernestFront
         internal string Key { get { return UserContract.Key; } } //base64 encoded int
 
         public List<Source> Sources { get{throw new NotImplementedException("User.Sources");} }
+        // should return Sources, names, keys...?
 
         public List<KeyValuePair<long, AccessRights>> RelatedStreams
         {
-            get 
-            {
-                throw new NotImplementedException("User.RelatedStreams");
-            }
+            get { return UserContract.RelatedStreams.ToList(); }
         }
 
         internal List<UserRight> UserRights; //to be removed 
@@ -173,7 +171,7 @@ namespace EvernestFront
         public SetRights SetRights(Int64 streamId, Int64 targetUserId, AccessRights right)
         {
             if (!Projection.Projection.StreamIdExists(streamId))
-                return new SetRights(new StreamIdDoesNotExist(streamId));
+                return new SetRights(new EventStreamIdDoesNotExist(streamId));
             if (!CanAdmin(streamId))
                 return new SetRights(new AdminAccessDenied(streamId, Id));
             //reverse order? so a user who doesn't have the rights doesn't know whether the stream exists
@@ -199,18 +197,18 @@ namespace EvernestFront
         /// <returns></returns>
         public PullRandom PullRandom(Int64 streamId)
         {
-            Stream stream;
-            if (Projection.Projection.TryGetStream(streamId, out stream))
+            EventStream eventStream;
+            if (EventStream.TryGetStream(streamId, out eventStream))
             {
                 if (CanRead(streamId))
                 {
-                    return stream.PullRandom();
+                    return eventStream.PullRandom();
                 }
                 else
                     return new PullRandom(new ReadAccessDenied(streamId, Id));
             }
             else
-                return new PullRandom(new StreamIdDoesNotExist(streamId));
+                return new PullRandom(new EventStreamIdDoesNotExist(streamId));
 
         }
 
@@ -222,18 +220,18 @@ namespace EvernestFront
         /// <returns></returns>
         public Pull Pull(Int64 streamId, int eventId)
         {
-            Stream stream;
-            if (Projection.Projection.TryGetStream(streamId, out stream))
+            EventStream eventStream;
+            if (EventStream.TryGetStream(streamId, out eventStream))
             {
                 if (CanRead(streamId))
                 {
-                    return stream.Pull(eventId);
+                    return eventStream.Pull(eventId);
                 }
                 else
                     return new Pull(new ReadAccessDenied(streamId, Id));
             }
             else
-                return new Pull(new StreamIdDoesNotExist(streamId));
+                return new Pull(new EventStreamIdDoesNotExist(streamId));
         }
 
         /// <summary>
@@ -246,18 +244,18 @@ namespace EvernestFront
         /// <returns></returns>
         public PullRange PullRange(Int64 streamId, int from, int to)
         {
-            Stream stream;
-            if (Projection.Projection.TryGetStream(streamId, out stream))
+            EventStream eventStream;
+            if (EventStream.TryGetStream(streamId, out eventStream))
             {
                 if (CanRead(streamId))
                 {
-                    return stream.PullRange(from, to);
+                    return eventStream.PullRange(from, to);
                 }
                 else
                     return new PullRange(new ReadAccessDenied(streamId, Id));
             }
             else
-                return new PullRange(new StreamIdDoesNotExist(streamId));
+                return new PullRange(new EventStreamIdDoesNotExist(streamId));
         }
 
         /// <summary>
@@ -268,19 +266,19 @@ namespace EvernestFront
         /// <returns></returns>
         public Push Push(Int64 streamId, string message)
         {
-            Stream stream;
-            if (Projection.Projection.TryGetStream(streamId, out stream))
+            EventStream eventStream;
+            if (EventStream.TryGetStream(streamId, out eventStream))
             {
                 if (CanWrite(streamId))
                 {
-                    return stream.Push(message);
+                    return eventStream.Push(message);
                     //TODO: add writer id to event
                 }
                 else
                     return new Push(new WriteAccessDenied(streamId, Id));
             }
             else
-                return new Push(new StreamIdDoesNotExist(streamId));
+                return new Push(new EventStreamIdDoesNotExist(streamId));
         }
 
 

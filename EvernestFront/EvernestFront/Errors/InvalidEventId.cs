@@ -12,7 +12,7 @@ namespace EvernestFront.Errors
 
         public int EventId { get; private set; }
 
-        internal InvalidEventId(int evId, Stream strm)
+        internal InvalidEventId(int evId, EventStream strm)
         {
             StreamId = strm.Id;
             EventId = evId;

@@ -14,9 +14,9 @@ namespace EvernestFront.Projection
             return tbls.UserTable.TryGetValue(userId, out userContract);
         }
 
-        internal static bool TryGetStreamContract(Tables tbls, long streamId, out StreamContract streamContract)
+        internal static bool TryGetStreamContract(Tables tbls, long streamId, out EventStreamContract streamContract)
         {
-            return tbls.StreamTable.TryGetValue(streamId, out streamContract);
+            return tbls.EventStreamTable.TryGetValue(streamId, out streamContract);
         }
 
         internal static bool TryGetSourceContract(Tables tbls, string sourceKey, out SourceContract sourceContract)
@@ -31,7 +31,7 @@ namespace EvernestFront.Projection
 
         internal static bool TryGetStreamId(Tables tbls, string streamName, out long streamId)
         {
-            return tbls.StreamNameToId.TryGetValue(streamName, out streamId);
+            return tbls.EventStreamNameToId.TryGetValue(streamName, out streamId);
         }
     }
 }

@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Answers\DeleteSource.cs" />
+    <Compile Include="Answers\GetSource.cs" />
     <Compile Include="Answers\GetUser.cs" />
     <Compile Include="Answers\Pull.cs" />
     <Compile Include="Answers\PullRandom.cs" />

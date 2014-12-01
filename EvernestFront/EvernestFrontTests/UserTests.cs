@@ -263,5 +263,32 @@ namespace EvernestFrontTests
             Pull ans = user2.Pull(streamId, eventId);
             ProcessTests.ErrorAssert<ReadAccessDenied>(ans);
         }
+
+        [Test]
+        public void CreateSource_Success()
+        {
+            User user = GetUser_AssertSuccess(UserName);
+            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadWrite);
+            Assert.IsTrue(ans.Success);
+            String key = ans.Key;
+            Assert.IsNotNull(key);
+            CreateSource ans2 = user.CreateSource("source2", streamId, AccessRights.ReadWrite);
+            Assert.IsTrue(ans2.Success);
+            String key2 = ans2.Key;
+            Assert.IsNotNull(key2);
+            Assert.AreNotEqual(key, key2);
+        }
+
+        [Test]
+        public void CreateSource_SourceNameTaken()
+        {
+            User user = GetUser_AssertSuccess(UserName);
+            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadWrite);
+            CreateSource ans2 = user.CreateSource(SourceName, streamId, AccessRights.Admin);
+            ProcessTests.ErrorAssert<SourceNameTaken>(ans);
+        }
+
     }
 }

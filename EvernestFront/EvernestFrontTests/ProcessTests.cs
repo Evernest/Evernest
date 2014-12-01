@@ -20,10 +20,7 @@ namespace EvernestFrontTests
         private const string Message = "message";
         private const string SourceName = "sourceName";
 
-        
 
-
-       
 
         internal static void ErrorAssert<TError>(Answer ans)
         {
@@ -39,35 +36,6 @@ namespace EvernestFrontTests
         {
             UserTable.Clear();
             StreamTable.Clear();
-        }
-
-
-        
-
-        [Test]
-        public void CreateSource_Success()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
-            CreateSource ans = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadWrite);
-            Assert.IsTrue(ans.Success);
-            String key = ans.Key;
-            Assert.IsNotNull(key);
-            CreateSource ans2=Process.CreateSource(userId, streamId, "source2", AccessRights.ReadWrite);
-            Assert.IsTrue(ans2.Success);
-            String key2 = ans2.Key;
-            Assert.IsNotNull(key2);
-            Assert.AreNotEqual(key, key2);
-        }
-
-        [Test]
-        public void CreateSource_SourceNameTaken()
-        {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
-            Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadWrite);
-            CreateSource ans = Process.CreateSource(userId, streamId, SourceName, AccessRights.Admin);
-            ErrorAssert<SourceNameTaken>(ans);
         }
 
 

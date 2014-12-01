@@ -17,10 +17,12 @@ namespace EvernestBack
     {
         private WriteLocker writeLock;
         private UInt64 currentId;
+        private CloudBlockBlob blob;
 
-        public EventStream( CloudBlockBlob blob, int BlobSize)
+        public EventStream(CloudBlockBlob blob)
         {
-            writeLock = new WriteLocker(blob, BlobSize);
+            this.blob = blob;
+            writeLock = new WriteLocker(blob.OpenWrite());
             currentId = 0;
         }
 
@@ -36,7 +38,7 @@ namespace EvernestBack
         // Pull : Use the ID got when pushing to get back the original string
         public void Pull(UInt64 id, Action<IAgent> Callback)
         {
-            Agent r = new Reader(null, id, Callback);
+            Agent r = new Reader(null, id, blob.OpenRead(), Callback);
         }
 
         public void StreamDeliver(Agent agent)

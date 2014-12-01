@@ -64,7 +64,9 @@ namespace EvernestBack
             EventStream stream;
             if( !openedStreams.TryGetValue(streamStrId, out stream) )
             {
-                stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId), BlobSize);
+                CloudBlockBlob blob = streamContainer.GetBlockBlobReference(streamStrId);
+                blob.StreamWriteSizeInBytes = BlobSize; // Defined in app.config
+                stream = new EventStream(blob);
                 openedStreams.Add(streamStrId, stream);
             }
             return stream;

@@ -15,14 +15,11 @@ namespace EvernestBack
 	{
 
 		private BlockingCollection<Producer> waitingProducers = new BlockingCollection<Producer>();
-        private CloudBlockBlob blob;
         private CloudBlobStream outputStream;
 
-        public WriteLocker(CloudBlockBlob blob, int BlobSize)
+        public WriteLocker(CloudBlobStream writeStream)
         {
-            this.blob = blob;
-            blob.StreamWriteSizeInBytes = BlobSize; // Defined in app.config
-            outputStream = blob.OpenWrite();
+            outputStream = writeStream;
         }
 
         public void Store()

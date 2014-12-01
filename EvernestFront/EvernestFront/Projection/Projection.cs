@@ -13,20 +13,7 @@ namespace EvernestFront.Projection
             _tables = new Tables();
         }
 
-        static internal bool TryGetUser(long userId, out User user)
-        {
-            UserContract userContract;
-            if (TryGetUserContract(userId, out userContract))
-            {
-                user = new User(userId, userContract);
-                return true;
-            }
-            else
-            {
-                user = null;
-                return false;
-            }
-        }
+        
 
         static internal bool TryGetStream(long streamId, out Stream stream)
         {
@@ -51,6 +38,11 @@ namespace EvernestFront.Projection
         static internal bool TryGetStreamContract(long streamId, out StreamContract streamContract)
         {
             return ReadTables.TryGetStreamContract(_tables, streamId, out streamContract);
+        }
+
+        static internal bool TryGetSourceContract(string sourceKey, out SourceContract sourceContract)
+        {
+            return ReadTables.TryGetSourceContract(_tables, sourceKey, out sourceContract);
         }
 
         static internal bool TryGetUserId(string userName, out long userId)

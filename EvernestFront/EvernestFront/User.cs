@@ -36,28 +36,30 @@ namespace EvernestFront
         internal List<UserRight> UserRights; //to be removed 
 
 
-        private UserContract _userContract;
-        private UserContract UserContract
-        {
-            get
-            {
-                if (_userContract == null)
-                    UpdateUserContract();
-                if (_userContract == null)
-                    throw new Exception("User.UserContract");
-                    //should wait?
-                return _userContract;
-            }
-        }
+        //private UserContract _userContract;
+        //private UserContract UserContract
+        //{
+        //    get
+        //    {
+        //        if (_userContract == null)
+        //            UpdateUserContract();
+        //        if (_userContract == null)
+        //            throw new Exception("User.UserContract");
+        //            //should wait?
+        //        return _userContract;
+        //    }
+        //}
+        
 
-        internal void UpdateUserContract()
-        {
-            UserContract uc;
-            if (Projection.Projection.TryGetUserContract(Id, out uc))
-                _userContract = uc;
-            //else?
-        }
+        //internal void UpdateUserContract()
+        //{
+        //    UserContract uc;
+        //    if (Projection.Projection.TryGetUserContract(Id, out uc))
+        //        _userContract = uc;
+        //    //else?
+        //}
 
+        private UserContract UserContract { get; set; }
 
 
 
@@ -70,18 +72,31 @@ namespace EvernestFront
 
 
 
-        internal User(long userId, UserContract userContract)
+        private User(long userId, UserContract userContract)
         {
             Id = userId;
-            _userContract = userContract;
+            UserContract = userContract;
         }
-
-
-        static public GetUser GetUser(long userId)
+        static private bool TryGetUser(long userId, out User user)
         {
             UserContract userContract;
             if (Projection.Projection.TryGetUserContract(userId, out userContract))
-                return new GetUser(new User(userId, userContract));
+            {
+                user = new User(userId, userContract);
+                return true;
+            }
+            else
+            {
+                user = null;
+                return false;
+            }
+        }
+
+        static public GetUser GetUser(long userId)
+        {
+            User user;
+            if (TryGetUser(userId, out user))
+                return new GetUser(user);
             else
                 return new GetUser(new UserIdDoesNotExist(userId));
         }
@@ -93,7 +108,7 @@ namespace EvernestFront
             if (Projection.Projection.TryGetUserId(userName, out userId))
             {
                 User user;
-                if (Projection.Projection.TryGetUser(userId, out user))
+                if (TryGetUser(userId, out user))
                 {
                     if (user.Identify(password))
                         return new IdentifyUser(userId);
@@ -164,7 +179,7 @@ namespace EvernestFront
             //reverse order? so a user who doesn't have the rights doesn't know whether the stream exists
 
             User targetUser;
-            if (!Projection.Projection.TryGetUser(targetUserId, out targetUser))
+            if (TryGetUser(targetUserId, out targetUser))
                 return new SetRights(new UserIdDoesNotExist(targetUserId));
             if (!targetUser.IsNotAdmin(streamId))
                 return new SetRights(new CannotDestituteAdmin(streamId, targetUserId));
@@ -276,9 +291,14 @@ namespace EvernestFront
         public Answers.DeleteSource DeleteSource(string sourceName)
         { throw new NotImplementedException(); }
 
+        /// <summary>
+        /// Returns the right of the user about the stream. 
+        /// If the stream id does not exist, NoRights is returned : the user cannot use this to determine whether a stream he has no right about exists. 
+        /// </summary>
+        /// <param name="streamId"></param>
+        /// <returns></returns>
         private AccessRights GetRight(long streamId)
         {
-            UpdateUserContract();
             AccessRights right;
             if (UserContract.RelatedStreams.TryGetValue(streamId, out right))
                 return right;

@@ -1,4 +1,6 @@
-﻿using EvernestFront.Errors;
+﻿using EvernestFront.Answers;
+using EvernestFront.Contract;
+using EvernestFront.Errors;
 using System;
 
 namespace EvernestFront
@@ -8,16 +10,16 @@ namespace EvernestFront
         
         public string Name { get; private set; }
         
-        public long UserId { get { return User.Id; } }
+        public long UserId { get { return SourceContract.UserId; } }
 
-        public long StreamId { get { return Stream.Id; } }
+        public long StreamId { get { return SourceContract.StreamId; } }
 
         //base64 encoded int
         public string Key { get; private set; }
 
-        public AccessRights Right { get; private set; }
+        public AccessRights Right { get { return SourceContract.Right; } }
 
-
+        private SourceContract SourceContract { get; set; }
 
 
 
@@ -37,18 +39,43 @@ namespace EvernestFront
 
         internal Source(User usr, Stream strm, string name, AccessRights right)
         {
-            Id = NextId();
-            User = usr;
-            Stream = strm;
-            Name = name;
-            Right = right;
-            Key = Keys.NewKey();
+            //Id = NextId();
+            //User = usr;
+            //Stream = strm;
+            //Name = name;
+            //Right = right;
+            //Key = Keys.NewKey();
         }
 
+        private Source(string sourceKey, SourceContract sourceContract)
+        {
+            Key = sourceKey;
+            SourceContract = sourceContract;
+        }
 
+        private static bool TryGetSource(string sourceKey, out Source source)
+        {
+            SourceContract sourceContract;
+            if (Projection.Projection.TryGetSourceContract(sourceKey, out sourceContract))
+            {
+                source = new Source(sourceKey, sourceContract);
+                return true;
+            }
+            else
+            {
+                source = null;
+                return false;
+            }
+        }
 
         static public Answers.GetSource GetSource(string sourceKey)
-        { throw new NotImplementedException(); }
+        {
+            Source source;
+            if (TryGetSource(sourceKey, out source))
+                return new GetSource(source);
+            else
+                return new GetSource(new SourceKeyDoesNotExist(sourceKey));
+        }
 
 
         public Answers.Push Push(string message)

@@ -34,9 +34,19 @@ namespace EvernestFront.Projection
 
         internal static Tables AddSource(Tables tbls, string key, SourceContract sourceContract)
         {
-            var srcTbl = tbls.SourceTable.SetItem(key, sourceContract);
-            //TODO: add to OwnedSources of user
-            return new Tables(tbls.UserTable, tbls.StreamTable, srcTbl, tbls.UserNameToId, tbls.StreamNameToId);
+            
+            UserContract usrc;
+            if (tbls.UserTable.TryGetValue(sourceContract.UserId, out usrc))
+            {
+                usrc = MakeUserContract.AddSource(usrc, sourceContract.Name, key);
+                var usrTbl = tbls.UserTable.SetItem(sourceContract.UserId, usrc);
+                var srcTbl = tbls.SourceTable.SetItem(key, sourceContract);
+                return new Tables(usrTbl, tbls.StreamTable, srcTbl, tbls.UserNameToId, tbls.StreamNameToId);
+            }
+            else
+                throw new Exception();
+            // exception because this should not happen : existence of userId should have been already tested
+            // TODO: document this
         }
 
         internal static Tables SetRight(Tables tbls, long userId, long streamId, AccessRights right)

@@ -10,7 +10,7 @@ using EvernestFront.Errors;
 namespace EvernestFrontTests
 {   
     [TestFixture]
-    class StreamTests
+    class EventStreamTests
     {
         private const string UserName = "userName";
         private const string StreamName = "streamName";
@@ -19,7 +19,7 @@ namespace EvernestFrontTests
         private const string SourceName = "sourceName";
 
 
-        internal static long GetStreamId_AssertSuccess(long userId, string streamName)
+        internal static long CreateStream_GetId_AssertSuccess(long userId, string streamName)
         {
             CreateEventStream ans = EventStream.CreateStream(userId, streamName);
             Assert.IsTrue(ans.Success);
@@ -37,8 +37,8 @@ namespace EvernestFrontTests
         [Test]
         public void CreateStream_Success()
         {
-            long userId = UserTests.GetUserId_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(userId, StreamName);
+            long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
         }
 
         [Test]
@@ -46,18 +46,18 @@ namespace EvernestFrontTests
         {
             const long bogusUserId = 42; //does not exist in UserTable
             CreateEventStream ans = EventStream.CreateStream(bogusUserId, StreamName);
-            ProcessTests.ErrorAssert<UserIdDoesNotExist>(ans);
+            AssertAuxiliaries.ErrorAssert<UserIdDoesNotExist>(ans);
         }
 
         [Test]
         public void CreateStream_StreamNameTaken()
         {
-            long user = UserTests.GetUserId_AssertSuccess(UserName);
-            long user2 = UserTests.GetUserId_AssertSuccess(UserName2);
+            long user = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            long user2 = UserTests.AddUser_GetId_AssertSuccess(UserName2);
 
-            long streamId = StreamTests.GetStreamId_AssertSuccess(user, StreamName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(user, StreamName);
             CreateEventStream ans = EventStream.CreateStream(user2, StreamName);
-            ProcessTests.ErrorAssert<EventStreamNameTaken>(ans);
+            AssertAuxiliaries.ErrorAssert<EventStreamNameTaken>(ans);
         }
 
 

@@ -21,7 +21,7 @@ namespace EvernestFrontTests
         private const string Message = "message";
         private const string SourceName = "sourceName";
 
-        internal static long GetUserId_AssertSuccess(string userName)
+        internal static long AddUser_GetId_AssertSuccess(string userName)
         {
             AddUser ans = User.AddUser(userName);
             Assert.IsTrue(ans.Success);
@@ -29,9 +29,8 @@ namespace EvernestFrontTests
             return ans.UserId;
         }
 
-        internal static User GetUser_AssertSuccess(string userName)
+        internal static User GetUser_AssertSuccess(long userId)
         {
-            long userId = GetUserId_AssertSuccess(userName);
             var ans = User.GetUser(userId);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
@@ -39,15 +38,18 @@ namespace EvernestFrontTests
             return ans.User;
         }
 
-        internal static void SetRights_AssertSuccess(User user, long streamId, long targetUser, AccessRights rights)
+
+        internal static void SetRights_AssertSuccess(long userId, long streamId, long targetUserId, AccessRights rights)
         {
-            SetRights ans = user.SetRights(streamId, targetUser, rights);
+            var user = GetUser_AssertSuccess(userId);
+            SetRights ans = user.SetRights(streamId, targetUserId, rights);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
         }
 
-        int GetEventId_AssertSuccess(User user, long streamId, String message)
+        int GetEventId_AssertSuccess(long userId, long streamId, String message)
         {
+            var user = GetUser_AssertSuccess(userId);
             Push ans = user.Push(streamId, message);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
@@ -63,16 +65,16 @@ namespace EvernestFrontTests
         [Test]
         public void AddUser_Success()
         {
-            long userId = GetUserId_AssertSuccess(UserName);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
         }
 
        
         [Test]
         public void AddUser_UserNameTaken()
         {
-            long userId = GetUserId_AssertSuccess(UserName);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
             AddUser ans = User.AddUser(UserName);
-            ProcessTests.ErrorAssert<UserNameTaken>(ans);
+            AssertAuxiliaries.ErrorAssert<UserNameTaken>(ans);
         }
 
         [Test]
@@ -96,7 +98,7 @@ namespace EvernestFrontTests
         [Test]
         public void GetUser_Success()
         {
-            long userId = GetUserId_AssertSuccess(UserName);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
             var ans = User.GetUser(userId);
             Assert.IsTrue(ans.Success);
             Assert.IsNotNull(ans.User);
@@ -107,7 +109,7 @@ namespace EvernestFrontTests
         public void GetUser_IdDoesNotExist()
         {
             var ans = User.GetUser(42);
-            ProcessTests.ErrorAssert<UserIdDoesNotExist>(ans);
+            AssertAuxiliaries.ErrorAssert<UserIdDoesNotExist>(ans);
         }
 
         [Test]
@@ -116,15 +118,16 @@ namespace EvernestFrontTests
             AddUser addUser = User.AddUser(UserName);
             Assert.IsTrue(addUser.Success);
             IdentifyUser ans = User.IdentifyUser(UserName, "BadPassword");
-            ProcessTests.ErrorAssert<WrongPassword>(ans);
+            AssertAuxiliaries.ErrorAssert<WrongPassword>(ans);
         }
 
 
         [Test]
         public void SetPassword_Success()
         {
-            User user = GetUser_AssertSuccess(UserName);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
             const string newPassword = "NewPassword";
+            User user = GetUser_AssertSuccess(userId);
             SetPassword setPassword = user.SetPassword(newPassword);
             Assert.IsTrue(setPassword.Success);
             IdentifyUser ans = User.IdentifyUser(UserName, newPassword);
@@ -134,10 +137,11 @@ namespace EvernestFrontTests
         [Test]
         public void SetPassword_InvalidString()
         {
-            User user = GetUser_AssertSuccess(UserName);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
             const string badString = "£££££"; //non ASCII
+            User user = GetUser_AssertSuccess(userId);
             SetPassword setPassword = user.SetPassword(badString);
-            ProcessTests.ErrorAssert<InvalidString>(setPassword);
+            AssertAuxiliaries.ErrorAssert<InvalidString>(setPassword);
         }
 
        
@@ -145,47 +149,49 @@ namespace EvernestFrontTests
         [Test]
         public void SetRights_Success()
         {
-            User creator = GetUser_AssertSuccess("creator");
-            User reader = GetUser_AssertSuccess("reader");
-            User admin = GetUser_AssertSuccess("admin");
+            long creatorId = AddUser_GetId_AssertSuccess("creator");
+            long readerId = AddUser_GetId_AssertSuccess("reader");
+            long adminId = AddUser_GetId_AssertSuccess("admin");
 
-            long streamId = StreamTests.GetStreamId_AssertSuccess(creator.Id, StreamName);
-            SetRights_AssertSuccess(creator, streamId, admin.Id, AccessRights.Admin);
-            SetRights_AssertSuccess(admin, streamId, reader.Id, AccessRights.ReadOnly);
-            SetRights_AssertSuccess(creator, streamId, reader.Id, AccessRights.ReadWrite);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(creatorId, StreamName);
+            SetRights_AssertSuccess(creatorId, streamId, adminId, AccessRights.Admin);
+            SetRights_AssertSuccess(adminId, streamId, readerId, AccessRights.ReadOnly);
+            SetRights_AssertSuccess(creatorId, streamId, readerId, AccessRights.ReadWrite);
         }
 
         [Test]
         public void SetRights_AdminAccessDenied()
         {
-            User creator = GetUser_AssertSuccess("creator");
-            User reader = GetUser_AssertSuccess("reader");
-            long streamId = StreamTests.GetStreamId_AssertSuccess(creator.Id, StreamName);
-            SetRights_AssertSuccess(creator, streamId, reader.Id, AccessRights.ReadOnly);
+            long creatorId = AddUser_GetId_AssertSuccess("creator");
+            long readerId = AddUser_GetId_AssertSuccess("reader");
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(creatorId, StreamName);
+            SetRights_AssertSuccess(creatorId, streamId, readerId, AccessRights.ReadOnly);
 
-            SetRights ans = reader.SetRights(streamId, reader.Id, AccessRights.ReadWrite);
-            ProcessTests.ErrorAssert<AdminAccessDenied>(ans);
+            User reader = GetUser_AssertSuccess(readerId);
+            SetRights ans = reader.SetRights(streamId, readerId, AccessRights.ReadWrite);
+            AssertAuxiliaries.ErrorAssert<AdminAccessDenied>(ans);
         }
 
         [Test]
         public void SetRights_CannotDestituteAdmin()
         {
-            User creator = GetUser_AssertSuccess("creator");
-            User evilAdmin = GetUser_AssertSuccess("evilAdmin");
-            long streamId = StreamTests.GetStreamId_AssertSuccess(creator.Id, StreamName);
-            SetRights_AssertSuccess(creator, streamId, evilAdmin.Id, AccessRights.Admin);
+            long creatorId = AddUser_GetId_AssertSuccess("creator");
+            long evilAdminId = AddUser_GetId_AssertSuccess("evilAdmin");
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(creatorId, StreamName);
+            SetRights_AssertSuccess(creatorId, streamId, evilAdminId, AccessRights.Admin);
 
-            SetRights ans = evilAdmin.SetRights(streamId, creator.Id, AccessRights.NoRights);
-            ProcessTests.ErrorAssert<CannotDestituteAdmin>(ans);
+            User evilAdmin = GetUser_AssertSuccess(evilAdminId);
+            SetRights ans = evilAdmin.SetRights(streamId, creatorId, AccessRights.NoRights);
+            AssertAuxiliaries.ErrorAssert<CannotDestituteAdmin>(ans);
         }
 
         [Test]
         public void Push_Success()
         {
-            User user = GetUser_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
-            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
-            int eventId2 = GetEventId_AssertSuccess(user, streamId, Message);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            int eventId2 = GetEventId_AssertSuccess(userId, streamId, Message);
             Assert.AreEqual(eventId, 0);
             Assert.AreEqual(eventId2, 1);
 
@@ -194,29 +200,32 @@ namespace EvernestFrontTests
         [Test]
         public void Push_WriteAccessDenied()
         {
-            User user = GetUser_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
 
-            User user2 = GetUser_AssertSuccess(UserName2);
+            long user2Id = AddUser_GetId_AssertSuccess(UserName2);
+            User user2 = GetUser_AssertSuccess(user2Id);
             Push ans = user2.Push(streamId, Message);
-            ProcessTests.ErrorAssert<WriteAccessDenied>(ans);
+            AssertAuxiliaries.ErrorAssert<WriteAccessDenied>(ans);
         }
 
         [Test]
         public void Push_StreamIdDoesNotExist()
         {
-            User user = GetUser_AssertSuccess(UserName);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
             const long streamId = 42; //does not exist in StreamTable
+            User user = GetUser_AssertSuccess(userId);
             Push ans = user.Push(streamId, Message);
-            ProcessTests.ErrorAssert<EventStreamIdDoesNotExist>(ans);
+            AssertAuxiliaries.ErrorAssert<EventStreamIdDoesNotExist>(ans);
         }
 
         [Test]
         public void PullRandom_Success()
         {
-            User user = GetUser_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
-            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            User user = GetUser_AssertSuccess(userId);
             PullRandom ans = user.PullRandom(streamId);
             Assert.IsTrue(ans.Success);
             Event pulledRandom = ans.EventPulled;
@@ -228,9 +237,10 @@ namespace EvernestFrontTests
         [Test]
         public void Pull_Success()
         {
-            User user = GetUser_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
-            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            User user = GetUser_AssertSuccess(userId);
             Pull ans = user.Pull(streamId, eventId);
             Assert.IsTrue(ans.Success);
             Event pulledById = ans.EventPulled;
@@ -241,10 +251,11 @@ namespace EvernestFrontTests
         [Test]
         public void PullRange_Success()
         {
-            User user = GetUser_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
-            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
-            int eventId2 = GetEventId_AssertSuccess(user, streamId, Message);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            int eventId2 = GetEventId_AssertSuccess(userId, streamId, Message);
+            User user = GetUser_AssertSuccess(userId);
             PullRange ans = user.PullRange(streamId, eventId, eventId2);
             Assert.IsTrue(ans.Success);
             var pulled = ans.Events;
@@ -254,21 +265,23 @@ namespace EvernestFrontTests
         [Test]
         public void Pull_ReadAccessDenied()
         {
-            User user = GetUser_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
-            int eventId = GetEventId_AssertSuccess(user, streamId, Message);
-            User user2 = GetUser_AssertSuccess(UserName2);
-            SetRights_AssertSuccess(user, streamId, user2.Id, AccessRights.WriteOnly);
-           
+            long userId = AddUser_GetId_AssertSuccess(UserName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
+            int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
+            long user2Id = AddUser_GetId_AssertSuccess(UserName2);
+            SetRights_AssertSuccess(userId, streamId, user2Id, AccessRights.WriteOnly);
+
+            User user2 = GetUser_AssertSuccess(user2Id);
             Pull ans = user2.Pull(streamId, eventId);
-            ProcessTests.ErrorAssert<ReadAccessDenied>(ans);
+            AssertAuxiliaries.ErrorAssert<ReadAccessDenied>(ans);
         }
 
         [Test]
         public void CreateSource_Success()
         {
-            User user = GetUser_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
+            User user = GetUser_AssertSuccess(userId);
             CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadWrite);
             Assert.IsTrue(ans.Success);
             String key = ans.Key;
@@ -283,11 +296,13 @@ namespace EvernestFrontTests
         [Test]
         public void CreateSource_SourceNameTaken()
         {
-            User user = GetUser_AssertSuccess(UserName);
-            long streamId = StreamTests.GetStreamId_AssertSuccess(user.Id, StreamName);
+            long userId = AddUser_GetId_AssertSuccess(UserName);
+            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
+            User user = GetUser_AssertSuccess(userId);
             CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadWrite);
+            user = GetUser_AssertSuccess(userId);
             CreateSource ans2 = user.CreateSource(SourceName, streamId, AccessRights.Admin);
-            ProcessTests.ErrorAssert<SourceNameTaken>(ans);
+            AssertAuxiliaries.ErrorAssert<SourceNameTaken>(ans);
         }
 
     }

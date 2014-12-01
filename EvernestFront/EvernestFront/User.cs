@@ -152,7 +152,7 @@ namespace EvernestFront
             //reverse order? so a user who doesn't have the rights doesn't know whether the stream exists
 
             User targetUser;
-            if (TryGetUser(targetUserId, out targetUser))
+            if (!TryGetUser(targetUserId, out targetUser))
                 return new SetRights(new UserIdDoesNotExist(targetUserId));
             if (!targetUser.IsNotAdmin(streamId))
                 return new SetRights(new CannotDestituteAdmin(streamId, targetUserId));
@@ -260,6 +260,7 @@ namespace EvernestFront
 
         public Answers.CreateSource CreateSource(string sourceName, long streamId, AccessRights rights)
             { throw new NotImplementedException(); }
+        //check existence of streamId ?
 
         public Answers.DeleteSource DeleteSource(string sourceName)
         { throw new NotImplementedException(); }

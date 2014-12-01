@@ -95,6 +95,8 @@ namespace EvernestFront.Projection
                 HandleUserAdded(dm as UserAdded);
             else if (dm is StreamCreated)
                 HandleStreamCreated(dm as StreamCreated);
+            else if (dm is SourceCreated)
+                HandleSourceCreated(dm as SourceCreated);
             else if (dm is UserRightSet)
                 HandleRightSet(dm as UserRightSet);
             else if (dm is PasswordSet)
@@ -111,6 +113,11 @@ namespace EvernestFront.Projection
             var tbls = MakeTables.AddStreamContract(_tables, sc.StreamId, sc.StreamContract);
             _tables = MakeTables.SetRight(tbls, sc.CreatorId, sc.StreamId, AccessRights.Admin); 
             //TODO: use a constant for AccessRights.Admin
+        }
+
+        static void HandleSourceCreated(SourceCreated sc)
+        {
+            _tables = MakeTables.AddSource(_tables, sc.Key, sc.SourceContract);
         }
 
         static void HandleRightSet(UserRightSet rs)

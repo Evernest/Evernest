@@ -22,10 +22,10 @@ namespace EvernestFront.Contract
         [DataMember]
         internal ImmutableDictionary<long, AccessRights> RelatedStreams { get; set; }
         [DataMember]
-        internal ImmutableDictionary<long, long> OwnedSources { get; set; }
+        internal ImmutableDictionary<string, string> OwnedSources { get; set; } //name->key
 
         internal UserContract(string name, string sph, byte[] ps, string key, ImmutableDictionary<long, AccessRights> strms,
-            ImmutableDictionary<long, long> srcs)
+            ImmutableDictionary<string, string> srcs)
         {
             UserName = name;
             SaltedPasswordHash = sph;

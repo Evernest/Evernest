@@ -58,8 +58,10 @@
     <Compile Include="CheckRights.cs" />
     <Compile Include="Contract\Diff\IDiff.cs" />
     <Compile Include="Contract\Diff\PasswordSet.cs" />
+    <Compile Include="Contract\Diff\SourceCreated.cs" />
     <Compile Include="Contract\Diff\UserRightSet.cs" />
     <Compile Include="Contract\Diff\StreamCreated.cs" />
+    <Compile Include="Contract\SourceContract.cs" />
     <Compile Include="Contract\StreamContract.cs" />
     <Compile Include="Contract\Diff\UserAdded.cs" />
     <Compile Include="Contract\UserContract.cs" />

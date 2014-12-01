@@ -270,6 +270,12 @@ namespace EvernestFront
 
 
 
+        public Answers.CreateSource CreateSource(string sourceName, long streamId, AccessRights rights)
+            { throw new NotImplementedException(); }
+
+        public Answers.DeleteSource DeleteSource(string sourceName)
+        { throw new NotImplementedException(); }
+
         private AccessRights GetRight(long streamId)
         {
             UpdateUserContract();

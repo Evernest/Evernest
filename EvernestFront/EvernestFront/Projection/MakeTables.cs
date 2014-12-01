@@ -32,6 +32,13 @@ namespace EvernestFront.Projection
             return new Tables(tbls.UserTable, strmTbl, tbls.SourceTable, tbls.UserNameToId, strmNtI);
         }
 
+        internal static Tables AddSource(Tables tbls, string key, SourceContract sourceContract)
+        {
+            var srcTbl = tbls.SourceTable.SetItem(key, sourceContract);
+            //TODO: add to OwnedSources of user
+            return new Tables(tbls.UserTable, tbls.StreamTable, srcTbl, tbls.UserNameToId, tbls.StreamNameToId);
+        }
+
         internal static Tables SetRight(Tables tbls, long userId, long streamId, AccessRights right)
         {
             UserContract userContract;

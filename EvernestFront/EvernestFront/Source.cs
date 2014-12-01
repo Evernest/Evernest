@@ -5,22 +5,31 @@ namespace EvernestFront
 {
     public class Source
     {
-        public Int64 Id { get; private set; }
+        
+        public string Name { get; private set; }
+        
+        public long UserId { get { return User.Id; } }
 
-        public Int64 UserId { get { return User.Id; } }
+        public long StreamId { get { return Stream.Id; } }
 
-        public Int64 StreamId { get { return Stream.Id; } }
+        //base64 encoded int
+        public string Key { get; private set; }
 
-        public String Name { get; private set; }
+        public AccessRights Right { get; private set; }
+
+
+
+
+
+        internal Int64 Id { get; private set; }
 
         internal User User { get; private set; }
 
         internal Stream Stream { get; private set; }
 
-        internal AccessRights Right { get; private set; }
+        
 
-        //base64 encoded int
-        public string Key { get; private set; }
+        
 
         // provisoire
         private static Int64 _next = 0;
@@ -38,6 +47,27 @@ namespace EvernestFront
 
 
 
+        static public Answers.GetSource GetSource(string sourceKey)
+        { throw new NotImplementedException(); }
+
+
+        public Answers.Push Push(string message)
+            { throw new NotImplementedException(); }
+
+        public Answers.PullRandom PullRandom()
+            { throw new NotImplementedException(); }
+
+        public Answers.Pull Pull(int eventId)
+            { throw new NotImplementedException(); }
+
+        public Answers.PullRange PullRange(int eventIdFrom, int eventIdTo)
+            { throw new NotImplementedException(); }
+
+        public Answers.SetRights SetRights(long targetUserId, AccessRights rights)
+            { throw new NotImplementedException(); }
+
+        public Answers.DeleteSource Delete()
+        { throw new NotImplementedException(); }
 
 
         internal bool CheckCanRead()

@@ -20,8 +20,22 @@ namespace EvernestFront.Projection
                 ps,
                 key,
                 ImmutableDictionary<long, AccessRights>.Empty,
-                ImmutableDictionary<long, long>.Empty
+                ImmutableDictionary<string, string>.Empty
             );
+        }
+
+        internal static UserContract AddSource(UserContract usrc, string sourceName, string sourceKey)
+        {
+            var srcs = usrc.OwnedSources.SetItem(sourceName, sourceKey);
+            return new UserContract(usrc.UserName, usrc.SaltedPasswordHash,
+                usrc.PasswordSalt, usrc.Key, usrc.RelatedStreams, srcs);
+        }
+
+        internal static UserContract DeleteSource(UserContract usrc, string sourceName)
+        {
+            var srcs = usrc.OwnedSources.Remove(sourceName);
+            return new UserContract(usrc.UserName, usrc.SaltedPasswordHash,
+                usrc.PasswordSalt, usrc.Key, usrc.RelatedStreams, srcs);
         }
 
         internal static UserContract SetRight(UserContract usrc, long streamId, AccessRights right)

@@ -12,7 +12,7 @@ namespace EvernestFront.Contract
         [DataMember]
         internal ImmutableDictionary<long, StreamContract> StreamTable;
         [DataMember]
-        internal ImmutableDictionary<string, int> SourceTable; //int should be Contract.Source when it is implemented
+        internal ImmutableDictionary<string, SourceContract> SourceTable;
 
         [DataMember]
         internal ImmutableDictionary<string, long> UserNameToId;
@@ -25,13 +25,13 @@ namespace EvernestFront.Contract
         {
             UserTable = ImmutableDictionary<long, UserContract>.Empty;
             StreamTable = ImmutableDictionary<long, StreamContract>.Empty;
-            SourceTable = ImmutableDictionary<string, int>.Empty;
+            SourceTable = ImmutableDictionary<string, SourceContract>.Empty;
             UserNameToId = ImmutableDictionary<string, long>.Empty;
             StreamNameToId = ImmutableDictionary<string, long>.Empty;
         }
 
         internal Tables(ImmutableDictionary<long, UserContract> usrTbl, ImmutableDictionary<long, StreamContract> strmTbl,
-            ImmutableDictionary<string, int> srcTbl, ImmutableDictionary<string, long> usrNtI,
+            ImmutableDictionary<string, SourceContract> srcTbl, ImmutableDictionary<string, long> usrNtI,
             ImmutableDictionary<string, long> strmNtI)
         {
             UserTable = usrTbl;

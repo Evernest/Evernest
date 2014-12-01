@@ -26,6 +26,11 @@ namespace EvernestAPI.Models
             {
                 body = null;
             }
+            //catch (Newtonsoft.Json.JsonSerializationException)
+            //{
+            //    // TODO : fail with error code
+            //    throw Exception;
+            //}
 
             // Copy the keys from the URL to the answer
             for (int i = 0; i < nvc.Count; i ++ )
@@ -34,17 +39,21 @@ namespace EvernestAPI.Models
             }
 
             // Copy the body to the answer
-            foreach (DictionaryEntry de in body)
+            try
             {
-                try
+                foreach (DictionaryEntry de in body)
                 {
-                    json.Add(de.Key, de.Value);
-                }
-                catch (ArgumentException)
-                {
-                    json[de.Key] = de.Value;
+                    try
+                    {
+                        json.Add(de.Key, de.Value);
+                    }
+                    catch (ArgumentException)
+                    {
+                        json[de.Key] = de.Value;
+                    }
                 }
             }
+            catch (NullReferenceException) { }
             return json;    
         }
     }

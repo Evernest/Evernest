@@ -120,6 +120,7 @@ namespace EvernestWeb.Controllers
         public ActionResult Register(RegisterModel model)
         {
             if (ModelState.IsValid)
+                /*
             {
                 // Tentative d'inscription de l'utilisateur
                 try
@@ -131,6 +132,15 @@ namespace EvernestWeb.Controllers
                 catch (MembershipCreateUserException e)
                 {
                     ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
+                }
+            }
+            */
+            {
+                EvernestFront.Answers.AddUser u = EvernestFront.Process.AddUser(model.UserName, model.Password);
+                if (u.Success)
+                {
+                    FormsAuthentication.SetAuthCookie(model.UserName, true);
+                    return RedirectToAction("Index", "Home");
                 }
             }
 

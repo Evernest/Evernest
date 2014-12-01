@@ -18,10 +18,10 @@ namespace EvernestBack
         private CloudBlockBlob blob;
         private CloudBlobStream outputStream;
 
-        public WriteLocker(CloudBlockBlob blob)
+        public WriteLocker(CloudBlockBlob blob, int BlobSize)
         {
             this.blob = blob;
-            blob.StreamWriteSizeInBytes = 65536; //64KiB for now, totally arbitrary
+            blob.StreamWriteSizeInBytes = BlobSize; // Defined in app.config
             outputStream = blob.OpenWrite();
         }
 

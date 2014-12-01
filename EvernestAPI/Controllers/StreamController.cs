@@ -151,7 +151,7 @@ namespace EvernestAPI.Controllers
             var httpContent = Request.Content;
             var asyncContent = httpContent.ReadAsStringAsync().Result;
 
-            Hashtable json = Tools.parseBody(Request);
+            Hashtable body = Tools.parseRequest(Request);
 
             var ans = new Hashtable();
             
@@ -161,7 +161,7 @@ namespace EvernestAPI.Controllers
             debug["Method"] = "Push";
             debug["id"] = id;
             //debug["nvc"] = nvc;
-            debug["body"] = json;
+            debug["body"] = body;
             ans["Debug"] = debug;
             // END DEBUG //
 

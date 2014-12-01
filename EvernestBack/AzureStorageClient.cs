@@ -18,6 +18,7 @@ namespace EvernestBack
         private CloudBlobClient blobClient;
         private Dictionary<String, EventStream> openedStreams;
         private CloudBlobContainer streamContainer;
+        private int BlobSize;
 
         public AzureStorageClient()
         {
@@ -26,10 +27,10 @@ namespace EvernestBack
             CloudStorageAccount storageAccount = null;
             try
             {
-                // TODO
+                // TODO : We should avoid to hardcode the indexes.
                 string connectionString = ConfigurationManager.AppSettings.Get(0);
                 storageAccount = CloudStorageAccount.Parse(connectionString);
-                Console.Read();
+                BlobSize = Int32.Parse(ConfigurationManager.AppSettings.Get(1));
             }
             catch (NullReferenceException e)
             {
@@ -37,11 +38,24 @@ namespace EvernestBack
                 Console.Error.WriteLine("Method : {0}", e.TargetSite);
                 Console.Error.WriteLine("Message : {0}", e.Message);
                 Console.Error.WriteLine("Source : {0}", e.Source);
+                Console.Read();
                 return;
             }
             blobClient = storageAccount.CreateCloudBlobClient();
             streamContainer = blobClient.GetContainerReference("streams");
-            streamContainer.CreateIfNotExists();
+            try
+            {
+                streamContainer.CreateIfNotExists();
+            }
+            catch (StorageException e)
+            {
+                Console.Error.WriteLine("Erreur de connection");
+                Console.Error.WriteLine("Method : {0}", e.TargetSite);
+                Console.Error.WriteLine("Message : {0}", e.Message);
+                Console.Error.WriteLine("Source : {0}", e.Source);
+                Console.Read();
+                return;
+            }
         }
 
 
@@ -50,7 +64,7 @@ namespace EvernestBack
             EventStream stream;
             if( !openedStreams.TryGetValue(streamStrId, out stream) )
             {
-                stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId));
+                stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId), BlobSize);
                 openedStreams.Add(streamStrId, stream);
             }
             return stream;

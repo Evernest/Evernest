@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Web;
 using System.Web.Http;
 
 namespace EvernestAPI.Controllers
@@ -8,18 +10,42 @@ namespace EvernestAPI.Controllers
         // /Source/{id}
         [HttpGet]
         [HttpPost]
-        public String Default(int id)
+        [ActionName("Default")]
+        public Hashtable Default(int id)
         {
-            return String.Format("/Source/{0}", id);
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Source";
+            debug["Method"] = "Default";
+            debug["id"] = id;
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
 
         // /Source/New
         [HttpGet]
         [HttpPost]
         [ActionName("New")]
-        public String New()
+        public Hashtable New()
         {
-            return String.Format("/Source/New");
+            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var ans = new Hashtable();
+
+            // BEGIN DEBUG //
+            var debug = new Hashtable();
+            debug["Controller"] = "Source";
+            debug["Method"] = "New";
+            debug["nvc"] = nvc;
+            ans["Debug"] = debug;
+            // END DEBUG //
+
+            return ans;
         }
     }
 }

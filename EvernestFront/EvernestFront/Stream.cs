@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//using EvernestFront.Answers;
-using EvernestFront.Exceptions;
+using EvernestFront.Answers;
+using EvernestFront.Errors;
+using EvernestBack;
 
 namespace EvernestFront
 {
@@ -18,6 +19,8 @@ namespace EvernestFront
 
         internal List<UserRight> UserRights { get; private set; }
 
+        private readonly RAMStream _backStream;
+        
         // un champ privé contenant un objet du Back
 
         // provisoire
@@ -31,7 +34,7 @@ namespace EvernestFront
             Count = 0;
             LastEventId = -1; //?
             UserRights = new List<UserRight>();
-            // TODO : appeler Back
+            _backStream = new RAMStream();
         }
 
         private int ActualEventId(int eventId)
@@ -39,54 +42,74 @@ namespace EvernestFront
             var id = eventId;
             if (id < 0)
                 id = id + (LastEventId + 1);
-            if ((id >= 0) && (id <= LastEventId))
-                return id;
-            else
-                throw new InvalidEventIdException(id,this);
+            return id;
         }
 
-        internal Event PullRandom()
+        private bool IsEventIdValid(int id)
+        {
+            return ((id >= 0) && (id <= LastEventId));
+        }
+
+        internal PullRandom PullRandom()
         {
             var random = new Random();
             int id = random.Next(LastEventId+1);
-                    
-            // TODO : appeler Back
-            return Event.DummyEvent(id,this);
+            Event pulledEvent=null;       
+            _backStream.Pull((ulong)id, ( a => pulledEvent = new Event(id,a.Message,this)));  //TODO : change this when we implement fire-and-forget with website
+            return new PullRandom(pulledEvent);
         }
 
-        internal Event Pull(int eventId)
+        internal Pull Pull(int eventId)
         {
             int id = ActualEventId(eventId);
 
-            // appeler Back
-            return Event.DummyEvent(id,this);
+            // call back-end
+
+            if (IsEventIdValid(id))
+            {
+                Event pulledEvent = null;
+                _backStream.Pull((ulong)id, (a=>pulledEvent = new Event(id, a.Message,this))); //TODO : change this
+                return new Pull(pulledEvent);
+            }
+            else
+            {
+                return new Pull(new InvalidEventId(id,this));
+            }
+           
         }
 
-        internal List<Event> PullRange(int fromEventId, int toEventId)
+        internal PullRange PullRange(int fromEventId, int toEventId)
         {
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
-
+            if (!IsEventIdValid(fromEventId))
+                return new PullRange(new InvalidEventId(fromEventId, this));
+            if (!IsEventIdValid(toEventId))
+                return new PullRange(new InvalidEventId(toEventId, this));
             var eventList = new List<Event>();
             for (int id = fromEventId; id <= toEventId; id++)
             {
-                // appeler Back
-                eventList.Add(Event.DummyEvent(id,this));
+                Pull ans = Pull(id);
+                if (!ans.Success)
+                    throw new Exception();  //this should never happen : both fromEventId and toEventId are valid, so id should be valid.
+                Event pulledEvent = ans.EventPulled; //TODO : change this when PullRange gets implemented in back-end
+                eventList.Add(pulledEvent);
             }
-
-            return eventList;
-            
+            return new PullRange(eventList);
         }
 
-        internal int Push(string message)
+
+
+
+        internal Push Push(string message)
         {
             int eventId = LastEventId + 1;
-    
-            // TODO : appeler Back 
+            // TODO : call back-end
 
+            _backStream.Push(message, (a => Console.WriteLine(a.RequestID)));  //TODO : change callback
             Count++;
             LastEventId++;
-            return eventId;
+            return new Push(eventId);
         }
 
 

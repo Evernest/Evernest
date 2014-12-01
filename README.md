@@ -41,6 +41,8 @@ If you intend to hack on Evernest source code, these documentation pages are for
  * [Front-Back API](https://github.com/Evernest/Evernest/wiki/Front-Back-API)
  * [Coding Guidelines](https://github.com/Evernest/Evernest/wiki/Coding-Guidelines)
 
+We also have an automatically generated [documentation](http://dev.evernest.org/doc/) for all the classes present in the repository.
+
 
 History
 -------

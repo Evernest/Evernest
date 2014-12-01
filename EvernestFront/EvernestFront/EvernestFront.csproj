@@ -96,18 +96,13 @@
     <Compile Include="Projection\MakeUserContract.cs" />
     <Compile Include="Projection\ReadTables.cs" />
     <Compile Include="Source.cs" />
-    <Compile Include="SourceTable.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="UserRight.cs" />
-    <Compile Include="Process.cs" />
     <Compile Include="Projection\Projection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventStream.cs" />
-    <Compile Include="StreamTable.cs" />
     <Compile Include="Errors\EventStreamIdDoesNotExist.cs" />
     <Compile Include="Errors\EventStreamNameTaken.cs" />
     <Compile Include="AccessRights.cs" />
-    <Compile Include="UserTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\EvernestBack\EvernestBack.csproj">

@@ -31,13 +31,6 @@ namespace EvernestFront
 
         
 
-        //public string Name { get; private set; }
-        //public int Count { get; private set; }
-        //public int LastEventId { get; private set; }
-        internal List<UserRight> UserRights { get; private set; } //to be removed
-        //private readonly RAMStream _backStream;
-        
-
         // temporary
         private static Int64 _next = 0;
         private static Int64 NextId() { return ++_next; }
@@ -109,7 +102,7 @@ namespace EvernestFront
             var random = new Random();
             int id = random.Next(LastEventId+1);
             Event pulledEvent=null;       
-            BackStream.Pull((ulong)id, ( a => pulledEvent = new Event(id,a.Message,this)));  //TODO : change this when we implement fire-and-forget with website
+            //BackStream.Pull((ulong)id, ( a => pulledEvent = new Event(id,a.Message,this)));  //TODO : change this when we implement fire-and-forget with website
             return new PullRandom(pulledEvent);
         }
 
@@ -121,7 +114,7 @@ namespace EvernestFront
             if (IsEventIdValid(id))
             {
                 Event pulledEvent = null;
-                BackStream.Pull((ulong)id, (a=>pulledEvent = new Event(id, a.Message,this))); //TODO : change this
+                //BackStream.Pull((ulong)id, (a=>pulledEvent = new Event(id, a.Message,this))); //TODO : change this
                 return new Pull(pulledEvent);
             }
             else

@@ -31,31 +31,6 @@ namespace EvernestFront
             get { return UserContract.RelatedStreams.ToList(); }
         }
 
-        internal List<UserRight> UserRights; //to be removed 
-
-
-        //private UserContract _userContract;
-        //private UserContract UserContract
-        //{
-        //    get
-        //    {
-        //        if (_userContract == null)
-        //            UpdateUserContract();
-        //        if (_userContract == null)
-        //            throw new Exception("User.UserContract");
-        //            //should wait?
-        //        return _userContract;
-        //    }
-        //}
-        
-
-        //internal void UpdateUserContract()
-        //{
-        //    UserContract uc;
-        //    if (Projection.Projection.TryGetUserContract(Id, out uc))
-        //        _userContract = uc;
-        //    //else?
-        //}
 
         private UserContract UserContract { get; set; }
 
@@ -291,7 +266,7 @@ namespace EvernestFront
 
         /// <summary>
         /// Returns the right of the user about the stream. 
-        /// If the stream id does not exist, NoRights is returned : the user cannot use this to determine whether a stream he has no right about exists. 
+        /// If the stream id does not exist, NoRights is returned : the user cannot determine whether a stream he has no right about exists. 
         /// </summary>
         /// <param name="streamId"></param>
         /// <returns></returns>
@@ -356,74 +331,5 @@ namespace EvernestFront
 
         
 
-
-
-        //internal User(string name, string password)
-        //{
-        //    Id = NextId();
-        //    Name = name;
-        //    Key = Keys.NewKey();
-        //    UserRights=new List<UserRight>();
-        //    Sources = new List<Source>();
-        //    PasswordSalt = System.Text.Encoding.ASCII.GetBytes(Keys.NewSalt());
-        //    var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
-        //    var hmacMD5 = new HMACMD5(PasswordSalt);
-        //    var saltedHash = hmacMD5.ComputeHash(passwordBytes);
-        //    SaltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
-        //}
-
-        //internal void AddSource(Source source)
-        //{
-        //    if (Id != source.UserId)
-        //        throw new Exception("undocumented error in User.AddSource");
-        //    Sources.Add(source);
-        //}
-
-        //internal AccessRights GetRightsOnStream(int stream)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //internal void SetRightsOnStream(int stream, AccessRights rights)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        ///// <summary>
-        ///// Checks if user already has a source called name.
-        ///// </summary>
-        ///// <param name="name"></param>
-        //internal bool CheckSourceNameIsFree(string name)
-        //{
-        //    return (!Sources.Exists(x => x.Name == name));
-        //}
-
-        //internal bool Identify(string password)
-        //{
-    
-        //    var hmacMD5 = new HMACMD5(PasswordSalt);
-        //    var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
-        //    var saltedHash = System.Text.Encoding.ASCII.GetString(hmacMD5.ComputeHash(passwordBytes));
-        //    return (SaltedPasswordHash.Equals(saltedHash));
-        //}
-
-        //internal SetPassword SetPassword(string password)
-        //{
-        //    if (!(password.Equals(System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(password)))))
-        //        return new SetPassword(new InvalidString(password));
-        //    var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
-        //    var hmacMD5 = new HMACMD5(PasswordSalt);
-        //    var saltedHash = hmacMD5.ComputeHash(passwordBytes);
-        //    SaltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
-        //    return new SetPassword(Id,password);
-        //}
-//        Id int: User identifier.
-//UserName string: User personnal name.
-//Password hash: Hash of user password concatenated to PasswordSalt.
-//PasswordSalt hash: Random string used to avoid pattern recognition in password hash.
-//Name string: User personal name.
-//FirstName string: User personal first name.
-//RelatedStreams {Stream} list: List of streams that are related to this user. A related stream is a stream that is either readable, writable or administrated by the user.
-//OwnedSources {Stream} list: List of streams that are administrated by this user.
     }
 }

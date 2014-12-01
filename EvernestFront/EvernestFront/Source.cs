@@ -33,19 +33,11 @@ namespace EvernestFront
 
         
 
-        // provisoire
+        // temporary
         private static Int64 _next = 0;
         private static Int64 NextId() { return ++_next; }
 
-        internal Source(User usr, EventStream strm, string name, AccessRights right)
-        {
-            //Id = NextId();
-            //User = usr;
-            //Stream = strm;
-            //Name = name;
-            //Right = right;
-            //Key = Keys.NewKey();
-        }
+
 
         private Source(string sourceKey, SourceContract sourceContract)
         {
@@ -97,22 +89,10 @@ namespace EvernestFront
         { throw new NotImplementedException(); }
 
 
-        internal bool CheckCanRead()
-        {
-            return (CheckRights.CheckCanRead(User, EventStream) & CheckRights.CanRead(Right));
-        }
-
-
-        internal bool CheckCanWrite()
-        {
-            return (CheckRights.CheckCanWrite(User, EventStream) & CheckRights.CanWrite(Right));
-        }
-
-
-        internal bool CheckCanAdmin()
-        {
-            return (CheckRights.CheckCanAdmin(User, EventStream) & CheckRights.CanAdmin(Right));
-        }
+        //internal bool CheckCanAdmin()
+        //{
+        //    return (CheckRights.CheckCanAdmin(User, EventStream) & CheckRights.CanAdmin(Right));
+        //}
 
     }
 }

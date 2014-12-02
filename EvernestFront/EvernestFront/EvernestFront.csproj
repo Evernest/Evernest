@@ -103,6 +103,8 @@
     <Compile Include="Errors\EventStreamIdDoesNotExist.cs" />
     <Compile Include="Errors\EventStreamNameTaken.cs" />
     <Compile Include="AccessRights.cs" />
+    <Compile Include="User.TowardSource.cs" />
+    <Compile Include="User.TowardEventStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\EvernestBack\EvernestBack.csproj">

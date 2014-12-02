@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
+using EvernestBack;
 using EvernestFront.Answers;
 using EvernestFront.Contract;
 using EvernestFront.Contract.Diff;
@@ -141,6 +142,14 @@ namespace EvernestFront
             var passwordSet = new PasswordSet(Id, saltedPasswordHash);
             Projection.Projection.HandleDiff(passwordSet);
             return new SetPassword(Id, password);
+        }
+
+
+
+        public CreateEventStream CreateEventStream(string streamName)
+        {
+            return EventStream.CreateEventStream(Id, streamName);
+            //move logic to this class?
         }
 
         public SetRights SetRights(Int64 streamId, Int64 targetUserId, AccessRights right)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using EvernestFront;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 using EvernestFront.Projection;
@@ -19,13 +20,7 @@ namespace EvernestFrontTests
         private const string SourceName = "sourceName";
 
 
-        internal static long CreateStream_GetId_AssertSuccess(long userId, string streamName)
-        {
-            CreateEventStream ans = EventStream.CreateStream(userId, streamName);
-            Assert.IsTrue(ans.Success);
-            Assert.IsNull(ans.Error);
-            return ans.StreamId;
-        }
+        
 
         [SetUp]
         public void Initialize()
@@ -34,32 +29,26 @@ namespace EvernestFrontTests
         }
 
 
+        
+
         [Test]
-        public void CreateStream_Success()
+        public void GetEventStream()
         {
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
-            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(userId, StreamName);
+            long streamId = UserTests.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+
+            var ans = EventStream.GetStream(streamId);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+            var stream = ans.EventStream;
+            Assert.AreEqual(streamId, stream.Id);
+            Assert.AreEqual(StreamName, stream.Name);
+            var relatedUsers = new List<KeyValuePair<long, AccessRights>>();
+            relatedUsers.Add(new KeyValuePair<long, AccessRights>(userId,AccessRights.Admin));
+            //const creatorRight when it is implemented
+            Assert.AreEqual(relatedUsers, stream.RelatedUsers);
+            Assert.AreEqual(0, stream.Count);
+            //LastEventId?
         }
-
-        [Test]
-        public void CreateStream_UserIdDoesNotExist()
-        {
-            const long bogusUserId = 42; //does not exist in UserTable
-            CreateEventStream ans = EventStream.CreateStream(bogusUserId, StreamName);
-            AssertAuxiliaries.ErrorAssert<UserIdDoesNotExist>(ans);
-        }
-
-        [Test]
-        public void CreateStream_StreamNameTaken()
-        {
-            long user = UserTests.AddUser_GetId_AssertSuccess(UserName);
-            long user2 = UserTests.AddUser_GetId_AssertSuccess(UserName2);
-
-            long streamId = EventStreamTests.CreateStream_GetId_AssertSuccess(user, StreamName);
-            CreateEventStream ans = EventStream.CreateStream(user2, StreamName);
-            AssertAuxiliaries.ErrorAssert<EventStreamNameTaken>(ans);
-        }
-
-
     }
 }

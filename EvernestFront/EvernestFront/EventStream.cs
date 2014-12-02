@@ -66,7 +66,7 @@ namespace EvernestFront
                 return new GetEventStream(new EventStreamIdDoesNotExist(streamId));
         }
 
-        public static CreateEventStream CreateStream(long creatorId, string streamName)
+        internal static CreateEventStream CreateEventStream(long creatorId, string streamName)
         {
             if (Projection.Projection.StreamNameExists(streamName))
                 return new CreateEventStream(new EventStreamNameTaken(streamName));

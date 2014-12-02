@@ -7,7 +7,7 @@ using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
-    class GetUser : Answer
+    public class GetUser : Answer
     {
         public User User;
 

@@ -12,7 +12,7 @@ using EvernestFront.Errors;
 
 namespace EvernestFront
 {
-    partial class User
+    public partial class User
     {
         public Int64 Id { get; private set; }
 
@@ -52,7 +52,7 @@ namespace EvernestFront
             UserContract = userContract;
         }
 
-        static private bool TryGetUser(long userId, out User user)
+        static internal bool TryGetUser(long userId, out User user)
         {
             UserContract userContract;
             if (Projection.Projection.TryGetUserContract(userId, out userContract))

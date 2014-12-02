@@ -10,7 +10,7 @@ using EvernestFront.Projection;
 
 namespace EvernestFront
 {
-    class EventStream
+    public class EventStream
     {
         public Int64 Id { get; private set; }
 
@@ -83,6 +83,37 @@ namespace EvernestFront
             Projection.Projection.HandleDiff(streamCreated);
             return new CreateEventStream(id);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        internal SetRights SetRight(long adminId, long targetUserId, AccessRights right)
+        {
+            User targetUser;
+            if (!User.TryGetUser(targetUserId, out targetUser))
+                return new SetRights(new UserIdDoesNotExist(targetUserId));
+            if (!targetUser.IsNotAdmin(Id))
+                return new SetRights(new CannotDestituteAdmin(Id, targetUserId));
+
+            var userRightSet = new UserRightSet(adminId, Id, targetUserId, right);
+
+            Projection.Projection.HandleDiff(userRightSet);
+            //TODO: diff should be written in a stream, then sent back to be processed
+
+            return new SetRights();
+        }
+
+
+
 
         private int ActualEventId(int eventId)
         {

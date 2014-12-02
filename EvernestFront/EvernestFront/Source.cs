@@ -7,42 +7,31 @@ namespace EvernestFront
 {
     public class Source
     {
-        
-        public string Name { get; private set; }
-        
-        public long UserId { get { return SourceContract.UserId; } }
-
-        public long StreamId { get { return SourceContract.StreamId; } }
-
         //base64 encoded int
         public string Key { get; private set; }
 
-        public AccessRights Right { get { return SourceContract.Right; } }
+        public string Name { get; private set; }
 
-        private SourceContract SourceContract { get; set; }
+        public User User { get; private set; }
 
+        public EventStream EventStream { get; private set; }
 
+        public AccessRights Right { get; private set; }
 
-        internal Int64 Id { get; private set; }
-
-        internal User User { get; private set; }
-
-        internal EventStream EventStream { get; private set; }
-
-        
-
-        
-
-        // temporary
-        private static Int64 _next = 0;
-        private static Int64 NextId() { return ++_next; }
+        //should sources have an id?
 
 
 
-        private Source(string sourceKey, SourceContract sourceContract)
+
+
+
+        private Source(string sourceKey, string name, User user, EventStream eventStream, AccessRights right)
         {
             Key = sourceKey;
-            SourceContract = sourceContract;
+            Name = name;
+            User = user;
+            EventStream = eventStream;
+            Right = right;
         }
 
         private static bool TryGetSource(string sourceKey, out Source source)
@@ -50,49 +39,94 @@ namespace EvernestFront
             SourceContract sourceContract;
             if (Projection.Projection.TryGetSourceContract(sourceKey, out sourceContract))
             {
-                source = new Source(sourceKey, sourceContract);
-                return true;
+                User user;
+                EventStream eventStream;
+                if (User.TryGetUser(sourceContract.UserId, out user)
+                    & EventStream.TryGetStream(sourceContract.StreamId, out eventStream))
+                {
+                    source = new Source(sourceKey, sourceContract.Name, user, eventStream, sourceContract.Right);
+                    return true;
+                }
             }
-            else
-            {
-                source = null;
-                return false;
-            }
+
+            source = null;
+            return false;
         }
 
-        static public Answers.GetSource GetSource(string sourceKey)
+        static public GetSource GetSource(string sourceKey)
         {
             Source source;
             if (TryGetSource(sourceKey, out source))
                 return new GetSource(source);
             else
                 return new GetSource(new SourceKeyDoesNotExist(sourceKey));
+                //or couldn't find user or eventStream though they should exist
+                //TODO: handle this properly
         }
 
 
-        public Answers.Push Push(string message)
-            { throw new NotImplementedException(); }
+        public Push Push(string message)
+        {
+            if (CanWrite())
+                return EventStream.Push(message);
+            else
+                return new Push(new WriteAccessDenied(this));
+        }
 
-        public Answers.PullRandom PullRandom()
-            { throw new NotImplementedException(); }
+        public PullRandom PullRandom()
+        {
+            if (CanRead())
+                return EventStream.PullRandom();
+            else
+                return new PullRandom(new ReadAccessDenied(this));
+        }
 
-        public Answers.Pull Pull(int eventId)
-            { throw new NotImplementedException(); }
+        public Pull Pull(int eventId)
+        {
+            if (CanRead())
+                return EventStream.Pull(eventId);
+            else
+                return new Pull(new ReadAccessDenied(this));
+        }
 
-        public Answers.PullRange PullRange(int eventIdFrom, int eventIdTo)
-            { throw new NotImplementedException(); }
+        public PullRange PullRange(int eventIdFrom, int eventIdTo)
+        {
+            if (CanRead())
+                return EventStream.PullRange(eventIdFrom, eventIdTo);
+            else
+                return new PullRange(new ReadAccessDenied(this));
+        }
 
-        public Answers.SetRights SetRights(long targetUserId, AccessRights rights)
-            { throw new NotImplementedException(); }
+        public SetRights SetRights(long targetUserId, AccessRights right)
+        {
+            if (CanAdmin())
+                return EventStream.SetRight(User.Id, targetUserId, right);
+            else
+                return new SetRights(new AdminAccessDenied(this));
+        }
 
-        public Answers.DeleteSource Delete()
+        public DeleteSource Delete()
         { throw new NotImplementedException(); }
 
 
-        //internal bool CheckCanAdmin()
-        //{
-        //    return (CheckRights.CheckCanAdmin(User, EventStream) & CheckRights.CanAdmin(Right));
-        //}
+
+
+
+
+
+
+        private bool CanRead()
+        {
+            return (CheckRights.CanRead(Right)&&User.CanRead(EventStream.Id));
+        }
+        private bool CanWrite()
+        {
+            return (CheckRights.CanWrite(Right) && User.CanWrite(EventStream.Id));
+        }
+        private bool CanAdmin()
+        {
+            return (CheckRights.CanAdmin(Right) && User.CanAdmin(EventStream.Id));
+        }
 
     }
 }

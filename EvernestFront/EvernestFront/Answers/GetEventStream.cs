@@ -7,7 +7,7 @@ using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
-    class GetEventStream : Answer
+    public class GetEventStream : Answer
     {
         public EventStream EventStream;
 

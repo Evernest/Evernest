@@ -19,24 +19,14 @@ namespace EvernestFront
 
         public SetRights SetRights(Int64 streamId, Int64 targetUserId, AccessRights right)
         {
-            if (!Projection.Projection.StreamIdExists(streamId))
-                return new SetRights(new EventStreamIdDoesNotExist(streamId));
             if (!CanAdmin(streamId))
                 return new SetRights(new AdminAccessDenied(streamId, Id));
-            //reverse order? so a user who doesn't have the rights doesn't know whether the stream exists
 
-            User targetUser;
-            if (!TryGetUser(targetUserId, out targetUser))
-                return new SetRights(new UserIdDoesNotExist(targetUserId));
-            if (!targetUser.IsNotAdmin(streamId))
-                return new SetRights(new CannotDestituteAdmin(streamId, targetUserId));
+            EventStream eventStream;
+            if (!EventStream.TryGetStream(streamId, out eventStream))
+                return new SetRights(new EventStreamIdDoesNotExist(streamId));
 
-            var userRightSet = new UserRightSet(Id, streamId, targetUserId, right);
-
-            Projection.Projection.HandleDiff(userRightSet);
-            //TODO: diff should be written in a stream, then sent back to be processed
-
-            return new SetRights();
+            return eventStream.SetRight(Id, targetUserId, right);
         }
 
         /// <summary>
@@ -144,19 +134,19 @@ namespace EvernestFront
             else
                 return AccessRights.NoRights;
         }
-        private bool CanRead(long streamId)
+        internal bool CanRead(long streamId)
         {
             return CheckRights.CanRead(GetRight(streamId));
         }
-        private bool CanWrite(long streamId)
+        internal bool CanWrite(long streamId)
         {
             return CheckRights.CanWrite(GetRight(streamId));
         }
-        private bool CanAdmin(long streamId)
+        internal bool CanAdmin(long streamId)
         {
             return CheckRights.CanAdmin(GetRight(streamId));
         }
-        private bool IsNotAdmin(long streamId)
+        internal bool IsNotAdmin(long streamId)
         {
             return CheckRights.CanBeModified(GetRight(streamId));
         }

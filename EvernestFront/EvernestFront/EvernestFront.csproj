@@ -95,6 +95,7 @@
     <Compile Include="Projection\MakeTables.cs" />
     <Compile Include="Projection\MakeUserContract.cs" />
     <Compile Include="Projection\ReadTables.cs" />
+    <Compile Include="Serializing.cs" />
     <Compile Include="Source.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Projection\Projection.cs" />

@@ -40,7 +40,7 @@ namespace EvernestFrontTests
             CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadWrite);
             user = GetUser_AssertSuccess(userId);
             CreateSource ans2 = user.CreateSource(SourceName, streamId, AccessRights.Admin);
-            AssertAuxiliaries.ErrorAssert<SourceNameTaken>(ans);
+            AssertAuxiliaries.ErrorAssert<SourceNameTaken>(ans2);
         }
     }
 }

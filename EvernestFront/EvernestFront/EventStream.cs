@@ -131,26 +131,26 @@ namespace EvernestFront
         internal PullRandom PullRandom()
         {
             var random = new Random();
-            int id = random.Next(LastEventId+1);
-            Event pulledEvent=null;       
-            //BackStream.Pull((ulong)id, ( a => pulledEvent = new Event(id,a.Message,this)));  //TODO : change this when we implement fire-and-forget with website
-            return new PullRandom(pulledEvent);
+            int eventId = random.Next(LastEventId+1);
+            EventContract pulledContract=null;       
+            BackStream.Pull((ulong)eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
+            return new PullRandom(new Event(pulledContract, eventId, Name, Id));
         }
 
-        internal Pull Pull(int eventId)
+        internal Pull Pull(int id)
         {
-            int id = ActualEventId(eventId);
+            int eventId = ActualEventId(id);
 
 
-            if (IsEventIdValid(id))
+            if (IsEventIdValid(eventId))
             {
-                Event pulledEvent = null;
-                //BackStream.Pull((ulong)id, (a=>pulledEvent = new Event(id, a.Message,this))); //TODO : change this
-                return new Pull(pulledEvent);
+                EventContract pulledContract = null;
+                BackStream.Pull((ulong)eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
+                return new Pull(new Event(pulledContract, eventId, Name, Id));
             }
             else
             {
-                return new Pull(new InvalidEventId(id,this));
+                return new Pull(new InvalidEventId(eventId,this));
             }
            
         }
@@ -178,13 +178,11 @@ namespace EvernestFront
 
 
 
-        internal Push Push(string message)
+        internal Push Push(string message, User author)
         {
             int eventId = LastEventId + 1;
-
-            BackStream.Push(message, (a => Console.WriteLine(a.RequestID)));  //TODO : change callback
-            //Count++;
-            //LastEventId++;
+            var contract = new EventContract(author, DateTime.UtcNow, message);
+            BackStream.Push(Serializing.WriteContract<EventContract>(contract), (a => Console.WriteLine(a.RequestID)));  //TODO : change this callback
             return new Push(eventId);
         }
 

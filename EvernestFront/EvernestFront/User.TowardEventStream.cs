@@ -110,7 +110,7 @@ namespace EvernestFront
             {
                 if (CanWrite(streamId))
                 {
-                    return eventStream.Push(message);
+                    return eventStream.Push(message, this);
                     //TODO: add writer id to event
                 }
                 else

@@ -68,7 +68,7 @@ namespace EvernestFront
         public Push Push(string message)
         {
             if (CanWrite())
-                return EventStream.Push(message);
+                return EventStream.Push(message, User);
             else
                 return new Push(new WriteAccessDenied(this));
         }

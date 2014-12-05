@@ -15,13 +15,12 @@ namespace EvernestBack
         List<string> Messages = new List<string>();
         UInt64 Index = 0;
 
-        public UInt64 Push(String Message, Action<IAgent> Callback)
+        public void Push(String Message, Action<IAgent> Callback)
         {
             IAgent a = new MyAgent(Message, Index);
             Index++;
             Messages.Add(a.Message);
             Callback(a);
-            return Index-1;
         }
 
         public void Pull(UInt64 Id, Action<IAgent> Callback)

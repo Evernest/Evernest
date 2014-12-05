@@ -45,11 +45,12 @@ namespace EvernestBack
         }
 
 
-        public EventStream GetEventStream( String streamStrId )
+        public EventStream GetEventStream( String streamStrId ) //not thread-safe yet
         {
             EventStream stream;
             if( !openedStreams.TryGetValue(streamStrId, out stream) )
             {
+                //should ensure that BlockSearchMode is set to Latest
                 stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId));
                 openedStreams.Add(streamStrId, stream);
             }

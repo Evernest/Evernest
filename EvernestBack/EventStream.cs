@@ -15,29 +15,37 @@ namespace EvernestBack
      */
     class EventStream:IStream
     {
-        private WriteLocker writeLock;
-        private UInt64 currentId;
+        private WriteLocker WriteLock;
+        CloudBlockBlob Blob;
 
         public EventStream( CloudBlockBlob blob )
         {
-            writeLock = new WriteLocker(blob);
-            currentId = 0;
+            this.Blob = blob;
+            WriteLock = new WriteLocker(blob);
+            WriteLock.Store();
         }
-
 
         // Push : Give a string, return an ID with the Callback
-        public UInt64 Push(String message, Action<IAgent> Callback)
+        public void Push(String message, Action<IAgent> callback)
         {
-            Agent p = new Producer(message, currentId, writeLock, Callback);
-            currentId++;
-            return currentId-1;
+            WriteLock.Register(message, callback);
         }
 
-
         // Pull : Use the ID got when pushing to get back the original string
-        public void Pull(UInt64 id, Action<IAgent> Callback)
+        public void Pull(UInt64 id, Action<IAgent> callback)
         {
-            Agent r = new Reader(null, id, Callback);
+            //ImmutableDictionary<UInt64, UInt64> milestones = writeLock.Milestones;
+            //UInt64 firstByte = milestones.LowerBound(id);
+            //UInt64 lastByte = milestones.UpperBound(id+1)-1;
+            //no "LowerBound" method? really? and it isn't in normal Dictionary even...
+            //i miss it, should i reimplement them? making it thread safe may be tough though
+            UInt64 firstByte = 42;
+            UInt64 lastByte = 1337;
+            Byte[] buffer = new Byte[lastByte-firstByte];
+            Blob.DownloadRangeToByteArray(buffer, 0, (Int64) firstByte, (Int64) (lastByte - firstByte - 1)); //should probably be DownloadRangeToByteArray
+            //then search for the good id in this range
+            // TODO...
+            Agent r = new Reader(null, id, callback);
         }
 
         public void StreamDeliver(Agent agent)

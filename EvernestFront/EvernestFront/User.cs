@@ -22,7 +22,7 @@ namespace EvernestFront
 
         internal byte[] PasswordSalt { get { return UserContract.PasswordSalt; } }
 
-        internal string Key { get { return UserContract.Key; } } //base64 encoded int
+        public string Key { get { return UserContract.Key; } } //base64 encoded int
 
         public List<Source> Sources { get{throw new NotImplementedException("User.Sources");} }
         // should return Sources, names, keys...?

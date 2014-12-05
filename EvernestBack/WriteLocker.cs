@@ -25,38 +25,40 @@ namespace EvernestBack
         }
 		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
         private CloudBlobStream Output;
-        private CloudBlockBlob blob;
-        //public ImmutableDictionary<UInt64, UInt64> Milestones { get; protected set;}
+        private CloudBlockBlob Blob;
+        public History<UInt64> Milestones { get; protected set;}
+        public UInt64 TotalWrittenBytes { get; protected set;}
             //i'm not really satisfied with that, feel free to move it wherever you think it more appropriate
-        private UInt64 CurrentID;
+        private UInt64 CurrentID = 0;
         
-        public WriteLocker(CloudBlockBlob blob, int BlobSize)
+        public WriteLocker(CloudBlockBlob blob, int blobSize)
         {
-            CurrentID = 0;
-            this.blob = blob;
-            blob.StreamWriteSizeInBytes = BlobSize; // Defined in app.config
-            //Milestones = ImmutableDictionary.ToImmutableDictionary(new Dictionary<UInt64, UInt64>());
+            TotalWrittenBytes = 0;
+            this.Blob = blob;
+            blob.StreamWriteSizeInBytes = blobSize; // Defined in app.config
+            Milestones = new History<UInt64>();
             Output = blob.OpenWrite();
         }
 
-        public void Store(UInt32 EventChunkSizeInBytes = 16384) //16KiB for now, also arbitrary
+        public void Store(UInt32 eventChunkSizeInBytes = 16384) //16KiB for now, also arbitrary
         {
             Task.Run(() =>
             {
                 UInt16 wroteBytes;
                 UInt32 chunkBytes = 0;
                 UInt64 lastPosition = 0;
-                Console.WriteLine("Starting Storing");
+                //Console.WriteLine("Starting Storing"); //if there is a Console.Read() in the main thread, this will block this instruction
                 while (PendingEventCollection.Count > 0)
                 {
                     PendingEvent pendingEvent = PendingEventCollection.Take();
                     Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.Callback);
                     CurrentID++;
                     wroteBytes = StoreToCloud(agent);
-                    if( wroteBytes + chunkBytes > EventChunkSizeInBytes)
+                    TotalWrittenBytes += wroteBytes;
+                    if( wroteBytes + chunkBytes > eventChunkSizeInBytes)
                     {
                         lastPosition += chunkBytes;
-                        //Milestones = Milestones.Add(p.RequestID, lastPosition);
+                        Milestones.Insert(agent.RequestID, lastPosition);
                         chunkBytes = wroteBytes;
                     }
                     else

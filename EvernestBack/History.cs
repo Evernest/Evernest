@@ -81,7 +81,7 @@ namespace EvernestBack
             return upperBound != null;
         }
 
-        public bool LeastBound(UInt64 key, ref ELT_T element)
+        public bool LowerBound(UInt64 key, ref ELT_T element)
         {
             Node current = Root, leastBound = null;
             while( current != null )

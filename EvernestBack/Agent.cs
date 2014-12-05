@@ -23,7 +23,7 @@ namespace EvernestBack
             this.Callback = Callback;
         }
 
-        private void Reverse(Byte[] Array, int Offset, int Count)
+        public static void Reverse(Byte[] Array, int Offset, int Count)
         {
             Byte Tmp;
             for (UInt16 i = 0; i < Count; i++)

@@ -13,17 +13,17 @@ namespace EvernestBack
      */
     public class RAMStream:IEventStream
     {
-        private String streamFileName;
+        private String StreamFileName;
         List<string> Messages = new List<string>();
         UInt64 Index = 0;
 
         public RAMStream(String streamStringID)
         {
-            streamFileName = streamStringID + "_RAMStreamContent.txt";
+            StreamFileName = streamStringID + "_RAMStreamContent.txt";
             String line;
-            if (System.IO.File.Exists(streamFileName))
+            if (System.IO.File.Exists(StreamFileName))
             {
-                System.IO.StreamReader file = new System.IO.StreamReader(streamFileName);
+                System.IO.StreamReader file = new System.IO.StreamReader(StreamFileName);
                 while ((line = file.ReadLine()) != null)
                 {
                     Index++;
@@ -35,24 +35,24 @@ namespace EvernestBack
 
         ~RAMStream()
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(streamFileName);
+            System.IO.StreamWriter file = new System.IO.StreamWriter(StreamFileName);
             foreach( String message in Messages )
                 file.WriteLine(message);
             file.Close();
         }
 
-        public void Push(String Message, Action<IAgent> Callback)
+        public void Push(String message, Action<IAgent> callback)
         {
-            IAgent a = new MyAgent(Message, Index);
+            IAgent a = new MyAgent(message, Index);
             Index++;
             Messages.Add(a.Message);
-            Callback(a);
+            callback(a);
         }
 
-        public void Pull(UInt64 Id, Action<IAgent> Callback)
+        public void Pull(UInt64 id, Action<IAgent> callback)
         {
-            IAgent a = new MyAgent(Messages.ElementAt((int) Id), Id);
-            Callback(a);
+            IAgent a = new MyAgent(Messages.ElementAt((int) id), id);
+            callback(a);
         }
 
         private class MyAgent:IAgent

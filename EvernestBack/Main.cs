@@ -14,13 +14,15 @@ namespace EvernestBack
             Int32 a = 0;
             test.UpperBound(2, ref a);
             Console.Write(a);*/
-            AzureStorageClient asc = new AzureStorageClient(true);
+            AzureStorageClient asc = new AzureStorageClient(false);
             IEventStream stream = asc.GetEventStream("Test");
             stream.Push("Test", b => index = b.RequestID);
-            stream.Pull(index, b => { Console.WriteLine(b.Message + ". ID : " + b.RequestID); Console.Read(); });
-            IEventStream sameStream = asc.GetEventStream("Test");
-            sameStream.Pull(index, b => { Console.WriteLine(b.Message + ". ID : " + b.RequestID); Console.Read(); });
-            Console.Read();
+            while (true)
+            {
+                stream.Pull(index, b => { Console.WriteLine(b.Message + ". ID : " + b.RequestID); });
+                System.Threading.Thread.Sleep(1);
+            }
+            //Console.Read();
             //i suspect this operation to block Console.WriteLine (thus preventing the other thread to run)
             //so i added a console.read() in the callback to have the time to see the message after pushing enter
         }

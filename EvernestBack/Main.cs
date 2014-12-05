@@ -14,7 +14,7 @@ namespace EvernestBack
             Int32 a = 0;
             test.UpperBound(2, ref a);
             Console.Write(a);*/
-            AzureStorageClient asc = new AzureStorageClient();
+            AzureStorageClient asc = new AzureStorageClient(true);
             IEventStream stream = asc.GetEventStream("Test");
             stream.Push("Test", b => index = b.RequestID);
             stream.Pull(index, b => { Console.WriteLine(b.Message + ". ID : " + b.RequestID); Console.Read(); });

@@ -65,17 +65,17 @@ namespace EvernestBack
         }
 
 
-        public IEventStream GetEventStream( String streamStrId ) //not thread-safe yet
+        public IEventStream GetEventStream( String streamStringID ) //not thread-safe yet
         {
             IEventStream stream;
-            if( !openedStreams.TryGetValue(streamStrId, out stream) )
+            if( !openedStreams.TryGetValue(streamStringID, out stream) )
             {
                 //should ensure that BlockSearchMode is set to Latest
                 if (dummy)
-                    stream = new RAMStream();
+                    stream = new RAMStream(streamStringID);
                 else
-                    stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId), blobSize);
-                openedStreams.Add(streamStrId, stream);
+                    stream = new EventStream(streamContainer.GetBlockBlobReference(streamStringID), blobSize);
+                openedStreams.Add(streamStringID, stream);
             }
             return stream;
         }

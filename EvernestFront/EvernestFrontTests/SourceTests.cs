@@ -179,6 +179,62 @@ namespace EvernestFrontTests
             AssertAuxiliaries.ErrorAssert<WriteAccessDenied>(ans);
         }
 
+
+        [Test]
+        public void Push_SourceCannotWrite_WriteAccessDenied()
+        {
+            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            long stream = UserTests.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.ReadOnly); //source cannot write
+            Source source = GetSource_AssertSuccess(sourceKey);
+            var ans = source.Push(Message);
+            AssertAuxiliaries.ErrorAssert<WriteAccessDenied>(ans);
+        }
+
+
+
+        [Test]
+        public void Pull_Success()
+        {
+            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            long stream = UserTests.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.ReadOnly);
+            Source source = GetSource_AssertSuccess(sourceKey);
+            int eventId = UserTests.GetEventId_AssertSuccess(userId, stream, Message);
+            var ans = source.Pull(eventId);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+            var eventPulled = ans.EventPulled;
+            Assert.AreEqual(eventPulled.Message, Message);
+            Assert.AreEqual(userId, eventPulled.AuthorId);
+            Assert.AreEqual(UserName, eventPulled.AuthorName);
+        }
+
+        [Test]
+        public void Pull_UserCannotRead_ReadAccessDenied()
+        {
+            long creatorId = UserTests.AddUser_GetId_AssertSuccess("creator");
+            long stream = UserTests.CreateEventStream_GetId_AssertSuccess(creatorId, StreamName);
+            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.ReadOnly); //user has no rights on stream
+            Source source = GetSource_AssertSuccess(sourceKey);
+            int eventId = UserTests.GetEventId_AssertSuccess(creatorId, stream, Message);
+            var ans = source.Pull(eventId);
+            AssertAuxiliaries.ErrorAssert<ReadAccessDenied>(ans);
+        }
+
+        [Test]
+        public void Pull_SourceCannotRead_ReadAccessDenied()
+        {
+            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            long stream = UserTests.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.WriteOnly); //source cannot read
+            Source source = GetSource_AssertSuccess(sourceKey);
+            int eventId = UserTests.GetEventId_AssertSuccess(userId, stream, Message);
+            var ans = source.Pull(eventId);
+            AssertAuxiliaries.ErrorAssert<ReadAccessDenied>(ans);
+        }
+
         
     }
 }

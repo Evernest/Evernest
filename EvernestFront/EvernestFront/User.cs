@@ -86,7 +86,7 @@ namespace EvernestFront
                 if (TryGetUser(userId, out user))
                 {
                     if (user.Identify(password))
-                        return new IdentifyUser(userId);
+                        return new IdentifyUser(user);
                     else
                         return new IdentifyUser(new WrongPassword(userName, password));
                 }
@@ -158,6 +158,8 @@ namespace EvernestFront
             return (SaltedPasswordHash.Equals(saltedHash));
         }
 
+
+        
         
 
     }

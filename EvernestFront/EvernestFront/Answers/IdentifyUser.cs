@@ -9,12 +9,12 @@ namespace EvernestFront.Answers
 {
     public class IdentifyUser : Answer
     {
-        public Int64 UserId { get; private set; }
+        public User User { get; private set; }
 
-        internal IdentifyUser(Int64 id)
+        internal IdentifyUser(User user)
             : base()
         {
-            UserId = id;
+            User = user;
         }
 
         internal IdentifyUser(FrontError err)

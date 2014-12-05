@@ -24,7 +24,12 @@ namespace EvernestFront.Projection
             return tbls.SourceTable.TryGetValue(sourceKey, out sourceContract);
         }
 
-        internal static bool TryGetUserId(Tables tbls, string userName, out long userId)
+        internal static bool TryGetUserIdFromKey(Tables tbls, string userKey, out long userId)
+        {
+            return tbls.UserKeyToId.TryGetValue(userKey, out userId);
+        }
+
+        internal static bool TryGetUserIdFromName(Tables tbls, string userName, out long userId)
         {
             return tbls.UserNameToId.TryGetValue(userName, out userId);
         }

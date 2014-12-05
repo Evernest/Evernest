@@ -34,7 +34,7 @@ namespace EvernestFront.Projection
 
         static internal bool TryGetUserId(string userName, out long userId)
         {
-            return ReadTables.TryGetUserId(_tables, userName, out userId);
+            return ReadTables.TryGetUserIdFromName(_tables, userName, out userId);
         }
 
         static internal bool TryGetStreamId(string streamName, out long streamId)
@@ -55,7 +55,7 @@ namespace EvernestFront.Projection
         internal static bool UserNameExists(string userName)
         {
             long userId;
-            return ReadTables.TryGetUserId(_tables, userName, out userId);
+            return ReadTables.TryGetUserIdFromName(_tables, userName, out userId);
         }
         internal static bool StreamNameExists(string streamName)
         {
@@ -76,6 +76,8 @@ namespace EvernestFront.Projection
                 HandleStreamCreated(dm as EventStreamCreated);
             else if (dm is SourceCreated)
                 HandleSourceCreated(dm as SourceCreated);
+            else if (dm is UserAppCreated)
+                HandleUserAppCreated(dm as UserAppCreated);
             else if (dm is UserRightSet)
                 HandleRightSet(dm as UserRightSet);
             else if (dm is PasswordSet)
@@ -97,6 +99,11 @@ namespace EvernestFront.Projection
         static void HandleSourceCreated(SourceCreated sc)
         {
             _tables = MakeTables.AddSource(_tables, sc.Key, sc.SourceContract);
+        }
+
+        static void HandleUserAppCreated(UserAppCreated uac)
+        {
+            _tables = MakeTables.AddUserApp(_tables, uac.Key, uac.UserId);
         }
 
         static void HandleRightSet(UserRightSet rs)

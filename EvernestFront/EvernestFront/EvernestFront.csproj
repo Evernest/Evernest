@@ -62,7 +62,7 @@
     <Compile Include="Contract\Diff\IDiff.cs" />
     <Compile Include="Contract\Diff\PasswordSet.cs" />
     <Compile Include="Contract\Diff\SourceCreated.cs" />
-    <Compile Include="Contract\Diff\UserAppCreated.cs" />
+    <Compile Include="Contract\Diff\UserKeyCreated.cs" />
     <Compile Include="Contract\Diff\UserRightSet.cs" />
     <Compile Include="Contract\Diff\EventStreamCreated.cs" />
     <Compile Include="Contract\SourceContract.cs" />

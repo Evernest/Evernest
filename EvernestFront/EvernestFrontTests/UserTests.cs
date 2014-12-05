@@ -13,7 +13,7 @@ namespace EvernestFrontTests
 {
 
     [TestFixture]
-    public partial class UserTests
+    public class UserTests
     {
         private const string UserName = "userName";
         private const string UserName2 = "userName2";

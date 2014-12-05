@@ -13,7 +13,7 @@ namespace EvernestBack
      * EventStream represents an instance of a stream of events and should be matched to a single blob
      * should be created with AzureStorageClient
      */
-    class EventStream:IStream
+    class EventStream:IEventStream
     {
         private WriteLocker WriteLock;
         CloudBlockBlob Blob;

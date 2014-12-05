@@ -80,7 +80,7 @@
     <Compile Include="History.cs" />
     <Compile Include="RAMStream.cs" />
     <Compile Include="IAgent.cs" />
-    <Compile Include="IStream.cs" />
+    <Compile Include="IEventStream.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reader.cs" />

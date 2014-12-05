@@ -16,42 +16,63 @@ namespace EvernestBack
     class AzureStorageClient
     {
         private CloudBlobClient blobClient;
-        private Dictionary<String, EventStream> openedStreams;
+        private Dictionary<String, IEventStream> openedStreams;
         private CloudBlobContainer streamContainer;
+        private bool dummy;
 
-        public AzureStorageClient()
+        public AzureStorageClient(bool dummy = true)
         {
-            openedStreams = new Dictionary<String,EventStream>();
-            // Create the blob client
-            CloudStorageAccount storageAccount = null;
-            try
+            this.dummy = dummy;
+            openedStreams = new Dictionary<String, IEventStream>();
+            if (dummy) // temporary dummy mode
             {
-                // TODO
-                string connectionString = ConfigurationManager.AppSettings.Get(0);
-                storageAccount = CloudStorageAccount.Parse(connectionString);
-                Console.Read();
+                blobClient = null;
+                streamContainer = null;
             }
-            catch (NullReferenceException e)
+            else
             {
-                Console.Error.WriteLine("Erreur de configuration du storageAccount");
-                Console.Error.WriteLine("Method : {0}", e.TargetSite);
-                Console.Error.WriteLine("Message : {0}", e.Message);
-                Console.Error.WriteLine("Source : {0}", e.Source);
-                return;
+                // Create the blob client
+                CloudStorageAccount storageAccount = null;
+                try
+                {
+                    // TODO
+                    var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
+                    storageAccount = CloudStorageAccount.Parse(connectionString);
+                    Console.Read();
+                }
+                catch (NullReferenceException e)
+                {
+                    Console.Error.WriteLine("Erreur de configuration du storageAccount");
+                    Console.Error.WriteLine("Method : {0}", e.TargetSite);
+                    Console.Error.WriteLine("Message : {0}", e.Message);
+                    Console.Error.WriteLine("Source : {0}", e.Source);
+                    return;
+                }
+                blobClient = storageAccount.CreateCloudBlobClient();
+                streamContainer = blobClient.GetContainerReference("streams");
+                try
+                {
+                    streamContainer.CreateIfNotExists();
+                }
+                catch (StorageException e)
+                {
+                    Console.WriteLine(e.Message);
+                    return;
+                }
             }
-            blobClient = storageAccount.CreateCloudBlobClient();
-            streamContainer = blobClient.GetContainerReference("streams");
-            streamContainer.CreateIfNotExists();
         }
 
 
-        public EventStream GetEventStream( String streamStrId ) //not thread-safe yet
+        public IEventStream GetEventStream( String streamStrId ) //not thread-safe yet
         {
-            EventStream stream;
+            IEventStream stream;
             if( !openedStreams.TryGetValue(streamStrId, out stream) )
             {
                 //should ensure that BlockSearchMode is set to Latest
-                stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId));
+                if (dummy)
+                    stream = new RAMStream();
+                else
+                    stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId));
                 openedStreams.Add(streamStrId, stream);
             }
             return stream;

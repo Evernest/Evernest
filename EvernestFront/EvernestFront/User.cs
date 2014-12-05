@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
@@ -16,24 +17,28 @@ namespace EvernestFront
     {
         public Int64 Id { get; private set; }
 
-        public string Name { get { return UserContract.UserName; } }
+        public string Name { get; private set; }
 
-        internal String SaltedPasswordHash { get { return UserContract.SaltedPasswordHash; } }
+        internal String SaltedPasswordHash { get; private set; }
 
-        internal byte[] PasswordSalt { get { return UserContract.PasswordSalt; } }
+        internal byte[] PasswordSalt { get; private set; }
 
-        internal string Key { get { return UserContract.Key; } } //base64 encoded int
+        internal ImmutableDictionary<string, string> InternalUserKeys { get; private set; }
 
-        public List<Source> Sources { get{throw new NotImplementedException("User.Sources");} }
+        internal ImmutableDictionary<string, string> InternalSources { get; private set; }
         // should return Sources, names, keys...?
 
-        public List<KeyValuePair<long, AccessRights>> RelatedStreams
-        {
-            get { return UserContract.RelatedStreams.ToList(); }
-        }
+        internal ImmutableDictionary<long, AccessRights> InternalRelatedEventStreams { get; private set; }
 
 
-        private UserContract UserContract { get; set; }
+
+        public List<KeyValuePair<string, string>> UserKeys { get { return InternalUserKeys.ToList(); } }
+
+        public List<KeyValuePair<string, string>> Sources { get { return InternalSources.ToList(); } }
+        // should return Sources, names, keys...?
+
+        public List<KeyValuePair<long, AccessRights>> RelatedEventStreams { get { return InternalRelatedEventStreams.ToList(); }}
+
 
 
 
@@ -46,10 +51,17 @@ namespace EvernestFront
 
 
 
-        private User(long userId, UserContract userContract)
+        private User(long id, string name, string sph, byte[] ps,
+            ImmutableDictionary<string, string> keys, ImmutableDictionary<string, string> sources, 
+            ImmutableDictionary<long, AccessRights> streams)
         {
-            Id = userId;
-            UserContract = userContract;
+            Id = id;
+            Name = name;
+            SaltedPasswordHash = sph;
+            PasswordSalt = ps;
+            InternalUserKeys = keys;
+            InternalSources = sources;
+            InternalRelatedEventStreams = streams;
         }
 
         static internal bool TryGetUser(long userId, out User user)
@@ -57,7 +69,10 @@ namespace EvernestFront
             UserContract userContract;
             if (Projection.Projection.TryGetUserContract(userId, out userContract))
             {
-                user = new User(userId, userContract);
+                user = new User(userId, userContract.UserName, 
+                    userContract.SaltedPasswordHash,userContract.PasswordSalt,
+                    userContract.Keys, userContract.OwnedSources,
+                    userContract.RelatedStreams);
                 return true;
             }
             else
@@ -121,7 +136,7 @@ namespace EvernestFront
 
                 var key = Keys.NewKey();
 
-                var userContract = MakeUserContract.NewUserContract(name, saltedPasswordHash, passwordSalt, key);
+                var userContract = MakeUserContract.NewUser(name, saltedPasswordHash, passwordSalt);
                 var userAdded = new UserAdded(id, userContract);
 
                 Projection.Projection.HandleDiff(userAdded);

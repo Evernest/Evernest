@@ -76,8 +76,8 @@ namespace EvernestFront.Projection
                 HandleStreamCreated(dm as EventStreamCreated);
             else if (dm is SourceCreated)
                 HandleSourceCreated(dm as SourceCreated);
-            else if (dm is UserAppCreated)
-                HandleUserAppCreated(dm as UserAppCreated);
+            else if (dm is UserKeyCreated)
+                HandleUserKeyCreated(dm as UserKeyCreated);
             else if (dm is UserRightSet)
                 HandleRightSet(dm as UserRightSet);
             else if (dm is PasswordSet)
@@ -101,9 +101,9 @@ namespace EvernestFront.Projection
             _tables = MakeTables.AddSource(_tables, sc.Key, sc.SourceContract);
         }
 
-        static void HandleUserAppCreated(UserAppCreated uac)
+        static void HandleUserKeyCreated(UserKeyCreated ukc)
         {
-            _tables = MakeTables.AddUserApp(_tables, uac.Key, uac.UserId);
+            _tables = MakeTables.AddUserKey(_tables, ukc.Key, ukc.UserId, ukc.Name);
         }
 
         static void HandleRightSet(UserRightSet rs)

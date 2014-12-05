@@ -129,7 +129,7 @@ namespace EvernestFront
         private AccessRights GetRight(long streamId)
         {
             AccessRights right;
-            if (UserContract.RelatedStreams.TryGetValue(streamId, out right))
+            if (InternalRelatedEventStreams.TryGetValue(streamId, out right))
                 return right;
             else
                 return AccessRights.NoRights;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using EvernestFront.Answers;
 using EvernestFront.Contract;
@@ -14,20 +15,23 @@ namespace EvernestFront
     {
         public Int64 Id { get; private set; }
 
-        public string Name { get { return StreamContract.StreamName; } }
+        public string Name { get; private set; }
 
         public int Count { get { return (int)BackStream.Index; } }
 
         public int LastEventId { get { return Count-1; } }
 
+
         public List<KeyValuePair<long, AccessRights>> RelatedUsers
         {
-            get { return StreamContract.RelatedUsers.ToList(); }
+            get { return InternalRelatedUsers.ToList(); }
         }
 
-        private RAMStream BackStream { get { return StreamContract.BackStream; } }
+        private ImmutableDictionary<long, AccessRights> InternalRelatedUsers { get; set; }
 
-        private EventStreamContract StreamContract { get; set; }
+        private RAMStream BackStream { get; set; }
+
+
 
         
 
@@ -36,10 +40,12 @@ namespace EvernestFront
         private static Int64 NextId() { return ++_next; }
 
 
-        private EventStream(long streamId, EventStreamContract streamContract)
+        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, RAMStream backStream)
         {
             Id = streamId;
-            StreamContract = streamContract;
+            Name = name;
+            InternalRelatedUsers = users;
+            BackStream = backStream;
         }
 
         internal static bool TryGetStream(long streamId, out EventStream eventStream)
@@ -47,7 +53,8 @@ namespace EvernestFront
             EventStreamContract streamContract;
             if (Projection.Projection.TryGetStreamContract(streamId, out streamContract))
             {
-                eventStream = new EventStream(streamId, streamContract);
+                eventStream = new EventStream(streamId, streamContract.StreamName,
+                    streamContract.RelatedUsers, streamContract.BackStream);
                 return true;
             }
             else

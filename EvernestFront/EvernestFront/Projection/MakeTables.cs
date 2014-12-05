@@ -50,11 +50,22 @@ namespace EvernestFront.Projection
             // TODO: document this
         }
 
-        internal static Tables AddUserApp(Tables tbls, string key, long userId)
+        internal static Tables AddUserKey(Tables tbls, string key, long userId, string keyName)
         {
-            var usrKtI = tbls.UserKeyToId.SetItem(key, userId);
-            return new Tables(tbls.UserTable, tbls.EventStreamTable, tbls.SourceTable, usrKtI, tbls.UserNameToId, tbls.EventStreamNameToId);
-        
+            UserContract usrc;
+            if (tbls.UserTable.TryGetValue(userId, out usrc))
+            {
+                usrc = MakeUserContract.AddKey(usrc, keyName, key);
+                var usrTbl = tbls.UserTable.SetItem(userId, usrc);
+                var usrKtI = tbls.UserKeyToId.SetItem(key, userId);
+                return new Tables(usrTbl, tbls.EventStreamTable, tbls.SourceTable, usrKtI, tbls.UserNameToId, tbls.EventStreamNameToId);
+       
+            }
+            else
+                throw new Exception();
+            // exception because this should not happen : existence of userId should have been already tested
+            // TODO: document this
+            
         }
 
         internal static Tables SetRight(Tables tbls, long userId, long streamId, AccessRights right)

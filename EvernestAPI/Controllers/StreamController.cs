@@ -6,6 +6,8 @@ using System.Web.Http;
 using EvernestFront;
 using Newtonsoft.Json;
 using EvernestAPI.Models;
+using System.Net;
+using System.Net.Http;
 
 namespace EvernestAPI.Controllers
 {
@@ -145,13 +147,20 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Push")]
-        public Hashtable Push(int id)
+        public HttpResponseMessage Push(HttpRequestMessage request, int id)
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var httpContent = Request.Content;
             var asyncContent = httpContent.ReadAsStringAsync().Result;
-
-            Hashtable json = Tools.parseBody(Request);
+            Hashtable body = new Hashtable();
+            try
+            {
+                body = Tools.parseRequest(Request);
+            }
+            catch
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
 
             var ans = new Hashtable();
             
@@ -161,11 +170,10 @@ namespace EvernestAPI.Controllers
             debug["Method"] = "Push";
             debug["id"] = id;
             //debug["nvc"] = nvc;
-            debug["body"] = json;
+            debug["body"] = body;
             ans["Debug"] = debug;
             // END DEBUG //
-
-            return ans;
+            return request.CreateResponse(HttpStatusCode.OK, ans);
         }
 
     }

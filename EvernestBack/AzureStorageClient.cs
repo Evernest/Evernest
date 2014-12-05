@@ -19,6 +19,7 @@ namespace EvernestBack
         private Dictionary<String, IEventStream> openedStreams;
         private CloudBlobContainer streamContainer;
         private bool dummy;
+        private int blobSize;
 
         public AzureStorageClient(bool dummy = true)
         {
@@ -37,6 +38,7 @@ namespace EvernestBack
                 {
                     // TODO
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
+                    blobSize = Int32.Parse(ConfigurationManager.AppSettings["BlobSize"]);
                     storageAccount = CloudStorageAccount.Parse(connectionString);
                     Console.Read();
                 }
@@ -72,7 +74,7 @@ namespace EvernestBack
                 if (dummy)
                     stream = new RAMStream();
                 else
-                    stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId));
+                    stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId), blobSize);
                 openedStreams.Add(streamStrId, stream);
             }
             return stream;

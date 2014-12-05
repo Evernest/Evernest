@@ -25,14 +25,16 @@ namespace EvernestBack
         }
 		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
         private CloudBlobStream Output;
+        private CloudBlockBlob blob;
         //public ImmutableDictionary<UInt64, UInt64> Milestones { get; protected set;}
             //i'm not really satisfied with that, feel free to move it wherever you think it more appropriate
         private UInt64 CurrentID;
         
-        public WriteLocker(CloudBlockBlob blob)
+        public WriteLocker(CloudBlockBlob blob, int BlobSize)
         {
             CurrentID = 0;
-            blob.StreamWriteSizeInBytes = 65536; //64KiB for now, totally arbitrary
+            this.blob = blob;
+            blob.StreamWriteSizeInBytes = BlobSize; // Defined in app.config
             //Milestones = ImmutableDictionary.ToImmutableDictionary(new Dictionary<UInt64, UInt64>());
             Output = blob.OpenWrite();
         }

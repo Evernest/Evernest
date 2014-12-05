@@ -10,7 +10,7 @@ namespace EvernestBack
      * This is a small test Stream storing messages in a List instead of in
      * Azure.
      */
-    class RAMStream:IEventStream
+    public class RAMStream:IEventStream
     {
         List<string> Messages = new List<string>();
         UInt64 Index = 0;

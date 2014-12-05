@@ -18,10 +18,10 @@ namespace EvernestBack
         private WriteLocker WriteLock;
         CloudBlockBlob Blob;
 
-        public EventStream( CloudBlockBlob blob )
+        public EventStream( CloudBlockBlob blob, int blobSize)
         {
             this.Blob = blob;
-            WriteLock = new WriteLocker(blob);
+            WriteLock = new WriteLocker(blob, blobSize);
             WriteLock.Store();
         }
 

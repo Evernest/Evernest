@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Dynamic;
+using System.Runtime.InteropServices;
 using EvernestFront;
-using EvernestFront.Exceptions;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
+using EvernestFront.Answers;
+using EvernestFront.Errors;
 
 namespace EvernestFrontTests
 {
@@ -19,6 +22,34 @@ namespace EvernestFrontTests
 
         private const string Message = "message";
 
+        internal static String GetSourceKey_AssertSuccess(long userId, long streamId, string sourceName,
+            AccessRights rights)
+        {
+            CreateSource ans = Process.CreateSource(userId, streamId, sourceName, rights);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+            Assert.IsNotNull(ans.Key);
+            return ans.Key;
+        }
+
+        internal static void SetRights_AssertSuccess(String adminSource, long targetUser, AccessRights rights)
+        {
+            SetRights ans = Process.SetRights(adminSource, targetUser, rights);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+        }
+
+        internal static int GetEventId_AssertSuccess(String sourceKey, String message)
+        {
+            Push ans = Process.Push(sourceKey, message);
+            var success = ans.Success;
+            var error = ans.Error;
+            var id = ans.MessageId;
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+            return ans.MessageId;
+        }
+
         [SetUp]
         public void Initialize()
         {
@@ -31,112 +62,114 @@ namespace EvernestFrontTests
         [Test]
         public void CreateSource_Success()
         {
-            var userId = Process.AddUser(UserName);
-            var streamId = Process.CreateStream(userId,StreamName);
-            var sourceKey = Process.CreateSource(userId, streamId, SourceName, SomeRight);
+            var userId = ProcessTests.GetUserId_AssertSuccess(UserName);
+            var streamId = ProcessTests.GetStreamId_AssertSuccess(userId,StreamName);
+            var sourceKey = GetSourceKey_AssertSuccess(userId, streamId, SourceName, SomeRight);
 
             Source source = SourceTable.GetSource(sourceKey);
             Assert.IsNotNull(source);
             Assert.AreEqual(sourceKey, source.Key);
             Assert.AreEqual(SourceName, source.Name);
 
-            var sourceKey2 = Process.CreateSource(userId, streamId, SourceName2, SomeRight);
+            var sourceKey2 = GetSourceKey_AssertSuccess(userId, streamId, SourceName2, SomeRight);
             Assert.AreNotEqual(sourceKey,sourceKey2);
         }
 
         [Test]
         public void CreateSource_SameNameDistinctUsers_Success()
         {
-            var userId = Process.AddUser(UserName);
-            var streamId = Process.CreateStream(userId, StreamName);
-            var sourceKey = Process.CreateSource(userId, streamId, SourceName, SomeRight);
-            var userId2 = Process.AddUser(UserName2);
-            var sourceKey2 = Process.CreateSource(userId2, streamId, SourceName, SomeRight);
+            var userId = ProcessTests.GetUserId_AssertSuccess(UserName);
+            var streamId = ProcessTests.GetStreamId_AssertSuccess(userId, StreamName);
+            var sourceKey = GetSourceKey_AssertSuccess(userId, streamId, SourceName, SomeRight);
+            var userId2 = ProcessTests.GetUserId_AssertSuccess(UserName2);
+            var sourceKey2 = GetSourceKey_AssertSuccess(userId2, streamId, SourceName, SomeRight);
+            Assert.AreNotEqual(sourceKey,sourceKey2);
         }
 
         [Test]
-        [ExpectedException(typeof(SourceNameTakenException))]
         public void CreateSource_SourceNameTaken()
         {
-            var userId = Process.AddUser(UserName);
-            var streamId = Process.CreateStream(userId, StreamName);
-            var sourceKey = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadOnly);
-            var sourceKey2 = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadOnly);
+            var userId = ProcessTests.GetUserId_AssertSuccess(UserName);
+            var streamId = ProcessTests.GetStreamId_AssertSuccess(userId, StreamName);
+            var sourceKey = GetSourceKey_AssertSuccess(userId, streamId, SourceName, AccessRights.ReadOnly);
+            CreateSource ans = Process.CreateSource(userId, streamId, SourceName, AccessRights.ReadOnly);
+            ProcessTests.ErrorAssert<SourceNameTaken>(ans);
         }
 
         [Test]
         public void SetRights_Success()
         {
-            long creator = Process.AddUser("creator");
-            long reader = Process.AddUser("reader");
-            long admin = Process.AddUser("admin");
-            long stream = Process.CreateStream(creator, StreamName);
-            var creatorSource = Process.CreateSource(creator, stream, SourceName, AccessRights.Admin);
-            var adminSource = Process.CreateSource(admin, stream, SourceName, AccessRights.Admin);
-            var readerSource = Process.CreateSource(reader, stream, SourceName, AccessRights.Admin);
+            long creator = ProcessTests.GetUserId_AssertSuccess("creator");
+            long reader = ProcessTests.GetUserId_AssertSuccess("reader");
+            long admin = ProcessTests.GetUserId_AssertSuccess("admin");
+            long stream = ProcessTests.GetStreamId_AssertSuccess(creator, StreamName);
+            var creatorSource = GetSourceKey_AssertSuccess(creator, stream, SourceName, AccessRights.Admin);
+            var adminSource = GetSourceKey_AssertSuccess(admin, stream, SourceName, AccessRights.Admin);
+            var readerSource = GetSourceKey_AssertSuccess(reader, stream, SourceName, AccessRights.Admin);
 
-            Process.SetRights(creatorSource, admin, AccessRights.Admin);
-            Process.SetRights(adminSource, reader, AccessRights.ReadOnly);
-            Process.SetRights(creatorSource, reader, AccessRights.ReadWrite);
+            SetRights_AssertSuccess(creatorSource, admin, AccessRights.Admin);
+            SetRights_AssertSuccess(adminSource, reader, AccessRights.ReadOnly);
+            SetRights_AssertSuccess(creatorSource, reader, AccessRights.ReadWrite);
         }
 
         [Test]
-        [ExpectedException(typeof(AdminAccessDeniedException))]
         public void SetRights_UserCannotAdmin_AdminAccessDenied()
         {
-            long creator = Process.AddUser("creator");
-            long reader = Process.AddUser("reader");
-            long stream = Process.CreateStream(creator, StreamName);
-            var readerSource = Process.CreateSource(reader, stream, SourceName, AccessRights.Admin);
-            Process.SetRights(creator, stream, reader, AccessRights.ReadOnly);
+            long creator = ProcessTests.GetUserId_AssertSuccess("creator");
+            long reader = ProcessTests.GetUserId_AssertSuccess("reader");
+            long stream = ProcessTests.GetStreamId_AssertSuccess(creator, StreamName);
+            var readerSource = GetSourceKey_AssertSuccess(reader, stream, SourceName, AccessRights.Admin);
+            ProcessTests.SetRights_AssertSuccess(creator, stream, reader, AccessRights.ReadOnly);
 
-            Process.SetRights(readerSource, reader, AccessRights.ReadWrite);
+            SetRights ans = Process.SetRights(readerSource, reader, AccessRights.ReadWrite);
+            Assert.IsFalse(ans.Success);
+            ProcessTests.ErrorAssert<AdminAccessDenied>(ans);
         }
 
         [Test]
-        [ExpectedException(typeof(AdminAccessDeniedException))]
         public void SetRights_SourceCannotAdmin_AdminAccessDenied()
         {
-            long creator = Process.AddUser("creator");
-            long target = Process.AddUser("target");
-            long stream = Process.CreateStream(creator, StreamName);
-            var source = Process.CreateSource(creator, stream, SourceName, AccessRights.ReadOnly);
+            long creator = ProcessTests.GetUserId_AssertSuccess("creator");
+            long target = ProcessTests.GetUserId_AssertSuccess("target");
+            long stream = ProcessTests.GetStreamId_AssertSuccess(creator, StreamName);
+            var source = GetSourceKey_AssertSuccess(creator, stream, SourceName, AccessRights.ReadOnly);
 
-            Process.SetRights(source, target, AccessRights.ReadWrite);
+            SetRights ans = Process.SetRights(source, target, AccessRights.ReadWrite);
+            ProcessTests.ErrorAssert<AdminAccessDenied>(ans);
         }
 
         [Test]
-        [ExpectedException(typeof(CannotDestituteAdminException))]
         public void SetRights_CannotDestituteAdmin()
         {
-            long creator = Process.AddUser("creator");
-            long stream = Process.CreateStream(creator, StreamName);
-            var source = Process.CreateSource(creator, stream, SourceName, AccessRights.Admin);
+            long creator = ProcessTests.GetUserId_AssertSuccess("creator");
+            long stream = ProcessTests.GetStreamId_AssertSuccess(creator, StreamName);
+            var source = GetSourceKey_AssertSuccess(creator, stream, SourceName, AccessRights.Admin);
 
-            Process.SetRights(source, creator, AccessRights.NoRights);
+            SetRights ans = Process.SetRights(source, creator, AccessRights.NoRights);
+            ProcessTests.ErrorAssert<CannotDestituteAdmin>(ans);
         }
 
         [Test]
         public void Push_Success()
         {
-            long user = Process.AddUser(UserName);
-            long stream = Process.CreateStream(user, StreamName);
-            var source = Process.CreateSource(user, stream, SourceName, AccessRights.Admin);
-            int eventId = Process.Push(source, Message);
-            int eventId2 = Process.Push(source, Message);
+            long user = ProcessTests.GetUserId_AssertSuccess(UserName);
+            long stream = ProcessTests.GetStreamId_AssertSuccess(user, StreamName);
+            var source = GetSourceKey_AssertSuccess(user, stream, SourceName, AccessRights.Admin);
+            int eventId = GetEventId_AssertSuccess(source, Message);
+            int eventId2 = GetEventId_AssertSuccess(source, Message);
             Assert.AreEqual(eventId, 0);
             Assert.AreEqual(eventId2, 1);
         }
 
         [Test]
-        [ExpectedException(typeof(WriteAccessDeniedException))]
         public void Push_UserCannotWrite_WriteAccessDenied()
         {
-            long creator = Process.AddUser("creator");
-            long stream = Process.CreateStream(creator, StreamName);
-            long user = Process.AddUser(UserName);
-            var source = Process.CreateSource(user, stream, SourceName, AccessRights.WriteOnly);
-            int eventId = Process.Push(source, Message);
+            long creator = ProcessTests.GetUserId_AssertSuccess("creator");
+            long stream = ProcessTests.GetStreamId_AssertSuccess(creator, StreamName);
+            long user = ProcessTests.GetUserId_AssertSuccess(UserName);
+            var source = GetSourceKey_AssertSuccess(user, stream, SourceName, AccessRights.WriteOnly);
+            Push ans = Process.Push(source, Message);
+            ProcessTests.ErrorAssert<WriteAccessDenied>(ans);
         }
 
         

@@ -33,16 +33,48 @@ namespace EvernestWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        //public ActionResult Login(LoginModel model, string returnUrl)
         public ActionResult Login(LoginModel model, string returnUrl)
         {
+            /*
             if (ModelState.IsValid && WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
             {
                 return RedirectToLocal(returnUrl);
             }
+            */
+
+            // connexion à EvernestFront avec la fonction fournie et vérification du compte.
+            if (ModelState.IsValid && true)
+            {
+                /*
+                int timeRememberMe = 1;
+                if (model.RememberMe)
+                    timeRememberMe = 30;
+                
+                // création d'un cookie
+                Response.Cookies["EvernestWeb"]["u"] = HashKey(model.UserName);
+                Response.Cookies["EvernestWeb"]["p"] = HashKey(model.Password);
+                Response.Cookies["EvernestWeb"].Expires = DateTime.Now.AddDays(timeRememberMe);
+                */
+
+                // udapte User.Identity.Name and Request.IsAuthenticated
+                FormsAuthentication.SetAuthCookie(model.UserName,model.RememberMe);
+
+                return RedirectToLocal(returnUrl);
+
+            }
+            
+
+
 
             // Si nous sommes arrivés là, quelque chose a échoué, réafficher le formulaire
             ModelState.AddModelError("", "Le nom d'utilisateur ou mot de passe fourni est incorrect.");
             return View(model);
+            
+            
+
+
+            
         }
 
         //
@@ -52,7 +84,20 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            WebSecurity.Logout();
+            //WebSecurity.Logout();
+
+            // Destroy token cookie (useless cookie, but needed to update user.name and Request.IsAuthenticated)
+            FormsAuthentication.SignOut();
+
+            // Destroy EvernestWeb Cookie
+            /*
+            if (Request.Cookies["EvernestWeb"] != null)
+            {
+                HttpCookie deletedCookie = new HttpCookie("EvernestWeb");
+                deletedCookie.Expires = DateTime.Now.AddDays(-1d);
+                Response.Cookies.Add(deletedCookie);
+            }
+            */
 
             return RedirectToAction("Index", "Home");
         }
@@ -401,6 +446,17 @@ namespace EvernestWeb.Controllers
                 default:
                     return "Une erreur inconnue s'est produite. Vérifiez votre entrée et réessayez. Si le problème persiste, contactez votre administrateur système.";
             }
+        }
+
+        public static string HashKey(string key)
+        {
+            UInt64 hashedValue = 4917635819926181551ul;
+            for (int i = 0; i < key.Length; ++i)
+            {
+                hashedValue += key[i];
+                hashedValue *= 4919631819126884552ul;
+            }
+            return hashedValue.ToString();
         }
         #endregion
     }

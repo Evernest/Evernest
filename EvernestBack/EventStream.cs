@@ -52,10 +52,10 @@ namespace EvernestBack
                     Agent.Reverse(buffer, (int) currentPosition+sizeof(UInt64), (int) sizeof(UInt16));
                 }
                 currentID = BitConverter.ToUInt64(buffer, (int) currentPosition);
-                messageLength = BitConverter.ToUInt16(buffer, (int) currentPosition+sizeof(UInt16));
+                messageLength = BitConverter.ToUInt16(buffer, (int) currentPosition+sizeof(UInt64));
                 currentPosition += sizeof(UInt64)+sizeof(UInt16);
             }
-            while(currentID != id); //should also check whether the position is still in range
+            while(currentID != id); // /!\ should also check whether the position is still in range!
             String message = System.Text.Encoding.Unicode.GetString(buffer, (int) currentPosition, (int) messageLength);
             Agent msgAgent = new Agent(message, currentID, callback);
             msgAgent.Processed();

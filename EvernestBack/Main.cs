@@ -7,7 +7,6 @@ namespace EvernestBack
     {
         static void Main(string[] args)
         {
-            UInt64 index=100;
             /*History<Int32> test = new History<Int32>();
             test.Insert(1, 1);
             test.Insert(3, 42);
@@ -16,12 +15,23 @@ namespace EvernestBack
             Console.Write(a);*/
             AzureStorageClient asc = new AzureStorageClient(false);
             IEventStream stream = asc.GetEventStream("Test");
-            stream.Push("Test", b => index = b.RequestID);
+            System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
+            UInt32 counter = 0;
             while (true)
             {
-                stream.Pull(index, b => { Console.WriteLine(b.Message + ". ID : " + b.RequestID); });
-                System.Threading.Thread.Sleep(1);
+                stream.Push(counter.ToString(), pushAgent =>
+                {
+                    stream.Pull(pushAgent.RequestID, pullAgent =>
+                    {
+                        Console.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
+                        file.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
+                    });
+                });
+                System.Threading.Thread.Sleep(100);
+                counter++;
             }
+            file.Close(); //this won't happen with an infinite loop, but anyway, this isn't that important
+
             //Console.Read();
             //i suspect this operation to block Console.WriteLine (thus preventing the other thread to run)
             //so i added a console.read() in the callback to have the time to see the message after pushing enter

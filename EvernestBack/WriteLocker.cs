@@ -73,7 +73,8 @@ namespace EvernestBack
         {
             UInt16 size;
             Byte[] bytes = prod.Serialize(out size);
-            Output.Write(bytes, 0, size);
+            //Output.Write(bytes, 0, size);
+            Blob.UploadFromByteArray(bytes, 0, (int) size);
             return size;
         }
 

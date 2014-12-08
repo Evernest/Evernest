@@ -40,7 +40,6 @@ namespace EvernestBack
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
                     blobSize = Int32.Parse(ConfigurationManager.AppSettings["BlobSize"]);
                     storageAccount = CloudStorageAccount.Parse(connectionString);
-                    Console.Read();
                 }
                 catch (NullReferenceException e)
                 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Web;
 using System.Web.Http;
 using EvernestFront;
@@ -61,14 +62,17 @@ namespace EvernestAPI.Controllers
                     ans["FieldErrors"] = new List<string> {"Key"};
                 }
             else
-                {
-                    var pullAnswer = Process.Pull(key, arg0);
-                    if (!pullAnswer.Success)
-                        throw new NotImplementedException();
-                    var eve = pullAnswer.EventPulled; //eve is not null at this point
-                    ans["Status"] = "Success";
-                    ans["Events"] = new List<Event> {eve};
-                };
+            {
+                var getSource = Source.GetSource(key);
+                if (!getSource.Success)
+                    throw new NotImplementedException();
+                var pullAnswer = getSource.Source.Pull(arg0);
+                if (!pullAnswer.Success)
+                    throw new NotImplementedException();
+                var eve = pullAnswer.EventPulled; //eve is not null at this point
+                ans["Status"] = "Success";
+                ans["Events"] = new List<Event> {eve};
+            };
             return ans;
         }
 
@@ -100,9 +104,14 @@ namespace EvernestAPI.Controllers
             }
             else
             {
+                var getSource = Source.GetSource(key);
+                if (!getSource.Success)
+                    throw new NotImplementedException();
+                var pullRange = getSource.Source.PullRange(arg0, arg1);
+                if (!pullRange.Success)
+                    throw new NotImplementedException();
                 ans["Status"] = "Success";
-                ans["Events"] = new List<Event>();
-                ans["Events"] = Process.PullRange(key, arg0, arg1);
+                ans["Events"] = pullRange.Events;
             }
             return ans;
         }
@@ -133,7 +142,10 @@ namespace EvernestAPI.Controllers
             }
             else
             {
-                var pullRandomAnswer = Process.PullRandom(key);
+                var getSource = Source.GetSource(key);
+                if (!getSource.Success)
+                    throw new NotImplementedException();
+                var pullRandomAnswer = getSource.Source.PullRandom();
                 if (!pullRandomAnswer.Success)
                     throw new NotImplementedException();
                 var eve = pullRandomAnswer.EventPulled; //not null

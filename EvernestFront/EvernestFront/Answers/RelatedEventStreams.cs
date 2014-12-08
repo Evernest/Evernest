@@ -7,17 +7,17 @@ using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
-    public class RelatedStreams : Answer
+    public class RelatedEventStreams : Answer
     {
         public List<KeyValuePair<Int64, AccessRights>> Streams { get; private set; }
 
-        internal RelatedStreams(List<KeyValuePair<Int64, AccessRights>> streams)
+        internal RelatedEventStreams(List<KeyValuePair<Int64, AccessRights>> streams)
             : base()
         {
             Streams = streams;
         }
 
-        internal RelatedStreams(FrontError err)
+        internal RelatedEventStreams(FrontError err)
             : base(err) { }
     }
 }

@@ -15,7 +15,7 @@ namespace EvernestBack
     {
         private String StreamFileName;
         List<string> Messages = new List<string>();
-        UInt64 Index = 0;
+        public UInt64 Index = 0;
 
         public RAMStream(String streamStringID)
         {

@@ -7,7 +7,7 @@ using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
-    public class CreateStream:Answer
+    public class CreateEventStream:Answer
     {
         public Int64 StreamId { get; private set; }
         
@@ -15,12 +15,12 @@ namespace EvernestFront.Answers
         /// Sets Success to false and field Error to err.
         /// </summary>
         /// <param name="err"></param>
-        internal CreateStream(FrontError err)
+        internal CreateEventStream(FrontError err)
             : base(err) { }
         /// <summary>
         /// Sets Success to true.
         /// </summary>
-        internal CreateStream(long id)
+        internal CreateEventStream(long id)
             : base ()
         {
             StreamId = id;

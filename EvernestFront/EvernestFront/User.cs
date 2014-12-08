@@ -99,7 +99,7 @@ namespace EvernestFront
                 User user;
                 if (TryGetUser(userId, out user))
                 {
-                    if (user.Identify(password))
+                    if (user.VerifyPassword(password))
                         return new IdentifyUser(user);
                     else
                         return new IdentifyUser(new WrongPassword(userName, password));
@@ -166,17 +166,19 @@ namespace EvernestFront
         }
 
 
-        public SetPassword SetPassword(string password)
+        public SetPassword SetPassword(string formerPassword, string newPassword)
         {
-            if (!(password.Equals(System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(password)))))
-                return new SetPassword(new InvalidString(password));
-            var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
+            if (!(newPassword.Equals(System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(newPassword)))))
+                return new SetPassword(new InvalidString(newPassword));
+            if (!VerifyPassword(formerPassword))
+                return new SetPassword(new WrongPassword(Name, formerPassword));
+            var passwordBytes = System.Text.Encoding.ASCII.GetBytes(newPassword);
             var hmacMD5 = new HMACMD5(PasswordSalt);
             var saltedHash = hmacMD5.ComputeHash(passwordBytes);
             var saltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
             var passwordSet = new PasswordSet(Id, saltedPasswordHash);
             Projection.Projection.HandleDiff(passwordSet);
-            return new SetPassword(Id, password);
+            return new SetPassword(Id, newPassword);
         }
 
         public CreateUserKey CreateUserKey(string keyName)
@@ -200,7 +202,7 @@ namespace EvernestFront
         }
 
 
-        private bool Identify(string password)
+        private bool VerifyPassword(string password)
         {
             var hmacMD5 = new HMACMD5(PasswordSalt);
             var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);

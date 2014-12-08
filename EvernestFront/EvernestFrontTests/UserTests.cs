@@ -106,22 +106,38 @@ namespace EvernestFrontTests
         [Test]
         public void SetPassword_Success()
         {
-            long userId = AddUser_GetId_AssertSuccess(UserName);
+            const string initialPassword = "InitialPassword";
+            var userAdded = User.AddUser(UserName, initialPassword);
+            var userId = userAdded.UserId;
             const string newPassword = "NewPassword";
             User user = GetUser_AssertSuccess(userId);
-            SetPassword setPassword = user.SetPassword(newPassword);
+            SetPassword setPassword = user.SetPassword(initialPassword, newPassword);
             Assert.IsTrue(setPassword.Success);
             IdentifyUser ans = User.IdentifyUser(UserName, newPassword);
             Assert.IsTrue(ans.Success);
         }
 
         [Test]
+        public void SetPassword_WrongPassword()
+        {
+            const string initialPassword = "InitialPassword";
+            var userAdded = User.AddUser(UserName, initialPassword);
+            var userId = userAdded.UserId;
+            const string newPassword = "NewPassword";
+            User user = GetUser_AssertSuccess(userId);
+            SetPassword setPassword = user.SetPassword("WrongPassword", newPassword);
+            AssertAuxiliaries.ErrorAssert<WrongPassword>(setPassword);
+        }
+
+        [Test]
         public void SetPassword_InvalidString()
         {
-            long userId = AddUser_GetId_AssertSuccess(UserName);
+            const string initialPassword = "InitialPassword";
+            var userAdded = User.AddUser(UserName, initialPassword);
+            var userId = userAdded.UserId;
             const string badString = "£££££"; //non ASCII
             User user = GetUser_AssertSuccess(userId);
-            SetPassword setPassword = user.SetPassword(badString);
+            SetPassword setPassword = user.SetPassword(initialPassword, badString);
             AssertAuxiliaries.ErrorAssert<InvalidString>(setPassword);
         }
 

@@ -9,7 +9,7 @@ namespace EvernestBack
      * both Reader and Producer. That is for instance : the Callback procedure 
      * when processed, the RequestID and Message logic, etc...
      */
-    abstract class Agent:IAgent
+    class Agent:IAgent
     {
         private Action<IAgent> Callback;
         public UInt64 RequestID { get; private set; }
@@ -23,7 +23,7 @@ namespace EvernestBack
             this.Callback = Callback;
         }
 
-        private void Reverse(Byte[] Array, int Offset, int Count)
+        public static void Reverse(Byte[] Array, int Offset, int Count)
         {
             Byte Tmp;
             for (UInt16 i = 0; i < Count; i++)

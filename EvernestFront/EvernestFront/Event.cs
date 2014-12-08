@@ -1,5 +1,7 @@
 ﻿using System;
-
+using System.Runtime.Remoting.Messaging;
+using System.Security.Claims;
+using EvernestFront.Contract;
 
 namespace EvernestFront
 {
@@ -13,28 +15,20 @@ namespace EvernestFront
 
         public Int64 ParentStreamId { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="eventId"></param>
-        /// <param name="message"></param>
-        /// <param name="parentStream"></param>
-        internal Event(int eventId, String message, Stream parentStream)
-        {
-            Id = eventId;
-            Message = message;
-            ParentStreamName = parentStream.Name;
-            ParentStreamId = parentStream.Id;
-        }
+        public String AuthorName { get; private set; }
 
-        internal static Event DummyEvent(Stream strm)
-        {
-            return new Event(0, "this is a dummy event because the implementation is not complete yet", strm);
-        }
+        public String AuthorId { get; private set; }
 
-        internal static Event DummyEvent(int id, Stream strm)
+        public DateTime Date { get; private set; }
+
+        internal Event(EventContract contract,int id, String parentStreamName, long parentStreamId)
         {
-            return new Event(id, "this is a dummy event because the implementation is not complete yet", strm);
+            Id = id;
+            Message = contract.Message;
+            ParentStreamName = parentStreamName;
+            ParentStreamId = parentStreamId;
+            AuthorName = contract.AuthorName;
+            Date = contract.Date;
         }
     }
 }

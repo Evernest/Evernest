@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Web;
 using System.Web.Http;
+using EvernestFront;
+using User = EvernestFront.User;
 
 namespace EvernestAPI.Controllers
 {
@@ -15,7 +17,6 @@ namespace EvernestAPI.Controllers
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var ans = new Hashtable();
-         
 
             // BEGIN DEBUG //
             var debug = new Hashtable();
@@ -37,7 +38,7 @@ namespace EvernestAPI.Controllers
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var ans = new Hashtable();
-            Answer.AddUser user = User.AddUser(username, password);
+            EvernestFront.Answers.AddUser user = EvernestFront.User.AddUser(username, password);
 
             // BEGIN DEBUG //
             var debug = new Hashtable();
@@ -51,10 +52,10 @@ namespace EvernestAPI.Controllers
             if (user.Success)
             {
                 ans["Status"] = "Success";
-                ans["id"] = user.id;
+                ans["id"] = user.UserId;
                 ans["name"] = username;
                 ans["password"] = password;
-                ans["key"] = user.key;
+                ans["key"] = user.UserKey;
             }
             else
             {
@@ -72,7 +73,7 @@ namespace EvernestAPI.Controllers
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var ans = new Hashtable();
-            Answer.GetUser user = User.GetUser(userId);
+            EvernestFront.Answers.GetUser user = EvernestFront.User.GetUser(userId);
 
             // BEGIN DEBUG //
             var debug = new Hashtable();
@@ -86,9 +87,9 @@ namespace EvernestAPI.Controllers
             if (user.Success)
             {
                 ans["Status"] = "Success";
-                ans["key"] = user.User.key;
+                ans["key"] = user.User.Key;
                 ans["id"] = userId;
-                ans["name"] = user.User.name;
+                ans["name"] = user.User.Name;
                 ans["OwnedSources"] = user.User.Sources;
                 ans["RelatedStreams"] = user.User.RelatedStreams;
             }
@@ -99,7 +100,6 @@ namespace EvernestAPI.Controllers
             }
             return ans;
         }
-
 
     }
 }

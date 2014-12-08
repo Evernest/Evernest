@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<InfoWarnings>
+  <Info>Begin full analysis with NDepend v5.4.1.8430</Info>
+  <Info>No Baseline for Comparison loaded.</Info>
+  <Warning>Can't load the assembly {EvernestWeb}:
+Can't find the .NET assembly {EvernestWeb} in specified folders. 
+Has it been compiled properly? 
+Is the NDepend project missing the containing folder of the .NET assembly?</Warning>
+  <Warning>Can't load the assembly {Newtonsoft.Json}:
+Several .NET assemblies have the name {Newtonsoft.Json} but they are different.
+ - C:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\bin\Debug\Newtonsoft.Json.dll   v0.0  407 776 bytes
+ - C:\Users\Niols\Documents\GitHub\Evernest\EvernestAPI\bin\Newtonsoft.Json.dll   v0.0  500 224 bytes
+</Warning>
+  <Info>Concurrent mode</Info>
+  <Info>.NET Assemblies loaded from {C:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\bin\Debug} 
+   EvernestFront.dll   v1.0.0.0
+   EvernestBack.exe   v1.0.0.0
+   Microsoft.WindowsAzure.Storage.dll   v4.3.0.0</Info>
+  <Info>.NET Assemblies loaded from {C:\Users\Niols\Documents\GitHub\Evernest\EvernestAPI\bin} 
+   EvernestAPI.dll   v1.0.0.0
+   Microsoft.AspNet.Identity.Core.dll   v2.0.0.0
+   System.Web.Http.dll   v5.2.0.0
+   System.Web.Mvc.dll   v5.2.0.0
+   Microsoft.AspNet.Identity.EntityFramework.dll   v2.0.0.0
+   Microsoft.Owin.Security.OAuth.dll   v2.1.0.0
+   System.Web.Optimization.dll   v1.1.0.0
+   Microsoft.AspNet.Identity.Owin.dll   v2.0.0.0
+   Microsoft.Owin.dll   v2.1.0.0
+   Owin.dll   v1.0.0.0
+   System.Net.Http.Formatting.dll   v5.2.0.0
+   EntityFramework.dll   v6.0.0.0
+   Microsoft.Owin.Security.dll   v2.1.0.0
+   Microsoft.Owin.Security.Cookies.dll   v2.1.0.0
+   System.Web.Http.WebHost.dll   v5.2.0.0
+   System.Web.Http.Owin.dll   v5.2.0.0</Info>
+  <Info>.NET Assemblies loaded from {C:\windows\Microsoft.NET\Framework\v4.0.30319} 
+   mscorlib.dll   v4.0.0.0
+   System.Core.dll   v4.0.0.0
+   System.Web.dll   v4.0.0.0
+   System.Net.Http.dll   v4.0.0.0
+   System.Xml.dll   v4.0.0.0
+   System.dll   v4.0.0.0
+   Microsoft.CSharp.dll   v4.0.0.0
+   System.ComponentModel.DataAnnotations.dll   v4.0.0.0
+   System.Runtime.Serialization.dll   v4.0.0.0
+   System.Xml.Linq.dll   v4.0.0.0
+   System.Configuration.dll   v4.0.0.0</Info>
+  <Warning>No application or third party assembly found in directory {C:\windows\Microsoft.NET\Framework\v4.0.30319\WPF}</Warning>
+  <Warning>Assembly {Newtonsoft.Json} is referenced by {EvernestAPI} but is not found.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestAPI\App_Start\WebApiConfig.cs} (last modified 24/11/2014 17:56:32) and the PDB file of the assembly {EvernestAPI} (last modified 24/11/2014 17:31:25) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestAPI\Controllers\SourceController.cs} (last modified 24/11/2014 17:56:03) and the PDB file of the assembly {EvernestAPI} (last modified 24/11/2014 17:31:25) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestAPI\Controllers\StreamController.cs} (last modified 01/12/2014 18:16:59) and the PDB file of the assembly {EvernestAPI} (last modified 24/11/2014 17:31:25) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestAPI\Controllers\UserController.cs} (last modified 04/12/2014 21:23:12) and the PDB file of the assembly {EvernestAPI} (last modified 24/11/2014 17:31:25) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestAPI\Models\Tools.cs} (last modified 01/12/2014 18:16:59) and the PDB file of the assembly {EvernestAPI} (last modified 24/11/2014 17:31:25) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\CheckRights.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Keys.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Source.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\SourceTable.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\User.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Process.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Stream.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\StreamTable.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\UserTable.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\Pull.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\PullRandom.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\PullRange.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\RelatedStreams.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\RelatedUsers.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\SetPassword.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\SetRights.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\IdentifyUser.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\InvalidString.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\SourceKeyDoesNotExist.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\WrongPassword.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\AccessDenied.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\AdminAccessDenied.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\CannotDestituteAdmin.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\FrontError.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\InvalidEventId.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\ReadAccessDenied.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\SourceNameTaken.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\UserIdDoesNotExist.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\UserNameDoesNotExist.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\UserNameTaken.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\Answer.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\Push.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\AddUser.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\CreateStream.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Answers\CreateSource.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\WriteAccessDenied.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\StreamIdDoesNotExist.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Errors\StreamNameTaken.cs} (last modified 24/11/2014 17:57:48) and the PDB file of the assembly {EvernestFront} (last modified 24/11/2014 16:48:19) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestBack\AzureStorageClient.cs} (last modified 01/12/2014 18:06:04) and the PDB file of the assembly {EvernestBack} (last modified 24/11/2014 16:48:18) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestBack\Main.cs} (last modified 01/12/2014 18:06:04) and the PDB file of the assembly {EvernestBack} (last modified 24/11/2014 16:48:18) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestBack\EventStream.cs} (last modified 01/12/2014 18:06:04) and the PDB file of the assembly {EvernestBack} (last modified 24/11/2014 16:48:18) are not in-sync.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestBack\WriteLocker.cs} (last modified 01/12/2014 18:06:04) and the PDB file of the assembly {EvernestBack} (last modified 24/11/2014 16:48:18) are not in-sync.</Warning>
+  <Info>100 source files parsed ; 11 source files not found ; 47 source files not in-sync with PDB</Info>
+  <Info>0 code rule has been extracted from code.</Info>
+  <Info>No dependency cycle detected in assemblies referencement graph.</Info>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\AccessDeniedException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\AdminAccessDeniedException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\CannotDestituteAdminException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\InvalidEventIdException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\ReadAccessDeniedException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\SourceNameTakenException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\UserIdDoesNotExistException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\UserNameTakenException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\WriteAccessDeniedException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\StreamIdDoesNotExistException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Warning>The source file {c:\Users\Niols\Documents\GitHub\Evernest\EvernestFront\EvernestFront\Exceptions\StreamNameTakenException.cs} referenced by the PDB file of the assembly {EvernestFront} does not exist.</Warning>
+  <Info>12/08/2014 10:39:53 Analyse dependencies of your application.</Info>
+  <Info>12/08/2014 10:39:57 Log trend metrics values.</Info>
+  <Info>12/08/2014 10:40:00 Execute queries and rules</Info>
+  <Warning>5 critical rules are violated.
+  - Avoid namespaces mutually dependent
+  - Potentially dead Types
+  - Potentially dead Methods
+  - Constructors of abstract classes should be declared as protected or private
+  - Avoid having different types with same name</Warning>
+  <Info>12/08/2014 10:40:04 NDepend analysis done. Duration: 01:25</Info>
+  <Info>12/08/2014 10:40:04 Building the report (standard).</Info>
+</InfoWarnings>

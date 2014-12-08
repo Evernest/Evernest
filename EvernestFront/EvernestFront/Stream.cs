@@ -34,7 +34,7 @@ namespace EvernestFront
             Count = 0;
             LastEventId = -1; //?
             UserRights = new List<UserRight>();
-            _backStream = new RAMStream();
+            _backStream = new RAMStream(Id.ToString());
         }
 
         private int ActualEventId(int eventId)

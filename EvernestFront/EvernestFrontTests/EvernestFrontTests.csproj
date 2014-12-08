@@ -78,6 +78,7 @@
     <Compile Include="UserTestsTowardEventStream.cs" />
     <Compile Include="UserTests.cs" />
     <Compile Include="UserTestsTowardSource.cs" />
+    <Compile Include="UserTestsTowardUserKeys.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EvernestFront\EvernestFront.csproj">

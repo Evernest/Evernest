@@ -15,13 +15,13 @@ namespace EvernestFront.Contract.Diff
         [DataMember]
         internal long UserId { get; set; }
         [DataMember]
-        internal string Name { get; set; }
+        internal string KeyName { get; set; }
 
         internal UserKeyCreated(string key, long userId, string name)
         {
             Key = key;
             UserId = userId;
-            Name = name;
+            KeyName = name;
         }
     }
 }

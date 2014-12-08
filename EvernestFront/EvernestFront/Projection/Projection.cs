@@ -32,9 +32,14 @@ namespace EvernestFront.Projection
             return ReadTables.TryGetSourceContract(_tables, sourceKey, out sourceContract);
         }
 
-        static internal bool TryGetUserId(string userName, out long userId)
+        static internal bool TryGetUserIdFromName(string userName, out long userId)
         {
             return ReadTables.TryGetUserIdFromName(_tables, userName, out userId);
+        }
+
+        static internal bool TryGetUserIdFromKey(string userKey, out long userId)
+        {
+            return ReadTables.TryGetUserIdFromKey(_tables, userKey, out userId);
         }
 
         static internal bool TryGetStreamId(string streamName, out long streamId)
@@ -103,7 +108,7 @@ namespace EvernestFront.Projection
 
         static void HandleUserKeyCreated(UserKeyCreated ukc)
         {
-            _tables = MakeTables.AddUserKey(_tables, ukc.Key, ukc.UserId, ukc.Name);
+            _tables = MakeTables.AddUserKey(_tables, ukc.Key, ukc.UserId, ukc.KeyName);
         }
 
         static void HandleRightSet(UserRightSet rs)

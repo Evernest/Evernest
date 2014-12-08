@@ -19,16 +19,15 @@ namespace EvernestFront
 
         public string Name { get; private set; }
 
-        internal String SaltedPasswordHash { get; private set; }
+        private String SaltedPasswordHash { get; set; }
 
-        internal byte[] PasswordSalt { get; private set; }
+        private byte[] PasswordSalt { get; set; }
 
-        internal ImmutableDictionary<string, string> InternalUserKeys { get; private set; }
+        private ImmutableDictionary<string, string> InternalUserKeys { get; set; }
 
-        internal ImmutableDictionary<string, string> InternalSources { get; private set; }
-        // should return Sources, names, keys...?
+        private ImmutableDictionary<string, string> InternalSources { get; set; }
 
-        internal ImmutableDictionary<long, AccessRights> InternalRelatedEventStreams { get; private set; }
+        private ImmutableDictionary<long, AccessRights> InternalRelatedEventStreams { get; set; }
 
 
 
@@ -95,7 +94,7 @@ namespace EvernestFront
         static public IdentifyUser IdentifyUser(string userName, string password)
         {
             long userId;
-            if (Projection.Projection.TryGetUserId(userName, out userId))
+            if (Projection.Projection.TryGetUserIdFromName(userName, out userId))
             {
                 User user;
                 if (TryGetUser(userId, out user))
@@ -114,6 +113,24 @@ namespace EvernestFront
                 return new IdentifyUser(new UserNameDoesNotExist(userName));
         }
 
+        static public IdentifyUser IdentifyUser(string key)
+        {
+            long userId;
+            if (Projection.Projection.TryGetUserIdFromKey(key, out userId))
+            {
+                User user;
+                if (TryGetUser(userId, out user))
+                {
+                    return new IdentifyUser(user);
+                }
+                else
+                    throw new Exception("User.IdentifyUser");
+                //this should not happen since userId is read in the tables
+
+            }
+            else
+                return new IdentifyUser(new UserKeyDoesNotExist(key));
+        }
 
 
         static public AddUser AddUser(string name)
@@ -162,7 +179,25 @@ namespace EvernestFront
             return new SetPassword(Id, password);
         }
 
-
+        public CreateUserKey CreateUserKey(string keyName)
+        {
+            if (InternalUserKeys.ContainsKey(keyName))
+                return new CreateUserKey(new UserKeyNameTaken(Id, keyName));
+            var key = Keys.NewKey();
+            var userKeyCreated = new UserKeyCreated(key, Id, keyName);
+            //TODO: system stream
+            Projection.Projection.HandleDiff(userKeyCreated);
+            return new CreateUserKey(key);
+        }
+        public CreateUserKey CreateUserKey()
+        {
+            var keyName = "temporary constant"; //TODO: generate a non existent name
+            var ans = CreateUserKey(keyName);
+            if (ans.Success)
+                return ans;
+            else
+                throw new Exception("User.CreateUserKey: keyName generated is taken");
+        }
 
 
         private bool Identify(string password)

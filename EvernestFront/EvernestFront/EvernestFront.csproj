@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Answers\CreateUserKey.cs" />
     <Compile Include="Answers\DeleteSource.cs" />
     <Compile Include="Answers\GetSource.cs" />
     <Compile Include="Answers\GetEventStream.cs" />
@@ -72,6 +73,8 @@
     <Compile Include="Contract\UserContract.cs" />
     <Compile Include="Errors\InvalidString.cs" />
     <Compile Include="Errors\SourceKeyDoesNotExist.cs" />
+    <Compile Include="Errors\UserKeyDoesNotExist.cs" />
+    <Compile Include="Errors\UserKeyNameTaken.cs" />
     <Compile Include="Errors\WrongPassword.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Errors\AccessDenied.cs" />

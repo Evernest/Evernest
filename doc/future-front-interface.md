@@ -33,6 +33,7 @@ En cas de succès, la réponse contient un objet User.
 
 ----------------
 Propriétés
+
  	long Id
 	string Name
 	List<Source> Sources
@@ -47,6 +48,7 @@ Méthodes
 	Answers.CreateUserKey CreateUserKey(string keyName)
 	Answers.CreateUserKey CreateUserKey()
 Dans le second cas, un nom est généré pour la clé.
+
 /!\ Pour l'instant la deuxième surcharge génère toujours le même nom donc vous aurez une erreur (UserKeyNameTaken) si vous l'utilisez deux fois.
 
 À ajouter : récupération de la liste des paires nom de clé / clé, et suppression de clé, qui demanderont le mot de passe pour qu'une clé ne puisse pas agir sur les autres.
@@ -77,7 +79,7 @@ Dans le second cas, un nom est généré pour la clé.
 #Classe Source
 
 	static Answers.GetSource GetSource(string sourceKey)
-en cas de succès, la réponse contient un objet Source.
+En cas de succès, la réponse contient un objet Source.
 	
 	string Name
 	long UserId

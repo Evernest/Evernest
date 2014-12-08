@@ -75,7 +75,7 @@ namespace EvernestFront
 
             var id = NextId();
 
-            var backStream = new RAMStream();
+            var backStream = new RAMStream(Convert.ToString(id));
 
             var streamContract = MakeEventStreamContract.NewStreamContract(streamName, backStream);
             var streamCreated = new EventStreamCreated(id, streamContract, creatorId);

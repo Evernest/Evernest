@@ -1,60 +1,131 @@
-﻿using EvernestFront.Errors;
+﻿using EvernestFront.Answers;
+using EvernestFront.Contract;
+using EvernestFront.Errors;
 using System;
 
 namespace EvernestFront
 {
     public class Source
     {
-        public Int64 Id { get; private set; }
-
-        public Int64 UserId { get { return User.Id; } }
-
-        public Int64 StreamId { get { return Stream.Id; } }
-
-        public String Name { get; private set; }
-
-        internal User User { get; private set; }
-
-        internal Stream Stream { get; private set; }
-
-        internal AccessRights Right { get; private set; }
-
         //base64 encoded int
         public string Key { get; private set; }
 
-        // provisoire
-        private static Int64 _next = 0;
-        private static Int64 NextId() { return ++_next; }
+        public string Name { get; private set; }
 
-        internal Source(User usr, Stream strm, string name, AccessRights right)
+        public User User { get; private set; }
+
+        public EventStream EventStream { get; private set; }
+
+        public AccessRights Right { get; private set; }
+
+        //should sources have an id?
+
+
+
+
+
+
+        private Source(string sourceKey, string name, User user, EventStream eventStream, AccessRights right)
         {
-            Id = NextId();
-            User = usr;
-            Stream = strm;
+            Key = sourceKey;
             Name = name;
+            User = user;
+            EventStream = eventStream;
             Right = right;
-            Key = Keys.NewKey();
+        }
+
+        private static bool TryGetSource(string sourceKey, out Source source)
+        {
+            SourceContract sourceContract;
+            if (Projection.Projection.TryGetSourceContract(sourceKey, out sourceContract))
+            {
+                User user;
+                EventStream eventStream;
+                if (User.TryGetUser(sourceContract.UserId, out user)
+                    & EventStream.TryGetStream(sourceContract.StreamId, out eventStream))
+                {
+                    source = new Source(sourceKey, sourceContract.Name, user, eventStream, sourceContract.Right);
+                    return true;
+                }
+            }
+
+            source = null;
+            return false;
+        }
+
+        static public GetSource GetSource(string sourceKey)
+        {
+            Source source;
+            if (TryGetSource(sourceKey, out source))
+                return new GetSource(source);
+            else
+                return new GetSource(new SourceKeyDoesNotExist(sourceKey));
+                //or couldn't find user or eventStream though they should exist
+                //TODO: handle this properly
         }
 
 
-
-
-
-        internal bool CheckCanRead()
+        public Push Push(string message)
         {
-            return (CheckRights.CheckCanRead(User, Stream) & CheckRights.CanRead(Right));
+            if (CanWrite())
+                return EventStream.Push(message, User);
+            else
+                return new Push(new WriteAccessDenied(this));
         }
 
-
-        internal bool CheckCanWrite()
+        public PullRandom PullRandom()
         {
-            return (CheckRights.CheckCanWrite(User, Stream) & CheckRights.CanWrite(Right));
+            if (CanRead())
+                return EventStream.PullRandom();
+            else
+                return new PullRandom(new ReadAccessDenied(this));
         }
 
-
-        internal bool CheckCanAdmin()
+        public Pull Pull(int eventId)
         {
-            return (CheckRights.CheckCanAdmin(User, Stream) & CheckRights.CanAdmin(Right));
+            if (CanRead())
+                return EventStream.Pull(eventId);
+            else
+                return new Pull(new ReadAccessDenied(this));
+        }
+
+        public PullRange PullRange(int eventIdFrom, int eventIdTo)
+        {
+            if (CanRead())
+                return EventStream.PullRange(eventIdFrom, eventIdTo);
+            else
+                return new PullRange(new ReadAccessDenied(this));
+        }
+
+        public SetRights SetRights(long targetUserId, AccessRights right)
+        {
+            if (CanAdmin())
+                return EventStream.SetRight(User.Id, targetUserId, right);
+            else
+                return new SetRights(new AdminAccessDenied(this));
+        }
+
+        public DeleteSource Delete()
+        { throw new NotImplementedException(); }
+
+
+
+
+
+
+
+
+        private bool CanRead()
+        {
+            return (CheckRights.CanRead(Right)&&User.CanRead(EventStream.Id));
+        }
+        private bool CanWrite()
+        {
+            return (CheckRights.CanWrite(Right) && User.CanWrite(EventStream.Id));
+        }
+        private bool CanAdmin()
+        {
+            return (CheckRights.CanAdmin(Right) && User.CanAdmin(EventStream.Id));
         }
 
     }

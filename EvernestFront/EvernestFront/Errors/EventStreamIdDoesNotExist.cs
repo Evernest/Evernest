@@ -4,11 +4,11 @@ using System;
 
 namespace EvernestFront.Errors
 {
-    public class StreamIdDoesNotExist : FrontError
+    public class EventStreamIdDoesNotExist : FrontError
     { 
         public Int64 StreamId { get; private set; }
 
-        internal StreamIdDoesNotExist(Int64 id)
+        internal EventStreamIdDoesNotExist(Int64 id)
         {
             StreamId = id;  
         }

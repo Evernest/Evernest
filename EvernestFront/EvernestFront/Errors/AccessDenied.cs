@@ -6,21 +6,21 @@ namespace EvernestFront.Errors
     public abstract class AccessDenied : FrontError
     {
         public Int64 StreamId { get; private set; }
-        public Int64 User { get; private set; }
-        public Int64? SourceId { get; private set; }
+        public Int64 UserId { get; private set; }
+        public string SourceName { get; private set; }
 
         protected AccessDenied(Int64 argStreamId, Int64 argUser)
         {
             StreamId = argStreamId;
-            User = argUser;
-            SourceId = null;
+            UserId = argUser;
+            SourceName = null;
         }
 
         protected AccessDenied(Source src)
         {
-            StreamId = src.Stream.Id;
-            User = src.User.Id;
-            SourceId = src.Id;
+            StreamId = src.EventStream.Id;
+            UserId = src.User.Id;
+            SourceName = src.Name;
         }
     }
 }

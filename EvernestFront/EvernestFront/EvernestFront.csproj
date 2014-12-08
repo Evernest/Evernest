@@ -30,8 +30,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ReadOnlyCollectionsInterfaces">
+      <HintPath>..\..\packages\ReadOnlyCollectionInterfaces.1.0.0\lib\NET45\ReadOnlyCollectionsInterfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable.Net40">
+      <HintPath>..\..\packages\System.Collections.Immutable.Net40.1.0.30.17\lib\net40\System.Collections.Immutable.Net40.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -39,15 +46,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Answers\DeleteSource.cs" />
+    <Compile Include="Answers\GetSource.cs" />
+    <Compile Include="Answers\GetEventStream.cs" />
+    <Compile Include="Answers\GetUser.cs" />
     <Compile Include="Answers\Pull.cs" />
     <Compile Include="Answers\PullRandom.cs" />
     <Compile Include="Answers\PullRange.cs" />
-    <Compile Include="Answers\RelatedStreams.cs" />
+    <Compile Include="Answers\RelatedEventStreams.cs" />
     <Compile Include="Answers\RelatedUsers.cs" />
     <Compile Include="Answers\SetPassword.cs" />
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="Answers\IdentifyUser.cs" />
     <Compile Include="CheckRights.cs" />
+    <Compile Include="Contract\Diff\IDiff.cs" />
+    <Compile Include="Contract\Diff\PasswordSet.cs" />
+    <Compile Include="Contract\Diff\SourceCreated.cs" />
+    <Compile Include="Contract\Diff\UserRightSet.cs" />
+    <Compile Include="Contract\Diff\EventStreamCreated.cs" />
+    <Compile Include="Contract\SourceContract.cs" />
+    <Compile Include="Contract\EventContract.cs" />
+    <Compile Include="Contract\EventStreamContract.cs" />
+    <Compile Include="Contract\Diff\UserAdded.cs" />
+    <Compile Include="Contract\UserContract.cs" />
     <Compile Include="Errors\InvalidString.cs" />
     <Compile Include="Errors\SourceKeyDoesNotExist.cs" />
     <Compile Include="Errors\WrongPassword.cs" />
@@ -65,22 +86,26 @@
     <Compile Include="Answers\Answer.cs" />
     <Compile Include="Answers\Push.cs" />
     <Compile Include="Answers\AddUser.cs" />
-    <Compile Include="Answers\CreateStream.cs" />
+    <Compile Include="Answers\CreateEventStream.cs" />
     <Compile Include="Answers\CreateSource.cs" />
     <Compile Include="Keys.cs" />
+    <Compile Include="Contract\Tables.cs" />
     <Compile Include="Errors\WriteAccessDenied.cs" />
+    <Compile Include="Projection\MakeEventStreamContract.cs" />
+    <Compile Include="Projection\MakeTables.cs" />
+    <Compile Include="Projection\MakeUserContract.cs" />
+    <Compile Include="Projection\ReadTables.cs" />
+    <Compile Include="Serializing.cs" />
     <Compile Include="Source.cs" />
-    <Compile Include="SourceTable.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="UserRight.cs" />
-    <Compile Include="Process.cs" />
+    <Compile Include="Projection\Projection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Stream.cs" />
-    <Compile Include="StreamTable.cs" />
-    <Compile Include="Errors\StreamIdDoesNotExist.cs" />
-    <Compile Include="Errors\StreamNameTaken.cs" />
+    <Compile Include="EventStream.cs" />
+    <Compile Include="Errors\EventStreamIdDoesNotExist.cs" />
+    <Compile Include="Errors\EventStreamNameTaken.cs" />
     <Compile Include="AccessRights.cs" />
-    <Compile Include="UserTable.cs" />
+    <Compile Include="User.TowardSource.cs" />
+    <Compile Include="User.TowardEventStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\EvernestBack\EvernestBack.csproj">

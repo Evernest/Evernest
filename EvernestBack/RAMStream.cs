@@ -13,7 +13,7 @@ namespace EvernestBack
     public class RAMStream:IStream
     {
         List<string> Messages = new List<string>();
-        UInt64 Index = 0;
+        public UInt64 Index = 0;
 
         public void Push(String Message, Action<IAgent> Callback)
         {

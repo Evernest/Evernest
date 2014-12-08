@@ -5,10 +5,10 @@ using System.Collections.Generic;
 namespace EvernestBack
 {
     /**
-     * The IStream interface represents a Stream from which you can get mes-
+     * The IEventStream interface represents a Stream from which you can get mes-
      * sages and push messages.
      */
-    public interface IStream
+    public interface IEventStream
     {
         /**
          * Push a message to the stream, and call the Callback when stored

@@ -6,27 +6,53 @@ using System.Threading.Tasks;
 
 namespace EvernestBack
 {
+
     /**
      * This is a small test Stream storing messages in a List instead of in
      * Azure.
      */
-    public class RAMStream:IStream
+    public class RAMStream:IEventStream
     {
+        private String StreamFileName;
         List<string> Messages = new List<string>();
-        UInt64 Index = 0;
+        public UInt64 Index = 0;
 
-        public void Push(String Message, Action<IAgent> Callback)
+        public RAMStream(String streamStringID)
         {
-            IAgent a = new MyAgent(Message, Index);
-            Index++;
-            Messages.Add(a.Message);
-            Callback(a);
+            StreamFileName = streamStringID + "_RAMStreamContent.txt";
+            String line;
+            if (System.IO.File.Exists(StreamFileName))
+            {
+                System.IO.StreamReader file = new System.IO.StreamReader(StreamFileName);
+                while ((line = file.ReadLine()) != null)
+                {
+                    Index++;
+                    Messages.Add(line);
+                }
+                file.Close();
+            }
         }
 
-        public void Pull(UInt64 Id, Action<IAgent> Callback)
+        ~RAMStream()
         {
-            IAgent a = new MyAgent(Messages.ElementAt((int) Id), Id);
-            Callback(a);
+            System.IO.StreamWriter file = new System.IO.StreamWriter(StreamFileName);
+            foreach( String message in Messages )
+                file.WriteLine(message);
+            file.Close();
+        }
+
+        public void Push(String message, Action<IAgent> callback)
+        {
+            IAgent a = new MyAgent(message, Index);
+            Index++;
+            Messages.Add(a.Message);
+            callback(a);
+        }
+
+        public void Pull(UInt64 id, Action<IAgent> callback)
+        {
+            IAgent a = new MyAgent(Messages.ElementAt((int) id), id);
+            callback(a);
         }
 
         private class MyAgent:IAgent

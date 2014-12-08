@@ -7,15 +7,37 @@ namespace EvernestBack
     {
         static void Main(string[] args)
         {
-            //UInt64 index=100;
-            //RAMStream Stream = new RAMStream();
-            //Stream.Push("Test", a => index = a.RequestID);
-            //Stream.Pull(index, a => Console.WriteLine(a.Message + ". ID : " + a.RequestID));
+            /*History<Int32> test = new History<Int32>();
+            test.Insert(1, 1);
+            test.Insert(3, 42);
+            Int32 a = 0;
+            test.UpperBound(2, ref a);
+            Console.Write(a);*/
+            AzureStorageClient asc = new AzureStorageClient(false);
+            IEventStream stream = asc.GetEventStream("Test");
+            System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
+            UInt32 counter = 0;
+            for (int i = 0; i < 100; i++)
+            {
+                stream.Push(counter.ToString(), pushAgent =>
+                {
+                    stream.Pull(pushAgent.RequestID, pullAgent =>
+                    {
+                        Console.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
+                        file.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
+                    });
+                });
+                System.Threading.Thread.Sleep(100);
+                counter++;
+            }
+            Console.Read();
+            Console.WriteLine("Fermeture du fichier");
+            Console.Read();
+            file.Close(); //this won't happen with an infinite loop, but anyway, this isn't that important
+
             //Console.Read();
-            Console.WriteLine("Begin Tests :");
-            AzureStorageClient asc = new AzureStorageClient();
-            IStream s = asc.GetEventStream("Test");
-            s.Push("Test", a => Console.WriteLine("Message poussé. Id : " + a.RequestID));
+            //i suspect this operation to block Console.WriteLine (thus preventing the other thread to run)
+            //so i added a console.read() in the callback to have the time to see the message after pushing enter
         }
     }
 }

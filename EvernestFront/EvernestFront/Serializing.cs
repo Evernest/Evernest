@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using EvernestFront.Contract;
+using EvernestFront.Contract.Diff;
 
 namespace EvernestFront
 {
@@ -33,6 +34,27 @@ namespace EvernestFront
             {
                 return (T) dcs.ReadObject(reader);
             }
+        }
+
+        internal static IDiff ReadDiffEnvelope(String serializedEnvelope)
+        {
+            DiffEnvelope envelope = ReadContract<DiffEnvelope>(serializedEnvelope);
+            var diffType = envelope.diffType;
+            if (diffType == (typeof (EventStreamCreated).Name))
+                return ReadContract<EventStreamCreated>(envelope.serializedDiff);
+            if (diffType == (typeof (PasswordSet)).Name)
+                return ReadContract<PasswordSet>(envelope.serializedDiff);
+            if (diffType == (typeof (SourceCreated)).Name)
+                return ReadContract<SourceCreated>(envelope.serializedDiff);
+            if (diffType == (typeof (UserAdded)).Name)
+                return ReadContract<UserAdded>(envelope.serializedDiff);
+            if (diffType == (typeof (UserKeyCreated)).Name)
+                return ReadContract<UserKeyCreated>(envelope.serializedDiff);
+            if (diffType == (typeof (UserRightSet)).Name)
+                return ReadContract<UserRightSet>(envelope.serializedDiff);
+            throw new NotImplementedException();                                //should not happen. Maybe create a dummy diff that does nothing instead of throwing an exception ?
+
+
         }
     }
 }

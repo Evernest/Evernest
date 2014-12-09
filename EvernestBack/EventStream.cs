@@ -18,7 +18,7 @@ namespace EvernestBack
         private WriteLocker WriteLock;
         private LocalCache Cache;
 
-        public EventStream( CloudBlockBlob blob, int bufferSize, UInt32 eventChunkSize)
+        public EventStream( CloudPageBlob blob, int bufferSize, UInt32 eventChunkSize)
         {
             BufferedBlobIO buffer = new BufferedBlobIO(blob, bufferSize);
             Cache = new LocalCache(buffer, eventChunkSize);

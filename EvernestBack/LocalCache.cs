@@ -59,8 +59,9 @@ namespace EvernestBack
                 message = "";
                 return false; //there's nothing written!
             }
-            Byte[] buffer = new Byte[lastByte - firstByte];
-            BufferedIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, (int) (lastByte - firstByte));
+            int byteCount = (int) (lastByte - firstByte);
+            Byte[] buffer = new Byte[byteCount];
+            byteCount = BufferedIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
             UInt32 currentPosition = 0, messageLength = 0;
             UInt64 currentID = 0;
             do
@@ -75,9 +76,11 @@ namespace EvernestBack
                 messageLength = BitConverter.ToUInt16(buffer, (int)currentPosition + sizeof(UInt64));
                 currentPosition += sizeof(UInt64) + sizeof(UInt16);
             }
-            while (currentID != id); // /!\ should also check whether the position is still in range!
-            message = System.Text.Encoding.Unicode.GetString(buffer, (int)currentPosition, (int)messageLength);
-            return true;
+            while (currentID != id && currentPosition + messageLength < byteCount);
+            message = "";
+            if (currentID == id)
+                message = System.Text.Encoding.Unicode.GetString(buffer, (int)currentPosition, (int)messageLength);
+            return currentID == id;
         }
     }
 }

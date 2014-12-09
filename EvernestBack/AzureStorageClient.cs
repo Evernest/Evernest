@@ -21,6 +21,7 @@ namespace EvernestBack
         private bool Dummy;
         private int BufferSize;
         private UInt32 EventChunkSize;
+        private long PageBlobSize;
         
         public AzureStorageClient(bool dummy = true)
         {
@@ -39,8 +40,9 @@ namespace EvernestBack
                 {
                     // TODO
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
-                    BufferSize = Int32.Parse(ConfigurationManager.AppSettings["BufferSize"]);
+                    BufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
                     EventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
+                    PageBlobSize = UInt32.Parse(ConfigurationManager.AppSettings["PageBlobSize"]);
                     storageAccount = CloudStorageAccount.Parse(connectionString);
                 }
                 catch (NullReferenceException e)
@@ -75,7 +77,11 @@ namespace EvernestBack
                 if (Dummy)
                     stream = new RAMStream(streamStringID);
                 else
-                    stream = new EventStream(StreamContainer.GetBlockBlobReference(streamStringID), BufferSize, EventChunkSize);
+                {
+                    CloudPageBlob pageBlob = StreamContainer.GetPageBlobReference(streamStringID);
+                    pageBlob.Create(PageBlobSize);
+                    stream = new EventStream(pageBlob, BufferSize, EventChunkSize);
+                }
                 OpenedStreams.Add(streamStringID, stream);
             }
             return stream;

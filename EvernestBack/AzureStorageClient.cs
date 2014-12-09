@@ -13,45 +13,70 @@ namespace EvernestBack
      * AzureStorageClient represents a client connection with the azure storage service 
      * see it as an EventStream factory
      */
-    class AzureStorageClient
+    public class AzureStorageClient
     {
-        private CloudBlobClient blobClient;
-        private Dictionary<String, EventStream> openedStreams;
-        private CloudBlobContainer streamContainer;
-
-        public AzureStorageClient()
+        private CloudBlobClient BlobClient;
+        private Dictionary<String, IEventStream> OpenedStreams;
+        private CloudBlobContainer StreamContainer;
+        private bool Dummy;
+        private int BufferSize;
+        private UInt32 EventChunkSize;
+        
+        public AzureStorageClient(bool dummy = true)
         {
-            openedStreams = new Dictionary<String,EventStream>();
-            // Create the blob client
-            CloudStorageAccount storageAccount = null;
-            try
+            Dummy = dummy;
+            OpenedStreams = new Dictionary<String, IEventStream>();
+            if (Dummy) // temporary dummy mode
             {
-                // TODO
-                string connectionString = ConfigurationManager.AppSettings.Get(0);
-                storageAccount = CloudStorageAccount.Parse(connectionString);
-                Console.Read();
+                BlobClient = null;
+                StreamContainer = null;
             }
-            catch (NullReferenceException e)
+            else
             {
-                Console.Error.WriteLine("Erreur de configuration du storageAccount");
-                Console.Error.WriteLine("Method : {0}", e.TargetSite);
-                Console.Error.WriteLine("Message : {0}", e.Message);
-                Console.Error.WriteLine("Source : {0}", e.Source);
-                return;
+                // Create the blob client
+                CloudStorageAccount storageAccount = null;
+                try
+                {
+                    // TODO
+                    var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
+                    BufferSize = Int32.Parse(ConfigurationManager.AppSettings["BufferSize"]);
+                    EventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
+                    storageAccount = CloudStorageAccount.Parse(connectionString);
+                }
+                catch (NullReferenceException e)
+                {
+                    Console.Error.WriteLine("Erreur de configuration du storageAccount");
+                    Console.Error.WriteLine("Method : {0}", e.TargetSite);
+                    Console.Error.WriteLine("Message : {0}", e.Message);
+                    Console.Error.WriteLine("Source : {0}", e.Source);
+                    return;
+                }
+                BlobClient = storageAccount.CreateCloudBlobClient();
+                StreamContainer = BlobClient.GetContainerReference("streams");
+                try
+                {
+                    StreamContainer.CreateIfNotExists();
+                }
+                catch (StorageException e)
+                {
+                    Console.WriteLine(e.Message);
+                    return;
+                }
             }
-            blobClient = storageAccount.CreateCloudBlobClient();
-            streamContainer = blobClient.GetContainerReference("streams");
-            streamContainer.CreateIfNotExists();
         }
 
 
-        public EventStream GetEventStream( String streamStrId )
+        public IEventStream GetEventStream( String streamStringID ) //not thread-safe yet
         {
-            EventStream stream;
-            if( !openedStreams.TryGetValue(streamStrId, out stream) )
+            IEventStream stream;
+            if( !OpenedStreams.TryGetValue(streamStringID, out stream) )
             {
-                stream = new EventStream(streamContainer.GetBlockBlobReference(streamStrId));
-                openedStreams.Add(streamStrId, stream);
+                //should ensure that BlockSearchMode is set to Latest
+                if (Dummy)
+                    stream = new RAMStream(streamStringID);
+                else
+                    stream = new EventStream(StreamContainer.GetBlockBlobReference(streamStringID), BufferSize, EventChunkSize);
+                OpenedStreams.Add(streamStringID, stream);
             }
             return stream;
         }

@@ -13,30 +13,34 @@ namespace EvernestBack
      * EventStream represents an instance of a stream of events and should be matched to a single blob
      * should be created with AzureStorageClient
      */
-    class EventStream:IStream
+    class EventStream:IEventStream
     {
-        private WriteLocker writeLock;
-        private UInt64 currentId;
+        private WriteLocker WriteLock;
+        private LocalCache Cache;
 
-        public EventStream( CloudBlockBlob blob )
+        public EventStream( CloudBlockBlob blob, int bufferSize, UInt32 eventChunkSize)
         {
-            writeLock = new WriteLocker(blob);
-            currentId = 0;
+            BufferedBlobIO buffer = new BufferedBlobIO(blob, bufferSize);
+            Cache = new LocalCache(buffer, eventChunkSize);
+            WriteLock = new WriteLocker(buffer, Cache);
+            WriteLock.Store();
         }
-
 
         // Push : Give a string, return an ID with the Callback
-        public void Push(String message, Action<IAgent> Callback)
+        public void Push(String message, Action<IAgent> callback)
         {
-            Agent p = new Producer(message, currentId, writeLock, Callback);
-            currentId++;
+            WriteLock.Register(message, callback);
         }
 
-
         // Pull : Use the ID got when pushing to get back the original string
-        public void Pull(UInt64 id, Action<IAgent> Callback)
+        public void Pull(UInt64 id, Action<IAgent> callback)
         {
-            Agent r = new Reader(null, id, Callback);
+            String message;
+            if (Cache.FetchEvent(id, out message))
+            {
+                Agent msgAgent = new Agent(message, id, callback);
+                msgAgent.Processed();
+            }
         }
 
         public void StreamDeliver(Agent agent)

@@ -55,8 +55,9 @@ namespace EvernestFrontTests
             var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
         }
 
-        //not implemented yet
+
         [Test]
+        [Ignore]
         public void CreateUserKey_SuccessiveDefaultNames_Success()
         {
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);

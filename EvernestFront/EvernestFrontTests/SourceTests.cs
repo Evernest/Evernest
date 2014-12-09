@@ -163,8 +163,7 @@ namespace EvernestFrontTests
             var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.Admin);
             int eventId = GetEventId_AssertSuccess(sourceKey, Message);
             int eventId2 = GetEventId_AssertSuccess(sourceKey, Message);
-            Assert.AreEqual(eventId, 0);
-            Assert.AreEqual(eventId2, 1);
+            Assert.AreEqual(eventId+1, eventId2);
         }
 
         [Test]

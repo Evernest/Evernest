@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Web;
 using System.Web.Http;
 using EvernestFront;
 using Newtonsoft.Json;
 using EvernestAPI.Models;
+using System.Net;
+using System.Net.Http;
 
 namespace EvernestAPI.Controllers
 {
@@ -59,14 +62,17 @@ namespace EvernestAPI.Controllers
                     ans["FieldErrors"] = new List<string> {"Key"};
                 }
             else
-                {
-                    var pullAnswer = Process.Pull(key, arg0);
-                    if (!pullAnswer.Success)
-                        throw new NotImplementedException();
-                    var eve = pullAnswer.EventPulled; //eve is not null at this point
-                    ans["Status"] = "Success";
-                    ans["Events"] = new List<Event> {eve};
-                };
+            {
+                var getSource = Source.GetSource(key);
+                if (!getSource.Success)
+                    throw new NotImplementedException();
+                var pullAnswer = getSource.Source.Pull(arg0);
+                if (!pullAnswer.Success)
+                    throw new NotImplementedException();
+                var eve = pullAnswer.EventPulled; //eve is not null at this point
+                ans["Status"] = "Success";
+                ans["Events"] = new List<Event> {eve};
+            };
             return ans;
         }
 
@@ -98,9 +104,14 @@ namespace EvernestAPI.Controllers
             }
             else
             {
+                var getSource = Source.GetSource(key);
+                if (!getSource.Success)
+                    throw new NotImplementedException();
+                var pullRange = getSource.Source.PullRange(arg0, arg1);
+                if (!pullRange.Success)
+                    throw new NotImplementedException();
                 ans["Status"] = "Success";
-                ans["Events"] = new List<Event>();
-                ans["Events"] = Process.PullRange(key, arg0, arg1);
+                ans["Events"] = pullRange.Events;
             }
             return ans;
         }
@@ -131,7 +142,10 @@ namespace EvernestAPI.Controllers
             }
             else
             {
-                var pullRandomAnswer = Process.PullRandom(key);
+                var getSource = Source.GetSource(key);
+                if (!getSource.Success)
+                    throw new NotImplementedException();
+                var pullRandomAnswer = getSource.Source.PullRandom();
                 if (!pullRandomAnswer.Success)
                     throw new NotImplementedException();
                 var eve = pullRandomAnswer.EventPulled; //not null
@@ -145,13 +159,20 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Push")]
-        public Hashtable Push(int id)
+        public HttpResponseMessage Push(HttpRequestMessage request, int id)
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var httpContent = Request.Content;
             var asyncContent = httpContent.ReadAsStringAsync().Result;
-
-            Hashtable json = Tools.parseBody(Request);
+            Hashtable body = new Hashtable();
+            try
+            {
+                body = Tools.parseRequest(Request);
+            }
+            catch
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
 
             var ans = new Hashtable();
             
@@ -161,11 +182,10 @@ namespace EvernestAPI.Controllers
             debug["Method"] = "Push";
             debug["id"] = id;
             //debug["nvc"] = nvc;
-            debug["body"] = json;
+            debug["body"] = body;
             ans["Debug"] = debug;
             // END DEBUG //
-
-            return ans;
+            return request.CreateResponse(HttpStatusCode.OK, ans);
         }
 
     }

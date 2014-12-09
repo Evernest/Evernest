@@ -23,7 +23,9 @@ namespace EvernestFront
 
         private byte[] PasswordSalt { get; set; }
 
+
         private ImmutableDictionary<string, string> InternalUserKeys { get; set; }
+
 
         private ImmutableDictionary<string, string> InternalSources { get; set; }
 

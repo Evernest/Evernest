@@ -488,6 +488,28 @@ Get stream by its Id.
 
 **Returned value:** single Stream
 
+#### Create stream
+
+Create a new Stream.
+
+**URL:** `/Stream/New`
+
+**Input data:**
+
+ * `Stream.Name` *string*: New stream name.
+ * `Name` *string*: Alias for `Stream.Name`.
+
+**Required rights:** Only the user key can create a new stream.
+
+**Returned value:** single Stream (the new Stream)
+
+**Example:**
+
+```
+GET /Stream/New?Name=MyNewStream HTTP/1.1
+Host: api.evernest.org
+```
+
 #### Get a random event
 
 Get a random event from stream `{StreamId}`
@@ -534,7 +556,7 @@ If these Ids are negatives, `{LastEventId}` is added to them so that they are co
 **Input data:**
 
  * `Event.Content` *string* **[required]**: New event content.
- * `Content` *string*: Alias of `Event.Content`.
+ * `Content` *string*: Alias for `Event.Content`.
 
 **Required rights:** `Write` right on the stream
 
@@ -578,7 +600,7 @@ Create a new Source.
 **Input data:**
 
  * `Source.Name` *string*: New source name.
- * `Name` *string*: Alias of `Source.Name`.
+ * `Name` *string*: Alias for `Source.Name`.
 
 **Required rights:** Only the user key can create a new source.
 

@@ -72,6 +72,7 @@
     <Compile Include="Contract\EventStreamContract.cs" />
     <Compile Include="Contract\Diff\UserAdded.cs" />
     <Compile Include="Contract\UserContract.cs" />
+    <Compile Include="DiffStream.cs" />
     <Compile Include="Errors\InvalidString.cs" />
     <Compile Include="Errors\SourceKeyDoesNotExist.cs" />
     <Compile Include="Errors\UserKeyDoesNotExist.cs" />

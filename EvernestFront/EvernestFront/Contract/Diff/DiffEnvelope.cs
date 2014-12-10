@@ -11,10 +11,15 @@ namespace EvernestFront.Contract.Diff
     class DiffEnvelope
     {
         [DataMember]
-        public String diffType;
+        public String DiffType;
         
         [DataMember]
-        public String serializedDiff;
+        public String SerializedDiff;
 
+        public DiffEnvelope(IDiff diff)
+        {
+            DiffType = (diff.GetType()).Name;
+            SerializedDiff = Serializing.WriteContract(diff);
+        }
     }
 }

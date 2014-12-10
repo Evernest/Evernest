@@ -92,6 +92,22 @@ namespace EvernestFront
                 return new GetUser(new UserIdDoesNotExist(userId));
         }
 
+        static public GetUser GetUser(string userKey)
+        {
+            long userId;
+            if (Projection.Projection.TryGetUserIdFromKey(userKey, out userId))
+            {
+                User user;
+                if (TryGetUser(userId, out user))
+                    return new GetUser(user);
+                else
+                    throw new Exception("User.GetUser");
+            }
+            else
+                return new GetUser(new UserKeyDoesNotExist(userKey));
+            
+        }
+
 
         static public IdentifyUser IdentifyUser(string userName, string password)
         {

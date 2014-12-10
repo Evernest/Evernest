@@ -79,6 +79,20 @@ namespace EvernestFrontTests
         }
 
         [Test]
+        public void GetUser_FromUserKey_Success()
+        {
+            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var user = UserTests.GetUser_AssertSuccess(userId);
+            var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
+            var ans = User.GetUser(key);
+            Assert.IsTrue(ans.Success);
+            var actualUser = ans.User;
+            Assert.AreEqual(userId, actualUser.Id);
+            Assert.AreEqual(user.Name, actualUser.Name);
+            //other asserts?
+        }
+
+        [Test]
         public void IdentifyUser_Success()
         {
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);

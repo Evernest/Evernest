@@ -100,6 +100,29 @@ namespace EvernestFrontTests
         }
 
         [Test]
+        public void GetSource_Success()
+        {
+            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var streamId = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            var sourceKey = CreateSource_GetKey_AssertSuccess(userId, streamId, SourceName, SomeRight);
+            var source = GetSource_AssertSuccess(sourceKey);
+            Assert.AreEqual(sourceKey, source.Key);
+            Assert.AreEqual(userId, source.User.Id);
+            Assert.AreEqual(streamId, source.EventStream.Id);
+            Assert.AreEqual(SourceName, source.Name);
+            Assert.AreEqual(SomeRight, source.Right);
+        }
+
+        [Test]
+        public void GetSource_SourceKeyDoesNotExist()
+        {
+            const string inexistantKey = "InexistantKey";
+            var ans = Source.GetSource(inexistantKey);
+            AssertAuxiliaries.ErrorAssert<SourceKeyDoesNotExist>(ans);
+            Assert.AreEqual(inexistantKey, (ans.Error as SourceKeyDoesNotExist).Key);
+        }
+
+        [Test]
         public void SetRights_Success()
         {
             long creatorId = UserTests.AddUser_GetId_AssertSuccess("creator");

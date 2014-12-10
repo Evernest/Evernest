@@ -117,8 +117,8 @@ namespace EvernestFrontTests
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             int eventId = GetEventId_AssertSuccess(userId, streamId, Message);
             int eventId2 = GetEventId_AssertSuccess(userId, streamId, Message);
-            Assert.AreEqual(eventId, 0);
-            Assert.AreEqual(eventId2, 1);
+            Assert.AreEqual(0, eventId);
+            Assert.AreEqual(1, eventId2);
 
         }
 
@@ -199,6 +199,19 @@ namespace EvernestFrontTests
             User user2 = UserTests.GetUser_AssertSuccess(user2Id);
             Pull ans = user2.Pull(streamId, eventId);
             AssertAuxiliaries.ErrorAssert<ReadAccessDenied>(ans);
+        }
+
+        [Test]
+        public void Pull_InvalidEventId()
+        {
+            const int invalidEventId = 42;
+            long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            long streamId = CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            User user = UserTests.GetUser_AssertSuccess(userId);
+            var ans = user.Pull(streamId, invalidEventId);
+            AssertAuxiliaries.ErrorAssert<InvalidEventId>(ans);
+            Assert.AreEqual(streamId, (ans.Error as InvalidEventId).StreamId);
+            Assert.AreEqual(invalidEventId, (ans.Error as InvalidEventId).EventId);
         }
     }
 }

@@ -93,6 +93,15 @@ namespace EvernestFrontTests
         }
 
         [Test]
+        public void GetUser_FromUserKey_UserKeyDoesNotExist()
+        {
+            const string inexistantKey = "InexistantKey";
+            var ans = User.GetUser(inexistantKey);
+            AssertAuxiliaries.ErrorAssert<UserKeyDoesNotExist>(ans);
+            Assert.AreEqual(inexistantKey, (ans.Error as UserKeyDoesNotExist).Key);
+        }
+
+        [Test]
         public void IdentifyUser_Success()
         {
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);

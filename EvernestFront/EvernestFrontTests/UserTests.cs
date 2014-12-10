@@ -75,6 +75,25 @@ namespace EvernestFrontTests
             IdentifyUser ans = User.IdentifyUser(UserName, user.Password);
             Assert.IsTrue(ans.Success);
         }
+
+        [Test]
+        public void IdentifyUser_UserNameDoesNotExist()
+        {
+            const string inexistentUserName = "InexistentUserName";
+            var ans = User.IdentifyUser(inexistentUserName, "password");
+            AssertAuxiliaries.ErrorAssert<UserNameDoesNotExist>(ans);
+            Assert.AreEqual(inexistentUserName, (ans.Error as UserNameDoesNotExist).Name);
+        }
+
+        [Test]
+        public void IdentifyUser_WrongPassword()
+        {
+            AddUser addUser = User.AddUser(UserName);
+            Assert.IsTrue(addUser.Success);
+            IdentifyUser ans = User.IdentifyUser(UserName, "WrongPassword");
+            AssertAuxiliaries.ErrorAssert<WrongPassword>(ans);
+        }
+
         [Test]
         public void GetUser_Success()
         {
@@ -92,14 +111,7 @@ namespace EvernestFrontTests
             AssertAuxiliaries.ErrorAssert<UserIdDoesNotExist>(ans);
         }
 
-        [Test]
-        public void IdentifyUser_WrongPassword()
-        {
-            AddUser addUser = User.AddUser(UserName);
-            Assert.IsTrue(addUser.Success);
-            IdentifyUser ans = User.IdentifyUser(UserName, "BadPassword");
-            AssertAuxiliaries.ErrorAssert<WrongPassword>(ans);
-        }
+        
 
 
         [Test]

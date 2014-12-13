@@ -13,22 +13,23 @@ namespace EvernestBack
      * AzureStorageClient represents a client connection with the azure storage service 
      * see it as an EventStream factory
      */
-    class AzureStorageClient
+    public class AzureStorageClient
     {
-        private CloudBlobClient blobClient;
-        private Dictionary<String, IEventStream> openedStreams;
-        private CloudBlobContainer streamContainer;
-        private bool dummy;
-        private int blobSize;
-
+        private CloudBlobClient BlobClient;
+        private Dictionary<String, IEventStream> OpenedStreams;
+        private CloudBlobContainer StreamContainer;
+        private bool Dummy;
+        private int BufferSize;
+        private UInt32 EventChunkSize;
+        
         public AzureStorageClient(bool dummy = true)
         {
-            this.dummy = dummy;
-            openedStreams = new Dictionary<String, IEventStream>();
-            if (dummy) // temporary dummy mode
+            Dummy = dummy;
+            OpenedStreams = new Dictionary<String, IEventStream>();
+            if (Dummy) // temporary dummy mode
             {
-                blobClient = null;
-                streamContainer = null;
+                BlobClient = null;
+                StreamContainer = null;
             }
             else
             {
@@ -38,7 +39,8 @@ namespace EvernestBack
                 {
                     // TODO
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
-                    blobSize = Int32.Parse(ConfigurationManager.AppSettings["BlobSize"]);
+                    BufferSize = Int32.Parse(ConfigurationManager.AppSettings["BufferSize"]);
+                    EventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
                     storageAccount = CloudStorageAccount.Parse(connectionString);
                 }
                 catch (NullReferenceException e)
@@ -49,11 +51,11 @@ namespace EvernestBack
                     Console.Error.WriteLine("Source : {0}", e.Source);
                     return;
                 }
-                blobClient = storageAccount.CreateCloudBlobClient();
-                streamContainer = blobClient.GetContainerReference("streams");
+                BlobClient = storageAccount.CreateCloudBlobClient();
+                StreamContainer = BlobClient.GetContainerReference("streams");
                 try
                 {
-                    streamContainer.CreateIfNotExists();
+                    StreamContainer.CreateIfNotExists();
                 }
                 catch (StorageException e)
                 {
@@ -67,14 +69,14 @@ namespace EvernestBack
         public IEventStream GetEventStream( String streamStringID ) //not thread-safe yet
         {
             IEventStream stream;
-            if( !openedStreams.TryGetValue(streamStringID, out stream) )
+            if( !OpenedStreams.TryGetValue(streamStringID, out stream) )
             {
                 //should ensure that BlockSearchMode is set to Latest
-                if (dummy)
+                if (Dummy)
                     stream = new RAMStream(streamStringID);
                 else
-                    stream = new EventStream(streamContainer.GetBlockBlobReference(streamStringID), blobSize);
-                openedStreams.Add(streamStringID, stream);
+                    stream = new EventStream(StreamContainer.GetBlockBlobReference(streamStringID), BufferSize, EventChunkSize);
+                OpenedStreams.Add(streamStringID, stream);
             }
             return stream;
         }

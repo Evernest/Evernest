@@ -12,7 +12,7 @@ namespace EvernestFront
         {
             //what if streamId does not exist?
             
-            if (UserContract.OwnedSources.ContainsKey(sourceName))
+            if (InternalSources.ContainsKey(sourceName))
                 return new CreateSource(new SourceNameTaken(Id, sourceName));
 
             var sourceContract = new SourceContract(sourceName, Id, streamId, rights);

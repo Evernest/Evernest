@@ -35,7 +35,7 @@ namespace EvernestFrontTests
         public void GetEventStream()
         {
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
-            long streamId = UserTests.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            long streamId = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
 
             var ans = EventStream.GetStream(streamId);
             Assert.IsTrue(ans.Success);

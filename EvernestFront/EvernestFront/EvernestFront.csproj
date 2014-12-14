@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Answers\CreateUserKey.cs" />
     <Compile Include="Answers\DeleteSource.cs" />
     <Compile Include="Answers\GetSource.cs" />
     <Compile Include="Answers\GetEventStream.cs" />
@@ -59,9 +60,11 @@
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="Answers\IdentifyUser.cs" />
     <Compile Include="CheckRights.cs" />
+    <Compile Include="Contract\Diff\DiffEnvelope.cs" />
     <Compile Include="Contract\Diff\IDiff.cs" />
     <Compile Include="Contract\Diff\PasswordSet.cs" />
     <Compile Include="Contract\Diff\SourceCreated.cs" />
+    <Compile Include="Contract\Diff\UserKeyCreated.cs" />
     <Compile Include="Contract\Diff\UserRightSet.cs" />
     <Compile Include="Contract\Diff\EventStreamCreated.cs" />
     <Compile Include="Contract\SourceContract.cs" />
@@ -69,8 +72,11 @@
     <Compile Include="Contract\EventStreamContract.cs" />
     <Compile Include="Contract\Diff\UserAdded.cs" />
     <Compile Include="Contract\UserContract.cs" />
+    <Compile Include="DiffStream.cs" />
     <Compile Include="Errors\InvalidString.cs" />
     <Compile Include="Errors\SourceKeyDoesNotExist.cs" />
+    <Compile Include="Errors\UserKeyDoesNotExist.cs" />
+    <Compile Include="Errors\UserKeyNameTaken.cs" />
     <Compile Include="Errors\WrongPassword.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Errors\AccessDenied.cs" />

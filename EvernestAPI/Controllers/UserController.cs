@@ -87,11 +87,12 @@ namespace EvernestAPI.Controllers
             if (user.Success)
             {
                 ans["Status"] = "Success";
-                ans["key"] = user.User.Key;
+                //ans["key"] = user.User.Key;
+                //TODO: handle removal of this field
                 ans["id"] = userId;
                 ans["name"] = user.User.Name;
                 ans["OwnedSources"] = user.User.Sources;
-                ans["RelatedStreams"] = user.User.RelatedStreams;
+                ans["RelatedStreams"] = user.User.RelatedEventStreams;
             }
             else
             {

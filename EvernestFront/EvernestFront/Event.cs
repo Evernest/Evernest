@@ -17,7 +17,7 @@ namespace EvernestFront
 
         public String AuthorName { get; private set; }
 
-        public String AuthorId { get; private set; }
+        public Int64 AuthorId { get; private set; }
 
         public DateTime Date { get; private set; }
 
@@ -28,6 +28,7 @@ namespace EvernestFront
             ParentStreamName = parentStreamName;
             ParentStreamId = parentStreamId;
             AuthorName = contract.AuthorName;
+            AuthorId = contract.AuthorId;
             Date = contract.Date;
         }
     }

@@ -2,21 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+
 
 namespace EvernestBack
 {
     class Reader:Agent
     {
-        public Reader(String Message, UInt64 RequestID, Action<IAgent> Callback)
+        System.IO.Stream readStream;
+        public Reader(String Message, UInt64 RequestID, System.IO.Stream readStream, Action<IAgent> Callback)
             :base(Message, RequestID, Callback)
         {
-            
+            this.readStream = readStream;
         }
         
         private void Read()
         {
-            //TODO
-            // message = "Pull from blob"
+            ReadFromStream(readStream);
+            Processed();
         }
     }
 }

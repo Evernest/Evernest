@@ -13,7 +13,7 @@ namespace EvernestBack
 {
     class WriteLocker
 	{
-        private class PendingEvent
+       private class PendingEvent
         {
             public String Message { get; private set; }
             public Action<IAgent> Callback { get; private set; }
@@ -24,57 +24,43 @@ namespace EvernestBack
             }
         }
 		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
-        private CloudBlobStream Output;
-        private CloudBlockBlob Blob;
-        public History<UInt64> Milestones { get; protected set;}
-        public UInt64 TotalWrittenBytes { get; protected set;}
-            //i'm not really satisfied with that, feel free to move it wherever you think it more appropriate
-        private UInt64 CurrentID = 0;
+
+        private LocalCache Cache;
+        private BufferedBlobIO WriteBuffer;
+        private UInt64 CurrentID;
         
-        public WriteLocker(CloudBlockBlob blob, int blobSize)
+        public WriteLocker(BufferedBlobIO buffer, LocalCache cache, UInt64 firstID)
         {
-            TotalWrittenBytes = 0;
-            this.Blob = blob;
-            blob.StreamWriteSizeInBytes = blobSize; // Defined in app.config
-            Milestones = new History<UInt64>();
-            Output = blob.OpenWrite();
+            Cache = cache;
+            WriteBuffer = buffer;
+            CurrentID = firstID;
+
         }
 
-        public void Store(UInt32 eventChunkSizeInBytes = 16384) //16KiB for now, also arbitrary
+        public void Store()
         {
             Task.Run(() =>
             {
                 UInt16 wroteBytes;
-                UInt32 chunkBytes = 0;
-                UInt64 lastPosition = 0;
                 //Console.WriteLine("Starting Storing"); //if there is a Console.Read() in the main thread, this will block this instruction
                 while (PendingEventCollection.Count > 0)
                 {
                     PendingEvent pendingEvent = PendingEventCollection.Take();
                     Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.Callback);
+                    wroteBytes = Write(agent);
+                    Cache.NotifyNewEntry(CurrentID, wroteBytes);
                     CurrentID++;
-                    wroteBytes = StoreToCloud(agent);
-                    TotalWrittenBytes += wroteBytes;
-                    if( wroteBytes + chunkBytes > eventChunkSizeInBytes)
-                    {
-                        lastPosition += chunkBytes;
-                        Milestones.Insert(agent.RequestID, lastPosition);
-                        chunkBytes = wroteBytes;
-                    }
-                    else
-                        chunkBytes += wroteBytes;
                     agent.Processed();
                 }
             }
             );
         }
 
-        private UInt16 StoreToCloud(Agent prod)
+        private UInt16 Write(Agent prod)
         {
             UInt16 size;
             Byte[] bytes = prod.Serialize(out size);
-            //Output.Write(bytes, 0, size);
-            Blob.UploadFromByteArray(bytes, 0, (int) size);
+            WriteBuffer.Push(bytes, 0, size);
             return size;
         }
 

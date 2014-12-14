@@ -6,7 +6,7 @@ namespace EvernestFront.Projection
 {
     static class Projection
     {
-        static private Tables _tables;
+        static private Tables _tables = new Tables();
 
         internal static void Clear()
         {

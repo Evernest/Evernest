@@ -1,5 +1,15 @@
 ﻿@{
     ViewBag.Title = "Index";
 }
+@if (Request.IsAuthenticated)
+{
+    <h2>OverView</h2>
+    
+    
+}
+else
+{
+    <h2>You must be logged to access this area.</h2>
+}
 
-<h2>OverView</h2>
+

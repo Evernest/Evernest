@@ -17,6 +17,27 @@ namespace EvernestWeb.Controllers
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
+
+        public void AddCookieId(Int64 id)
+        {
+            const int timeRememberMe = 1;
+                
+            // création d'un cookie
+            Response.Cookies["EvernestWeb"]["id"] = Convert.ToString(id);
+            Response.Cookies["EvernestWeb"].Expires = DateTime.Now.AddDays(timeRememberMe);
+        }
+
+        public void DeleteCookieId()
+        {
+            // Destroy EvernestWeb Cookie
+            if (Request.Cookies["EvernestWeb"] != null)
+            {
+                HttpCookie deletedCookie = new HttpCookie("EvernestWeb");
+                deletedCookie.Expires = DateTime.Now.AddDays(-1d);
+                Response.Cookies.Add(deletedCookie);
+            }
+        }
+
         //
         // GET: /Account/Login
 
@@ -44,37 +65,23 @@ namespace EvernestWeb.Controllers
             */
 
             // connexion à EvernestFront avec la fonction fournie et vérification du compte.
-            if (ModelState.IsValid && true)
+            if (ModelState.IsValid)
             {
-                /*
-                int timeRememberMe = 1;
-                if (model.RememberMe)
-                    timeRememberMe = 30;
-                
-                // création d'un cookie
-                Response.Cookies["EvernestWeb"]["u"] = HashKey(model.UserName);
-                Response.Cookies["EvernestWeb"]["p"] = HashKey(model.Password);
-                Response.Cookies["EvernestWeb"].Expires = DateTime.Now.AddDays(timeRememberMe);
-                */
 
-                // udapte User.Identity.Name and Request.IsAuthenticated
-                FormsAuthentication.SetAuthCookie(model.UserName,model.RememberMe);
+                EvernestFront.Answers.IdentifyUser idU = EvernestFront.User.IdentifyUser(model.UserName, model.Password);
 
-                return RedirectToLocal(returnUrl);
-
+                if (idU.Success)
+                { 
+                    // udapte User.Identity.Name and Request.IsAuthenticated
+                    FormsAuthentication.SetAuthCookie(model.UserName,model.RememberMe);
+                    AddCookieId(idU.User.Id);
+                    return RedirectToLocal(returnUrl);
+                }
             }
-            
-
-
 
             // Si nous sommes arrivés là, quelque chose a échoué, réafficher le formulaire
-            ModelState.AddModelError("", "Le nom d'utilisateur ou mot de passe fourni est incorrect.");
+            ModelState.AddModelError("", "User name or password is incorrect.");
             return View(model);
-            
-            
-
-
-            
         }
 
         //
@@ -88,16 +95,8 @@ namespace EvernestWeb.Controllers
 
             // Destroy token cookie (useless cookie, but needed to update user.name and Request.IsAuthenticated)
             FormsAuthentication.SignOut();
+            DeleteCookieId();
 
-            // Destroy EvernestWeb Cookie
-            /*
-            if (Request.Cookies["EvernestWeb"] != null)
-            {
-                HttpCookie deletedCookie = new HttpCookie("EvernestWeb");
-                deletedCookie.Expires = DateTime.Now.AddDays(-1d);
-                Response.Cookies.Add(deletedCookie);
-            }
-            */
 
             return RedirectToAction("Index", "Home");
         }
@@ -136,10 +135,11 @@ namespace EvernestWeb.Controllers
             }
             */
             {
-                EvernestFront.Answers.AddUser u = EvernestFront.Process.AddUser(model.UserName, model.Password);
+                EvernestFront.Answers.AddUser u = EvernestFront.User.AddUser(model.UserName, model.Password);
                 if (u.Success)
                 {
                     FormsAuthentication.SetAuthCookie(model.UserName, true);
+                    AddCookieId(u.UserId);
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -151,6 +151,10 @@ namespace EvernestWeb.Controllers
         //
         // POST: /Account/Disassociate
 
+
+        // I don't know if i need this function
+
+        /*
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Disassociate(string provider, string providerUserId)
@@ -176,7 +180,7 @@ namespace EvernestWeb.Controllers
 
             return RedirectToAction("Manage", new { Message = message });
         }
-
+        */
         //
         // GET: /Account/Manage
 
@@ -255,6 +259,8 @@ namespace EvernestWeb.Controllers
             return View(model);
         }
 
+        /*
+
         //
         // POST: /Account/ExternalLogin
 
@@ -265,7 +271,7 @@ namespace EvernestWeb.Controllers
         {
             return new ExternalLoginResult(provider, Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
         }
-
+        
         //
         // GET: /Account/ExternalLoginCallback
 
@@ -382,7 +388,7 @@ namespace EvernestWeb.Controllers
             ViewBag.ShowRemoveButton = externalLogins.Count > 1 || OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
             return PartialView("_RemoveExternalLoginsPartial", externalLogins);
         }
-
+        */
         #region Applications auxiliaires
         private ActionResult RedirectToLocal(string returnUrl)
         {
@@ -402,7 +408,7 @@ namespace EvernestWeb.Controllers
             SetPasswordSuccess,
             RemoveLoginSuccess,
         }
-
+        /*
         internal class ExternalLoginResult : ActionResult
         {
             public ExternalLoginResult(string provider, string returnUrl)
@@ -419,7 +425,7 @@ namespace EvernestWeb.Controllers
                 OAuthWebSecurity.RequestAuthentication(Provider, ReturnUrl);
             }
         }
-
+        */
         private static string ErrorCodeToString(MembershipCreateStatus createStatus)
         {
             // Consultez http://go.microsoft.com/fwlink/?LinkID=177550 pour
@@ -458,6 +464,7 @@ namespace EvernestWeb.Controllers
             }
         }
 
+        // this function I added, is not used (for the moment, but I stock it, in case...)
         public static string HashKey(string key)
         {
             UInt64 hashedValue = 4917635819926181551ul;

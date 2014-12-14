@@ -50,6 +50,23 @@ namespace EvernestFront.Projection
             // TODO: document this
         }
 
+        internal static Tables DeleteSource(Tables tbls, string sourceKey, long userId, string sourceName)
+        {
+
+            UserContract usrc;
+            if (tbls.UserTable.TryGetValue(userId, out usrc))
+            {
+                usrc = MakeUserContract.RemoveSource(usrc, sourceName);
+                var usrTbl = tbls.UserTable.SetItem(userId, usrc);
+                var srcTbl = tbls.SourceTable.Remove(sourceKey);
+                return new Tables(usrTbl, tbls.EventStreamTable, srcTbl, tbls.UserKeyToId, tbls.UserNameToId, tbls.EventStreamNameToId);
+            }
+            else
+                throw new Exception();
+            // exception because this should not happen : existence of userId should have been already tested
+            // TODO: document this
+        }
+
         internal static Tables AddUserKey(Tables tbls, string key, long userId, string keyName)
         {
             UserContract usrc;
@@ -66,6 +83,24 @@ namespace EvernestFront.Projection
             // exception because this should not happen : existence of userId should have been already tested
             // TODO: document this
             
+        }
+
+        internal static Tables DeleteUserKey(Tables tbls, string key, long userId, string keyName)
+        {
+            UserContract usrc;
+            if (tbls.UserTable.TryGetValue(userId, out usrc))
+            {
+                usrc = MakeUserContract.RemoveKey(usrc, keyName);
+                var usrTbl = tbls.UserTable.SetItem(userId, usrc);
+                var usrKtI = tbls.UserKeyToId.Remove(key);
+                return new Tables(usrTbl, tbls.EventStreamTable, tbls.SourceTable, usrKtI, tbls.UserNameToId, tbls.EventStreamNameToId);
+
+            }
+            else
+                throw new Exception();
+            // exception because this should not happen : existence of userId should have been already tested
+            // TODO: document this
+
         }
 
         internal static Tables SetRight(Tables tbls, long userId, long streamId, AccessRights right)

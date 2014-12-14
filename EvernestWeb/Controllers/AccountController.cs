@@ -18,16 +18,16 @@ namespace EvernestWeb.Controllers
     public class AccountController : Controller
     {
 
-        public void AddCookieId(Int64 id)
+        private void AddCookieId(Int64 id)
         {
             const int timeRememberMe = 1;
                 
             // création d'un cookie
-            Response.Cookies["EvernestWeb"]["id"] = Convert.ToString(id);
+            Response.Cookies["EvernestWeb"]["Id"] = Convert.ToString(id);
             Response.Cookies["EvernestWeb"].Expires = DateTime.Now.AddDays(timeRememberMe);
         }
 
-        public void DeleteCookieId()
+        private void DeleteCookieId() // cette fonction ne fonctionne pas, je ne sais pas encore pourquoi, à voir.
         {
             // Destroy EvernestWeb Cookie
             if (Request.Cookies["EvernestWeb"] != null)

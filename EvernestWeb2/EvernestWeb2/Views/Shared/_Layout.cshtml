@@ -27,7 +27,7 @@
                 </ul>
                 <!-- test -->
                 <div class="Evernest-menu-identification">
-                    @if (false)
+                    @if (ViewBag.Connexion == "false")
                     {
                         <ul>
                             <li>@Html.ActionLink("Login", "Login", "Account")</li>
@@ -37,7 +37,7 @@
                     else
                     {
                         <ul>
-                            <li>Hello @Html.ActionLink("nom a mettre", "Index", "Account")</li>
+                            <li>Hello @Html.ActionLink("toto", "Index", "Account")</li>
                             <li>@Html.ActionLink("Log Off", "LogOff", "Account")</li>
                         </ul>
                     }

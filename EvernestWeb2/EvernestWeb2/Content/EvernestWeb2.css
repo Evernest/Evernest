@@ -18,6 +18,7 @@
 
 .Evernest-menu-identification a {
     color: darkgray;
+    display: inline-block;
 }
 
 .Evernest-menu-identification a:hover {

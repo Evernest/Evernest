@@ -53,7 +53,7 @@ namespace EvernestWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddStream(AddItem item)
+        public ActionResult Index(string addStream)
         {
             string idString = "";
             Int64 id = -1;
@@ -69,41 +69,46 @@ namespace EvernestWeb.Controllers
             if (gU.Success)
             {
                 // add stream
-                EvernestFront.Answers.CreateEventStream stream = gU.User.CreateEventStream(item.Name);
-                if (stream.Success)
+                if (addStream != null)
                 {
                     
+                    EvernestFront.Answers.CreateEventStream stream = gU.User.CreateEventStream(addStream);
+                    if (stream.Success)
+                    {
+                        // update user object
+                        gU = EvernestFront.User.GetUser(id);
+
+                        // seek data to print
+
+                        
+                        List<KeyValuePair<long, EvernestFront.AccessRights>> listStreams = gU.User.RelatedEventStreams;
+                        List<KeyValuePair<string, string>> listSources = gU.User.Sources;
+                        StreamsSources ss = new StreamsSources();
+                        foreach (KeyValuePair<long, EvernestFront.AccessRights> elt in listStreams)
+                        {
+                            EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(elt.Key);
+                            if (s.Success)
+                                ss.AddEventStream(s.EventStream);
+                        }
+                        foreach (KeyValuePair<string, string> src in listSources)
+                        {
+                            EvernestFront.Answers.GetSource s = EvernestFront.Source.GetSource(src.Key);
+                            if (s.Success)
+                                ss.AddSource(s.Source);
+                        }
+                        
+                        return View(ss);
+                    }
                 }
-
-                // seek data to print
-
-
-                List<KeyValuePair<long, EvernestFront.AccessRights>> listStreams = gU.User.RelatedEventStreams;
-                List<KeyValuePair<string, string>> listSources = gU.User.Sources;
-                StreamsSources ss = new StreamsSources();
-                foreach (KeyValuePair<long, EvernestFront.AccessRights> elt in listStreams)
-                {
-                    EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(elt.Key);
-                    if (s.Success)
-                        ss.AddEventStream(s.EventStream);
-                }
-                foreach (KeyValuePair<string, string> src in listSources)
-                {
-                    EvernestFront.Answers.GetSource s = EvernestFront.Source.GetSource(src.Key);
-                    if (s.Success)
-                        ss.AddSource(s.Source);
-                }
-
-                return View("Index", ss);
             }
-            return View("Index");
+            return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddSource()
+        public ActionResult AddSource(string addSource)
         {
-            return Index();
+            return View();
         }
 
         public ActionResult Stream()

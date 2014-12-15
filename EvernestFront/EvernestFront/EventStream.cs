@@ -77,8 +77,7 @@ namespace EvernestFront
         {
             if (Projection.Projection.StreamNameExists(streamName))
                 return new CreateEventStream(new EventStreamNameTaken(streamName));
-            if (!Projection.Projection.UserIdExists(creatorId))
-                return new CreateEventStream(new UserIdDoesNotExist(creatorId));
+            // this is supposed to be called by a user object, so creatorId should always exist
 
             var id = NextId();
 

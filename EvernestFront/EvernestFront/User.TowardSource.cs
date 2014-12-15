@@ -10,7 +10,7 @@ namespace EvernestFront
     {
         public CreateSource CreateSource(string sourceName, long streamId, AccessRights rights)
         {
-            //what if streamId does not exist?
+            //TODO: what if streamId does not exist?
             
             if (InternalSources.ContainsKey(sourceName))
                 return new CreateSource(new SourceNameTaken(Id, sourceName));
@@ -23,7 +23,23 @@ namespace EvernestFront
             return new CreateSource(key);
         }
 
-        public Answers.DeleteSource DeleteSource(string sourceName)
-        { throw new NotImplementedException(); }
+
+
+        public DeleteSource DeleteSource(string sourceName)
+        {
+            
+            string key;
+            if (InternalSources.TryGetValue(sourceName, out key))
+            {
+                var sourceDeleted = new SourceDeleted(key, Id, sourceName);
+                Projection.Projection.HandleDiff(sourceDeleted);
+                //TODO: system stream
+                return new DeleteSource();
+            }
+            else
+                return new DeleteSource();
+                //TODO: error?
+
+        }
     }
 }

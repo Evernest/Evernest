@@ -1,5 +1,6 @@
 ﻿using EvernestFront.Answers;
 using EvernestFront.Contract;
+using EvernestFront.Contract.Diff;
 using EvernestFront.Errors;
 using System;
 
@@ -106,7 +107,12 @@ namespace EvernestFront
         }
 
         public DeleteSource Delete()
-        { throw new NotImplementedException(); }
+        {
+            var sourceDeleted = new SourceDeleted(Key, User.Id, Name);
+            Projection.Projection.HandleDiff(sourceDeleted);
+            //TODO: system stream
+            return new DeleteSource();
+        }
 
 
 

@@ -44,7 +44,7 @@ namespace EvernestFront.Projection
                 usrc.PasswordSalt, usrc.Keys, usrc.RelatedStreams, srcs);
         }
 
-        internal static UserContract DeleteSource(UserContract usrc, string sourceName)
+        internal static UserContract RemoveSource(UserContract usrc, string sourceName)
         {
             var srcs = usrc.OwnedSources.Remove(sourceName);
             return new UserContract(usrc.UserName, usrc.SaltedPasswordHash,

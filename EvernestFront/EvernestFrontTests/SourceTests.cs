@@ -99,7 +99,21 @@ namespace EvernestFrontTests
             AssertAuxiliaries.ErrorAssert<SourceNameTaken>(ans);
         }
 
+        [Test]
+        public void DeleteSource_Success()
+        {
+            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var streamId = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            var sourceKey = CreateSource_GetKey_AssertSuccess(userId, streamId, SourceName, SomeRight);
 
+            var source = GetSource_AssertSuccess(sourceKey);
+            DeleteSource ans = source.Delete();
+
+            Assert.IsTrue(ans.Success);
+            var user = UserTests.GetUser_AssertSuccess(userId);
+            Assert.IsFalse(user.Sources.Exists(pair => pair.Key==SourceName));
+
+        }
 
         [Test]
         public void GetSource_Success()

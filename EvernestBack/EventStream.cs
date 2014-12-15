@@ -16,12 +16,12 @@ namespace EvernestBack
     class EventStream:IEventStream
     {
         private WriteLocker WriteLock;
-        private UInt64 CurrentId;
+        private long CurrentId;
         private CloudBlockBlob Blob;
 
         private LocalCache Cache;
 
-        public EventStream( CloudBlockBlob blob, int bufferSize, UInt32 eventChunkSize)
+        public EventStream( CloudBlockBlob blob, int bufferSize, uint eventChunkSize)
         {
             CurrentId = 0;
             this.Blob = blob;
@@ -32,13 +32,13 @@ namespace EvernestBack
         }
 
         // Push : Give a string, return an ID with the Callback
-        public void Push(String message, Action<IAgent> callback)
+        public void Push(string message, Action<IAgent> callback)
         {
             WriteLock.Register(message, callback);
         }
 
         // Pull : Use the ID got when pushing to get back the original string
-        public void Pull(UInt64 id, Action<IAgent> callback)
+        public void Pull(long id, Action<IAgent> callback)
         {
             String message;
             if (Cache.FetchEvent(id, out message))
@@ -48,7 +48,7 @@ namespace EvernestBack
             }
         }
 
-        public UInt64 Size()
+        public long Size()
         {
             return WriteLock.CurrentID;
         }

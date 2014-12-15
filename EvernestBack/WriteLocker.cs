@@ -15,9 +15,9 @@ namespace EvernestBack
 	{
        private class PendingEvent
         {
-            public String Message { get; private set; }
+            public string Message { get; private set; }
             public Action<IAgent> Callback { get; private set; }
-            public PendingEvent(String message, Action<IAgent> callback)
+            public PendingEvent(string message, Action<IAgent> callback)
             {
                 Message = message;
                 Callback = callback;
@@ -27,9 +27,9 @@ namespace EvernestBack
 		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
         private LocalCache Cache;
         private BufferedBlobIO WriteBuffer;
-        public UInt64 CurrentID {get ; private set;}
+        public long CurrentID {get ; private set;}
         
-        public WriteLocker(BufferedBlobIO buffer, LocalCache cache, UInt64 firstID)
+        public WriteLocker(BufferedBlobIO buffer, LocalCache cache, long firstID)
         {
             Cache = cache;
             WriteBuffer = buffer;
@@ -41,7 +41,7 @@ namespace EvernestBack
         {
             Task.Run(() =>
             {
-                UInt16 wroteBytes;
+                long wroteBytes;
                 //Console.WriteLine("Starting Storing"); //if there is a Console.Read() in the main thread, this will block this instruction
                 while (PendingEventCollection.Count > 0)
                 {
@@ -64,7 +64,7 @@ namespace EvernestBack
             return size;
         }
 
-        public void Register(String message, Action<IAgent> callback)
+        public void Register(string message, Action<IAgent> callback)
         {
             PendingEventCollection.Add(new PendingEvent(message, callback));
         }

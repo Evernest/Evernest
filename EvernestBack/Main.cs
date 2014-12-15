@@ -7,13 +7,16 @@ namespace EvernestBack
     {
         static void Main(string[] args)
         {
-            /*History<Int32> test = new History<Int32>();
-            test.Insert(1, 1);
-            test.Insert(3, 42);
-            Int32 a = 0;
-            test.UpperBound(2, ref a);
-            Console.Write(a);*/
-            IEventStream stream = AzureStorageClient.singleton.GetEventStream("Test");
+            IEventStream stream;
+            try
+            {
+                stream = AzureStorageClient.singleton.GetNewEventStream("Test");
+            }
+            catch (ArgumentException e)
+            {
+                Console.Write(e.Message);
+                return;
+            }
             System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
             UInt32 counter = 0;
 

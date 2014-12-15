@@ -11,10 +11,10 @@ namespace EvernestBack
 {
     class LocalCache
     {
-        private History<UInt64> Milestones;
-        private UInt64 TotalWrittenBytes = 0;
-        private UInt64 CurrentChunkBytes = 0;
-        private UInt64 LastPosition = 0;
+        private History<long> Milestones;
+        private long TotalWrittenBytes = 0;
+        private long CurrentChunkBytes = 0;
+        private long LastPosition = 0;
         private UInt32 EventChunkSizeInBytes;
         private BufferedBlobIO BufferedIO;
 
@@ -22,10 +22,10 @@ namespace EvernestBack
         {
             BufferedIO = buffer;
             EventChunkSizeInBytes = eventChunkSizeInBytes;
-            Milestones = new History<UInt64>();
+            Milestones = new History<long>();
         }
 
-        public void NotifyNewEntry(UInt64 id, UInt16 wroteBytes)
+        public void NotifyNewEntry(long id, long wroteBytes)
         {
             TotalWrittenBytes += wroteBytes;
             if( wroteBytes + CurrentChunkBytes > EventChunkSizeInBytes)
@@ -38,21 +38,21 @@ namespace EvernestBack
                 CurrentChunkBytes += wroteBytes;
         }
 
-        public bool FetchEvent(UInt64 id, out String message)
+        public bool FetchEvent(long id, out string message)
         {
             return PullFromLocalCache(id, out message) || PullFromCloud(id, out message);
         }
 
-        private bool PullFromLocalCache(UInt64 id, out String message)
+        private bool PullFromLocalCache(long id, out string message)
         {
             message = ""; //no cache yet
             return false;
         }
 
-        private bool PullFromCloud(UInt64 id, out String message)
+        private bool PullFromCloud(long id, out string message)
         {
-            UInt64 firstByte = 0;
-            UInt64 lastByte = 0;
+            long firstByte = 0;
+            long lastByte = 0;
             Milestones.LowerBound(id, ref firstByte);
             if (!Milestones.UpperBound(id + 1, ref lastByte) && (lastByte = TotalWrittenBytes) == 0)
             {
@@ -61,8 +61,8 @@ namespace EvernestBack
             }
             Byte[] buffer = new Byte[lastByte - firstByte];
             BufferedIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, (int) (lastByte - firstByte));
-            UInt32 currentPosition = 0, messageLength = 0;
-            UInt64 currentID = 0;
+            int currentPosition = 0, messageLength = 0;
+            long currentID = 0;
             do
             {
                 currentPosition += messageLength;
@@ -71,7 +71,7 @@ namespace EvernestBack
                     Agent.Reverse(buffer, (int)currentPosition, (int)sizeof(UInt64));
                     Agent.Reverse(buffer, (int)currentPosition + sizeof(UInt64), (int)sizeof(UInt16));
                 }
-                currentID = BitConverter.ToUInt64(buffer, (int)currentPosition);
+                currentID = BitConverter.ToInt64(buffer, currentPosition);
                 messageLength = BitConverter.ToUInt16(buffer, (int)currentPosition + sizeof(UInt64));
                 currentPosition += sizeof(UInt64) + sizeof(UInt16);
             }

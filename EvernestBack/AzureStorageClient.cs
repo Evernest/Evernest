@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
+﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using System;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace EvernestBack
@@ -20,7 +17,7 @@ namespace EvernestBack
         private CloudBlobContainer StreamContainer;
         private bool Dummy;
         private int BufferSize;
-        private UInt32 EventChunkSize;
+        private uint EventChunkSize;
         public static AzureStorageClient singleton = new AzureStorageClient();
         
         private AzureStorageClient()

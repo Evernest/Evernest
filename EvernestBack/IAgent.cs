@@ -12,7 +12,7 @@ namespace EvernestBack
      */
     public interface IAgent
     {
-        String Message { get; }
-        UInt64 RequestID { get; }
+        string Message { get; }
+        long RequestID { get; }
     }
 }

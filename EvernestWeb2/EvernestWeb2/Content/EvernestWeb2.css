@@ -1,0 +1,26 @@
+﻿.Evernest-menu-identification {
+    display: inline-block;
+    color: darkgrey;
+    padding-top: 15px;
+    float: right;
+}
+
+.Evernest-menu-identification ul {
+    margin: 0;
+    padding: 0;
+}
+
+.Evernest-menu-identification li {
+    list-style-type: none;
+    float: right;
+    margin: 0px 15px;
+}
+
+.Evernest-menu-identification a {
+    color: darkgray;
+}
+
+.Evernest-menu-identification a:hover {
+    text-decoration: none;
+    color: azure;
+}

@@ -19,7 +19,7 @@ namespace EvernestFront
 
         public string Name { get; private set; }
 
-        private String SaltedPasswordHash { get; set; }
+        public String SaltedPasswordHash { get; set; }
 
         private byte[] PasswordSalt { get; set; }
 

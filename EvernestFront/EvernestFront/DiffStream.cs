@@ -13,11 +13,11 @@ namespace EvernestFront
     static class DiffStream
     {
 
-        //public int Count { get { return (int)BackStream.Index; } }
-        //public int LastEventId { get { return Count - 1; } }
+        //public long Count { get { return (int)BackStream.Index; } }
+        //public long LastEventId { get { return Count - 1; } }
 
 
-        internal static AzureStorageClient asc = new AzureStorageClient();
+        internal static AzureStorageClient asc = new AzureStorageClient();  //TODO : change this when AzureStorageClient becomes a singleton
         private static EvernestBack.IEventStream BackStream { get; set; }
 
         private const String DiffstreamStringId = "DiffStream"; //other stream IDs are made of digits, so there is no conflict. Still, probably not a good thing to hardcode this...
@@ -33,7 +33,7 @@ namespace EvernestFront
             BackStream.Push(Serializing.WriteContract(contract), (a => { }));   //change callback to wake up projection ?
         }
 
-        internal static IDiff Pull(int id)
+        internal static IDiff Pull(long id)
         {
             //TODO : check ID validity
             IDiff diff = null;

@@ -1,6 +1,10 @@
 ﻿using System.Collections;
 using System.Web;
 using System.Web.Http;
+using EvernestAPI.Models;
+using System.Net;
+using System.Net.Http;
+using EvernestFront;
 
 namespace EvernestAPI.Controllers
 {
@@ -10,7 +14,7 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public Hashtable Default(int id)
+        public HttpResponseMessage Default(int id)
         {
             var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
             var ans = new Hashtable();
@@ -24,27 +28,52 @@ namespace EvernestAPI.Controllers
             ans["Debug"] = debug;
             // END DEBUG //
 
-            return ans;
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         // /Source/New
         [HttpGet]
         [HttpPost]
         [ActionName("New")]
-        public Hashtable New()
+        public HttpResponseMessage New()
         {
-            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
-            var ans = new Hashtable();
+            try
+            {
+                var body = Tools.ParseRequest(Request);
+                var ans = new Hashtable();
+                try
+                {
+                    var key = (string)body["Key"];
+                    var user = EvernestFront.User.IdentifyUser(key).User;
 
-            // BEGIN DEBUG //
-            var debug = new Hashtable();
-            debug["Controller"] = "Source";
-            debug["Method"] = "New";
-            debug["nvc"] = nvc;
-            ans["Debug"] = debug;
-            // END DEBUG //
 
-            return ans;
+                }
+                catch
+                {
+                    var nokey = new Hashtable();
+                    nokey["Controller"] = "Source";
+                    nokey["Method"] = "New";
+                    nokey["nvc"] = body;
+                    nokey["Error"] = "KeyNotFound";
+                    return Request.CreateResponse(HttpStatusCode.OK, nokey);
+                }
+
+                
+
+                // BEGIN DEBUG //
+                var debug = new Hashtable();
+                debug["Controller"] = "Source";
+                debug["Method"] = "New";
+                debug["nvc"] = body;
+                ans["Debug"] = debug;
+                // END DEBUG //
+
+                return Request.CreateResponse(HttpStatusCode.OK, ans);
+            }
+            catch
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
         }
     }
 }

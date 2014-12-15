@@ -6,7 +6,7 @@ namespace EvernestFront.Projection
 {
     static class Projection
     {
-        static private Tables _tables;
+        static private Tables _tables = new Tables();
 
         internal static void Clear()
         {
@@ -81,8 +81,12 @@ namespace EvernestFront.Projection
                 HandleStreamCreated(dm as EventStreamCreated);
             else if (dm is SourceCreated)
                 HandleSourceCreated(dm as SourceCreated);
+            else if (dm is SourceDeleted)
+                HandleSourceDeleted(dm as SourceDeleted);
             else if (dm is UserKeyCreated)
                 HandleUserKeyCreated(dm as UserKeyCreated);
+            else if (dm is UserKeyDeleted)
+                HandleUserKeyDeleted(dm as UserKeyDeleted);
             else if (dm is UserRightSet)
                 HandleRightSet(dm as UserRightSet);
             else if (dm is PasswordSet)
@@ -106,9 +110,19 @@ namespace EvernestFront.Projection
             _tables = MakeTables.AddSource(_tables, sc.Key, sc.SourceContract);
         }
 
+        static void HandleSourceDeleted(SourceDeleted sd)
+        {
+            _tables = MakeTables.DeleteSource(_tables, sd.SourceKey, sd.UserId, sd.SourceName);
+        }
+
         static void HandleUserKeyCreated(UserKeyCreated ukc)
         {
             _tables = MakeTables.AddUserKey(_tables, ukc.Key, ukc.UserId, ukc.KeyName);
+        }
+
+        static void HandleUserKeyDeleted(UserKeyDeleted ukd)
+        {
+            _tables = MakeTables.DeleteUserKey(_tables, ukd.Key, ukd.UserId, ukd.KeyName);
         }
 
         static void HandleRightSet(UserRightSet rs)

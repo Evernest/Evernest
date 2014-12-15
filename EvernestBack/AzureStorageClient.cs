@@ -15,10 +15,15 @@ namespace EvernestBack
         private CloudBlobClient BlobClient;
         private Dictionary<String, IEventStream> OpenedStreams;
         private CloudBlobContainer StreamContainer;
+        private CloudBlobContainer StreamIndexContainer;
         private bool Dummy;
         private int BufferSize;
+
         private uint EventChunkSize;
         public static AzureStorageClient singleton = new AzureStorageClient();
+
+        private long PageBlobSize;
+
         
         private AzureStorageClient()
         {
@@ -37,8 +42,9 @@ namespace EvernestBack
                 {
                     // TODO
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
-                    BufferSize = Int32.Parse(ConfigurationManager.AppSettings["BufferSize"]);
+                    BufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
                     EventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
+                    PageBlobSize = UInt32.Parse(ConfigurationManager.AppSettings["PageBlobSize"]);
                     storageAccount = CloudStorageAccount.Parse(connectionString);
                 }
                 catch (NullReferenceException e)
@@ -50,10 +56,12 @@ namespace EvernestBack
                     return;
                 }
                 BlobClient = storageAccount.CreateCloudBlobClient();
-                StreamContainer = BlobClient.GetContainerReference("streams");
+                StreamContainer = BlobClient.GetContainerReference("stream");
+                StreamIndexContainer = BlobClient.GetContainerReference("streamIndex");
                 try
                 {
                     StreamContainer.CreateIfNotExists();
+                    StreamIndexContainer.CreateIfNotExists();
                 }
                 catch (StorageException e)
                 {
@@ -86,7 +94,10 @@ namespace EvernestBack
             {
                 stream = new RAMStream(streamStringID);
             } else {
-                stream = new EventStream(StreamContainer.GetBlockBlobReference(streamStringID), BufferSize, EventChunkSize);
+                CloudPageBlob streamBlob = StreamContainer.GetPageBlobReference(streamStringID);
+                CloudBlockBlob streamIndexBlob = StreamContainer.GetBlockBlobReference(streamStringID);
+                streamBlob.Create(PageBlobSize);
+                stream = new EventStream(streamBlob, streamIndexBlob, BufferSize, EventChunkSize);
             }
             OpenedStreams.Add(streamStringID, stream);
             return stream;

@@ -9,19 +9,21 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
 {
-    class LocalCache
+    class EventIndexer
     {
         private History<long> Milestones;
         private long TotalWrittenBytes = 0;
         private long CurrentChunkBytes = 0;
         private long LastPosition = 0;
         private UInt32 EventChunkSizeInBytes;
-        private BufferedBlobIO BufferedIO;
+        private BufferedBlobIO BufferedStreamIO;
+        private CloudBlockBlob StreamIndexBlob;
 
-        public LocalCache( BufferedBlobIO buffer, UInt32 eventChunkSizeInBytes )
+        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, UInt32 eventChunkSizeInBytes )
         {
-            BufferedIO = buffer;
+            BufferedStreamIO = buffer;
             EventChunkSizeInBytes = eventChunkSizeInBytes;
+            StreamIndexBlob = streamIndexBlob;
             Milestones = new History<long>();
         }
 
@@ -49,6 +51,17 @@ namespace EvernestBack
             return false;
         }
 
+
+        public void WriteIndexInfo()
+        {
+
+        }
+
+        private void ReadIndexInfo()
+        {
+ 
+        }
+
         private bool PullFromCloud(long id, out string message)
         {
             long firstByte = 0;
@@ -59,10 +72,13 @@ namespace EvernestBack
                 message = "";
                 return false; //there's nothing written!
             }
-            Byte[] buffer = new Byte[lastByte - firstByte];
-            BufferedIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, (int) (lastByte - firstByte));
+
+            int byteCount = (int) (lastByte - firstByte);
+            Byte[] buffer = new Byte[byteCount];
+            byteCount = BufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
             int currentPosition = 0, messageLength = 0;
             long currentID = 0;
+
             do
             {
                 currentPosition += messageLength;
@@ -75,9 +91,11 @@ namespace EvernestBack
                 messageLength = BitConverter.ToUInt16(buffer, (int)currentPosition + sizeof(UInt64));
                 currentPosition += sizeof(UInt64) + sizeof(UInt16);
             }
-            while (currentID != id); // /!\ should also check whether the position is still in range!
-            message = System.Text.Encoding.Unicode.GetString(buffer, (int)currentPosition, (int)messageLength);
-            return true;
+            while (currentID != id && currentPosition + messageLength < byteCount);
+            message = "";
+            if (currentID == id)
+                message = System.Text.Encoding.Unicode.GetString(buffer, (int)currentPosition, (int)messageLength);
+            return currentID == id;
         }
     }
 }

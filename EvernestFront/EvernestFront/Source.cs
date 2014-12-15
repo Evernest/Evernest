@@ -1,5 +1,6 @@
 ﻿using EvernestFront.Answers;
 using EvernestFront.Contract;
+using EvernestFront.Contract.Diff;
 using EvernestFront.Errors;
 using System;
 
@@ -81,7 +82,7 @@ namespace EvernestFront
                 return new PullRandom(new ReadAccessDenied(this));
         }
 
-        public Pull Pull(int eventId)
+        public Pull Pull(long eventId)
         {
             if (CanRead())
                 return EventStream.Pull(eventId);
@@ -89,7 +90,7 @@ namespace EvernestFront
                 return new Pull(new ReadAccessDenied(this));
         }
 
-        public PullRange PullRange(int eventIdFrom, int eventIdTo)
+        public PullRange PullRange(long eventIdFrom, long eventIdTo)
         {
             if (CanRead())
                 return EventStream.PullRange(eventIdFrom, eventIdTo);
@@ -106,7 +107,12 @@ namespace EvernestFront
         }
 
         public DeleteSource Delete()
-        { throw new NotImplementedException(); }
+        {
+            var sourceDeleted = new SourceDeleted(Key, User.Id, Name);
+            Projection.Projection.HandleDiff(sourceDeleted);
+            //TODO: system stream
+            return new DeleteSource();
+        }
 
 
 

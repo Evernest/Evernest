@@ -7,7 +7,7 @@ namespace EvernestFront
 {
     public class Event
     {
-        public int Id { get; private set; }
+        public long Id { get; private set; }
 
         public String Message { get; private set; }
 
@@ -21,7 +21,7 @@ namespace EvernestFront
 
         public DateTime Date { get; private set; }
 
-        internal Event(EventContract contract,int id, String parentStreamName, long parentStreamId)
+        internal Event(EventContract contract,long id, String parentStreamName, long parentStreamId)
         {
             Id = id;
             Message = contract.Message;

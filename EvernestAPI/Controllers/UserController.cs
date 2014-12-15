@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using System.Net;
+using System.Net.Http;
 using System.Web;
 using System.Web.Http;
-using EvernestFront;
-using User = EvernestFront.User;
+using EvernestAPI.Models;
 
 namespace EvernestAPI.Controllers
 {
@@ -13,10 +13,20 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public Hashtable Default(int id)
+        public HttpResponseMessage Default(int id)
         {
-            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+
+            Hashtable nvc;
             var ans = new Hashtable();
+
+            try
+            {
+                nvc = Tools.ParseRequest(Request);
+            }
+            catch
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);   
+            }
 
             // BEGIN DEBUG //
             var debug = new Hashtable();
@@ -27,7 +37,7 @@ namespace EvernestAPI.Controllers
             ans["Debug"] = debug;
             // END DEBUG //
 
-            return ans;
+            return Request.CreateResponse(HttpStatusCode.OK, ans);
         }
 
 

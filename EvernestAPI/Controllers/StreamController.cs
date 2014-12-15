@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Web;
 using System.Web.Http;
 using EvernestFront;
-using Newtonsoft.Json;
 using EvernestAPI.Models;
 using System.Net;
 using System.Net.Http;
@@ -159,33 +157,28 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Push")]
-        public HttpResponseMessage Push(HttpRequestMessage request, int id)
+        public HttpResponseMessage Push(int id)
         {
-            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
-            var httpContent = Request.Content;
-            var asyncContent = httpContent.ReadAsStringAsync().Result;
-            Hashtable body = new Hashtable();
             try
             {
-                body = Tools.parseRequest(Request);
+                var body = Tools.ParseRequest(Request);
+                var ans = new Hashtable();
+
+                // BEGIN DEBUG //
+                var debug = new Hashtable();
+                debug["Controller"] = "Stream";
+                debug["Method"] = "Push";
+                debug["id"] = id;
+                debug["body"] = body;
+                ans["Debug"] = debug;
+                // END DEBUG //
+
+                return Request.CreateResponse(HttpStatusCode.OK, ans);
             }
             catch
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
-
-            var ans = new Hashtable();
-            
-            // BEGIN DEBUG //
-            var debug = new Hashtable();
-            debug["Controller"] = "Stream";
-            debug["Method"] = "Push";
-            debug["id"] = id;
-            //debug["nvc"] = nvc;
-            debug["body"] = body;
-            ans["Debug"] = debug;
-            // END DEBUG //
-            return request.CreateResponse(HttpStatusCode.OK, ans);
         }
 
     }

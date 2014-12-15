@@ -5,6 +5,7 @@ using EvernestAPI.Models;
 using System.Net;
 using System.Net.Http;
 using EvernestFront;
+using System.Collections.Generic;
 
 namespace EvernestAPI.Controllers
 {
@@ -16,19 +17,48 @@ namespace EvernestAPI.Controllers
         [ActionName("Default")]
         public HttpResponseMessage Default(int id)
         {
-            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
-            var ans = new Hashtable();
+            try
+            {
+                var body = Tools.ParseRequest(Request);
+                var ans = new Hashtable();
 
-            // BEGIN DEBUG //
-            var debug = new Hashtable();
-            debug["Controller"] = "Source";
-            debug["Method"] = "Default";
-            debug["id"] = id;
-            debug["nvc"] = nvc;
-            ans["Debug"] = debug;
-            // END DEBUG //
+                // BEGIN DEBUG //
+                var debug = new Hashtable();
+                debug["Controller"] = "Stream";
+                debug["Method"] = "Push";
+                debug["id"] = id;
+                debug["body"] = body;
+                ans["Debug"] = debug;
+                ans["Status"] = "Error";
+                // END DEBUG //
 
-            return new HttpResponseMessage(HttpStatusCode.OK);
+                try 
+                {
+                    var key = (string)body["Key"];
+                    var gsource = Source.GetSource(key);
+                    if (!gsource.Success)
+                    {
+                        var nosource = ans;
+                        ans["FieldErrors"] = gsource.Source;
+                        return Request.CreateResponse(HttpStatusCode.OK, nosource);
+                    }
+                    ans["Status"] = "Success";
+                    ans["Sources"] = new List<Source> {gsource.Source};
+	                
+                }
+                catch
+                {
+                    var nokey = ans;
+                    nokey["Error"] = "KeyNotFound";
+                    return Request.CreateResponse(HttpStatusCode.OK, nokey);
+
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, ans);
+            }
+            catch
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
         }
 
         // /Source/New
@@ -45,7 +75,7 @@ namespace EvernestAPI.Controllers
                 var debug = new Hashtable();
                 debug["Controller"] = "Source";
                 debug["Method"] = "New";
-                debug["nvc"] = body;
+                debug["body"] = body;
                 ans["Debug"] = debug;
                 ans["Status"] = "Error";
                 // END DEBUG //

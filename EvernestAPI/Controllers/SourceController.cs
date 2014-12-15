@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Web;
 using System.Web.Http;
 using EvernestAPI.Models;
 using System.Net;
@@ -32,9 +31,9 @@ namespace EvernestAPI.Controllers
                 ans["Status"] = "Error";
                 // END DEBUG //
 
-                try 
+                try
                 {
-                    var key = (string)body["Key"];
+                    var key = (string) body["Key"];
                     var gsource = Source.GetSource(key);
                     if (!gsource.Success)
                     {
@@ -44,7 +43,7 @@ namespace EvernestAPI.Controllers
                     }
                     ans["Status"] = "Success";
                     ans["Sources"] = new List<Source> {gsource.Source};
-	                
+
                 }
                 catch
                 {
@@ -71,6 +70,7 @@ namespace EvernestAPI.Controllers
             {
                 var body = Tools.ParseRequest(Request);
                 var ans = new Hashtable();
+
                 // BEGIN DEBUG //
                 var debug = new Hashtable();
                 debug["Controller"] = "Source";
@@ -79,35 +79,34 @@ namespace EvernestAPI.Controllers
                 ans["Debug"] = debug;
                 ans["Status"] = "Error";
                 // END DEBUG //
-              
+
                 try
                 {
-                    var key = (string)body["Key"];
+                    var key = (string) body["Key"];
                     var iduser = EvernestFront.User.IdentifyUser(key);
                     if (!iduser.Success)
                     {
                         var nouser = ans;
                         nouser["Error"] = "UserNotFound";
-                        return Request.CreateResponse(HttpStatusCode.OK,nouser);
+                        return Request.CreateResponse(HttpStatusCode.OK, nouser);
                     }
                     var user = iduser.User;
-                    var sourceName = (string)body["SourceName"];
-                    var streamId = (long)body["StreamId"];
-                    var rights = (AccessRights)body["AccessRights"];
+                    var sourceName = (string) body["SourceName"];
+                    var streamId = (long) body["StreamId"];
+                    var rights = (AccessRights) body["AccessRights"];
                     var creaSource = user.CreateSource(sourceName, streamId, rights);
                     if (!creaSource.Success)
                     {
                         var nosource = ans;
                         nosource["Error"] = "NoSourceCreated";
-                        return Request.CreateResponse(HttpStatusCode.OK,nosource);
+                        return Request.CreateResponse(HttpStatusCode.OK, nosource);
                     }
                     ans["Status"] = "Success";
 
                 }
                 catch
                 {
-                    var nokey = new Hashtable();
-                    nokey = ans;
+                    var nokey = ans;
                     nokey["Error"] = "KeyNotFound";
                     return Request.CreateResponse(HttpStatusCode.OK, nokey);
                 }

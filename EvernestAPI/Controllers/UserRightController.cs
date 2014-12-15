@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using System.Web;
 using System.Web.Http;
+using EvernestAPI.Models;
 
 namespace EvernestAPI.Controllers
 {
@@ -12,7 +12,7 @@ namespace EvernestAPI.Controllers
         [ActionName("Default")]
         public Hashtable Get(int id, int streamId)
         {
-            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var body = Tools.ParseRequest(Request);
             var ans = new Hashtable();
 
             // BEGIN DEBUG //
@@ -21,7 +21,7 @@ namespace EvernestAPI.Controllers
             debug["Method"] = "Get";
             debug["id"] = id;
             debug["streamId"] = streamId;
-            debug["nvc"] = nvc;
+            debug["body"] = body;
             ans["Debug"] = debug;
             // END DEBUG //
 
@@ -34,7 +34,7 @@ namespace EvernestAPI.Controllers
         [ActionName("Set")]
         public Hashtable Set(int id, int streamId, string right)
         {
-            var nvc = HttpUtility.ParseQueryString(Request.RequestUri.Query);
+            var body = Tools.ParseRequest(Request);
             var ans = new Hashtable();
 
             // BEGIN DEBUG //
@@ -44,7 +44,7 @@ namespace EvernestAPI.Controllers
             debug["id"] = id;
             debug["streamId"] = streamId;
             debug["right"] = right;
-            debug["nvc"] = nvc;
+            debug["body"] = body;
             ans["Debug"] = debug;
             // END DEBUG //
 

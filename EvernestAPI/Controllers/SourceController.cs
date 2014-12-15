@@ -41,32 +41,46 @@ namespace EvernestAPI.Controllers
             {
                 var body = Tools.ParseRequest(Request);
                 var ans = new Hashtable();
-                try
-                {
-                    var key = (string)body["Key"];
-                    var user = EvernestFront.User.IdentifyUser(key).User;
-
-
-                }
-                catch
-                {
-                    var nokey = new Hashtable();
-                    nokey["Controller"] = "Source";
-                    nokey["Method"] = "New";
-                    nokey["nvc"] = body;
-                    nokey["Error"] = "KeyNotFound";
-                    return Request.CreateResponse(HttpStatusCode.OK, nokey);
-                }
-
-                
-
                 // BEGIN DEBUG //
                 var debug = new Hashtable();
                 debug["Controller"] = "Source";
                 debug["Method"] = "New";
                 debug["nvc"] = body;
                 ans["Debug"] = debug;
+                ans["Status"] = "Error";
                 // END DEBUG //
+              
+                try
+                {
+                    var key = (string)body["Key"];
+                    var iduser = EvernestFront.User.IdentifyUser(key);
+                    if (!iduser.Success)
+                    {
+                        var nouser = ans;
+                        nouser["Error"] = "UserNotFound";
+                        return Request.CreateResponse(HttpStatusCode.OK,nouser);
+                    }
+                    var user = iduser.User;
+                    var sourceName = (string)body["SourceName"];
+                    var streamId = (long)body["StreamId"];
+                    var rights = (AccessRights)body["AccessRights"];
+                    var creaSource = user.CreateSource(sourceName, streamId, rights);
+                    if (!creaSource.Success)
+                    {
+                        var nosource = ans;
+                        nosource["Error"] = "NoSourceCreated";
+                        return Request.CreateResponse(HttpStatusCode.OK,nosource);
+                    }
+                    ans["Status"] = "Success";
+
+                }
+                catch
+                {
+                    var nokey = new Hashtable();
+                    nokey = ans;
+                    nokey["Error"] = "KeyNotFound";
+                    return Request.CreateResponse(HttpStatusCode.OK, nokey);
+                }
 
                 return Request.CreateResponse(HttpStatusCode.OK, ans);
             }

@@ -18,6 +18,7 @@ namespace EvernestBack
         private CloudBlobClient BlobClient;
         private Dictionary<String, IEventStream> OpenedStreams;
         private CloudBlobContainer StreamContainer;
+        private CloudBlobContainer StreamIndexContainer;
         private bool Dummy;
         private int BufferSize;
         private UInt32 EventChunkSize;
@@ -54,10 +55,12 @@ namespace EvernestBack
                     return;
                 }
                 BlobClient = storageAccount.CreateCloudBlobClient();
-                StreamContainer = BlobClient.GetContainerReference("streams");
+                StreamContainer = BlobClient.GetContainerReference("stream");
+                StreamIndexContainer = BlobClient.GetContainerReference("streamIndex");
                 try
                 {
                     StreamContainer.CreateIfNotExists();
+                    StreamIndexContainer.CreateIfNotExists();
                 }
                 catch (StorageException e)
                 {
@@ -78,9 +81,10 @@ namespace EvernestBack
                     stream = new RAMStream(streamStringID);
                 else
                 {
-                    CloudPageBlob pageBlob = StreamContainer.GetPageBlobReference(streamStringID);
-                    pageBlob.Create(PageBlobSize);
-                    stream = new EventStream(pageBlob, BufferSize, EventChunkSize);
+                    CloudPageBlob streamBlob = StreamContainer.GetPageBlobReference(streamStringID);
+                    CloudBlockBlob streamIndexBlob = StreamContainer.GetBlockBlobReference(streamStringID);
+                    streamBlob.Create(PageBlobSize);
+                    stream = new EventStream(streamBlob, streamIndexBlob, BufferSize, EventChunkSize);
                 }
                 OpenedStreams.Add(streamStringID, stream);
             }

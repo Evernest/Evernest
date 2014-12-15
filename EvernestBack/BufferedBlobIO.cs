@@ -50,7 +50,6 @@ namespace EvernestBack
                 int pageNumber = (CurrentBufferPosition/PageSize);
                 System.IO.Stream stream = new System.IO.MemoryStream(WriteBuffer, 0, MaximumBufferSize);
                 Blob.WritePages(stream, PageSize*CurrentPage, null, null, null, null); //should ensure no error happens
-                //Blob.UploadFromByteArray(WriteBuffer, 0, (int)CurrentBufferPosition);
                 CurrentPage += pageNumber;
                 CurrentBufferPosition = CurrentBufferPosition % PageSize;
                 Buffer.BlockCopy(WriteBuffer, (int) pageNumber*PageSize, WriteBuffer, 0, CurrentBufferPosition);

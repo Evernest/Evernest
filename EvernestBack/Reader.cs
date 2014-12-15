@@ -11,7 +11,7 @@ namespace EvernestBack
     {
         System.IO.Stream readStream;
         public Reader(string Message, long RequestID, System.IO.Stream readStream, Action<IAgent> Callback)
-            :base(Message, (ulong) RequestID, Callback) // TODO : remove ulong cast when Agent updated
+            :base(Message, RequestID, Callback) // TODO : remove ulong cast when Agent updated
         {
             this.readStream = readStream;
         }

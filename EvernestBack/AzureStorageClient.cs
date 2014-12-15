@@ -92,6 +92,7 @@ namespace EvernestBack
             IEventStream stream;
             if(Dummy)
             {
+                Console.WriteLine("Starting RAMStream.");
                 stream = new RAMStream(streamStringID);
             } else {
                 CloudPageBlob streamBlob = StreamContainer.GetPageBlobReference(streamStringID);

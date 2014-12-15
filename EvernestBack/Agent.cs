@@ -14,14 +14,14 @@ namespace EvernestBack
     class Agent:IAgent
     {
         private Action<IAgent> Callback;
-        public UInt64 RequestID { get; private set; }
-        public String Message { get; protected set; }
+        public long RequestID { get; private set; }
+        public string Message { get; protected set; }
 
         internal Agent(String Message, long RequestID, 
             Action<IAgent> Callback)
         {            
             this.Message = Message;
-            this.RequestID = (ulong) RequestID;
+            this.RequestID = RequestID;
             this.Callback = Callback;
         }
 
@@ -65,14 +65,14 @@ namespace EvernestBack
         public void ReadFromStream(System.IO.Stream Input) 
             //should check whether an error happen when reading
         {
-            Byte[] Buffer = new Byte[sizeof(UInt64)];
-            Input.Read(Buffer, 0, sizeof(UInt64));
+            Byte[] Buffer = new Byte[sizeof(Int64)];
+            Input.Read(Buffer, 0, sizeof(Int64));
             if (!BitConverter.IsLittleEndian)
-                Reverse(Buffer, 0, sizeof(UInt64));
-            RequestID = BitConverter.ToUInt64(Buffer, 0);
-            Input.Read(Buffer, 0, sizeof(UInt16));
+                Reverse(Buffer, 0, sizeof(Int64));
+            RequestID = BitConverter.ToInt64(Buffer, 0);
+            Input.Read(Buffer, 0, sizeof(Int16));
             if (!BitConverter.IsLittleEndian)
-                Reverse(Buffer, 0, sizeof(UInt16));
+                Reverse(Buffer, 0, sizeof(Int16));
             UInt16 MsgLength = BitConverter.ToUInt16(Buffer, 0);
             Byte[] MsgBuffer = new Byte[MsgLength];
             Input.Read(MsgBuffer, 0, MsgLength);

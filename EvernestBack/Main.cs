@@ -18,16 +18,14 @@ namespace EvernestBack
                 return;
             }
             System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
-            UInt32 counter = 0;
 
             const int n = 1000;
-            bool[] tbl = new bool[n];
+            bool[] tbl = new bool[n+500];
             for (int i = 0; i < n; i++)
                 tbl[i] = false;
             for (int i = 0; i < n; i++ )
-
             {
-                stream.Push(counter.ToString(), pushAgent =>
+                stream.Push(i.ToString(), pushAgent =>
                 {
                     stream.Pull(pushAgent.RequestID, pullAgent =>
                     {
@@ -37,7 +35,6 @@ namespace EvernestBack
                     });
                 });
                 //System.Threading.Thread.Sleep(100);
-                counter++;
             } //this won't happen with an infinite loop, but anyway, this isn't that important
             bool ok = false;
             while(!ok)

@@ -16,18 +16,13 @@ namespace EvernestBack
     class EventStream:IEventStream
     {
         private WriteLocker WriteLock;
-        private UInt64 CurrentId;
-        private CloudBlockBlob Blob;
+        private EventIndexer Indexer;
 
-        private LocalCache Cache;
-
-        public EventStream( CloudBlockBlob blob, int bufferSize, UInt32 eventChunkSize)
+        public EventStream( CloudPageBlob blob, CloudBlockBlob streamIndexBlob, int bufferSize, UInt32 eventChunkSize)
         {
-            CurrentId = 0;
-            this.Blob = blob;
-            BufferedBlobIO buffer = new BufferedBlobIO(Blob, bufferSize);
-            Cache = new LocalCache(buffer, eventChunkSize);
-            WriteLock = new WriteLocker(buffer, Cache, CurrentId);
+            BufferedBlobIO buffer = new BufferedBlobIO(blob, bufferSize);
+            Indexer = new EventIndexer(streamIndexBlob, buffer, eventChunkSize);
+            WriteLock = new WriteLocker(buffer, Indexer);
             WriteLock.Store();
 
         }
@@ -42,7 +37,7 @@ namespace EvernestBack
         public void Pull(UInt64 id, Action<IAgent> callback)
         {
             String message;
-            if (Cache.FetchEvent(id, out message))
+            if (Indexer.FetchEvent(id, out message))
             {
                 Agent msgAgent = new Agent(message, id, callback);
                 msgAgent.Processed();

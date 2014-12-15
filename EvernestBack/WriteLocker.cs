@@ -24,17 +24,15 @@ namespace EvernestBack
             }
         }
 		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
-
-        private LocalCache Cache;
+        private EventIndexer Indexer;
         private BufferedBlobIO WriteBuffer;
         private UInt64 CurrentID;
         
-        public WriteLocker(BufferedBlobIO buffer, LocalCache cache, UInt64 firstID)
+        public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer)
         {
-            Cache = cache;
+            Indexer = indexer;
             WriteBuffer = buffer;
-            CurrentID = firstID;
-
+            CurrentID = 0;
         }
 
         public void Store()
@@ -48,7 +46,7 @@ namespace EvernestBack
                     PendingEvent pendingEvent = PendingEventCollection.Take();
                     Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.Callback);
                     wroteBytes = Write(agent);
-                    Cache.NotifyNewEntry(CurrentID, wroteBytes);
+                    Indexer.NotifyNewEntry(CurrentID, wroteBytes);
                     CurrentID++;
                     agent.Processed();
                 }

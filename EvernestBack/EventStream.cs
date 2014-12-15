@@ -29,7 +29,6 @@ namespace EvernestBack
             Cache = new LocalCache(buffer, eventChunkSize);
             WriteLock = new WriteLocker(buffer, Cache, CurrentId);
             WriteLock.Store();
-
         }
 
         // Push : Give a string, return an ID with the Callback
@@ -47,6 +46,11 @@ namespace EvernestBack
                 Agent msgAgent = new Agent(message, id, callback);
                 msgAgent.Processed();
             }
+        }
+
+        public UInt64 Size()
+        {
+            return WriteLock.CurrentID;
         }
 
         public void StreamDeliver(Agent agent)

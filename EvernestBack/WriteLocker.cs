@@ -23,11 +23,11 @@ namespace EvernestBack
                 Callback = callback;
             }
         }
-		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
 
+		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
         private LocalCache Cache;
         private BufferedBlobIO WriteBuffer;
-        private UInt64 CurrentID;
+        public UInt64 CurrentID {get ; private set;}
         
         public WriteLocker(BufferedBlobIO buffer, LocalCache cache, UInt64 firstID)
         {

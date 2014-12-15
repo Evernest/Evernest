@@ -7,21 +7,19 @@ using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
-    public class IdentifyUser : Answer
+    public class CreateUserKey : Answer
     {
-        public User User { get; private set; }
+        public String Key { get; private set; }
 
-        internal IdentifyUser(User user)
+        internal CreateUserKey(String key)
             : base()
         {
-            User = user;
+            Key = key;
         }
 
-        internal IdentifyUser(FrontError err)
+        internal CreateUserKey(FrontError err)
             : base(err)
         {
-            
         }
     }
-    
 }

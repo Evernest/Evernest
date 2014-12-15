@@ -24,6 +24,7 @@ namespace EvernestBack
             Indexer = new EventIndexer(streamIndexBlob, buffer, eventChunkSize);
             WriteLock = new WriteLocker(buffer, Indexer);
             WriteLock.Store();
+
         }
 
         // Push : Give a string, return an ID with the Callback

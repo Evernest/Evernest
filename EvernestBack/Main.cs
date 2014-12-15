@@ -17,11 +17,13 @@ namespace EvernestBack
             IEventStream stream = asc.GetEventStream("Test");
             System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
             UInt32 counter = 0;
+
             const int n = 1000;
             bool[] tbl = new bool[n];
             for (int i = 0; i < n; i++)
                 tbl[i] = false;
             for (int i = 0; i < n; i++ )
+
             {
                 stream.Push(counter.ToString(), pushAgent =>
                 {
@@ -41,7 +43,9 @@ namespace EvernestBack
                 ok = true;
                 for( int i = 0; i < 1000 && ok; ok = ok && tbl[i], i++);
             }
+
             file.Close();
+
             //i suspect this operation to block Console.WriteLine (thus preventing the other thread to run)
             //so i added a console.read() in the callback to have the time to see the message after pushing enter
         }

@@ -13,7 +13,7 @@ namespace EvernestBack
 {
     class WriteLocker
 	{
-        private class PendingEvent
+       private class PendingEvent
         {
             public String Message { get; private set; }
             public Action<IAgent> Callback { get; private set; }
@@ -26,12 +26,13 @@ namespace EvernestBack
 		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
         private EventIndexer Indexer;
         private BufferedBlobIO WriteBuffer;
-        private UInt64 CurrentID = 0;
+        private UInt64 CurrentID;
         
         public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer)
         {
             Indexer = indexer;
             WriteBuffer = buffer;
+            CurrentID = 0;
         }
 
         public void Store()

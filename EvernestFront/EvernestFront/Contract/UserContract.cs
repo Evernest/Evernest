@@ -18,19 +18,20 @@ namespace EvernestFront.Contract
         [DataMember]
         internal byte[] PasswordSalt { get; set; }
         [DataMember]
-        internal string Key { get; set; } //base64 encoded int
+        internal ImmutableDictionary<string, string> Keys { get; set; } //base64 encoded int
         [DataMember]
         internal ImmutableDictionary<long, AccessRights> RelatedStreams { get; set; }
         [DataMember]
         internal ImmutableDictionary<string, string> OwnedSources { get; set; } //name->key
 
-        internal UserContract(string name, string sph, byte[] ps, string key, ImmutableDictionary<long, AccessRights> strms,
+        internal UserContract(string name, string sph, byte[] ps,
+            ImmutableDictionary<string, string> keys, ImmutableDictionary<long, AccessRights> strms,
             ImmutableDictionary<string, string> srcs)
         {
             UserName = name;
             SaltedPasswordHash = sph;
             PasswordSalt = ps;
-            Key = key;
+            Keys = keys;
             RelatedStreams = strms;
             OwnedSources = srcs;
         }

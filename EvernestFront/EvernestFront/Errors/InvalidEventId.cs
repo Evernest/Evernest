@@ -10,9 +10,9 @@ namespace EvernestFront.Errors
     {
         public Int64 StreamId { get; private set; }
 
-        public int EventId { get; private set; }
+        public long EventId { get; private set; }
 
-        internal InvalidEventId(int evId, EventStream strm)
+        internal InvalidEventId(long evId, EventStream strm)
         {
             StreamId = strm.Id;
             EventId = evId;

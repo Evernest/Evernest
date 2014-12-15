@@ -3,6 +3,8 @@
 # Doxygen
 doc/doxygen/html
 doc/doxygen/latex
+*.chm
+*.chw
 
 
 # Emacs

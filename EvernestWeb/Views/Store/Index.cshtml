@@ -6,45 +6,48 @@
 {
     <h2>OverView</h2>
 
-    <h3>Streams</h3>
-    
-    <ul>
-        @if (Model != null)
-            { 
-            for (int i = 0; i < Model.Streams.Count; ++i)
-            {
-                <li>@Model.Streams[i].Name</li>
-            }
-        }
-        <li>
-            @{Html.BeginForm("AddStream", "Store", FormMethod.Post);}
-            @Html.AntiForgeryToken()
-            @Html.Label("addStream","Add a Stream : ")
-            @Html.TextBox("addStream","")
-            <input type="submit" value="Add" />
-            @{Html.EndForm();}
-        </li>
-    </ul>
-    
-    <h3>Sources</h3>
-    <ul>
-        @if (Model != null)
-        {
-            for (int i = 0; i < Model.Sources.Count; ++i)
-             {
-                 <li>@Model.Sources[i].Name</li>
-             }
-        }
-        <li>
-            @{Html.BeginForm("AddSource", "Store", FormMethod.Post);}
-            @Html.AntiForgeryToken()
-            @Html.Label("addSource", "Add a Source : ")
-            @Html.TextBox("addSource", "")
-            <input type="submit" value="Add" />
-            @{Html.EndForm();}
-        </li>
-    </ul>
+    <div class="Store_Streams">
+        <h3>Streams</h3>
 
+        <ul>
+            @if (Model != null)
+            {
+                for (int i = 0; i < Model.Streams.Count; ++i)
+                {
+                    <li>@Model.Streams[i].Name</li>
+                }
+            }
+            <li>
+                @{Html.BeginForm("Index", "Store", FormMethod.Post);}
+                @Html.AntiForgeryToken()
+                @Html.Label("addStream", "Add a Stream : ")
+                @Html.TextBox("addStream", "")
+                <input type="submit" value="Add" />
+                @{Html.EndForm();}
+            </li>
+        </ul>
+    </div>
+
+    <div class="Store_Sources">
+        <h3>Sources</h3>
+        <ul>
+            @if (Model != null)
+            {
+                for (int i = 0; i < Model.Sources.Count; ++i)
+                {
+                    <li>@Model.Sources[i].Name</li>
+                }
+            }
+            <li>
+                @{Html.BeginForm("AddSource", "Store", FormMethod.Post);}
+                @Html.AntiForgeryToken()
+                @Html.Label("addSource", "Add a Source : ")
+                @Html.TextBox("addSource", "")
+                <input type="submit" value="Add" />
+                @{Html.EndForm();}
+            </li>
+        </ul>
+    </div>
 }
 else
 {

@@ -41,7 +41,7 @@ namespace EvernestFrontTests
             Assert.IsNull(ans.Error);
         }
 
-        internal static int PushEvent_GetId_AssertSuccess(long userId, long streamId, String message)
+        internal static long PushEvent_GetId_AssertSuccess(long userId, long streamId, String message)
         {
             var user = UserTests.GetUser_AssertSuccess(userId);
             Push ans = user.Push(streamId, message);
@@ -115,8 +115,8 @@ namespace EvernestFrontTests
         {
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, StreamName);
-            int eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
-            int eventId2 = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
+            long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
+            long eventId2 = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             Assert.AreEqual(0, eventId);
             Assert.AreEqual(1, eventId2);
 
@@ -149,7 +149,7 @@ namespace EvernestFrontTests
         {
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, StreamName);
-            int eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
+            long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             User user = UserTests.GetUser_AssertSuccess(userId);
             PullRandom ans = user.PullRandom(streamId);
             Assert.IsTrue(ans.Success);
@@ -164,7 +164,7 @@ namespace EvernestFrontTests
         {
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, StreamName);
-            int eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
+            long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             User user = UserTests.GetUser_AssertSuccess(userId);
             Pull ans = user.Pull(streamId, eventId);
             Assert.IsTrue(ans.Success);
@@ -178,8 +178,8 @@ namespace EvernestFrontTests
         {
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, StreamName);
-            int eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
-            int eventId2 = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
+            long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
+            long eventId2 = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             User user = UserTests.GetUser_AssertSuccess(userId);
             PullRange ans = user.PullRange(streamId, eventId, eventId2);
             Assert.IsTrue(ans.Success);
@@ -192,7 +192,7 @@ namespace EvernestFrontTests
         {
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, StreamName);
-            int eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
+            long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             long user2Id = UserTests.AddUser_GetId_AssertSuccess(UserName2);
             SetRights_AssertSuccess(userId, streamId, user2Id, AccessRights.WriteOnly);
 
@@ -204,7 +204,7 @@ namespace EvernestFrontTests
         [Test]
         public void Pull_InvalidEventId()
         {
-            const int invalidEventId = 42;
+            const long invalidEventId = 42;
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             User user = UserTests.GetUser_AssertSuccess(userId);

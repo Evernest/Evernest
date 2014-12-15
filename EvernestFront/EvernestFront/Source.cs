@@ -82,7 +82,7 @@ namespace EvernestFront
                 return new PullRandom(new ReadAccessDenied(this));
         }
 
-        public Pull Pull(int eventId)
+        public Pull Pull(long eventId)
         {
             if (CanRead())
                 return EventStream.Pull(eventId);
@@ -90,7 +90,7 @@ namespace EvernestFront
                 return new Pull(new ReadAccessDenied(this));
         }
 
-        public PullRange PullRange(int eventIdFrom, int eventIdTo)
+        public PullRange PullRange(long eventIdFrom, long eventIdTo)
         {
             if (CanRead())
                 return EventStream.PullRange(eventIdFrom, eventIdTo);

@@ -57,7 +57,7 @@ namespace EvernestFront
         /// <param name="streamId"></param>
         /// <param name="eventId"></param>
         /// <returns></returns>
-        public Pull Pull(Int64 streamId, int eventId)
+        public Pull Pull(Int64 streamId, long eventId)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))
@@ -81,7 +81,7 @@ namespace EvernestFront
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public PullRange PullRange(Int64 streamId, int from, int to)
+        public PullRange PullRange(Int64 streamId, long from, long to)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))

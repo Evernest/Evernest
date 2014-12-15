@@ -21,10 +21,11 @@ namespace EvernestBack
         private bool Dummy;
         private int BufferSize;
         private UInt32 EventChunkSize;
+        public static AzureStorageClient singleton = new AzureStorageClient();
         
-        public AzureStorageClient(bool dummy = true)
+        private AzureStorageClient()
         {
-            Dummy = dummy;
+            Dummy = Boolean.Parse(ConfigurationManager.AppSettings["Dummy"]);
             OpenedStreams = new Dictionary<String, IEventStream>();
             if (Dummy) // temporary dummy mode
             {
@@ -71,14 +72,28 @@ namespace EvernestBack
             IEventStream stream;
             if( !OpenedStreams.TryGetValue(streamStringID, out stream) )
             {
-                //should ensure that BlockSearchMode is set to Latest
-                if (Dummy)
-                    stream = new RAMStream(streamStringID);
-                else
-                    stream = new EventStream(StreamContainer.GetBlockBlobReference(streamStringID), BufferSize, EventChunkSize);
-                OpenedStreams.Add(streamStringID, stream);
+                throw new ArgumentException("You want to recover a stream that does not exists.\n Stream : " + streamStringID);
             }
             return stream;
+        }
+
+        public IEventStream GetNewEventStream(String streamStringID)
+        {
+            if(OpenedStreams.ContainsKey(streamStringID))
+            {
+                // If we want to create a stream that already exists 
+                throw new ArgumentException("You want to create a stream with a name already used.\n Stream : " + streamStringID);
+            }
+            IEventStream stream;
+            if(Dummy)
+            {
+                stream = new RAMStream(streamStringID);
+            } else {
+                stream = new EventStream(StreamContainer.GetBlockBlobReference(streamStringID), BufferSize, EventChunkSize);
+            }
+            OpenedStreams.Add(streamStringID, stream);
+            return stream;
+
         }
         //missing something to close streams
 

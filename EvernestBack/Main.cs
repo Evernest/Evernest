@@ -13,8 +13,7 @@ namespace EvernestBack
             Int32 a = 0;
             test.UpperBound(2, ref a);
             Console.Write(a);*/
-            AzureStorageClient asc = new AzureStorageClient(false);
-            IEventStream stream = asc.GetEventStream("Test");
+            IEventStream stream = AzureStorageClient.singleton.GetEventStream("Test");
             System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
             UInt32 counter = 0;
 

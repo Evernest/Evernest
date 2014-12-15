@@ -52,6 +52,12 @@ namespace EvernestFront
                 return ReadContract<UserKeyCreated>(envelope.SerializedDiff);
             if (diffType == (typeof (UserRightSet)).Name)
                 return ReadContract<UserRightSet>(envelope.SerializedDiff);
+            if (diffType == (typeof (SourceDeleted)).Name)
+                return ReadContract<SourceDeleted>(envelope.SerializedDiff);
+            if (diffType == (typeof (UserKeyCreated)).Name)
+                return ReadContract<UserKeyCreated>(envelope.SerializedDiff);
+            if (diffType == (typeof (UserKeyDeleted)).Name)
+                return ReadContract<UserKeyDeleted>(envelope.SerializedDiff);
             throw new NotImplementedException();                                //should not happen. Maybe create a dummy diff that does nothing instead of throwing an exception ?
 
 

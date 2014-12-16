@@ -72,7 +72,7 @@ namespace EvernestBack
         }
 
 
-        public IEventStream GetEventStream( String streamStringID ) //not thread-safe yet
+        public IEventStream GetEventStream( string streamStringID ) //not thread-safe yet
         {
             IEventStream stream;
             if( !OpenedStreams.TryGetValue(streamStringID, out stream) )
@@ -82,7 +82,7 @@ namespace EvernestBack
             return stream;
         }
 
-        public IEventStream GetNewEventStream(String streamStringID)
+        public IEventStream GetNewEventStream(string streamStringID)
         {
             if(OpenedStreams.ContainsKey(streamStringID))
             {

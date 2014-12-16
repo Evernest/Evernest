@@ -41,7 +41,7 @@ namespace EvernestFrontTests
             Assert.IsNull(ans.Error);
         }
 
-        internal static long PushEvent_GetId_AssertSuccess(long userId, long streamId, String message)
+        internal static long PushEvent_GetId_AssertSuccess(long userId, long streamId, string message)
         {
             var user = UserTests.GetUser_AssertSuccess(userId);
             Push ans = user.Push(streamId, message);

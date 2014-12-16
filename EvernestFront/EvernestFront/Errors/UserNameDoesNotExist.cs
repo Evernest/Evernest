@@ -8,7 +8,7 @@ namespace EvernestFront.Errors
 {
     public class UserNameDoesNotExist : FrontError
     {
-        public String Name { get; private set; }
+        public string Name { get; private set; }
 
         internal UserNameDoesNotExist(string name)
         {

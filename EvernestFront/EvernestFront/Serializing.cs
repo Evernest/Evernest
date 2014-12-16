@@ -26,7 +26,7 @@ namespace EvernestFront
         }
 
 
-        internal static T ReadContract<T>(String serializedContract)
+        internal static T ReadContract<T>(string serializedContract)
         {
             var dcs = new DataContractSerializer(typeof (T));
             var sr = new StringReader(serializedContract);
@@ -36,7 +36,7 @@ namespace EvernestFront
             }
         }
 
-        internal static IDiff ReadDiffEnvelope(String serializedEnvelope)
+        internal static IDiff ReadDiffEnvelope(string serializedEnvelope)
         {
             DiffEnvelope envelope = ReadContract<DiffEnvelope>(serializedEnvelope);
             var diffType = envelope.DiffType;

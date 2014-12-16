@@ -8,7 +8,6 @@ using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 
-// TODO : UInt64 -> long & String -> string
 
 namespace EvernestBack
 {
@@ -17,7 +16,7 @@ namespace EvernestBack
         public Byte[] WriteBuffer {get; protected set;}
         public CloudPageBlob Blob {get; private set;}
         private int CurrentBufferPosition, MaximumBufferSize;
-        private Int64 CurrentPage = 0;
+        private long CurrentPage = 0;
         private UInt16 CurrentBufferOffset = 0;
         private const Int16 PageSize = 512;
 

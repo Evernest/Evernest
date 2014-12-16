@@ -36,7 +36,7 @@ namespace EvernestBack
         ~RAMStream()
         {
             System.IO.StreamWriter file = new System.IO.StreamWriter(StreamFileName);
-            foreach( String message in Messages )
+            foreach( string message in Messages )
                 file.WriteLine(message);
             file.Close();
         }

@@ -37,7 +37,7 @@ namespace EvernestBack
         // Pull : Use the ID got when pushing to get back the original string
         public void Pull(long id, Action<IAgent> callback)
         {
-            String message;
+            string message;
             if (Indexer.FetchEvent(id, out message))
             {
                 Agent msgAgent = new Agent(message, id, callback);

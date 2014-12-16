@@ -28,7 +28,7 @@ namespace EvernestFront
             return RandomString(KeyLength);
         }
 
-        private static String RandomString(int length)
+        private static string RandomString(int length)
         {
             const int byteSize = 0x100;
             var allowedCharSet = new HashSet<char>(AllowedChars).ToArray();

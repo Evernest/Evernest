@@ -10,10 +10,10 @@ namespace EvernestFront.Errors
     {
         //user UserId already owns a key called KeyName, he cannot create another one.
 
-        public Int64 UserId { get; private set; }
+        public long UserId { get; private set; }
         public string KeyName { get; private set; }
 
-        internal UserKeyNameTaken(Int64 userId, string keyName)
+        internal UserKeyNameTaken(long userId, string keyName)
         {
             UserId = userId;
             KeyName = keyName;

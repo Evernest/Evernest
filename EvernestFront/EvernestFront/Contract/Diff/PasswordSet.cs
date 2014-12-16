@@ -13,7 +13,7 @@ namespace EvernestFront.Contract.Diff
         [DataMember]
         internal long UserId { get; set; }
         [DataMember]
-        internal String SaltedPasswordHash { get; set; }
+        internal string SaltedPasswordHash { get; set; }
 
         internal PasswordSet(long userId, string saltedPasswordHash)
         {

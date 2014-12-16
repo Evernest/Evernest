@@ -51,7 +51,7 @@ namespace EvernestFrontTests
             Assert.IsNull(ans.Error);
         }
 
-        internal static long GetEventId_AssertSuccess(string sourceKey, String message)
+        internal static long GetEventId_AssertSuccess(string sourceKey, string message)
         {
             Source source = GetSource_AssertSuccess(sourceKey);
             Push ans = source.Push(message);

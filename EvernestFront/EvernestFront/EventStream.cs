@@ -13,7 +13,7 @@ namespace EvernestFront
 {
     public class EventStream
     {
-        public Int64 Id { get; private set; }
+        public long Id { get; private set; }
 
         public string Name { get; private set; }
 
@@ -36,8 +36,8 @@ namespace EvernestFront
         
 
         // temporary
-        private static Int64 _next = 0;
-        private static Int64 NextId() { return ++_next; }
+        private static long _next = 0;
+        private static long NextId() { return ++_next; }
 
 
         private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, RAMStream backStream)
@@ -139,7 +139,7 @@ namespace EvernestFront
             var random = new Random();
             long eventId = (long)random.Next((int)LastEventId+1);
             EventContract pulledContract=null;       
-            BackStream.Pull((ulong)eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
+            BackStream.Pull(eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
             return new PullRandom(new Event(pulledContract, eventId, Name, Id));
         }
 
@@ -151,7 +151,7 @@ namespace EvernestFront
             if (IsEventIdValid(eventId))
             {
                 EventContract pulledContract = null;
-                BackStream.Pull((ulong)eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
+                BackStream.Pull(eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
                 return new Pull(new Event(pulledContract, eventId, Name, Id));
             }
             else

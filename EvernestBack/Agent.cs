@@ -10,14 +10,13 @@ namespace EvernestBack
      * when processed, the RequestID and Message logic, etc...
      */
 
-    // TODO : UInt64 -> long & String -> string
     class Agent:IAgent
     {
         private Action<IAgent> Callback;
         public long RequestID { get; private set; }
         public string Message { get; protected set; }
 
-        internal Agent(String Message, long RequestID, 
+        internal Agent(string Message, long RequestID, 
             Action<IAgent> Callback)
         {            
             this.Message = Message;
@@ -84,7 +83,7 @@ namespace EvernestBack
             Callback(this);
         }
 
-        internal void ProcessFailed(String FeedbackMessage)
+        internal void ProcessFailed(string FeedbackMessage)
         {
             //TODO
         }

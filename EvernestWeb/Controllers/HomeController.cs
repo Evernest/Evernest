@@ -3,34 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using EvernestWeb2.Models;
 
-namespace EvernestWeb.Controllers
+namespace EvernestWeb2.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public void IsConnected()
         {
-            ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
-
-            return View();
+            ViewBag.Connexion = "false";
+            Connexion connexion = new Connexion();
+            if (connexion.IsConnected())
+                ViewBag.Connexion = "true";
         }
 
-        public ActionResult Storage()
+        public ActionResult Index()
         {
-            ViewBag.Message = "Store your logs.";
+            IsConnected();
+            
 
             return View();
         }
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your app description page.";
+            IsConnected();
+            ViewBag.Message = "Your application description page.";
 
             return View();
         }
 
         public ActionResult Contact()
         {
+            IsConnected();
             ViewBag.Message = "Your contact page.";
 
             return View();

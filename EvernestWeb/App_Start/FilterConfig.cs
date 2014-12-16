@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 
-namespace EvernestWeb
+namespace EvernestWeb2
 {
     public class FilterConfig
     {

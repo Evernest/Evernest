@@ -9,15 +9,13 @@ namespace EvernestBack
      * both Reader and Producer. That is for instance : the Callback procedure 
      * when processed, the RequestID and Message logic, etc...
      */
-
-    // TODO : UInt64 -> long & String -> string
     class Agent:IAgent
     {
         private Action<IAgent> Callback;
-        public long RequestID { get; private set; }
-        public string Message { get; protected set; }
+        public UInt64 RequestID { get; private set; }
+        public String Message { get; protected set; }
 
-        internal Agent(String Message, long RequestID, 
+        internal Agent(String Message, UInt64 RequestID, 
             Action<IAgent> Callback)
         {            
             this.Message = Message;
@@ -65,14 +63,14 @@ namespace EvernestBack
         public void ReadFromStream(System.IO.Stream Input) 
             //should check whether an error happen when reading
         {
-            Byte[] Buffer = new Byte[sizeof(Int64)];
-            Input.Read(Buffer, 0, sizeof(Int64));
+            Byte[] Buffer = new Byte[sizeof(UInt64)];
+            Input.Read(Buffer, 0, sizeof(UInt64));
             if (!BitConverter.IsLittleEndian)
-                Reverse(Buffer, 0, sizeof(Int64));
-            RequestID = BitConverter.ToInt64(Buffer, 0);
-            Input.Read(Buffer, 0, sizeof(Int16));
+                Reverse(Buffer, 0, sizeof(UInt64));
+            RequestID = BitConverter.ToUInt64(Buffer, 0);
+            Input.Read(Buffer, 0, sizeof(UInt16));
             if (!BitConverter.IsLittleEndian)
-                Reverse(Buffer, 0, sizeof(Int16));
+                Reverse(Buffer, 0, sizeof(UInt16));
             UInt16 MsgLength = BitConverter.ToUInt16(Buffer, 0);
             Byte[] MsgBuffer = new Byte[MsgLength];
             Input.Read(MsgBuffer, 0, MsgLength);

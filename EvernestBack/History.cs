@@ -10,14 +10,14 @@ namespace EvernestBack
     {
         private class Node
         {
-            public Node(long key, ELT_T element, Node left, Node right)
+            public Node(UInt64 key, ELT_T element, Node left, Node right)
             {
                 Key = key;
                 Element = element;
                 Left = left;
                 Right = right;
             }
-            public long Key {get; private set;}
+            public UInt64 Key {get; private set;}
             public ELT_T Element {get; private set;}
             public Node Left {get; set; }
             public Node Right {get; set; }
@@ -39,12 +39,12 @@ namespace EvernestBack
             Mislinked.Clear();
         }
 
-        public void Insert(long key, ELT_T element)
+        public void Insert(UInt64 key, ELT_T element)
         {
             if((CurrentCounter & 1) != 0)
             {
                 LastNode.Right = new Node(key, element, null, null);
-                for(long tmp = CurrentCounter; (tmp & 2) != 0 ; tmp>>=1, Mislinked.Pop() );
+                for(UInt64 tmp = CurrentCounter; (tmp & 2) != 0 ; tmp>>=1, Mislinked.Pop() );
             }
             else
             {
@@ -63,7 +63,7 @@ namespace EvernestBack
             CurrentCounter++;
         }
 
-        public bool UpperBound(long key, ref ELT_T element)
+        public bool UpperBound(UInt64 key, ref ELT_T element)
         {
             Node current = Root, upperBound = null;
             while( current != null )
@@ -81,7 +81,7 @@ namespace EvernestBack
             return upperBound != null;
         }
 
-        public bool LowerBound(long key, ref ELT_T element)
+        public bool LowerBound(UInt64 key, ref ELT_T element)
         {
             Node current = Root, leastBound = null;
             while( current != null )
@@ -102,6 +102,6 @@ namespace EvernestBack
         private Stack<Node> Mislinked;
         private Node Root;
         private Node LastNode;
-        private long CurrentCounter;
+        private UInt64 CurrentCounter;
     }
 }

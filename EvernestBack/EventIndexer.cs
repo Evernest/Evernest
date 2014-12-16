@@ -11,10 +11,10 @@ namespace EvernestBack
 {
     class EventIndexer
     {
-        private History<long> Milestones;
-        private long TotalWrittenBytes = 0;
-        private long CurrentChunkBytes = 0;
-        private long LastPosition = 0;
+        private History<UInt64> Milestones;
+        private UInt64 TotalWrittenBytes = 0;
+        private UInt64 CurrentChunkBytes = 0;
+        private UInt64 LastPosition = 0;
         private UInt32 EventChunkSizeInBytes;
         private BufferedBlobIO BufferedStreamIO;
         private CloudBlockBlob StreamIndexBlob;
@@ -24,10 +24,10 @@ namespace EvernestBack
             BufferedStreamIO = buffer;
             EventChunkSizeInBytes = eventChunkSizeInBytes;
             StreamIndexBlob = streamIndexBlob;
-            Milestones = new History<long>();
+            Milestones = new History<UInt64>();
         }
 
-        public void NotifyNewEntry(long id, long wroteBytes)
+        public void NotifyNewEntry(UInt64 id, UInt16 wroteBytes)
         {
             TotalWrittenBytes += wroteBytes;
             if( wroteBytes + CurrentChunkBytes > EventChunkSizeInBytes)
@@ -40,17 +40,16 @@ namespace EvernestBack
                 CurrentChunkBytes += wroteBytes;
         }
 
-        public bool FetchEvent(long id, out string message)
+        public bool FetchEvent(UInt64 id, out String message)
         {
             return PullFromLocalCache(id, out message) || PullFromCloud(id, out message);
         }
 
-        private bool PullFromLocalCache(long id, out string message)
+        private bool PullFromLocalCache(UInt64 id, out String message)
         {
             message = ""; //no cache yet
             return false;
         }
-
 
         public void WriteIndexInfo()
         {
@@ -62,23 +61,21 @@ namespace EvernestBack
  
         }
 
-        private bool PullFromCloud(long id, out string message)
+        private bool PullFromCloud(UInt64 id, out String message)
         {
-            long firstByte = 0;
-            long lastByte = 0;
+            UInt64 firstByte = 0;
+            UInt64 lastByte = 0;
             Milestones.LowerBound(id, ref firstByte);
             if (!Milestones.UpperBound(id + 1, ref lastByte) && (lastByte = TotalWrittenBytes) == 0)
             {
                 message = "";
                 return false; //there's nothing written!
             }
-
             int byteCount = (int) (lastByte - firstByte);
             Byte[] buffer = new Byte[byteCount];
             byteCount = BufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
-            int currentPosition = 0, messageLength = 0;
-            long currentID = 0;
-
+            UInt32 currentPosition = 0, messageLength = 0;
+            UInt64 currentID = 0;
             do
             {
                 currentPosition += messageLength;
@@ -87,7 +84,7 @@ namespace EvernestBack
                     Agent.Reverse(buffer, (int)currentPosition, (int)sizeof(UInt64));
                     Agent.Reverse(buffer, (int)currentPosition + sizeof(UInt64), (int)sizeof(UInt16));
                 }
-                currentID = BitConverter.ToInt64(buffer, currentPosition);
+                currentID = BitConverter.ToUInt64(buffer, (int)currentPosition);
                 messageLength = BitConverter.ToUInt16(buffer, (int)currentPosition + sizeof(UInt64));
                 currentPosition += sizeof(UInt64) + sizeof(UInt16);
             }

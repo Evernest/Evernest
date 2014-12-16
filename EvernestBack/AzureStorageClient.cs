@@ -1,7 +1,10 @@
-﻿using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System.Configuration;
 
 namespace EvernestBack
@@ -18,16 +21,12 @@ namespace EvernestBack
         private CloudBlobContainer StreamIndexContainer;
         private bool Dummy;
         private int BufferSize;
-
-        private uint EventChunkSize;
-        public static AzureStorageClient singleton = new AzureStorageClient();
-
+        private UInt32 EventChunkSize;
         private long PageBlobSize;
-
         
-        private AzureStorageClient()
+        public AzureStorageClient(bool dummy = true)
         {
-            Dummy = Boolean.Parse(ConfigurationManager.AppSettings["Dummy"]);
+            Dummy = dummy;
             OpenedStreams = new Dictionary<String, IEventStream>();
             if (Dummy) // temporary dummy mode
             {
@@ -77,32 +76,19 @@ namespace EvernestBack
             IEventStream stream;
             if( !OpenedStreams.TryGetValue(streamStringID, out stream) )
             {
-                throw new ArgumentException("You want to recover a stream that does not exists.\n Stream : " + streamStringID);
+                //should ensure that BlockSearchMode is set to Latest
+                if (Dummy)
+                    stream = new RAMStream(streamStringID);
+                else
+                {
+                    CloudPageBlob streamBlob = StreamContainer.GetPageBlobReference(streamStringID);
+                    CloudBlockBlob streamIndexBlob = StreamContainer.GetBlockBlobReference(streamStringID);
+                    streamBlob.Create(PageBlobSize);
+                    stream = new EventStream(streamBlob, streamIndexBlob, BufferSize, EventChunkSize);
+                }
+                OpenedStreams.Add(streamStringID, stream);
             }
             return stream;
-        }
-
-        public IEventStream GetNewEventStream(String streamStringID)
-        {
-            if(OpenedStreams.ContainsKey(streamStringID))
-            {
-                // If we want to create a stream that already exists 
-                throw new ArgumentException("You want to create a stream with a name already used.\n Stream : " + streamStringID);
-            }
-            IEventStream stream;
-            if(Dummy)
-            {
-                Console.WriteLine("Starting RAMStream.");
-                stream = new RAMStream(streamStringID);
-            } else {
-                CloudPageBlob streamBlob = StreamContainer.GetPageBlobReference(streamStringID);
-                CloudBlockBlob streamIndexBlob = StreamContainer.GetBlockBlobReference(streamStringID);
-                streamBlob.Create(PageBlobSize);
-                stream = new EventStream(streamBlob, streamIndexBlob, BufferSize, EventChunkSize);
-            }
-            OpenedStreams.Add(streamStringID, stream);
-            return stream;
-
         }
         //missing something to close streams
 

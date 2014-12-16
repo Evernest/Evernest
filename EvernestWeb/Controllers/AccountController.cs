@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using EvernestWeb2.Models;
-using WebMatrix.WebData;
 
 namespace EvernestWeb2.Controllers
 {

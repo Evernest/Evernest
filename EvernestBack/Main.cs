@@ -10,7 +10,7 @@ namespace EvernestBack
             IEventStream stream;
             try
             {
-                stream = AzureStorageClient.singleton.GetNewEventStream("Test");
+                stream = AzureStorageClient.Instance.GetNewEventStream("Test");
             }
             catch (ArgumentException e)
             {

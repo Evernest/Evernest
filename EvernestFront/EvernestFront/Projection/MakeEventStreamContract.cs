@@ -7,7 +7,7 @@ namespace EvernestFront.Projection
     static class MakeEventStreamContract
     {
 
-        static internal EventStreamContract NewStreamContract(string name, EvernestBack.RAMStream backStream)
+        static internal EventStreamContract NewStreamContract(string name, EvernestBack.IEventStream backStream)
         {
             var users = ImmutableDictionary<long, AccessRights>.Empty;
             return new EventStreamContract(name, users, backStream);

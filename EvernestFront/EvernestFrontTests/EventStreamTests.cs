@@ -26,6 +26,7 @@ namespace EvernestFrontTests
         public void Initialize()
         {
             Projection.Clear();
+            Setup.ClearAsc();
         }
 
 

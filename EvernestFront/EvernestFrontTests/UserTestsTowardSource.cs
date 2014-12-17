@@ -23,7 +23,9 @@ namespace EvernestFrontTests
         [SetUp]
         public void ResetTables()
         {
-            Projection.Clear();
+            Projection.Clear(); 
+            Setup.ClearAsc();
+
         }
 
         [Test]

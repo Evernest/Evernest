@@ -17,7 +17,7 @@ namespace EvernestFront
 
         public string Name { get; private set; }
 
-        public long Count { get { return (int)BackStream.Index; } }
+        public long Count { get { return BackStream.Size(); } }
 
         public long LastEventId { get { return Count-1; } }
 
@@ -29,7 +29,7 @@ namespace EvernestFront
 
         private ImmutableDictionary<long, AccessRights> InternalRelatedUsers { get; set; }
 
-        private RAMStream BackStream { get; set; }
+        private IEventStream BackStream { get; set; }
 
 
 
@@ -40,7 +40,7 @@ namespace EvernestFront
         private static long NextId() { return ++_next; }
 
 
-        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, RAMStream backStream)
+        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, IEventStream backStream)
         {
             Id = streamId;
             Name = name;
@@ -81,7 +81,7 @@ namespace EvernestFront
 
             var id = NextId();
 
-            var backStream = new RAMStream(streamName);
+            var backStream = AzureStorageClient.Instance.GetNewEventStream(streamName);
 
             var streamContract = MakeEventStreamContract.NewStreamContract(streamName, backStream);
             var streamCreated = new EventStreamCreated(id, streamContract, creatorId);

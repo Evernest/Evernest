@@ -1,0 +1,56 @@
+﻿@model EvernestWeb.ViewModels.StreamsSources
+@{
+    ViewBag.Title = "Manage my Store";
+}
+
+<h2>Manage my Store</h2>
+
+<div>@Html.ActionLink("Manage my profil", "Index", "Account")</div>
+
+<div>
+    <!-- for streams -->
+    <div>
+        <h4>Streams</h4>
+        <ul>
+            @if (Model != null)
+            {
+                for (int i = 0; i < Model.Streams.Count; ++i)
+                {
+                    <li>@Model.Streams[i].Name</li>
+                }
+            }
+            <li>
+                @{Html.BeginForm("MyStore", "Store", FormMethod.Post);}
+                @Html.AntiForgeryToken()
+                @Html.Label("item", "Add a Stream : ")
+                @Html.TextBox("addStream", "")
+                <input type="hidden" name="nature" value=0 />
+                <input type="submit" value="Add" />
+                @{Html.EndForm();}
+            </li>
+        </ul>
+    </div>
+
+    <!-- for sources -->
+    <div>
+        <h4>Sources</h4>
+        <ul>
+            @if (Model != null)
+            {
+                for (int i = 0; i < Model.Sources.Count; ++i)
+                {
+                    <li>@Model.Sources[i].Name</li>
+                }
+            }
+            <li>
+                @{Html.BeginForm("MyStore", "Store", FormMethod.Post);}
+                @Html.AntiForgeryToken()
+                @Html.Label("item", "Add a Source : ")
+                @Html.TextBox("addSource", "")
+                <input type="hidden" name="nature" value=1 />
+                <input type="submit" value="Add" />
+                @{Html.EndForm();}
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace EvernestWeb2
+namespace EvernestWeb
 {
     public class BundleConfig
     {

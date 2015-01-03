@@ -23,6 +23,7 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Store", "Index", "Store")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
                 <!-- test -->
@@ -37,7 +38,7 @@
                     else
                     {
                         <ul>
-                            <li>Hello @Html.ActionLink("toto", "Index", "Account")</li>
+                            <li><a href="/Store/MyStore">Hello @ViewBag.Username</a></li>
                             <li>@Html.ActionLink("Log Off", "LogOff", "Account")</li>
                         </ul>
                     }

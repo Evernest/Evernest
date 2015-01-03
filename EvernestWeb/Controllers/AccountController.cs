@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using EvernestWeb2.Models;
+using EvernestWeb.Models;
 using WebMatrix.WebData;
 
-namespace EvernestWeb2.Controllers
+namespace EvernestWeb.Controllers
 {
     public class AccountController : Controller
     {
@@ -15,7 +15,10 @@ namespace EvernestWeb2.Controllers
             ViewBag.Connexion = "false";
             Connexion connexion = new Connexion();
             if (connexion.IsConnected())
+            {
                 ViewBag.Connexion = "true";
+                ViewBag.Username = connexion.Username;
+            }
         }
 
         // GET: Account

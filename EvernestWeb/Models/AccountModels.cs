@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 
-namespace EvernestWeb2.Models
+namespace EvernestWeb.Models
 {
     public class AccountModel
     {

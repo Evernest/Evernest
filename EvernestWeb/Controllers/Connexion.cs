@@ -8,7 +8,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 
 
-namespace EvernestWeb2.Controllers
+namespace EvernestWeb.Controllers
 {
     public class Connexion
     {
@@ -68,13 +68,14 @@ namespace EvernestWeb2.Controllers
                     IdUser = Convert.ToInt64(HttpContext.Current.Request.Cookies["EvernestWeb"]["IdUser"]);
                 else
                     return false;
+
                 if (HttpContext.Current.Request.Cookies["EvernestWeb"]["Hashed"] != null)
                     HashedPassword = HttpContext.Current.Request.Cookies["EvernestWeb"]["Hashed"];
                 else
                     return false;
                 
                 return true;
-                // later confirm hashedPassword and IdUser with EvernestFront
+                // later confirm hashedPassword and IdUser with EvernestFront and store user name
             }
             return false;
         }

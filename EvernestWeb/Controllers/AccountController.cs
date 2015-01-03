@@ -10,7 +10,7 @@ namespace EvernestWeb.Controllers
 {
     public class AccountController : Controller
     {
-        public void IsConnected()
+        private bool IsConnected()
         {
             ViewBag.Connexion = "false";
             Connexion connexion = new Connexion();
@@ -18,7 +18,9 @@ namespace EvernestWeb.Controllers
             {
                 ViewBag.Connexion = "true";
                 ViewBag.Username = connexion.Username;
+                return true;
             }
+            return false;
         }
 
         // GET: Account
@@ -41,15 +43,25 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model, string returnUrl)
         {
-            IsConnected();
-            if (ModelState.IsValid)
+            if (!IsConnected())
             {
-                // to modify later
-                Connexion connexion = new Connexion();
-                connexion.CreateConnexionCookie(1, model.Password, model.RememberMe);
-                return RedirectToAction("Index", "Account");
+                if (ModelState.IsValid)
+                {
+                    Connexion connexion = new Connexion();
+                    if (connexion.CheckUser(model.Username, model.Password))
+                    {
+                        connexion.CreateConnexionCookie(model.RememberMe);
+                        return RedirectToAction("Index", "Account");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Username", "Login failed.");
+                        return View(model);
+                    }
+                }
+                return View(model);
             }
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
@@ -64,15 +76,32 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
-            IsConnected();
-            if (ModelState.IsValid)
+            if (!IsConnected())
             {
-                // to modify later
-                Connexion connexion = new Connexion();
-                connexion.CreateConnexionCookie(1, model.Password, false);
-                return RedirectToAction("Index", "Account");
+                if (ModelState.IsValid)
+                {
+                    // add user in blob
+                    EvernestFront.Answers.AddUser u = EvernestFront.User.AddUser(model.Username, model.Password);
+                    if (u.Success)
+                    {
+                        // if it is ok, then create a cookie for the session
+                        EvernestFront.Answers.GetUser g = EvernestFront.User.GetUser(u.UserId);
+                        if (g.Success)
+                        {
+                            Connexion connexion = new Connexion(g.User.Id, g.User.SaltedPasswordHash, g.User.Name);
+                            connexion.CreateConnexionCookie(false);
+                            return RedirectToAction("Index", "Account");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Username", "User Name already taken.");
+                        return View(model);
+                    }
+                }
+                return View(model);
             }
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         public ActionResult LogOff()

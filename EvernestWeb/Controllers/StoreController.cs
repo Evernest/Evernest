@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using System.Web.Routing;
 using EvernestWeb.Models;
 using EvernestWeb.ViewModels;
 
@@ -11,7 +11,7 @@ namespace EvernestWeb.Controllers
 {
     public class StoreController : Controller
     {
-        public Connexion IsConnected()
+        private Connexion IsConnected()
         {
             ViewBag.Connexion = "false";
             Connexion connexion = new Connexion();
@@ -60,7 +60,7 @@ namespace EvernestWeb.Controllers
 
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
             if (u.Success)
-            {   
+            {
                 StreamsSources streamsSources = getStreamsSources(u);
                 return View(streamsSources);
             }
@@ -70,7 +70,7 @@ namespace EvernestWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult MyStore(string item, int nature)
+        public ActionResult AddStream(string addStream) // add stream
         {
             Connexion connexion = IsConnected();
             if (ViewBag.Connexion != "true")
@@ -78,28 +78,65 @@ namespace EvernestWeb.Controllers
 
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
             if (u.Success)
-                if (item != null)
-                    if (nature == 0) // a stream
+                if (addStream != null)
+                {
+                    EvernestFront.Answers.CreateEventStream stream = u.User.CreateEventStream(addStream);
+                    if (stream.Success)
                     {
-                        EvernestFront.Answers.CreateEventStream stream = u.User.CreateEventStream(item);
-                        if (stream.Success)
+                        // update user object
+                        u = EvernestFront.User.GetUser(connexion.IdUser);
+                        if (u.Success)
                         {
-                            // update user object
-                            u = EvernestFront.User.GetUser(connexion.IdUser);
-                            if (u.Success)
-                            {
-                                StreamsSources streamsSources = getStreamsSources(u);
-                                return View(streamsSources);
-                            }
+                            StreamsSources streamsSources = getStreamsSources(u);
+                            return RedirectToAction("MyStore", "Store", new RouteValueDictionary(streamsSources));
                         }
                     }
-                    /* add a source
-                    else if (nature == 1) // a source
+                }
+            return View("Index");
+        }
+
+        public EvernestFront.AccessRights StringToAccessRights(string accessRights)
+        {
+            EvernestFront.AccessRights accessRights_ = EvernestFront.AccessRights.NoRights; // something by default
+            switch (accessRights)
+            {
+                case "NoRights" : accessRights_ = EvernestFront.AccessRights.NoRights;break;
+                case "ReadOnly": accessRights_ = EvernestFront.AccessRights.ReadOnly; break;
+                case "WriteOnly": accessRights_ = EvernestFront.AccessRights.WriteOnly; break;
+                case "ReadWrite": accessRights_ = EvernestFront.AccessRights.ReadWrite; break;
+                case "Admin": accessRights_ = EvernestFront.AccessRights.Admin; break;
+                case "Root": accessRights_ = EvernestFront.AccessRights.Root; break;
+            }
+            return accessRights_;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddSource(string addSource, string idStream, string accessRights) // add source
+        {
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion != "true")
+                return View("Index");
+
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+            if (u.Success)
+                if (addSource != null)
+                {
+                    long idStream_ = Convert.ToInt64(idStream);
+                    EvernestFront.AccessRights accessRights_ = StringToAccessRights(accessRights);
+                    EvernestFront.Answers.CreateSource source = u.User.CreateSource(addSource, idStream_, accessRights_);
+                    if (source.Success)
                     {
-                        
+                        // update user object
+                        u = EvernestFront.User.GetUser(connexion.IdUser);
+                        if (u.Success)
+                        {
+                            StreamsSources streamsSources = getStreamsSources(u);
+                            return RedirectToAction("MyStore", "Store", new RouteValueDictionary(streamsSources));
+                        }
                     }
-                    */
-            return View();
+                }
+            return View("Index");
         }
     }
 }

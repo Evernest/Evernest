@@ -12,20 +12,21 @@
     <div>
         <h4>Streams</h4>
         <ul>
+            <li>Id - Name - Number of Events</li>
             @if (Model != null)
             {
                 for (int i = 0; i < Model.Streams.Count; ++i)
                 {
-                    <li>@Model.Streams[i].Name</li>
+                    <li>@Model.Streams[i].Id - @Model.Streams[i].Name - @Model.Streams[i].Count</li>
                 }
             }
             <li>
-                @{Html.BeginForm("MyStore", "Store", FormMethod.Post);}
+                @{Html.BeginForm("AddStream", "Store", FormMethod.Post);}
                 @Html.AntiForgeryToken()
-                @Html.Label("item", "Add a Stream : ")
+                @Html.Label("addStream", "Add a Stream : ")
                 @Html.TextBox("addStream", "")
-                <input type="hidden" name="nature" value=0 />
-                <input type="submit" value="Add" />
+                <input type="hidden" name="nature" value="stream"/>
+                <input type="submit" value="Add"/>
                 @{Html.EndForm();}
             </li>
         </ul>
@@ -43,11 +44,25 @@
                 }
             }
             <li>
-                @{Html.BeginForm("MyStore", "Store", FormMethod.Post);}
+                @{Html.BeginForm("AddSource", "Store", FormMethod.Post);}
                 @Html.AntiForgeryToken()
-                @Html.Label("item", "Add a Source : ")
+                @Html.Label("addSource", "Add a Source : ")
                 @Html.TextBox("addSource", "")
-                <input type="hidden" name="nature" value=1 />
+                <select name="idStream">
+                    @for (int i = 0; i < Model.Streams.Count; ++i)
+                    {
+                        <option value="@{ Write(i);}">@Model.Streams[i].Name</option>
+                    }
+                </select>
+                <select name="accessRights">
+                    <option value="NoRights">NoRights</option>
+                    <option value="ReadOnly">ReadOnly</option>
+                    <option value="WriteOnly">WriteOnly</option>
+                    <option value="ReadWrite">ReadWrite</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Root">Root</option>
+                </select>
+                <input type="hidden" name="nature" value="source" />
                 <input type="submit" value="Add" />
                 @{Html.EndForm();}
             </li>

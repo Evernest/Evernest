@@ -10,7 +10,7 @@ namespace EvernestWeb.Controllers
 {
     public class HomeController : Controller
     {
-        public void IsConnected()
+        private void IsConnected()
         {
             ViewBag.Connexion = "false";
             Connexion connexion = new Connexion();

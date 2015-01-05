@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EvernestFront.Answers;
-using EvernestFront.Contract.Diff;
+using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront
 {
@@ -27,18 +27,18 @@ namespace EvernestFront
             BackStream = asc.GetEventStream(DiffstreamStringId);
         }
 
-        internal static void Push(IDiff diff)
+        internal static void Push(ISystemEvent systemEvent)
         {
-            var contract = new DiffEnvelope(diff);
+            var contract = new SystemEventEnvelope(systemEvent);
             BackStream.Push(Serializing.WriteContract(contract), (a => { }));   //change callback to wake up projection ?
         }
 
-        internal static IDiff Pull(long id)
+        internal static ISystemEvent Pull(long id)
         {
             //TODO : check ID validity
-            IDiff diff = null;
-            BackStream.Pull(id, (a => diff = Serializing.ReadDiffEnvelope(a.Message)));
-            return diff;
+            ISystemEvent systemEvent = null;
+            BackStream.Pull(id, (a => systemEvent = Serializing.ReadDiffEnvelope(a.Message)));
+            return systemEvent;
         }
     }
 }

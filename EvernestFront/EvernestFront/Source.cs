@@ -1,6 +1,6 @@
 ﻿using EvernestFront.Answers;
 using EvernestFront.Contract;
-using EvernestFront.Contract.Diff;
+using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;
 using System;
 
@@ -38,7 +38,7 @@ namespace EvernestFront
         private static bool TryGetSource(string sourceKey, out Source source)
         {
             SourceContract sourceContract;
-            if (Projection.Projection.TryGetSourceContract(sourceKey, out sourceContract))
+            if (Projection.ProjectionOld.TryGetSourceContract(sourceKey, out sourceContract))
             {
                 User user;
                 EventStream eventStream;
@@ -109,7 +109,7 @@ namespace EvernestFront
         public DeleteSource Delete()
         {
             var sourceDeleted = new SourceDeleted(Key, User.Id, Name);
-            Projection.Projection.HandleDiff(sourceDeleted);
+            Projection.ProjectionOld.HandleDiff(sourceDeleted);
             //TODO: system stream
             return new DeleteSource();
         }

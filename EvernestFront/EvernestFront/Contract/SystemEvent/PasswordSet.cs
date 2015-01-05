@@ -5,10 +5,10 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvernestFront.Contract.Diff
+namespace EvernestFront.Contract.SystemEvent
 {
     [DataContract]
-    class PasswordSet : IDiff
+    class PasswordSet : ISystemEvent
     {
         [DataMember]
         internal long UserId { get; set; }

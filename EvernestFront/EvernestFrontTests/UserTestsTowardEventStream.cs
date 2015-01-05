@@ -20,7 +20,7 @@ namespace EvernestFrontTests
         [SetUp]
         public void ResetTables()
         {
-            Projection.Clear();
+            ProjectionOld.Clear();
         }
 
         internal static long CreateEventStream_GetId_AssertSuccess(long userId, string streamName)

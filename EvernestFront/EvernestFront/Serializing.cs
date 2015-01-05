@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using EvernestFront.Contract;
-using EvernestFront.Contract.Diff;
+using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront
 {
@@ -36,28 +36,28 @@ namespace EvernestFront
             }
         }
 
-        internal static IDiff ReadDiffEnvelope(string serializedEnvelope)
+        internal static ISystemEvent ReadDiffEnvelope(string serializedEnvelope)
         {
-            DiffEnvelope envelope = ReadContract<DiffEnvelope>(serializedEnvelope);
-            var diffType = envelope.DiffType;
+            SystemEventEnvelope envelope = ReadContract<SystemEventEnvelope>(serializedEnvelope);
+            var diffType = envelope.SystemEventType;
             if (diffType == (typeof (EventStreamCreated).Name))
-                return ReadContract<EventStreamCreated>(envelope.SerializedDiff);
+                return ReadContract<EventStreamCreated>(envelope.SerializedSystemEvent);
             if (diffType == (typeof (PasswordSet)).Name)
-                return ReadContract<PasswordSet>(envelope.SerializedDiff);
+                return ReadContract<PasswordSet>(envelope.SerializedSystemEvent);
             if (diffType == (typeof (SourceCreated)).Name)
-                return ReadContract<SourceCreated>(envelope.SerializedDiff);
+                return ReadContract<SourceCreated>(envelope.SerializedSystemEvent);
             if (diffType == (typeof (UserAdded)).Name)
-                return ReadContract<UserAdded>(envelope.SerializedDiff);
+                return ReadContract<UserAdded>(envelope.SerializedSystemEvent);
             if (diffType == (typeof (UserKeyCreated)).Name)
-                return ReadContract<UserKeyCreated>(envelope.SerializedDiff);
+                return ReadContract<UserKeyCreated>(envelope.SerializedSystemEvent);
             if (diffType == (typeof (UserRightSet)).Name)
-                return ReadContract<UserRightSet>(envelope.SerializedDiff);
+                return ReadContract<UserRightSet>(envelope.SerializedSystemEvent);
             if (diffType == (typeof (SourceDeleted)).Name)
-                return ReadContract<SourceDeleted>(envelope.SerializedDiff);
+                return ReadContract<SourceDeleted>(envelope.SerializedSystemEvent);
             if (diffType == (typeof (UserKeyCreated)).Name)
-                return ReadContract<UserKeyCreated>(envelope.SerializedDiff);
+                return ReadContract<UserKeyCreated>(envelope.SerializedSystemEvent);
             if (diffType == (typeof (UserKeyDeleted)).Name)
-                return ReadContract<UserKeyDeleted>(envelope.SerializedDiff);
+                return ReadContract<UserKeyDeleted>(envelope.SerializedSystemEvent);
             throw new NotImplementedException();                                //should not happen. Maybe create a dummy diff that does nothing instead of throwing an exception ?
 
 

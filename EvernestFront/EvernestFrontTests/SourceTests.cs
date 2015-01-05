@@ -63,7 +63,7 @@ namespace EvernestFrontTests
         [SetUp]
         public void ClearProjection()
         {
-            Projection.Clear();
+            ProjectionOld.Clear();
         }
 
         [Test]

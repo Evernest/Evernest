@@ -5,10 +5,10 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvernestFront.Contract.Diff
+namespace EvernestFront.Contract.SystemEvent
 {
     [DataContract]
-    class SourceCreated : IDiff
+    class SourceCreated : ISystemEvent
     {
         [DataMember]
         internal string Key { get; set; } //base64 encoded int

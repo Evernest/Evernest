@@ -1,10 +1,10 @@
 ﻿using System.Runtime.Serialization;
 using EvernestFront.Errors;
 
-namespace EvernestFront.Contract.Diff
+namespace EvernestFront.Contract.SystemEvent
 {
     [DataContract]
-    internal class UserAdded : IDiff
+    internal class UserAdded : ISystemEvent
     {
         
         [DataMember]

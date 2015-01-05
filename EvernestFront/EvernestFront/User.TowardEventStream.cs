@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EvernestFront.Answers;
-using EvernestFront.Contract.Diff;
+using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;
 
 namespace EvernestFront

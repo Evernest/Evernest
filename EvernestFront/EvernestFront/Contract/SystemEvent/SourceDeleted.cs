@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.Diff
+namespace EvernestFront.Contract.SystemEvent
 {
     [DataContract]
-    class SourceDeleted : IDiff
+    class SourceDeleted : ISystemEvent
     {
         [DataMember]
         internal string SourceKey { get; set; } //base64 encoded int

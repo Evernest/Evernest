@@ -1,7 +1,7 @@
 ﻿using System;
 using EvernestFront.Answers;
 using EvernestFront.Contract;
-using EvernestFront.Contract.Diff;
+using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;
 
 namespace EvernestFront
@@ -19,7 +19,7 @@ namespace EvernestFront
             var key = Keys.NewKey();
             var sourceCreated = new SourceCreated(key, sourceContract);
 
-            Projection.Projection.HandleDiff(sourceCreated);
+            Projection.ProjectionOld.HandleDiff(sourceCreated);
             return new CreateSource(key);
         }
 
@@ -32,7 +32,7 @@ namespace EvernestFront
             if (InternalSources.TryGetValue(sourceName, out key))
             {
                 var sourceDeleted = new SourceDeleted(key, Id, sourceName);
-                Projection.Projection.HandleDiff(sourceDeleted);
+                Projection.ProjectionOld.HandleDiff(sourceDeleted);
                 //TODO: system stream
                 return new DeleteSource();
             }

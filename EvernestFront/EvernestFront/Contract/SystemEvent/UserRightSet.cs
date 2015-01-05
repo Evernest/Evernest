@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.Diff
+namespace EvernestFront.Contract.SystemEvent
 {
     [DataContract]
-    class UserRightSet : IDiff
+    class UserRightSet : ISystemEvent
     {
         [DataMember]
         internal long AdminId;

@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using EvernestBack;
 using EvernestFront.Answers;
 using EvernestFront.Contract;
-using EvernestFront.Contract.Diff;
+using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Projection;
 using EvernestFront.Errors;
 
@@ -68,7 +68,7 @@ namespace EvernestFront
         static internal bool TryGetUser(long userId, out User user)
         {
             UserContract userContract;
-            if (Projection.Projection.TryGetUserContract(userId, out userContract))
+            if (Projection.ProjectionOld.TryGetUserContract(userId, out userContract))
             {
                 user = new User(userId, userContract.UserName, 
                     userContract.SaltedPasswordHash,userContract.PasswordSalt,
@@ -95,7 +95,7 @@ namespace EvernestFront
         static public GetUser GetUser(string userKey)
         {
             long userId;
-            if (Projection.Projection.TryGetUserIdFromKey(userKey, out userId))
+            if (Projection.ProjectionOld.TryGetUserIdFromKey(userKey, out userId))
             {
                 User user;
                 if (TryGetUser(userId, out user))
@@ -112,7 +112,7 @@ namespace EvernestFront
         static public IdentifyUser IdentifyUser(string userName, string password)
         {
             long userId;
-            if (Projection.Projection.TryGetUserIdFromName(userName, out userId))
+            if (Projection.ProjectionOld.TryGetUserIdFromName(userName, out userId))
             {
                 User user;
                 if (TryGetUser(userId, out user))
@@ -134,7 +134,7 @@ namespace EvernestFront
         static public IdentifyUser IdentifyUser(string key)
         {
             long userId;
-            if (Projection.Projection.TryGetUserIdFromKey(key, out userId))
+            if (Projection.ProjectionOld.TryGetUserIdFromKey(key, out userId))
             {
                 User user;
                 if (TryGetUser(userId, out user))
@@ -158,7 +158,7 @@ namespace EvernestFront
 
         static public AddUser AddUser(string name, string password)
         {
-            if (!Projection.Projection.UserNameExists(name))
+            if (!Projection.ProjectionOld.UserNameExists(name))
             {
                 var id = NextId();
 
@@ -174,7 +174,7 @@ namespace EvernestFront
                 var userContract = MakeUserContract.NewUser(name, saltedPasswordHash, passwordSalt);
                 var userAdded = new UserAdded(id, userContract);
 
-                Projection.Projection.HandleDiff(userAdded);
+                Projection.ProjectionOld.HandleDiff(userAdded);
                 //TODO: diff should be written in a stream, then sent back to be processed
 
                 return new AddUser(name, id, key, password);
@@ -195,7 +195,7 @@ namespace EvernestFront
             var saltedHash = hmacMD5.ComputeHash(passwordBytes);
             var saltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
             var passwordSet = new PasswordSet(Id, saltedPasswordHash);
-            Projection.Projection.HandleDiff(passwordSet);
+            Projection.ProjectionOld.HandleDiff(passwordSet);
             return new SetPassword(Id, newPassword);
         }
 
@@ -206,7 +206,7 @@ namespace EvernestFront
             var key = Keys.NewKey();
             var userKeyCreated = new UserKeyCreated(key, Id, keyName);
             //TODO: system stream
-            Projection.Projection.HandleDiff(userKeyCreated);
+            Projection.ProjectionOld.HandleDiff(userKeyCreated);
             return new CreateUserKey(key);
         }
         public CreateUserKey CreateUserKey()

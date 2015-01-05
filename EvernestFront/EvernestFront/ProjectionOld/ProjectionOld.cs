@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using EvernestFront.Contract;
-using EvernestFront.Contract.Diff;
+using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront.Projection
 {
-    static class Projection
+    static class ProjectionOld
     {
         static private Tables _tables = new Tables();
 
@@ -73,7 +73,7 @@ namespace EvernestFront.Projection
 
 
 
-        static internal void HandleDiff(IDiff dm)
+        static internal void HandleDiff(ISystemEvent dm)
         {
             if (dm is UserAdded)
                 HandleUserAdded(dm as UserAdded);

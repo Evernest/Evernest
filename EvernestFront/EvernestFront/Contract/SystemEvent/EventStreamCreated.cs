@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.Diff
+namespace EvernestFront.Contract.SystemEvent
 {
     [DataContract]
-    class EventStreamCreated : IDiff
+    class EventStreamCreated : ISystemEvent
     {
         
         [DataMember]

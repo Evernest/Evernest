@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using EvernestFront.Answers;
 using EvernestFront.Contract;
-using EvernestFront.Contract.Diff;
+using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;
 using EvernestBack;
 using EvernestFront.Projection;
@@ -40,7 +40,7 @@ namespace EvernestFront
         private static long NextId() { return ++_next; }
 
 
-        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, RAMStream backStream)
+        protected EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, RAMStream backStream)
         {
             Id = streamId;
             Name = name;
@@ -51,7 +51,7 @@ namespace EvernestFront
         internal static bool TryGetStream(long streamId, out EventStream eventStream)
         {
             EventStreamContract streamContract;
-            if (Projection.Projection.TryGetStreamContract(streamId, out streamContract))
+            if (Projection.ProjectionOld.TryGetStreamContract(streamId, out streamContract))
             {
                 eventStream = new EventStream(streamId, streamContract.StreamName,
                     streamContract.RelatedUsers, streamContract.BackStream);
@@ -75,7 +75,7 @@ namespace EvernestFront
 
         internal static CreateEventStream CreateEventStream(long creatorId, string streamName)
         {
-            if (Projection.Projection.StreamNameExists(streamName))
+            if (Projection.ProjectionOld.StreamNameExists(streamName))
                 return new CreateEventStream(new EventStreamNameTaken(streamName));
             // this is supposed to be called by a user object, so creatorId should always exist
 
@@ -86,7 +86,7 @@ namespace EvernestFront
             var streamContract = MakeEventStreamContract.NewStreamContract(streamName, backStream);
             var streamCreated = new EventStreamCreated(id, streamContract, creatorId);
 
-            Projection.Projection.HandleDiff(streamCreated);
+            Projection.ProjectionOld.HandleDiff(streamCreated);
             return new CreateEventStream(id);
         }
 
@@ -112,7 +112,7 @@ namespace EvernestFront
 
             var userRightSet = new UserRightSet(adminId, Id, targetUserId, right);
 
-            Projection.Projection.HandleDiff(userRightSet);
+            Projection.ProjectionOld.HandleDiff(userRightSet);
             //TODO: diff should be written in a stream, then sent back to be processed
 
             return new SetRights();

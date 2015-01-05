@@ -22,7 +22,7 @@ namespace EvernestFrontTests
         [SetUp]
         public void ResetTables()
         {
-            Projection.Clear();
+            ProjectionOld.Clear();
         }
 
 

@@ -167,6 +167,8 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Store\Index.cshtml" />
     <Content Include="Views\Store\MyStore.cshtml" />
+    <Content Include="Views\Store\Stream.cshtml" />
+    <Content Include="Views\Store\PushEventForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

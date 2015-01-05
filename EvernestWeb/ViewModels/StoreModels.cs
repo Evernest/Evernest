@@ -30,4 +30,17 @@ namespace EvernestWeb.ViewModels
             Sources.Add(s);
         }
     }
+
+    public class StreamAndEvents
+    {
+        // Stream
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public long Count { get; set; }
+        public long LastEventId { get; set;}
+        public List<KeyValuePair<long, EvernestFront.AccessRights>> RelatedUsers { get; set; }
+
+        // Events
+        public List<EvernestFront.Event> Events;
+    }
 }

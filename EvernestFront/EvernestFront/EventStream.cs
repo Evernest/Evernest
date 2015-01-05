@@ -161,7 +161,7 @@ namespace EvernestFront
            
         }
 
-        internal PullRange PullRange(long fromEventId, long toEventId)
+        public PullRange PullRange(long fromEventId, long toEventId)
         {
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
@@ -184,7 +184,7 @@ namespace EvernestFront
 
 
 
-        internal Push Push(string message, User author)
+        public Push Push(string message, User author)
         {
             long eventId = LastEventId + 1;
             var contract = new EventContract(author, DateTime.UtcNow, message);

@@ -126,7 +126,7 @@ namespace EvernestAPI.Controllers
             }
             catch
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);                
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 

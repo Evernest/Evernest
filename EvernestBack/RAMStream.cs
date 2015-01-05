@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace EvernestBack
 {
@@ -15,15 +16,15 @@ namespace EvernestBack
     {
         private String StreamFileName;
         List<string> Messages = new List<string>();
-        public UInt64 Index = 0;
+        public long Index = 0;
 
-        public RAMStream(String streamStringID)
+        public RAMStream(string streamStringID)
         {
             StreamFileName = streamStringID + "_RAMStreamContent.txt";
             String line;
-            if (System.IO.File.Exists(StreamFileName))
+            if (File.Exists(StreamFileName))
             {
-                System.IO.StreamReader file = new System.IO.StreamReader(StreamFileName);
+                StreamReader file = new StreamReader(StreamFileName);
                 while ((line = file.ReadLine()) != null)
                 {
                     Index++;
@@ -35,13 +36,13 @@ namespace EvernestBack
 
         ~RAMStream()
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(StreamFileName);
+            StreamWriter file = new StreamWriter(StreamFileName);
             foreach( String message in Messages )
                 file.WriteLine(message);
             file.Close();
         }
 
-        public void Push(String message, Action<IAgent> callback)
+        public void Push(string message, Action<IAgent> callback)
         {
             IAgent a = new MyAgent(message, Index);
             Index++;
@@ -49,7 +50,7 @@ namespace EvernestBack
             callback(a);
         }
 
-        public void Pull(UInt64 id, Action<IAgent> callback)
+        public void Pull(long id, Action<IAgent> callback)
         {
             IAgent a = new MyAgent(Messages.ElementAt((int) id), id);
             callback(a);
@@ -58,9 +59,9 @@ namespace EvernestBack
         private class MyAgent:IAgent
         {
             public String Message { get; protected set; }
-            public UInt64 RequestID { get; private set; }
+            public long RequestID { get; private set; }
 
-            public MyAgent(string Message, ulong Index)
+            public MyAgent(string Message, long Index)
             {
                 this.Message = Message;
                 this.RequestID = Index;

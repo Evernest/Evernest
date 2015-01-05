@@ -3,29 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
 {
-    class History<ELT_T>
+    class History
     {
         private class Node
         {
-            public Node(UInt64 key, ELT_T element, Node left, Node right)
+            public Node(long key, ulong element, Node left, Node right)
             {
                 Key = key;
                 Element = element;
                 Left = left;
                 Right = right;
             }
-            public UInt64 Key {get; private set;}
-            public ELT_T Element {get; private set;}
+            public long Key {get; private set;}
+            public ulong Element {get; private set;}
             public Node Left {get; set; }
             public Node Right {get; set; }
         }
 
         public History()
         {
-            CurrentCounter = 0;
+            ElementCounter = 0;
             Mislinked = new Stack<Node>();
             LastNode = null;
             Root = null;
@@ -33,18 +34,18 @@ namespace EvernestBack
 
         public void Clear()
         {
-            CurrentCounter = 0;
+            ElementCounter = 0;
             LastNode = null;
             Root = null;
             Mislinked.Clear();
         }
 
-        public void Insert(UInt64 key, ELT_T element)
+        public void Insert(long key, ulong element)
         {
-            if((CurrentCounter & 1) != 0)
+            if((ElementCounter & 1) != 0)
             {
                 LastNode.Right = new Node(key, element, null, null);
-                for(UInt64 tmp = CurrentCounter; (tmp & 2) != 0 ; tmp>>=1, Mislinked.Pop() );
+                for(long tmp = ElementCounter; (tmp & 2) != 0 ; tmp>>=1, Mislinked.Pop() );
             }
             else
             {
@@ -60,10 +61,10 @@ namespace EvernestBack
                     Mislinked.Push( LastNode );
                 }
             }
-            CurrentCounter++;
+            ElementCounter++;
         }
 
-        public bool UpperBound(UInt64 key, ref ELT_T element)
+        public bool UpperBound(long key, ref ulong element)
         {
             Node current = Root, upperBound = null;
             while( current != null )
@@ -81,7 +82,7 @@ namespace EvernestBack
             return upperBound != null;
         }
 
-        public bool LowerBound(UInt64 key, ref ELT_T element)
+        public bool LowerBound(long key, ref ulong element)
         {
             Node current = Root, leastBound = null;
             while( current != null )
@@ -99,9 +100,70 @@ namespace EvernestBack
             return leastBound != null;
         }
 
+        public Byte[] Serialize() //missing endianness check/byte reordering
+        {
+            long byteCount = sizeof(long) + ElementCounter * (sizeof(long) + sizeof(ulong));
+            Byte[] serializedHistory = new Byte[byteCount];
+            Byte[] treeCountBytes = BitConverter.GetBytes((long) ElementCounter);
+            Buffer.BlockCopy(treeCountBytes, 0, serializedHistory, 0, sizeof(long));
+            int offset = sizeof(long);
+            //infix traversal (writes nodes in their key's order)
+            Stack<Node> currentlyVisitedNodes = new Stack<Node>();
+            Node currentNode;
+            currentlyVisitedNodes.Push(Root);
+            while ((currentNode = currentlyVisitedNodes.Last().Left) != null)
+                currentlyVisitedNodes.Push(currentNode);
+            Byte[] keyBytes;
+            Byte[] elementBytes;
+            while (currentlyVisitedNodes.Count > 0)
+            {
+                currentNode = currentlyVisitedNodes.Last();
+                keyBytes = BitConverter.GetBytes(currentNode.Key);
+                elementBytes = BitConverter.GetBytes(currentNode.Element);
+                Buffer.BlockCopy(keyBytes, 0, serializedHistory, offset, sizeof(long));
+                offset += sizeof(long);
+                Buffer.BlockCopy(elementBytes, 0, serializedHistory, offset, sizeof(ulong));
+                offset += sizeof(ulong);
+                currentNode = currentNode.Right;
+                currentlyVisitedNodes.Pop();
+                if(currentNode != null)
+                {
+                    currentlyVisitedNodes.Push(currentNode);
+                    while ((currentNode = currentlyVisitedNodes.Last().Left) != null)
+                        currentlyVisitedNodes.Push(currentNode);
+                }
+            }
+            return serializedHistory;
+        }
+
+        public void Deserialize(Byte[] src, int offset)
+        {
+            Clear();
+            long elementCount = BitConverter.ToInt64(src, offset);
+            long key;
+            ulong element;
+            offset += sizeof(long);
+            for( long i = 0 ; i < elementCount ; i++ )
+            {
+                key = BitConverter.ToInt64(src, offset);
+                offset += sizeof(long);
+                element = BitConverter.ToUInt64(src, offset);
+                offset += sizeof(ulong);
+                Insert(key, element);
+            }
+        }
+
+        public void ReadFromBlob(CloudBlockBlob blob)
+        {
+            Byte[] sizeBytes = new Byte[sizeof(long)];
+            blob.DownloadRangeToByteArray(sizeBytes, 0, 0, sizeof(long));
+            Byte[] serializedHistory = new Byte[sizeof(long)+BitConverter.ToInt64(sizeBytes, 0)*(sizeof(long) + sizeof(ulong))];
+            Deserialize(serializedHistory, 0);
+        }
+
         private Stack<Node> Mislinked;
         private Node Root;
         private Node LastNode;
-        private UInt64 CurrentCounter;
+        private long ElementCounter;
     }
 }

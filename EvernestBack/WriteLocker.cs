@@ -26,7 +26,7 @@ namespace EvernestBack
 		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
         private EventIndexer Indexer;
         private BufferedBlobIO WriteBuffer;
-        private UInt64 CurrentID;
+        private long CurrentID;
         
         public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer)
         {

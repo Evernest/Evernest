@@ -15,13 +15,13 @@ namespace EvernestBack
          * @param message The message to store
          * @param Callback The method to call when stored
          */
-        void Push(String message, Action<IAgent> Callback);
+        void Push(string message, Action<IAgent> Callback);
 
         /**
          * Get a message from the stream, and call the Callback when pulled
          * @param id The index of the message you want
          * @param Callback The method to call when the message is pulled
          */
-        void Pull(UInt64 id, Action<IAgent> Callback);
+        void Pull(long id, Action<IAgent> Callback);
     }
 }

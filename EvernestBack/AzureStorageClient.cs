@@ -56,7 +56,7 @@ namespace EvernestBack
                 }
                 BlobClient = storageAccount.CreateCloudBlobClient();
                 StreamContainer = BlobClient.GetContainerReference("stream");
-                StreamIndexContainer = BlobClient.GetContainerReference("streamIndex");
+                StreamIndexContainer = BlobClient.GetContainerReference("streamindex");
                 try
                 {
                     StreamContainer.CreateIfNotExists();
@@ -70,14 +70,12 @@ namespace EvernestBack
             }
         }
 
-
-        public IEventStream GetEventStream( String streamStringID ) //not thread-safe yet
+        public IEventStream GetEventStream( string streamStringID ) //not thread-safe yet
         {
             IEventStream stream;
             if( !OpenedStreams.TryGetValue(streamStringID, out stream) )
             {
-                //should ensure that BlockSearchMode is set to Latest
-                if (Dummy)
+                if (Dummy) //this condition should eventually be removed
                     stream = new RAMStream(streamStringID);
                 else
                 {
@@ -90,7 +88,17 @@ namespace EvernestBack
             }
             return stream;
         }
-        //missing something to close streams
 
+        public void DeleteIfExists( String streamStringID )
+        {
+            //TODO
+        }
+
+        public bool TryGetFreshEventStream(string streamStringID, out IEventStream stream)
+        {
+            //TODO
+            stream = null;
+            return false;
+        }
     }
 }

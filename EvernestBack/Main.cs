@@ -1,5 +1,6 @@
 using System;
-
+using System.Threading;
+using System.IO;
 
 namespace EvernestBack
 {
@@ -15,7 +16,7 @@ namespace EvernestBack
             Console.Write(a);*/
             AzureStorageClient asc = new AzureStorageClient(false);
             IEventStream stream = asc.GetEventStream("Test");
-            System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
+            StreamWriter file = new StreamWriter("log.txt");
             UInt32 counter = 0;
 
             const int n = 1000;
@@ -34,9 +35,9 @@ namespace EvernestBack
                         file.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
                     });
                 });
-                //System.Threading.Thread.Sleep(100);
+                //Thread.Sleep(100);
                 counter++;
-            } //this won't happen with an infinite loop, but anyway, this isn't that important
+            }
             bool ok = false;
             while(!ok)
             {

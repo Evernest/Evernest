@@ -10,7 +10,7 @@ namespace EvernestBack
     class Reader:Agent
     {
         System.IO.Stream readStream;
-        public Reader(String Message, UInt64 RequestID, System.IO.Stream readStream, Action<IAgent> Callback)
+        public Reader(String Message, long RequestID, System.IO.Stream readStream, Action<IAgent> Callback)
             :base(Message, RequestID, Callback)
         {
             this.readStream = readStream;

@@ -24,7 +24,6 @@ namespace EvernestBack
             Indexer = new EventIndexer(streamIndexBlob, buffer, eventChunkSize);
             WriteLock = new WriteLocker(buffer, Indexer);
             WriteLock.Store();
-
         }
 
         // Push : Give a string, return an ID with the Callback
@@ -34,7 +33,7 @@ namespace EvernestBack
         }
 
         // Pull : Use the ID got when pushing to get back the original string
-        public void Pull(UInt64 id, Action<IAgent> callback)
+        public void Pull(long id, Action<IAgent> callback)
         {
             String message;
             if (Indexer.FetchEvent(id, out message))

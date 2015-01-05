@@ -11,7 +11,7 @@ namespace EvernestBack
 {
     class EventIndexer
     {
-        private History<UInt64> Milestones;
+        private History Milestones;
         private UInt64 TotalWrittenBytes = 0;
         private UInt64 CurrentChunkBytes = 0;
         private UInt64 LastPosition = 0;
@@ -24,10 +24,11 @@ namespace EvernestBack
             BufferedStreamIO = buffer;
             EventChunkSizeInBytes = eventChunkSizeInBytes;
             StreamIndexBlob = streamIndexBlob;
-            Milestones = new History<UInt64>();
+            Milestones = new History();
+            ReadIndexInfo();
         }
 
-        public void NotifyNewEntry(UInt64 id, UInt16 wroteBytes)
+        public void NotifyNewEntry(long id, UInt16 wroteBytes)
         {
             TotalWrittenBytes += wroteBytes;
             if( wroteBytes + CurrentChunkBytes > EventChunkSizeInBytes)
@@ -40,12 +41,12 @@ namespace EvernestBack
                 CurrentChunkBytes += wroteBytes;
         }
 
-        public bool FetchEvent(UInt64 id, out String message)
+        public bool FetchEvent(long id, out String message)
         {
             return PullFromLocalCache(id, out message) || PullFromCloud(id, out message);
         }
 
-        private bool PullFromLocalCache(UInt64 id, out String message)
+        private bool PullFromLocalCache(long id, out String message)
         {
             message = ""; //no cache yet
             return false;
@@ -53,15 +54,23 @@ namespace EvernestBack
 
         public void WriteIndexInfo()
         {
-
+            Byte[] serializedMilestones = Milestones.Serialize();
+            StreamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
         }
 
         private void ReadIndexInfo()
         {
- 
+            try
+            {
+                Milestones.ReadFromBlob(StreamIndexBlob);
+            }
+            catch(StorageException e)
+            {
+                Milestones.Clear();
+            }
         }
 
-        private bool PullFromCloud(UInt64 id, out String message)
+        private bool PullFromCloud(long id, out String message)
         {
             UInt64 firstByte = 0;
             UInt64 lastByte = 0;
@@ -75,16 +84,16 @@ namespace EvernestBack
             Byte[] buffer = new Byte[byteCount];
             byteCount = BufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
             UInt32 currentPosition = 0, messageLength = 0;
-            UInt64 currentID = 0;
+            long currentID = 0;
             do
             {
                 currentPosition += messageLength;
                 if (!BitConverter.IsLittleEndian)
                 {
-                    Agent.Reverse(buffer, (int)currentPosition, (int)sizeof(UInt64));
-                    Agent.Reverse(buffer, (int)currentPosition + sizeof(UInt64), (int)sizeof(UInt16));
+                    Agent.Reverse(buffer, (int)currentPosition, sizeof(long));
+                    Agent.Reverse(buffer, (int)currentPosition + sizeof(UInt64), sizeof(UInt16));
                 }
-                currentID = BitConverter.ToUInt64(buffer, (int)currentPosition);
+                currentID = BitConverter.ToInt64(buffer, (int)currentPosition);
                 messageLength = BitConverter.ToUInt16(buffer, (int)currentPosition + sizeof(UInt64));
                 currentPosition += sizeof(UInt64) + sizeof(UInt16);
             }

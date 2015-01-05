@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="AssertAuxiliaries.cs" />
     <Compile Include="SerializingTests.cs" />
+    <Compile Include="Setup.cs" />
     <Compile Include="SourceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventStreamTests.cs" />
@@ -81,6 +82,10 @@
     <Compile Include="UserTestsTowardUserKeys.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\EvernestBack\EvernestBack.csproj">
+      <Project>{98fb2d5c-0689-4f34-9b04-de94992eb906}</Project>
+      <Name>EvernestBack</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EvernestFront\EvernestFront.csproj">
       <Project>{955f313d-19ed-4f17-904b-4d95a4ee7e74}</Project>
       <Name>EvernestFront</Name>

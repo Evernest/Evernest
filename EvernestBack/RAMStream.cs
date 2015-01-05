@@ -13,14 +13,14 @@ namespace EvernestBack
      */
     public class RAMStream:IEventStream
     {
-        private String StreamFileName;
+        private string StreamFileName;
         List<string> Messages = new List<string>();
-        public UInt64 Index = 0;
+        public long Index = 0;
 
-        public RAMStream(String streamStringID)
+        public RAMStream(string streamStringID)
         {
             StreamFileName = streamStringID + "_RAMStreamContent.txt";
-            String line;
+            string line;
             if (System.IO.File.Exists(StreamFileName))
             {
                 System.IO.StreamReader file = new System.IO.StreamReader(StreamFileName);
@@ -36,12 +36,12 @@ namespace EvernestBack
         ~RAMStream()
         {
             System.IO.StreamWriter file = new System.IO.StreamWriter(StreamFileName);
-            foreach( String message in Messages )
+            foreach( string message in Messages )
                 file.WriteLine(message);
             file.Close();
         }
 
-        public void Push(String message, Action<IAgent> callback)
+        public void Push(string message, Action<IAgent> callback)
         {
             IAgent a = new MyAgent(message, Index);
             Index++;
@@ -49,18 +49,23 @@ namespace EvernestBack
             callback(a);
         }
 
-        public void Pull(UInt64 id, Action<IAgent> callback)
+        public void Pull(long id, Action<IAgent> callback)
         {
             IAgent a = new MyAgent(Messages.ElementAt((int) id), id);
             callback(a);
         }
 
+        public long Size()
+        {
+            return Messages.Count();
+        }
+
         private class MyAgent:IAgent
         {
-            public String Message { get; protected set; }
-            public UInt64 RequestID { get; private set; }
+            public string Message { get; protected set; }
+            public long RequestID { get; private set; }
 
-            public MyAgent(string Message, ulong Index)
+            public MyAgent(string Message, long Index)
             {
                 this.Message = Message;
                 this.RequestID = Index;

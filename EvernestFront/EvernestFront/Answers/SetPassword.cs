@@ -9,10 +9,10 @@ namespace EvernestFront.Answers
 {
     public class SetPassword : Answer
     {
-        public Int64 User { get; private set; }
-        public String NewPassword { get; private set; }
+        public long User { get; private set; }
+        public string NewPassword { get; private set; }
 
-        internal SetPassword(Int64 user, string password)
+        internal SetPassword(long user, string password)
             : base()
         {
             User = user;

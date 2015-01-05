@@ -13,11 +13,11 @@ namespace EvernestFront
 {
     public class EventStream
     {
-        public Int64 Id { get; private set; }
+        public long Id { get; private set; }
 
         public string Name { get; private set; }
 
-        public long Count { get { return (int)BackStream.Index; } }
+        public long Count { get { return BackStream.Size(); } }
 
         public long LastEventId { get { return Count-1; } }
 
@@ -29,18 +29,18 @@ namespace EvernestFront
 
         private ImmutableDictionary<long, AccessRights> InternalRelatedUsers { get; set; }
 
-        private RAMStream BackStream { get; set; }
+        private IEventStream BackStream { get; set; }
 
 
 
         
 
         // temporary
-        private static Int64 _next = 0;
-        private static Int64 NextId() { return ++_next; }
+        private static long _next = 0;
+        private static long NextId() { return ++_next; }
 
 
-        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, RAMStream backStream)
+        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, IEventStream backStream)
         {
             Id = streamId;
             Name = name;
@@ -81,7 +81,7 @@ namespace EvernestFront
 
             var id = NextId();
 
-            var backStream = new RAMStream(streamName);
+            var backStream = AzureStorageClient.Instance.GetNewEventStream(streamName);
 
             var streamContract = MakeEventStreamContract.NewStreamContract(streamName, backStream);
             var streamCreated = new EventStreamCreated(id, streamContract, creatorId);
@@ -139,7 +139,7 @@ namespace EvernestFront
             var random = new Random();
             long eventId = (long)random.Next((int)LastEventId+1);
             EventContract pulledContract=null;       
-            BackStream.Pull((ulong)eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
+            BackStream.Pull(eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
             return new PullRandom(new Event(pulledContract, eventId, Name, Id));
         }
 
@@ -151,7 +151,7 @@ namespace EvernestFront
             if (IsEventIdValid(eventId))
             {
                 EventContract pulledContract = null;
-                BackStream.Pull((ulong)eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
+                BackStream.Pull(eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
                 return new Pull(new Event(pulledContract, eventId, Name, Id));
             }
             else
@@ -161,7 +161,7 @@ namespace EvernestFront
            
         }
 
-        internal PullRange PullRange(long fromEventId, long toEventId)
+        public PullRange PullRange(long fromEventId, long toEventId)
         {
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
@@ -184,7 +184,7 @@ namespace EvernestFront
 
 
 
-        internal Push Push(string message, User author)
+        public Push Push(string message, User author)
         {
             long eventId = LastEventId + 1;
             var contract = new EventContract(author, DateTime.UtcNow, message);

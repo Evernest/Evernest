@@ -9,9 +9,9 @@ namespace EvernestFront.Answers
 {
     public class CreateUserKey : Answer
     {
-        public String Key { get; private set; }
+        public string Key { get; private set; }
 
-        internal CreateUserKey(String key)
+        internal CreateUserKey(string key)
             : base()
         {
             Key = key;

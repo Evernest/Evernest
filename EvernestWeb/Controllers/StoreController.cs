@@ -1,129 +1,196 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using System.Web.Routing;
 using EvernestWeb.Models;
 using EvernestWeb.ViewModels;
 
-namespace EvernestWeb.Controllers 
+namespace EvernestWeb.Controllers
 {
     public class StoreController : Controller
     {
-        //
-        // GET: /Store/
+        private Connexion IsConnected()
+        {
+            ViewBag.Connexion = "false";
+            Connexion connexion = new Connexion();
+            if (connexion.IsConnected())
+            {
+                ViewBag.Connexion = "true";
+                ViewBag.Username = connexion.Username;
+            }
+            return connexion;
+        }
 
+        // GET: Store
         public ActionResult Index()
         {
-            string idString = "";
-            Int64 id = -1;
-            if (Request.Cookies["EvernestWeb"] != null)
-            {
-                if (Request.Cookies["EvernestWeb"]["Id"] != null)
-                {
-                    idString = Request.Cookies["EvernestWeb"]["Id"];
-                    id = Int64.Parse(idString);
-                }
-            }
-            EvernestFront.Answers.GetUser gU = EvernestFront.User.GetUser(id);
-            if (gU.Success)
-            {
-                List<KeyValuePair<long, EvernestFront.AccessRights>> listStreams = gU.User.RelatedEventStreams;
-                List<KeyValuePair<string, string>> listSources = gU.User.Sources;
-                StreamsSources ss = new StreamsSources();
-                foreach (KeyValuePair<long, EvernestFront.AccessRights> elt in listStreams)
-                {
-                    EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(elt.Key);
-                    if (s.Success)
-                        ss.AddEventStream(s.EventStream);
-                }
-                foreach (KeyValuePair<string, string> src in listSources)
-                {
-                    EvernestFront.Answers.GetSource s = EvernestFront.Source.GetSource(src.Key);
-                    if (s.Success)
-                        ss.AddSource(s.Source);
-                }
+            IsConnected();
 
-                return View(ss);    
+            return View();
+        }
+
+        private StreamsSources getStreamsSources(EvernestFront.Answers.GetUser u)
+        {
+            List<KeyValuePair<long, EvernestFront.AccessRights>> listStreams = u.User.RelatedEventStreams;
+            List<KeyValuePair<string, string>> listSources = u.User.Sources;
+            StreamsSources streamsSources = new StreamsSources();
+            foreach (KeyValuePair<long, EvernestFront.AccessRights> elt in listStreams)
+            {
+                EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(elt.Key);
+                if (s.Success)
+                    streamsSources.AddEventStream(s.EventStream);
             }
+            foreach (KeyValuePair<string, string> src in listSources)
+            {
+                EvernestFront.Answers.GetSource s = EvernestFront.Source.GetSource(src.Value); // the second string is the Key to fetch the source
+                if (s.Success)
+                    streamsSources.AddSource(s.Source);
+            }
+
+            return streamsSources;
+        }
+
+        public ActionResult MyStore()
+        {
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion != "true")
+                return View("Index");
+
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+            if (u.Success)
+            {
+                StreamsSources streamsSources = getStreamsSources(u);
+                return View(streamsSources);
+            }
+
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Index(string addStream)
+        public ActionResult AddStream(string addStream) // add stream
         {
-            string idString = "";
-            Int64 id = -1;
-            if (Request.Cookies["EvernestWeb"] != null)
-            {
-                if (Request.Cookies["EvernestWeb"]["Id"] != null)
-                {
-                    idString = Request.Cookies["EvernestWeb"]["Id"];
-                    id = Int64.Parse(idString);
-                }
-            }
-            EvernestFront.Answers.GetUser gU = EvernestFront.User.GetUser(id);
-            if (gU.Success)
-            {
-                // add stream
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion != "true")
+                return View("Index");
+
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+            if (u.Success)
                 if (addStream != null)
                 {
-                    
-                    EvernestFront.Answers.CreateEventStream stream = gU.User.CreateEventStream(addStream);
+                    EvernestFront.Answers.CreateEventStream stream = u.User.CreateEventStream(addStream);
                     if (stream.Success)
                     {
                         // update user object
-                        gU = EvernestFront.User.GetUser(id);
-
-                        // seek data to print
-
-                        
-                        List<KeyValuePair<long, EvernestFront.AccessRights>> listStreams = gU.User.RelatedEventStreams;
-                        List<KeyValuePair<string, string>> listSources = gU.User.Sources;
-                        StreamsSources ss = new StreamsSources();
-                        foreach (KeyValuePair<long, EvernestFront.AccessRights> elt in listStreams)
+                        u = EvernestFront.User.GetUser(connexion.IdUser);
+                        if (u.Success)
                         {
-                            EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(elt.Key);
-                            if (s.Success)
-                                ss.AddEventStream(s.EventStream);
+                            StreamsSources streamsSources = getStreamsSources(u);
+                            return RedirectToAction("MyStore", "Store", new RouteValueDictionary(streamsSources));
                         }
-                        foreach (KeyValuePair<string, string> src in listSources)
-                        {
-                            EvernestFront.Answers.GetSource s = EvernestFront.Source.GetSource(src.Key);
-                            if (s.Success)
-                                ss.AddSource(s.Source);
-                        }
-                        
-                        return View(ss);
                     }
                 }
+            return View("Index");
+        }
+
+        public EvernestFront.AccessRights StringToAccessRights(string accessRights)
+        {
+            EvernestFront.AccessRights accessRights_ = EvernestFront.AccessRights.NoRights; // something by default
+            switch (accessRights)
+            {
+                case "NoRights" : accessRights_ = EvernestFront.AccessRights.NoRights;break;
+                case "ReadOnly": accessRights_ = EvernestFront.AccessRights.ReadOnly; break;
+                case "WriteOnly": accessRights_ = EvernestFront.AccessRights.WriteOnly; break;
+                case "ReadWrite": accessRights_ = EvernestFront.AccessRights.ReadWrite; break;
+                case "Admin": accessRights_ = EvernestFront.AccessRights.Admin; break;
+                case "Root": accessRights_ = EvernestFront.AccessRights.Root; break;
             }
-            return View();
+            return accessRights_;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddSource(string addSource)
+        public ActionResult AddSource(string addSource, string idStream, string accessRights) // add source
         {
-            return View();
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion != "true")
+                return View("Index");
+
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+            if (u.Success)
+                if (addSource != null)
+                {
+                    long idStream_ = Convert.ToInt64(idStream);
+                    EvernestFront.AccessRights accessRights_ = StringToAccessRights(accessRights);
+                    EvernestFront.Answers.CreateSource source = u.User.CreateSource(addSource, idStream_, accessRights_);
+                    if (source.Success)
+                    {
+                        // update user object
+                        u = EvernestFront.User.GetUser(connexion.IdUser);
+                        if (u.Success)
+                            return RedirectToAction("MyStore", "Store");
+                    }
+                }
+            return View("Index");
         }
 
-        public ActionResult Stream()
+        private StreamAndEvents getStreamsAndEvents(long id)
         {
-            return View();
+            EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(id);
+            if (s.Success)
+            {
+                // fetch stream
+                StreamAndEvents streamAndEvents = new StreamAndEvents();
+                streamAndEvents.Id = s.EventStream.Id;
+                streamAndEvents.Name = s.EventStream.Name;
+                streamAndEvents.Count = s.EventStream.Count;
+                streamAndEvents.LastEventId = s.EventStream.LastEventId;
+                streamAndEvents.RelatedUsers = s.EventStream.RelatedUsers;
+
+                // fetch stream's events
+                int begin = 0;
+                if (s.EventStream.LastEventId > 10)
+                    begin = Convert.ToInt32(s.EventStream.LastEventId) - 10;
+
+                EvernestFront.Answers.PullRange r = s.EventStream.PullRange(begin, s.EventStream.LastEventId);
+                streamAndEvents.Events = r.Events;
+
+                return streamAndEvents;
+            }
+            return null;
         }
 
-        public ActionResult Source()
+        public ActionResult Stream(long id)
         {
-            return View();
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion != "true")
+                return View("Index");
+
+            StreamAndEvents streamAndEvents = getStreamsAndEvents(id);
+            return View(streamAndEvents);
         }
 
-        public ActionResult Coworker()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PushEvent(string item, int sid)
         {
-            return View();
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion != "true")
+                return View("Index");
+
+            if (item != null)
+            {
+                EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(sid);
+                if (s.Success)
+                {
+                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+                    if (u.Success)
+                        s.EventStream.Push(item, u.User);
+                }
+            }
+            return RedirectToAction("Stream", "Store", new { id = sid });
         }
     }
 }

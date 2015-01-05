@@ -9,7 +9,7 @@ namespace EvernestFront.Answers
 {
     public class CreateEventStream:Answer
     {
-        public Int64 StreamId { get; private set; }
+        public long StreamId { get; private set; }
         
         /// <summary>
         /// Sets Success to false and field Error to err.

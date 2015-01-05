@@ -8,9 +8,9 @@ namespace EvernestFront.Errors
 {
     public class UserIdDoesNotExist : FrontError
     {
-        public Int64 Id { get; private set; }
+        public long Id { get; private set; }
 
-        internal UserIdDoesNotExist(Int64 id)
+        internal UserIdDoesNotExist(long id)
         {
             Id = id;
         }

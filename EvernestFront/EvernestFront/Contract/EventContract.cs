@@ -11,13 +11,13 @@ namespace EvernestFront.Contract
     class EventContract
     {
         [DataMember]
-        internal String AuthorName { get; set; }
+        internal string AuthorName { get; set; }
         [DataMember]
-        internal Int64 AuthorId { get; set; }
+        internal long AuthorId { get; set; }
         [DataMember]
         internal DateTime Date { get; set; }
         [DataMember]
-        internal String Message { get; set; }
+        internal string Message { get; set; }
 
         internal EventContract(User author, DateTime date, string message)
         {

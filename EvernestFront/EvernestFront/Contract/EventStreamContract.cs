@@ -16,11 +16,11 @@ namespace EvernestFront.Contract
         [DataMember]
         internal ImmutableDictionary<long, AccessRights> RelatedUsers { get; set; }
         //[DataMember]
-        internal EvernestBack.RAMStream BackStream { get; set; }
+        internal EvernestBack.IEventStream BackStream { get; set; }
         //this is a temporary simulator of backend
         //the actual class should have a contract
 
-        internal EventStreamContract(string name, ImmutableDictionary<long, AccessRights> users, EvernestBack.RAMStream bs)
+        internal EventStreamContract(string name, ImmutableDictionary<long, AccessRights> users, EvernestBack.IEventStream bs)
         {
             StreamName = name;
             RelatedUsers = users;

@@ -7,9 +7,9 @@ namespace EvernestFront.Answers
 {
     public class CreateSource : Answer
     {
-        public String Key { get; private set; }
+        public string Key { get; private set; }
 
-        internal CreateSource(String key)
+        internal CreateSource(string key)
             : base()
         {
             Key = key;

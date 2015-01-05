@@ -7,25 +7,25 @@ namespace EvernestBack
     {
         static void Main(string[] args)
         {
-            /*History<Int32> test = new History<Int32>();
-            test.Insert(1, 1);
-            test.Insert(3, 42);
-            Int32 a = 0;
-            test.UpperBound(2, ref a);
-            Console.Write(a);*/
-            AzureStorageClient asc = new AzureStorageClient(false);
-            IEventStream stream = asc.GetEventStream("Test");
+            IEventStream stream;
+            try
+            {
+                stream = AzureStorageClient.Instance.GetNewEventStream("Test");
+            }
+            catch (ArgumentException e)
+            {
+                Console.Write(e.Message);
+                return;
+            }
             System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
-            UInt32 counter = 0;
 
             const int n = 1000;
-            bool[] tbl = new bool[n];
+            bool[] tbl = new bool[n+500];
             for (int i = 0; i < n; i++)
                 tbl[i] = false;
             for (int i = 0; i < n; i++ )
-
             {
-                stream.Push(counter.ToString(), pushAgent =>
+                stream.Push(i.ToString(), pushAgent =>
                 {
                     stream.Pull(pushAgent.RequestID, pullAgent =>
                     {
@@ -35,7 +35,6 @@ namespace EvernestBack
                     });
                 });
                 //System.Threading.Thread.Sleep(100);
-                counter++;
             } //this won't happen with an infinite loop, but anyway, this isn't that important
             bool ok = false;
             while(!ok)

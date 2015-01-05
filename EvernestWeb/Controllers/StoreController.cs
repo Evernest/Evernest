@@ -130,10 +130,7 @@ namespace EvernestWeb.Controllers
                         // update user object
                         u = EvernestFront.User.GetUser(connexion.IdUser);
                         if (u.Success)
-                        {
-                            StreamsSources streamsSources = getStreamsSources(u);
-                            return RedirectToAction("MyStore", "Store", new RouteValueDictionary(streamsSources));
-                        }
+                            return RedirectToAction("MyStore", "Store");
                     }
                 }
             return View("Index");
@@ -193,7 +190,6 @@ namespace EvernestWeb.Controllers
                         s.EventStream.Push(item, u.User);
                 }
             }
-            //StreamAndEvents streamAndEvents = getStreamsAndEvents(id);
             return RedirectToAction("Stream", "Store", new { id = sid });
         }
     }

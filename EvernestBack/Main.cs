@@ -45,8 +45,8 @@ namespace EvernestBack
 
             file.Close();
 
-            //i suspect this operation to block Console.WriteLine (thus preventing the other thread to run)
-            //so i added a console.read() in the callback to have the time to see the message after pushing enter
+            //I suspect this operation to block Console.WriteLine (thus preventing the other thread to run)
+            //so I added a console.read() in the callback to have the time to see the message after pushing enter
         }
     }
 }

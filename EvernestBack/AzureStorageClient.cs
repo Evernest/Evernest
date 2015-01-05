@@ -59,7 +59,7 @@ namespace EvernestBack
                 }
                 catch (NullReferenceException e)
                 {
-                    Console.Error.WriteLine("Erreur de configuration du storageAccount");
+                    Console.Error.WriteLine("StorageAccount configuration error:");
                     Console.Error.WriteLine("Method : {0}", e.TargetSite);
                     Console.Error.WriteLine("Message : {0}", e.Message);
                     Console.Error.WriteLine("Source : {0}", e.Source);

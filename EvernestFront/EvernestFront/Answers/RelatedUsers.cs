@@ -9,9 +9,9 @@ namespace EvernestFront.Answers
 {
     public class RelatedUsers : Answer
     {
-        public List<KeyValuePair<Int64, AccessRights>> Users { get; private set; }
+        public List<KeyValuePair<long, AccessRights>> Users { get; private set; }
 
-        internal RelatedUsers(List<KeyValuePair<Int64,AccessRights>> users)
+        internal RelatedUsers(List<KeyValuePair<long,AccessRights>> users)
             :base()
         {
             Users = users;

@@ -23,7 +23,9 @@ namespace EvernestFrontTests
         [SetUp]
         public void ResetTables()
         {
-            Projection.Clear();
+            Projection.Clear(); 
+            Setup.ClearAsc();
+
         }
 
         [Test]
@@ -34,11 +36,11 @@ namespace EvernestFrontTests
             User user = UserTests.GetUser_AssertSuccess(userId);
             CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadWrite);
             Assert.IsTrue(ans.Success);
-            String key = ans.Key;
+            string key = ans.Key;
             Assert.IsNotNull(key);
             CreateSource ans2 = user.CreateSource("source2", streamId, AccessRights.ReadWrite);
             Assert.IsTrue(ans2.Success);
-            String key2 = ans2.Key;
+            string key2 = ans2.Key;
             Assert.IsNotNull(key2);
             Assert.AreNotEqual(key, key2);
         }

@@ -20,7 +20,17 @@ namespace EvernestBack
         private int BufferSize;
 
         private uint EventChunkSize;
-        public static AzureStorageClient singleton = new AzureStorageClient();
+        private static AzureStorageClient _singleton;
+
+        public static AzureStorageClient Instance
+        {
+            get
+            {
+                if (_singleton == null)
+                    _singleton = new AzureStorageClient();
+                return _singleton;   
+            }
+        }
 
         private long PageBlobSize;
 
@@ -49,7 +59,7 @@ namespace EvernestBack
                 }
                 catch (NullReferenceException e)
                 {
-                    Console.Error.WriteLine("Erreur de configuration du storageAccount");
+                    Console.Error.WriteLine("StorageAccount configuration error:");
                     Console.Error.WriteLine("Method : {0}", e.TargetSite);
                     Console.Error.WriteLine("Message : {0}", e.Message);
                     Console.Error.WriteLine("Source : {0}", e.Source);
@@ -97,6 +107,7 @@ namespace EvernestBack
          * 
          */
         private IEventStream OpenStream(String streamID)
+
         {
             IEventStream stream;
             if (!OpenedStreams.TryGetValue(streamID, out stream))
@@ -126,6 +137,7 @@ namespace EvernestBack
          * Create a new stream (does not open it). I.e. Create the blob to store it.
          */
         private void CreateEventStream(String streamID)
+
         {
             if(OpenedStreams.ContainsKey(streamID))
             {

@@ -1,23 +1,20 @@
 ﻿@model EvernestWeb.Models.RegisterModel
 @{
-    ViewBag.Title = "S'inscrire";
+    ViewBag.Title = "Register";
 }
 
-<hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
-    <h2>Créez un nouveau compte.</h2>
-</hgroup>
+<h2>Register</h2>
 
-@using (Html.BeginForm()) {
+@using (Html.BeginForm())
+{
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()
-
     <fieldset>
-        <legend>Formulaire d'inscription</legend>
+        <legend>Register Form</legend>
         <ol>
             <li>
-                @Html.LabelFor(m => m.UserName)
-                @Html.TextBoxFor(m => m.UserName)
+                @Html.LabelFor(m => m.Username)
+                @Html.TextBoxFor(m => m.Username)
             </li>
             <li>
                 @Html.LabelFor(m => m.Password)
@@ -28,7 +25,7 @@
                 @Html.PasswordFor(m => m.ConfirmPassword)
             </li>
         </ol>
-        <input type="submit" value="S'inscrire" />
+        <input type="submit" value="Register" />
     </fieldset>
 }
 

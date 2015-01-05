@@ -6,7 +6,7 @@ namespace EvernestFront.Errors
 {
     public class WriteAccessDenied : AccessDenied
     {
-        internal WriteAccessDenied(Int64 stream, Int64 user)
+        internal WriteAccessDenied(long stream, long user)
             : base(stream, user) { }
 
         internal WriteAccessDenied(Source src)

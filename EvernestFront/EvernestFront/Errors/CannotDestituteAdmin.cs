@@ -5,8 +5,8 @@ namespace EvernestFront.Errors
 {
     public class CannotDestituteAdmin : FrontError
     {
-        public Int64 Stream { get; private set; }
-        public Int64 User { get; private set; }
+        public long Stream { get; private set; }
+        public long User { get; private set; }
 
         /// <summary>
         /// Constructor for CannotDestituteAdmin.
@@ -15,7 +15,7 @@ namespace EvernestFront.Errors
         /// <param name="stream"></param>
         /// <param name="user"></param>
 
-        internal CannotDestituteAdmin(Int64 stream, Int64 user)
+        internal CannotDestituteAdmin(long stream, long user)
         {
             Stream = stream;
             User = user;

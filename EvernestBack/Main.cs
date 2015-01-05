@@ -10,7 +10,7 @@ namespace EvernestBack
             IEventStream stream;
             try
             {
-                stream = AzureStorageClient.singleton.GetNewEventStream("Test");
+                stream = AzureStorageClient.Instance.GetNewEventStream("Test");
             }
             catch (ArgumentException e)
             {
@@ -20,7 +20,7 @@ namespace EvernestBack
             }
             try
             {
-                stream = AzureStorageClient.singleton.GetEventStream("Test2"); // Should fail
+                stream = AzureStorageClient.Instance.GetEventStream("Test2"); // Should fail
             } catch ( ArgumentException e)
             {
                 Console.WriteLine("Success, you failed : ");
@@ -57,8 +57,8 @@ namespace EvernestBack
 
             //file.Close();
 
-            //i suspect this operation to block Console.WriteLine (thus preventing the other thread to run)
-            //so i added a console.read() in the callback to have the time to see the message after pushing enter
+            //I suspect this operation to block Console.WriteLine (thus preventing the other thread to run)
+            //so I added a console.read() in the callback to have the time to see the message after pushing enter
         }
     }
 }

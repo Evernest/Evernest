@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using EvernestFront.Answers;
+using EvernestFront.Auxiliaries;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;

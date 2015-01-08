@@ -6,6 +6,7 @@ using System.Security.AccessControl;
 using System.Security.Cryptography;
 using EvernestBack;
 using EvernestFront.Answers;
+using EvernestFront.Auxiliaries;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Projection;

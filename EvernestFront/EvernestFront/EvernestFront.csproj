@@ -97,20 +97,24 @@
     <Compile Include="Answers\AddUser.cs" />
     <Compile Include="Answers\CreateEventStream.cs" />
     <Compile Include="Answers\CreateSource.cs" />
-    <Compile Include="Keys.cs" />
+    <Compile Include="SystemEventEnvelopeProduction\SystemAction\EventStreamCreation.cs" />
+    <Compile Include="SystemEventEnvelopeProduction\SystemAction\SystemAction.cs" />
+    <Compile Include="SystemEventEnvelopeProduction\SystemEventEnvelope.cs" />
+    <Compile Include="SystemEventEnvelopeProduction\SystemEventEnvelopeProducer.cs" />
+    <Compile Include="Auxiliaries\Keys.cs" />
     <Compile Include="Contract\Tables.cs" />
     <Compile Include="Errors\WriteAccessDenied.cs" />
     <Compile Include="ProjectionOld\MakeEventStreamContract.cs" />
     <Compile Include="ProjectionOld\MakeTables.cs" />
     <Compile Include="ProjectionOld\MakeUserContract.cs" />
-    <Compile Include="ProjectionOld\Projection.cs" />
     <Compile Include="ProjectionOld\ReadTables.cs" />
     <Compile Include="Projections\EventStreamsProjection.cs" />
     <Compile Include="Projections\IProjection.cs" />
     <Compile Include="Projections\SourcesProjection.cs" />
     <Compile Include="Projections\UsersProjection.cs" />
-    <Compile Include="Serializing.cs" />
+    <Compile Include="Auxiliaries\Serializing.cs" />
     <Compile Include="Source.cs" />
+    <Compile Include="SystemEventEnvelopeProduction\UserDataForProducer.cs" />
     <Compile Include="SystemEventStream.cs" />
     <Compile Include="User.cs" />
     <Compile Include="ProjectionOld\ProjectionOld.cs" />
@@ -131,6 +135,7 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

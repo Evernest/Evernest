@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace EvernestFront
+namespace EvernestFront.Auxiliaries
 {
     static class Keys
     {

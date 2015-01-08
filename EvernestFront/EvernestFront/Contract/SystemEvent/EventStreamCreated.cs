@@ -9,15 +9,15 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         internal long StreamId;
         [DataMember]
-        internal EventStreamContract StreamContract;
+        internal string StreamName;
         [DataMember]
-        internal long CreatorId;
+        internal string CreatorName;
 
-        internal EventStreamCreated(long streamId, EventStreamContract sc, long creatorId)
+        internal EventStreamCreated(long streamId, string streamName, string creatorName)
         {
             StreamId = streamId;
-            StreamContract = sc;
-            CreatorId = creatorId;
+            StreamName = streamName;
+            CreatorName = creatorName;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using EvernestFront;
+using EvernestFront.Auxiliaries;
 using EvernestFront.Contract;
 using EvernestFront.Projection;
 using NUnit.Framework;

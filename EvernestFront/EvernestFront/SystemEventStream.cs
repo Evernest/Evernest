@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EvernestBack;
 using EvernestFront.Answers;
+using EvernestFront.Auxiliaries;
 using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront

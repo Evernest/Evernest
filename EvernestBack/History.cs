@@ -103,10 +103,12 @@ namespace EvernestBack
         public Byte[] Serialize() //missing endianness check/byte reordering
         {
             long byteCount = sizeof(long) + ElementCounter * (sizeof(long) + sizeof(ulong));
-            Byte[] serializedHistory = new Byte[byteCount];
-            Byte[] treeCountBytes = BitConverter.GetBytes((long) ElementCounter);
-            Buffer.BlockCopy(treeCountBytes, 0, serializedHistory, 0, sizeof(long));
-            int offset = sizeof(long);
+            Byte[] serializedHistory = new Byte[byteCount+sizeof(long)];
+            Byte[] sizeBytes = BitConverter.GetBytes(byteCount);
+            Byte[] treeCountBytes = BitConverter.GetBytes(ElementCounter);
+            Buffer.BlockCopy(sizeBytes, 0, serializedHistory, 0, sizeof(long));
+            Buffer.BlockCopy(treeCountBytes, 0, serializedHistory, sizeof(long), sizeof(long));
+            int offset = sizeof(long)+sizeof(long);
             //infix traversal (writes nodes in their key's order)
             Stack<Node> currentlyVisitedNodes = new Stack<Node>();
             Node currentNode;
@@ -117,7 +119,7 @@ namespace EvernestBack
             Byte[] elementBytes;
             while (currentlyVisitedNodes.Count > 0)
             {
-                currentNode = currentlyVisitedNodes.Last();
+                currentNode = currentlyVisitedNodes.First();
                 keyBytes = BitConverter.GetBytes(currentNode.Key);
                 elementBytes = BitConverter.GetBytes(currentNode.Element);
                 Buffer.BlockCopy(keyBytes, 0, serializedHistory, offset, sizeof(long));
@@ -129,7 +131,7 @@ namespace EvernestBack
                 if(currentNode != null)
                 {
                     currentlyVisitedNodes.Push(currentNode);
-                    while ((currentNode = currentlyVisitedNodes.Last().Left) != null)
+                    while ((currentNode = currentlyVisitedNodes.First().Left) != null)
                         currentlyVisitedNodes.Push(currentNode);
                 }
             }

@@ -9,7 +9,7 @@ namespace EvernestFront.Answers
 {
     public class Push : Answer
     {
-        public int MessageId { get; private set; }
+        public long MessageId { get; private set; }
 
         internal Push(FrontError err)
             : base(err) { }
@@ -19,7 +19,7 @@ namespace EvernestFront.Answers
         /// Sets field success to true and MessageID to id.
         /// </summary>
         /// <param name="id"></param>
-        internal Push(int id)
+        internal Push(long id)
         :base ()
         {
             MessageId = id;

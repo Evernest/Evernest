@@ -13,13 +13,13 @@ namespace EvernestFront
 {
     public class EventStream
     {
-        public Int64 Id { get; private set; }
+        public long Id { get; private set; }
 
         public string Name { get; private set; }
 
-        public int Count { get { return (int)BackStream.Index; } }
+        public long Count { get { return BackStream.Size(); } }
 
-        public int LastEventId { get { return Count-1; } }
+        public long LastEventId { get { return Count-1; } }
 
 
         public List<KeyValuePair<long, AccessRights>> RelatedUsers
@@ -29,18 +29,18 @@ namespace EvernestFront
 
         private ImmutableDictionary<long, AccessRights> InternalRelatedUsers { get; set; }
 
-        private RAMStream BackStream { get; set; }
+        private IEventStream BackStream { get; set; }
 
 
 
         
 
         // temporary
-        private static Int64 _next = 0;
-        private static Int64 NextId() { return ++_next; }
+        private static long _next = 0;
+        private static long NextId() { return ++_next; }
 
 
-        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, RAMStream backStream)
+        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, IEventStream backStream)
         {
             Id = streamId;
             Name = name;
@@ -77,12 +77,11 @@ namespace EvernestFront
         {
             if (Projection.Projection.StreamNameExists(streamName))
                 return new CreateEventStream(new EventStreamNameTaken(streamName));
-            if (!Projection.Projection.UserIdExists(creatorId))
-                return new CreateEventStream(new UserIdDoesNotExist(creatorId));
+            // this is supposed to be called by a user object, so creatorId should always exist
 
             var id = NextId();
 
-            var backStream = new RAMStream(Convert.ToString(id));
+            var backStream = AzureStorageClient.Instance.GetNewEventStream(streamName);
 
             var streamContract = MakeEventStreamContract.NewStreamContract(streamName, backStream);
             var streamCreated = new EventStreamCreated(id, streamContract, creatorId);
@@ -122,7 +121,7 @@ namespace EvernestFront
 
 
 
-        private int ActualEventId(int eventId)
+        private long ActualEventId(long eventId)
         {
             var id = eventId;
             if (id < 0)
@@ -130,7 +129,7 @@ namespace EvernestFront
             return id;
         }
 
-        private bool IsEventIdValid(int id)
+        private bool IsEventIdValid(long id)
         {
             return ((id >= 0) && (id <= LastEventId));
         }
@@ -138,21 +137,21 @@ namespace EvernestFront
         internal PullRandom PullRandom()
         {
             var random = new Random();
-            int eventId = random.Next(LastEventId+1);
+            long eventId = (long)random.Next((int)LastEventId+1);
             EventContract pulledContract=null;       
-            BackStream.Pull((ulong)eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
+            BackStream.Pull(eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
             return new PullRandom(new Event(pulledContract, eventId, Name, Id));
         }
 
-        internal Pull Pull(int id)
+        internal Pull Pull(long id)
         {
-            int eventId = ActualEventId(id);
+            long eventId = ActualEventId(id);
 
 
             if (IsEventIdValid(eventId))
             {
                 EventContract pulledContract = null;
-                BackStream.Pull((ulong)eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
+                BackStream.Pull(eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
                 return new Pull(new Event(pulledContract, eventId, Name, Id));
             }
             else
@@ -162,7 +161,7 @@ namespace EvernestFront
            
         }
 
-        internal PullRange PullRange(int fromEventId, int toEventId)
+        public PullRange PullRange(long fromEventId, long toEventId)
         {
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
@@ -171,7 +170,7 @@ namespace EvernestFront
             if (!IsEventIdValid(toEventId))
                 return new PullRange(new InvalidEventId(toEventId, this));
             var eventList = new List<Event>();
-            for (int id = fromEventId; id <= toEventId; id++)
+            for (long id = fromEventId; id <= toEventId; id++)
             {
                 Pull ans = Pull(id);
                 if (!ans.Success)
@@ -185,9 +184,9 @@ namespace EvernestFront
 
 
 
-        internal Push Push(string message, User author)
+        public Push Push(string message, User author)
         {
-            int eventId = LastEventId + 1;
+            long eventId = LastEventId + 1;
             var contract = new EventContract(author, DateTime.UtcNow, message);
             BackStream.Push(Serializing.WriteContract<EventContract>(contract), (a => Console.WriteLine(a.RequestID)));  //TODO : change this callback
             return new Push(eventId);

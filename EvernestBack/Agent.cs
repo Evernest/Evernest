@@ -9,13 +9,14 @@ namespace EvernestBack
      * both Reader and Producer. That is for instance : the Callback procedure 
      * when processed, the RequestID and Message logic, etc...
      */
+
     class Agent:IAgent
     {
         private Action<IAgent> Callback;
         public long RequestID { get; private set; }
-        public String Message { get; protected set; }
+        public string Message { get; protected set; }
 
-        internal Agent(String Message, long RequestID, 
+        internal Agent(string Message, long RequestID, 
             Action<IAgent> Callback)
         {            
             this.Message = Message;
@@ -82,7 +83,7 @@ namespace EvernestBack
             Callback(this);
         }
 
-        internal void ProcessFailed(String FeedbackMessage)
+        internal void ProcessFailed(string FeedbackMessage)
         {
             //TODO
         }

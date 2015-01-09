@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using EvernestFront;
 using EvernestFront.Answers;
 using EvernestFront.Errors;
@@ -16,11 +17,15 @@ namespace EvernestFrontTests
         private const string UserName2 = "userName2";
         private const string StreamName = "streamName";
         private const string SourceName = "sourceName";
+        private const string SourceName2 = "sourceName2";
+        private const AccessRights SomeRight = AccessRights.ReadOnly; //constant to use when the right is not decisive
 
         [SetUp]
         public void ResetTables()
         {
-            Projection.Clear();
+            Projection.Clear(); 
+            Setup.ClearAsc();
+
         }
 
         [Test]
@@ -31,11 +36,11 @@ namespace EvernestFrontTests
             User user = UserTests.GetUser_AssertSuccess(userId);
             CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadWrite);
             Assert.IsTrue(ans.Success);
-            String key = ans.Key;
+            string key = ans.Key;
             Assert.IsNotNull(key);
             CreateSource ans2 = user.CreateSource("source2", streamId, AccessRights.ReadWrite);
             Assert.IsTrue(ans2.Success);
-            String key2 = ans2.Key;
+            string key2 = ans2.Key;
             Assert.IsNotNull(key2);
             Assert.AreNotEqual(key, key2);
         }
@@ -46,10 +51,37 @@ namespace EvernestFrontTests
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             long streamId = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             User user = UserTests.GetUser_AssertSuccess(userId);
-            CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadWrite);
+            CreateSource ans = user.CreateSource(SourceName, streamId, SomeRight);
             user = UserTests.GetUser_AssertSuccess(userId);
-            CreateSource ans2 = user.CreateSource(SourceName, streamId, AccessRights.Admin);
+            CreateSource ans2 = user.CreateSource(SourceName, streamId, SomeRight);
             AssertAuxiliaries.ErrorAssert<SourceNameTaken>(ans2);
+        }
+
+        [Test]
+        public void Sources_Property()
+        {
+            long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            long streamId = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            string key = SourceTests.CreateSource_GetKey_AssertSuccess(userId, streamId, SourceName, SomeRight);
+            string key2 = SourceTests.CreateSource_GetKey_AssertSuccess(userId, streamId, SourceName2, SomeRight);
+            User user = UserTests.GetUser_AssertSuccess(userId);
+            var sources = user.Sources;
+            Assert.AreEqual(2, sources.Count);
+            Assert.IsTrue(sources.Contains(new KeyValuePair<string, string>(SourceName, key)));
+            Assert.IsTrue(sources.Contains(new KeyValuePair<string, string>(SourceName2, key2)));
+        }
+
+        [Test]
+        public void DeleteSource_Success()
+        {
+            long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            long streamId = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            var sourceKey = SourceTests.CreateSource_GetKey_AssertSuccess(userId, streamId, SourceName, SomeRight);
+            User user = UserTests.GetUser_AssertSuccess(userId);
+            DeleteSource ds = user.DeleteSource(SourceName);
+            Assert.IsTrue(ds.Success);
+            user = UserTests.GetUser_AssertSuccess(userId);
+            Assert.IsFalse(user.Sources.Exists(pair => pair.Key==SourceName));
         }
     }
 }

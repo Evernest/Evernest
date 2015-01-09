@@ -26,7 +26,7 @@ namespace EvernestFront
         }
 
 
-        internal static T ReadContract<T>(String serializedContract)
+        internal static T ReadContract<T>(string serializedContract)
         {
             var dcs = new DataContractSerializer(typeof (T));
             var sr = new StringReader(serializedContract);
@@ -36,7 +36,7 @@ namespace EvernestFront
             }
         }
 
-        internal static IDiff ReadDiffEnvelope(String serializedEnvelope)
+        internal static IDiff ReadDiffEnvelope(string serializedEnvelope)
         {
             DiffEnvelope envelope = ReadContract<DiffEnvelope>(serializedEnvelope);
             var diffType = envelope.DiffType;
@@ -52,6 +52,12 @@ namespace EvernestFront
                 return ReadContract<UserKeyCreated>(envelope.SerializedDiff);
             if (diffType == (typeof (UserRightSet)).Name)
                 return ReadContract<UserRightSet>(envelope.SerializedDiff);
+            if (diffType == (typeof (SourceDeleted)).Name)
+                return ReadContract<SourceDeleted>(envelope.SerializedDiff);
+            if (diffType == (typeof (UserKeyCreated)).Name)
+                return ReadContract<UserKeyCreated>(envelope.SerializedDiff);
+            if (diffType == (typeof (UserKeyDeleted)).Name)
+                return ReadContract<UserKeyDeleted>(envelope.SerializedDiff);
             throw new NotImplementedException();                                //should not happen. Maybe create a dummy diff that does nothing instead of throwing an exception ?
 
 

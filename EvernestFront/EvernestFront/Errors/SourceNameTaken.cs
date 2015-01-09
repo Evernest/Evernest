@@ -10,10 +10,10 @@ namespace EvernestFront.Errors
     {
         //user UserId already owns a source called SourceName, he cannot create another one.
 
-        public Int64 UserId { get; private set; }
+        public long UserId { get; private set; }
         public string SourceName { get; private set; }
 
-        internal SourceNameTaken(Int64 user, string source)
+        internal SourceNameTaken(long user, string source)
         {
             UserId = user;
             SourceName = source;

@@ -6,9 +6,9 @@ namespace EvernestFront.Errors
 {
     public class EventStreamIdDoesNotExist : FrontError
     { 
-        public Int64 StreamId { get; private set; }
+        public long StreamId { get; private set; }
 
-        internal EventStreamIdDoesNotExist(Int64 id)
+        internal EventStreamIdDoesNotExist(long id)
         {
             StreamId = id;  
         }

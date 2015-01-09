@@ -14,14 +14,14 @@ namespace EvernestBack
      */
     public class RAMStream:IEventStream
     {
-        private String StreamFileName;
+        private string StreamFileName;
         List<string> Messages = new List<string>();
         public long Index = 0;
 
         public RAMStream(string streamStringID)
         {
             StreamFileName = streamStringID + "_RAMStreamContent.txt";
-            String line;
+            string line;
             if (File.Exists(StreamFileName))
             {
                 StreamReader file = new StreamReader(StreamFileName);
@@ -37,7 +37,7 @@ namespace EvernestBack
         ~RAMStream()
         {
             StreamWriter file = new StreamWriter(StreamFileName);
-            foreach( String message in Messages )
+            foreach( string message in Messages )
                 file.WriteLine(message);
             file.Close();
         }
@@ -56,9 +56,14 @@ namespace EvernestBack
             callback(a);
         }
 
+        public long Size()
+        {
+            return Messages.Count();
+        }
+
         private class MyAgent:IAgent
         {
-            public String Message { get; protected set; }
+            public string Message { get; protected set; }
             public long RequestID { get; private set; }
 
             public MyAgent(string Message, long Index)

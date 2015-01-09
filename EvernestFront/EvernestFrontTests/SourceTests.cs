@@ -51,7 +51,7 @@ namespace EvernestFrontTests
             Assert.IsNull(ans.Error);
         }
 
-        internal static int GetEventId_AssertSuccess(string sourceKey, String message)
+        internal static long GetEventId_AssertSuccess(string sourceKey, string message)
         {
             Source source = GetSource_AssertSuccess(sourceKey);
             Push ans = source.Push(message);
@@ -64,6 +64,7 @@ namespace EvernestFrontTests
         public void ClearProjection()
         {
             Projection.Clear();
+            Setup.ClearAsc();
         }
 
         [Test]
@@ -97,6 +98,22 @@ namespace EvernestFrontTests
             User user = UserTests.GetUser_AssertSuccess(userId);
             CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadOnly);
             AssertAuxiliaries.ErrorAssert<SourceNameTaken>(ans);
+        }
+
+        [Test]
+        public void DeleteSource_Success()
+        {
+            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var streamId = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
+            var sourceKey = CreateSource_GetKey_AssertSuccess(userId, streamId, SourceName, SomeRight);
+
+            var source = GetSource_AssertSuccess(sourceKey);
+            DeleteSource ans = source.Delete();
+
+            Assert.IsTrue(ans.Success);
+            var user = UserTests.GetUser_AssertSuccess(userId);
+            Assert.IsFalse(user.Sources.Exists(pair => pair.Key==SourceName));
+
         }
 
         [Test]
@@ -184,8 +201,8 @@ namespace EvernestFrontTests
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             long stream = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.Admin);
-            int eventId = GetEventId_AssertSuccess(sourceKey, Message);
-            int eventId2 = GetEventId_AssertSuccess(sourceKey, Message);
+            long eventId = GetEventId_AssertSuccess(sourceKey, Message);
+            long eventId2 = GetEventId_AssertSuccess(sourceKey, Message);
             Assert.AreEqual(eventId+1, eventId2);
         }
 
@@ -222,7 +239,7 @@ namespace EvernestFrontTests
             long stream = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.ReadOnly);
             Source source = GetSource_AssertSuccess(sourceKey);
-            int eventId = UserTestsTowardEventStream.GetEventId_AssertSuccess(userId, stream, Message);
+            long eventId = UserTestsTowardEventStream.PushEvent_GetId_AssertSuccess(userId, stream, Message);
             var ans = source.Pull(eventId);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
@@ -240,7 +257,7 @@ namespace EvernestFrontTests
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.ReadOnly); //user has no rights on stream
             Source source = GetSource_AssertSuccess(sourceKey);
-            int eventId = UserTestsTowardEventStream.GetEventId_AssertSuccess(creatorId, stream, Message);
+            long eventId = UserTestsTowardEventStream.PushEvent_GetId_AssertSuccess(creatorId, stream, Message);
             var ans = source.Pull(eventId);
             AssertAuxiliaries.ErrorAssert<ReadAccessDenied>(ans);
         }
@@ -252,7 +269,7 @@ namespace EvernestFrontTests
             long stream = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.WriteOnly); //source cannot read
             Source source = GetSource_AssertSuccess(sourceKey);
-            int eventId = UserTestsTowardEventStream.GetEventId_AssertSuccess(userId, stream, Message);
+            long eventId = UserTestsTowardEventStream.PushEvent_GetId_AssertSuccess(userId, stream, Message);
             var ans = source.Pull(eventId);
             AssertAuxiliaries.ErrorAssert<ReadAccessDenied>(ans);
         }

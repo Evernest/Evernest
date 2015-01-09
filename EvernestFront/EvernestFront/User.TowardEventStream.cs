@@ -17,7 +17,7 @@ namespace EvernestFront
             //move logic to this class?
         }
 
-        public SetRights SetRights(Int64 streamId, Int64 targetUserId, AccessRights right)
+        public SetRights SetRights(long streamId, long targetUserId, AccessRights right)
         {
             if (!CanAdmin(streamId))
                 return new SetRights(new AdminAccessDenied(streamId, Id));
@@ -34,7 +34,7 @@ namespace EvernestFront
         /// </summary>
         /// <param name="streamId"></param>
         /// <returns></returns>
-        public PullRandom PullRandom(Int64 streamId)
+        public PullRandom PullRandom(long streamId)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))
@@ -57,7 +57,7 @@ namespace EvernestFront
         /// <param name="streamId"></param>
         /// <param name="eventId"></param>
         /// <returns></returns>
-        public Pull Pull(Int64 streamId, int eventId)
+        public Pull Pull(long streamId, long eventId)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))
@@ -81,7 +81,7 @@ namespace EvernestFront
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public PullRange PullRange(Int64 streamId, int from, int to)
+        public PullRange PullRange(long streamId, long from, long to)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))
@@ -103,7 +103,7 @@ namespace EvernestFront
         /// <param name="streamId"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Push Push(Int64 streamId, string message)
+        public Push Push(long streamId, string message)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))

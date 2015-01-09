@@ -7,7 +7,7 @@ namespace EvernestFront.Errors
     public class ReadAccessDenied : AccessDenied
     {
 
-        internal ReadAccessDenied(Int64 stream, Int64 user)
+        internal ReadAccessDenied(long stream, long user)
             : base(stream, user) { }
 
         internal ReadAccessDenied(Source src)

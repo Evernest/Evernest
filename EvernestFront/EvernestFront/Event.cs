@@ -7,21 +7,21 @@ namespace EvernestFront
 {
     public class Event
     {
-        public int Id { get; private set; }
+        public long Id { get; private set; }
 
-        public String Message { get; private set; }
+        public string Message { get; private set; }
 
-        public String ParentStreamName { get; private set; }
+        public string ParentStreamName { get; private set; }
 
-        public Int64 ParentStreamId { get; private set; }
+        public long ParentStreamId { get; private set; }
 
-        public String AuthorName { get; private set; }
+        public string AuthorName { get; private set; }
 
-        public Int64 AuthorId { get; private set; }
+        public long AuthorId { get; private set; }
 
         public DateTime Date { get; private set; }
 
-        internal Event(EventContract contract,int id, String parentStreamName, long parentStreamId)
+        internal Event(EventContract contract,long id, string parentStreamName, long parentStreamId)
         {
             Id = id;
             Message = contract.Message;

@@ -15,11 +15,11 @@ namespace EvernestFront
 {
     public partial class User
     {
-        public Int64 Id { get; private set; }
+        public long Id { get; private set; }
 
         public string Name { get; private set; }
 
-        private String SaltedPasswordHash { get; set; }
+        public string SaltedPasswordHash { get; set; }
 
         private byte[] PasswordSalt { get; set; }
 
@@ -44,8 +44,8 @@ namespace EvernestFront
 
 
         //change this ? Factor with Stream.nextId() ?
-        private static Int64 _next;
-        private static Int64 NextId() { _next++; return _next; }
+        private static long _next;
+        private static long NextId() { _next++; return _next; }
 
         //TODO : refactor hashing and conversions between string/bytes
 

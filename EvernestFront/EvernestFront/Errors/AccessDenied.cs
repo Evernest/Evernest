@@ -5,11 +5,11 @@ namespace EvernestFront.Errors
 {
     public abstract class AccessDenied : FrontError
     {
-        public Int64 StreamId { get; private set; }
-        public Int64 UserId { get; private set; }
+        public long StreamId { get; private set; }
+        public long UserId { get; private set; }
         public string SourceName { get; private set; }
 
-        protected AccessDenied(Int64 argStreamId, Int64 argUser)
+        protected AccessDenied(long argStreamId, long argUser)
         {
             StreamId = argStreamId;
             UserId = argUser;

@@ -8,9 +8,9 @@ namespace EvernestFront.Errors
 {
     public class SourceKeyDoesNotExist : FrontError
     {
-        public String Key { get; private set; }
+        public string Key { get; private set; }
 
-        internal SourceKeyDoesNotExist(String key)
+        internal SourceKeyDoesNotExist(string key)
         {
             Key = key;
         }

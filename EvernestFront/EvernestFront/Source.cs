@@ -35,21 +35,36 @@ namespace EvernestFront
             Right = right;
         }
 
-        private static bool TryGetSource(string sourceKey, out Source source)
+        private static bool TryGetSource(string sourceKey, out Source source, out FrontError error)
         {
             SourceContract sourceContract;
             if (Projection.Projection.TryGetSourceContract(sourceKey, out sourceContract))
             {
                 User user;
-                EventStream eventStream;
-                if (User.TryGetUser(sourceContract.UserId, out user)
-                    & EventStream.TryGetStream(sourceContract.StreamId, out eventStream))
+                if (!User.TryGetUser(sourceContract.UserId, out user))
                 {
-                    source = new Source(sourceKey, sourceContract.Name, user, eventStream, sourceContract.Right);
-                    return true;
+                    error=new UserIdDoesNotExist(sourceContract.UserId);
+                    source = null;
+                    return false;
+                }
+                else
+                {
+                    EventStream eventStream;
+                    if (!EventStream.TryGetStream(sourceContract.StreamId, out eventStream))
+                    {
+                        error = new EventStreamIdDoesNotExist(sourceContract.StreamId);
+                        source = null;
+                        return false;
+                    }
+                    else
+                    {
+                        source = new Source(sourceKey, sourceContract.Name, user, eventStream, sourceContract.Right);
+                        error = null;
+                        return true;
+                    }
                 }
             }
-
+            error = new SourceKeyDoesNotExist(sourceKey);
             source = null;
             return false;
         }
@@ -57,12 +72,11 @@ namespace EvernestFront
         static public GetSource GetSource(string sourceKey)
         {
             Source source;
-            if (TryGetSource(sourceKey, out source))
+            FrontError error;
+            if (TryGetSource(sourceKey, out source, out error))
                 return new GetSource(source);
             else
-                return new GetSource(new SourceKeyDoesNotExist(sourceKey));
-                //or couldn't find user or eventStream though they should exist
-                //TODO: handle this properly
+                return new GetSource(error);
         }
 
 

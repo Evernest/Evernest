@@ -136,10 +136,11 @@ namespace EvernestWeb.Controllers
             return View("Index");
         }
 
-        private StreamAndEvents getStreamsAndEvents(long id)
+        private StreamAndEvents getStreamsAndEvents(long streamId, long userId)
         {
-            EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(id);
-            if (s.Success)
+            EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(streamId);
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(userId);
+            if (s.Success&&u.Success)
             {
                 // fetch stream
                 StreamAndEvents streamAndEvents = new StreamAndEvents();
@@ -154,7 +155,7 @@ namespace EvernestWeb.Controllers
                 if (s.EventStream.LastEventId > 10)
                     begin = Convert.ToInt32(s.EventStream.LastEventId) - 10;
 
-                EvernestFront.Answers.PullRange r = s.EventStream.PullRange(begin, s.EventStream.LastEventId);
+                EvernestFront.Answers.PullRange r = u.User.PullRange(streamId, begin, s.EventStream.LastEventId);
                 streamAndEvents.Events = r.Events;
 
                 return streamAndEvents;
@@ -168,7 +169,7 @@ namespace EvernestWeb.Controllers
             if (ViewBag.Connexion != "true")
                 return View("Index");
 
-            StreamAndEvents streamAndEvents = getStreamsAndEvents(id);
+            StreamAndEvents streamAndEvents = getStreamsAndEvents(id, connexion.IdUser);
             return View(streamAndEvents);
         }
 
@@ -187,7 +188,7 @@ namespace EvernestWeb.Controllers
                 {
                     EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
                     if (u.Success)
-                        s.EventStream.Push(item, u.User);
+                        u.User.Push(s.EventStream.Id, item);
                 }
             }
             return RedirectToAction("Stream", "Store", new { id = sid });

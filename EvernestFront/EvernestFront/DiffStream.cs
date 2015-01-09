@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EvernestFront.Answers;
 using EvernestFront.Auxiliaries;
+using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront
@@ -30,7 +31,7 @@ namespace EvernestFront
 
         internal static void Push(ISystemEvent systemEvent)
         {
-            var contract = new SystemEventEnvelope(systemEvent);
+            var contract = new SystemEventSerializationEnvelope(systemEvent);
             BackStream.Push(Serializing.WriteContract(contract), (a => { }));   //change callback to wake up projection ?
         }
 

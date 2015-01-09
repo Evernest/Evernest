@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 using EvernestFront.Auxiliaries;
+using EvernestFront.Contract.SystemEvent;
 
-namespace EvernestFront.Contract.SystemEvent
+namespace EvernestFront.Contract
 {
     [DataContract]
-    class SystemEventEnvelope
+    class SystemEventSerializationEnvelope
     {
         [DataMember]
         public string SystemEventType;
@@ -17,7 +13,7 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         public string SerializedSystemEvent;
 
-        public SystemEventEnvelope(ISystemEvent systemEvent)
+        public SystemEventSerializationEnvelope(ISystemEvent systemEvent)
         {
             SystemEventType = (systemEvent.GetType()).Name;
             SerializedSystemEvent = Serializing.WriteContract(systemEvent);

@@ -6,19 +6,16 @@ namespace EvernestFront.Contract.SystemEvent
     class UserRightSet : ISystemEvent
     {
         [DataMember]
-        internal long AdminId;
-        [DataMember]
         internal long StreamId;
         [DataMember]
-        internal long TargetId;
+        internal string TargetName;
         [DataMember]
         internal AccessRights Right;
 
-        internal UserRightSet(long adminId, long streamId, long targetId, AccessRights right)
+        internal UserRightSet(long streamId, string targetName, AccessRights right)
         {
-            AdminId = adminId;
             StreamId = streamId;
-            TargetId = targetId;
+            TargetName = targetName;
             Right = right;
         }
     }

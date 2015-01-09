@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Projections;
+using EvernestFront.SystemEventEnvelopeProduction;
 
 namespace EvernestFront
 {
@@ -12,23 +14,34 @@ namespace EvernestFront
     {
 
 
-        private ICollection<IProjection> _projections;
-        private SystemEventStream _systemEventStream; 
+        private ICollection<IProjection> Projections { set; get; }
+        private SystemEventStream SystemEventStream { set; get; }
 
 
-        internal void HandleSystemEvent(ISystemEvent systemEvent)
+        internal void HandleSystemEventEnvelope(SystemEventEnvelope systemEventEnvelope)
         {
-            _systemEventStream.Push(systemEvent);
-            foreach (var p in _projections)
+
+            if (systemEventEnvelope.Success)
             {
-                p.HandleSystemEvent(systemEvent);
+                SystemEventStream.Push(systemEventEnvelope.SystemEvent);
+                //TODO: SuccessCallBack on systemEventEnvelope.SystemEvent
+                foreach (var p in Projections)
+                {
+                    p.HandleSystemEvent(systemEventEnvelope.SystemEvent);
+                }
             }
+            else
+            {
+                //TODO: ErrorCallBack on systemEventEnvelope.Error
+            }
+
+            
         }
 
         internal Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream)
         {
-            _projections = projections;
-            _systemEventStream = systemEventStream;
+            Projections = projections;
+            SystemEventStream = systemEventStream;
         }
 
 

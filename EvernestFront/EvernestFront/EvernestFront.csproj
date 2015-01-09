@@ -60,11 +60,13 @@
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="Answers\IdentifyUser.cs" />
     <Compile Include="CheckRights.cs" />
-    <Compile Include="Contract\SystemEvent\SystemEventEnvelope.cs" />
+    <Compile Include="Contract\SystemEventSerializationEnvelope.cs" />
+    <Compile Include="Contract\SystemEvent\EventStreamDeleted.cs" />
     <Compile Include="Contract\SystemEvent\ISystemEvent.cs" />
     <Compile Include="Contract\SystemEvent\PasswordSet.cs" />
     <Compile Include="Contract\SystemEvent\SourceCreated.cs" />
     <Compile Include="Contract\SystemEvent\SourceDeleted.cs" />
+    <Compile Include="Contract\SystemEvent\UserDeleted.cs" />
     <Compile Include="Contract\SystemEvent\UserKeyCreated.cs" />
     <Compile Include="Contract\SystemEvent\UserKeyDeleted.cs" />
     <Compile Include="Contract\SystemEvent\UserRightSet.cs" />
@@ -72,7 +74,7 @@
     <Compile Include="Contract\SourceContract.cs" />
     <Compile Include="Contract\EventContract.cs" />
     <Compile Include="Contract\EventStreamContract.cs" />
-    <Compile Include="Contract\SystemEvent\UserAdded.cs" />
+    <Compile Include="Contract\SystemEvent\UserCreated.cs" />
     <Compile Include="Contract\UserContract.cs" />
     <Compile Include="DiffStream.cs" />
     <Compile Include="Dispatcher.cs" />
@@ -97,6 +99,7 @@
     <Compile Include="Answers\AddUser.cs" />
     <Compile Include="Answers\CreateEventStream.cs" />
     <Compile Include="Answers\CreateSource.cs" />
+    <Compile Include="Projections\EventStreamDataForProjection.cs" />
     <Compile Include="SystemEventEnvelopeProduction\SystemAction\EventStreamCreation.cs" />
     <Compile Include="SystemEventEnvelopeProduction\SystemAction\SystemAction.cs" />
     <Compile Include="SystemEventEnvelopeProduction\SystemEventEnvelope.cs" />

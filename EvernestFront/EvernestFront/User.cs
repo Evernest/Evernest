@@ -173,7 +173,7 @@ namespace EvernestFront
                 var key = Keys.NewKey();
 
                 var userContract = MakeUserContract.NewUser(name, saltedPasswordHash, passwordSalt);
-                var userAdded = new UserAdded(id, userContract);
+                var userAdded = new UserCreated(id, userContract);
 
                 Projection.ProjectionOld.HandleDiff(userAdded);
                 //TODO: diff should be written in a stream, then sent back to be processed

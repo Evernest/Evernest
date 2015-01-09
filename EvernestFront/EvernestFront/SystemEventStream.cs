@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EvernestBack;
 using EvernestFront.Answers;
 using EvernestFront.Auxiliaries;
+using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront
@@ -24,7 +25,7 @@ namespace EvernestFront
 
         internal void Push(ISystemEvent systemEvent)
         {
-            var contract = new SystemEventEnvelope(systemEvent);
+            var contract = new SystemEventSerializationEnvelope(systemEvent);
             Push(Serializing.WriteContract(contract), _systemUser);
         }
     }

@@ -75,8 +75,8 @@ namespace EvernestFront.Projection
 
         static internal void HandleDiff(ISystemEvent dm)
         {
-            if (dm is UserAdded)
-                HandleUserAdded(dm as UserAdded);
+            if (dm is UserCreated)
+                HandleUserAdded(dm as UserCreated);
             else if (dm is EventStreamCreated)
                 HandleStreamCreated(dm as EventStreamCreated);
             else if (dm is SourceCreated)
@@ -93,7 +93,7 @@ namespace EvernestFront.Projection
                 HandlePasswordSet(dm as PasswordSet);
         }
 
-        static void HandleUserAdded(UserAdded ua)
+        static void HandleUserAdded(UserCreated ua)
         {
             _tables = MakeTables.AddUserContract(_tables, ua.UserId, ua.UserContract);
         }

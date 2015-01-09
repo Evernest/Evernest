@@ -42,6 +42,11 @@ namespace EvernestFront.SystemEventEnvelopeProduction
             _nextEventStreamId = 0;
         }
 
+        internal SystemEventEnvelope ProduceSystemEventEnvelope(SystemAction.SystemAction action)
+        {
+            return ProduceSystemEventEnvelopeWhen((dynamic)action);
+        }
+
         private bool UserNameExists(string name)
         {
             return UserNames.Contains(name);
@@ -52,11 +57,11 @@ namespace EvernestFront.SystemEventEnvelopeProduction
         }
 
 
-        private SystemEventEnvelope ProduceSystemEventEnvelope(EventStreamCreation action)
+        private SystemEventEnvelope ProduceSystemEventEnvelopeWhen(EventStreamCreation action)
         {
             if (EventStreamNameExists(action.StreamName))
                 return new SystemEventEnvelope(new EventStreamNameTaken(action.StreamName), action);
-            EventStreamCreated systemEvent = new EventStreamCreated(NextEventStreamId, action.StreamName, action.CreatorName);
+            var systemEvent = new EventStreamCreated(NextEventStreamId, action.StreamName, action.CreatorName);
             SelfUpdate(systemEvent);
             return new SystemEventEnvelope(systemEvent, action);
         }

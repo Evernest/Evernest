@@ -11,14 +11,27 @@ namespace EvernestFront.Contract.SystemEvent
     class SourceCreated : ISystemEvent
     {
         [DataMember]
-        internal string Key { get; set; } //base64 encoded int
+        internal string SourceKey { get; private set; }
         [DataMember]
-        internal SourceContract SourceContract { get; set; }
+        internal string SourceName { get; private set; }
+        [DataMember]
+        internal long UserId { get; private set; }
+        [DataMember]
+        internal string UserName { get; private set; }
+        [DataMember]
+        internal long EventStreamId { get; private set; }
+        [DataMember]
+        internal AccessRights Right { get; private set; }
 
-        internal SourceCreated(string key, SourceContract sc)
+        
+        internal SourceCreated(string key, string name, long userId, string userName, long eventStreamId, AccessRights right)
         {
-            Key = key;
-            SourceContract = sc;
+            SourceKey = key;
+            SourceName = name;
+            UserId = userId;
+            UserName = userName;
+            EventStreamId = eventStreamId;
+            Right = right;
         }
     }
 }

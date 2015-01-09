@@ -11,14 +11,17 @@ namespace EvernestFront.Contract.SystemEvent
     class PasswordSet : ISystemEvent
     {
         [DataMember]
-        internal long UserId { get; set; }
+        internal long UserId { get; private set; }
         [DataMember]
-        internal string SaltedPasswordHash { get; set; }
+        internal string SaltedPasswordHash { get; private set; }
+        [DataMember]
+        internal byte[] PasswordSalt { get; private set; }
 
-        internal PasswordSet(long userId, string saltedPasswordHash)
+        internal PasswordSet(long userId, string hash, byte[] salt)
         {
             UserId = userId;
-            SaltedPasswordHash = saltedPasswordHash;
+            SaltedPasswordHash = hash;
+            PasswordSalt = salt;
         }
     }
 }

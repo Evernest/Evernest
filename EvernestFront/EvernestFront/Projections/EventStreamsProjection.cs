@@ -11,41 +11,41 @@ namespace EvernestFront.Projections
 {
     class EventStreamsProjection : IProjection
     {
-        private States State { get; set; }
+        private DictionariesClass Dictionaries { get; set; }
 
         /// <summary>
-        /// Fields containing the data of the projection are encapsulated in this class so that they are all set atomically at once.
+        /// Fields containing the data of the projection are encapsulated in this class so that they are atomically all set at once.
         /// </summary>
-        private class States
+        private class DictionariesClass
         {
             internal ImmutableDictionary<string, long> NameToId { get; private set; }
             internal ImmutableDictionary<long, EventStreamDataForProjection> IdToData { get; private set; }
 
-            private States(ImmutableDictionary<string, long> nti,
+            private DictionariesClass(ImmutableDictionary<string, long> nti,
                 ImmutableDictionary<long, EventStreamDataForProjection> itd)
             {
                 NameToId = nti;
                 IdToData = itd;
             }
 
-            internal States() 
+            internal DictionariesClass() 
                 : this(ImmutableDictionary<string, long>.Empty,
                 ImmutableDictionary<long, EventStreamDataForProjection>.Empty) { }
 
-            internal States SetNameToId(ImmutableDictionary<string, long> nti)
+            internal DictionariesClass SetNameToId(ImmutableDictionary<string, long> nti)
             {
-                return new States(nti, IdToData);
+                return new DictionariesClass(nti, IdToData);
             }
 
-            internal States SetIdToData(ImmutableDictionary<long, EventStreamDataForProjection> itd)
+            internal DictionariesClass SetIdToData(ImmutableDictionary<long, EventStreamDataForProjection> itd)
             {
-                return new States(NameToId, itd);
+                return new DictionariesClass(NameToId, itd);
             }
         }
 
         internal EventStreamsProjection()
         {
-            State = new States();
+            Dictionaries = new DictionariesClass();
         }
 
         public void HandleSystemEvent(ISystemEvent systemEvent)
@@ -67,28 +67,28 @@ namespace EvernestFront.Projections
             var backStream = new RAMStream(systemEvent.StreamName);
             var eventStreamData = new EventStreamDataForProjection(systemEvent.StreamName, systemEvent.CreatorName,
                 backStream);
-            var nti = State.NameToId.SetItem(systemEvent.StreamName, systemEvent.StreamId);
-            var itd = State.IdToData.SetItem(systemEvent.StreamId, eventStreamData);
-            State = State.SetNameToId(nti).SetIdToData(itd);
+            var nti = Dictionaries.NameToId.SetItem(systemEvent.StreamName, systemEvent.StreamId);
+            var itd = Dictionaries.IdToData.SetItem(systemEvent.StreamId, eventStreamData);
+            Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
         private void HandleSystemEventWhen(EventStreamDeleted systemEvent)
         {
-            var nti = State.NameToId.Remove(systemEvent.StreamName);
-            var itd = State.IdToData.Remove(systemEvent.StreamId);
-            State = State.SetNameToId(nti).SetIdToData(itd);
+            var nti = Dictionaries.NameToId.Remove(systemEvent.StreamName);
+            var itd = Dictionaries.IdToData.Remove(systemEvent.StreamId);
+            Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
         private void HandleSystemEventWhen(UserRightSet systemEvent)
         {
             EventStreamDataForProjection data;
-            if (!State.IdToData.TryGetValue(systemEvent.StreamId, out data))
+            if (!Dictionaries.IdToData.TryGetValue(systemEvent.StreamId, out data))
             {
                 //TODO: register error
                 return;
             }
-            var itd = State.IdToData.SetItem(systemEvent.StreamId, data.SetRight(systemEvent.TargetName, systemEvent.Right));
-            State = State.SetIdToData(itd);
+            var itd = Dictionaries.IdToData.SetItem(systemEvent.StreamId, data.SetRight(systemEvent.TargetName, systemEvent.Right));
+            Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
         //EventStreamsProjection is not concerned by following system events

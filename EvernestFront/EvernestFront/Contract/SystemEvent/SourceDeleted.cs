@@ -6,7 +6,7 @@ namespace EvernestFront.Contract.SystemEvent
     class SourceDeleted : ISystemEvent
     {
         [DataMember]
-        internal string SourceKey { get; set; } //base64 encoded int
+        internal string SourceKey { get; set; }
         [DataMember]
         internal long UserId { get; set; }
         [DataMember]

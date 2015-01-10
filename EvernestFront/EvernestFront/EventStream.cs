@@ -140,7 +140,7 @@ namespace EvernestFront
             var random = new Random();
             long eventId = (long)random.Next((int)LastEventId+1);
             EventContract pulledContract=null;       
-            BackStream.Pull(eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
+            BackStream.Pull(eventId, ( a => pulledContract = Serializer.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
             return new PullRandom(new Event(pulledContract, eventId, Name, Id));
         }
 
@@ -152,7 +152,7 @@ namespace EvernestFront
             if (IsEventIdValid(eventId))
             {
                 EventContract pulledContract = null;
-                BackStream.Pull(eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
+                BackStream.Pull(eventId, (a => pulledContract = Serializer.ReadContract<EventContract>(a.Message))); //TODO : change this
                 return new Pull(new Event(pulledContract, eventId, Name, Id));
             }
             else
@@ -189,7 +189,7 @@ namespace EvernestFront
         {
             long eventId = LastEventId + 1;
             var contract = new EventContract(author, DateTime.UtcNow, message);
-            BackStream.Push(Serializing.WriteContract<EventContract>(contract), (a => Console.WriteLine(a.RequestID)));  //TODO : change this callback
+            BackStream.Push(Serializer.WriteContract<EventContract>(contract), (a => Console.WriteLine(a.RequestID)));  //TODO : change this callback
             return new Push(eventId);
         }
 

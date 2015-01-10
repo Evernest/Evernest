@@ -34,8 +34,8 @@ namespace EvernestFrontTests
             var user = UserTests.GetUser_AssertSuccess(userId);
             var date = DateTime.UtcNow;
             var contract = new EventContract(user, date, Message);
-            var serializedContract = Serializing.WriteContract<EventContract>(contract);
-            var deserializedContract = Serializing.ReadContract<EventContract>(serializedContract);
+            var serializedContract = Serializer.WriteContract<EventContract>(contract);
+            var deserializedContract = Serializer.ReadContract<EventContract>(serializedContract);
             Assert.AreEqual(contract.AuthorId, deserializedContract.AuthorId);
             Assert.AreEqual(contract.AuthorName, deserializedContract.AuthorName);
             Assert.AreEqual(contract.Date, deserializedContract.Date);

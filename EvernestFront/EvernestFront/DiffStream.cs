@@ -32,14 +32,14 @@ namespace EvernestFront
         internal static void Push(ISystemEvent systemEvent)
         {
             var contract = new SystemEventSerializationEnvelope(systemEvent);
-            BackStream.Push(Serializing.WriteContract(contract), (a => { }));   //change callback to wake up projection ?
+            BackStream.Push(Serializer.WriteContract(contract), (a => { }));   //change callback to wake up projection ?
         }
 
         internal static ISystemEvent Pull(long id)
         {
             //TODO : check ID validity
             ISystemEvent systemEvent = null;
-            BackStream.Pull(id, (a => systemEvent = Serializing.ReadDiffEnvelope(a.Message)));
+            BackStream.Pull(id, (a => systemEvent = Serializer.ReadDiffEnvelope(a.Message)));
             return systemEvent;
         }
     }

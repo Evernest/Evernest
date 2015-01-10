@@ -8,9 +8,9 @@ using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront.Auxiliaries
 {
-    static class Serializing
+    class Serializer
     {
-        internal static string WriteContract<T>(T contract)
+        internal string WriteContract<T>(T contract)
         {
             var dcs = new DataContractSerializer(typeof(T));
             var sb = new StringBuilder();
@@ -23,7 +23,7 @@ namespace EvernestFront.Auxiliaries
         }
 
 
-        internal static T ReadContract<T>(string serializedContract)
+        internal T ReadContract<T>(string serializedContract)
         {
             var dcs = new DataContractSerializer(typeof (T));
             var sr = new StringReader(serializedContract);
@@ -33,7 +33,7 @@ namespace EvernestFront.Auxiliaries
             }
         }
 
-        internal static ISystemEvent ReadDiffEnvelope(string serializedEnvelope)
+        internal ISystemEvent ReadDiffEnvelope(string serializedEnvelope)
         {
             SystemEventSerializationEnvelope serializationEnvelope = ReadContract<SystemEventSerializationEnvelope>(serializedEnvelope);
             var diffType = serializationEnvelope.SystemEventType;

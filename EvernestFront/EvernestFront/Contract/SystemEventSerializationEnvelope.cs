@@ -16,7 +16,7 @@ namespace EvernestFront.Contract
         public SystemEventSerializationEnvelope(ISystemEvent systemEvent)
         {
             SystemEventType = (systemEvent.GetType()).Name;
-            SerializedSystemEvent = Serializing.WriteContract(systemEvent);
+            SerializedSystemEvent = Serializer.WriteContract(systemEvent);
         }
     }
 }

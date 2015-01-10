@@ -4,30 +4,30 @@ using System.Text;
 
 namespace EvernestFront.Auxiliaries
 {
-    static class Keys
+    class KeyGenerator
     {
         private const string AllowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
         private const int KeyLength = 32;
         private const int SaltLength = 32;
         private const int PasswordLength = 32;
 
-        internal static string NewPassword()
+        internal string NewPassword()
         {
             return RandomString(PasswordLength);
         }
 
-        internal static string NewSalt()
+        internal string NewSalt()
         {
             return RandomString(SaltLength);
         }
 
 
-        internal static string NewKey()
+        internal string NewKey()
         {
             return RandomString(KeyLength);
         }
 
-        private static string RandomString(int length)
+        private string RandomString(int length)
         {
             const int byteSize = 0x100;
             var allowedCharSet = new HashSet<char>(AllowedChars).ToArray();

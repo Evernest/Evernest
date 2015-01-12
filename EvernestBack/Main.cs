@@ -19,7 +19,6 @@ namespace EvernestBack
                 Console.Read();
                 return;
             }
-
             const int n = 1000;
             for (int i = 0; i < n; i++ )
             {
@@ -34,7 +33,6 @@ namespace EvernestBack
             }
             while(true)
             {}
-
         }
     }
 }

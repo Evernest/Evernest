@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Threading;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System.Configuration;
 
 
 namespace EvernestBack

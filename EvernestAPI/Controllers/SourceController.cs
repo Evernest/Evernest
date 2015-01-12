@@ -60,11 +60,11 @@ namespace EvernestAPI.Controllers
             }
         }
 
-        // /Source/New/{id}
+        // /Source/New/
         [HttpGet]
         [HttpPost]
         [ActionName("New")]
-        public HttpResponseMessage New(int id)
+        public HttpResponseMessage New()
         {
             try
             {

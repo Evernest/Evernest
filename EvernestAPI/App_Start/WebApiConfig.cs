@@ -60,11 +60,8 @@ namespace EvernestAPI
           
             config.Routes.MapHttpRoute(
                 name: "APISourceNew",
-                routeTemplate: "{controller}/New/{id}",
-                constraints: new
-                {
-                    id = @"\d+",
-                },
+                routeTemplate: "{controller}/New/",
+                constraints: new {},
                 defaults: new
                 {
                     action="New",

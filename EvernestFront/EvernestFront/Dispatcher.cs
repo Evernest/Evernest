@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Projections;
-using EvernestFront.SystemEventEnvelopeProduction;
+using EvernestFront.Service;
 
 namespace EvernestFront
 {

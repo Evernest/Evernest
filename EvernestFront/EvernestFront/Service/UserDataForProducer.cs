@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EvernestFront.SystemEventEnvelopeProduction
+namespace EvernestFront.Service
 {
-    class UserDataForProducer
+    class UserDataForService
     {
         internal string UserName { get; set; }
         
@@ -18,7 +18,7 @@ namespace EvernestFront.SystemEventEnvelopeProduction
         
         internal HashSet<string> Sources { get; set; }
 
-        internal UserDataForProducer(string name, string hash, byte[] salt, HashSet<string> keys, HashSet<string> sources)
+        internal UserDataForService(string name, string hash, byte[] salt, HashSet<string> keys, HashSet<string> sources)
         {
             UserName = name;
             SaltedPasswordHash = hash;

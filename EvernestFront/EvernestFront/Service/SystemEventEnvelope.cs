@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;
 
-namespace EvernestFront.SystemEventEnvelopeProduction
+namespace EvernestFront.Service
 {
     class SystemEventEnvelope
     {
@@ -16,7 +16,7 @@ namespace EvernestFront.SystemEventEnvelopeProduction
         internal Delegate SuccessCallBack { get; private set; }
         internal Delegate ErrorCallBack { get; private set; }
 
-        internal SystemEventEnvelope(ISystemEvent systemEvent, SystemAction.SystemAction action)
+        internal SystemEventEnvelope(ISystemEvent systemEvent, Command.Command action)
         {
             Success = true;
             SystemEvent = systemEvent;
@@ -25,7 +25,7 @@ namespace EvernestFront.SystemEventEnvelopeProduction
             ErrorCallBack = action.ErrorCallBack;
         }
 
-        internal SystemEventEnvelope(FrontError error, SystemAction.SystemAction action)
+        internal SystemEventEnvelope(FrontError error, Command.Command action)
         {
             Success = false;
             SystemEvent = null;

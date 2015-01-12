@@ -159,11 +159,8 @@ namespace EvernestAPI.Controllers
                 errorMessage = "Missing user id.";
                 error = null;
             }
-
-			
+            
            
-
-            // end est ici
             // BEGIN DEBUG //
             var debug = new Hashtable();
             debug["Controller"] = "Right";

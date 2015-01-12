@@ -63,6 +63,7 @@
     <Compile Include="CheckRights.cs" />
     <Compile Include="Contract\SystemEventSerializationEnvelope.cs" />
     <Compile Include="Contract\SystemEvent\EventStreamDeleted.cs" />
+    <Compile Include="Contract\SystemEvent\InvalidCommandSystemEvent.cs" />
     <Compile Include="Contract\SystemEvent\ISystemEvent.cs" />
     <Compile Include="Contract\SystemEvent\PasswordSet.cs" />
     <Compile Include="Contract\SystemEvent\SourceCreated.cs" />
@@ -102,8 +103,7 @@
     <Compile Include="Projections\UserDataForProjection.cs" />
     <Compile Include="Service\Command\EventStreamCreation.cs" />
     <Compile Include="Service\Command\EventStreamDeletion.cs" />
-    <Compile Include="Service\Command\Command.cs" />
-    <Compile Include="Service\SystemEventEnvelope.cs" />
+    <Compile Include="Service\Command\CommandBase.cs" />
     <Compile Include="Service\Service.cs" />
     <Compile Include="Auxiliaries\KeyGenerator.cs" />
     <Compile Include="Errors\WriteAccessDenied.cs" />
@@ -113,7 +113,7 @@
     <Compile Include="Projections\UsersProjection.cs" />
     <Compile Include="Auxiliaries\Serializer.cs" />
     <Compile Include="Source.cs" />
-    <Compile Include="Service\UserDataForProducer.cs" />
+    <Compile Include="Service\UserDataForService.cs" />
     <Compile Include="SystemEventStream.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

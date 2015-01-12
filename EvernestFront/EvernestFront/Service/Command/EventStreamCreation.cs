@@ -1,6 +1,6 @@
 ﻿namespace EvernestFront.Service.Command
 {
-    class EventStreamCreation : Command
+    class EventStreamCreation : CommandBase
     {
         internal string EventStreamName { get; private set; }
         internal string CreatorName { get; private set; }

@@ -42,9 +42,9 @@ namespace EvernestFront.Service
             _nextEventStreamId = 0;
         }
 
-        internal SystemEventEnvelope ProduceSystemEventEnvelope(Command.Command action)
+        internal ISystemEvent HandleCommand(CommandBase action)
         {
-            return ProduceSystemEventEnvelopeWhen((dynamic)action);
+            return HandleCommandCase((dynamic)action);
         }
 
         private bool UserNameExists(string name)
@@ -65,13 +65,13 @@ namespace EvernestFront.Service
         //}
 
 
-        private SystemEventEnvelope ProduceSystemEventEnvelopeWhen(EventStreamCreation action)
+        private ISystemEvent HandleCommandCase(EventStreamCreation action)
         {
             if (EventStreamNameExists(action.EventStreamName))
-                return new SystemEventEnvelope(new EventStreamNameTaken(action.EventStreamName), action);
+                return new InvalidCommandSystemEvent(new EventStreamNameTaken(action.EventStreamName));
             var systemEvent = new EventStreamCreated(NextEventStreamId, action.EventStreamName, action.CreatorName);
             SelfUpdate(systemEvent);
-            return new SystemEventEnvelope(systemEvent, action);
+            return systemEvent;
         }
 
         private void SelfUpdate(EventStreamCreated systemEvent)
@@ -80,24 +80,24 @@ namespace EvernestFront.Service
             EventStreamIdToAdmins.Add(systemEvent.StreamId, new HashSet<string> { systemEvent.CreatorName });
         }
 
-        private SystemEventEnvelope ProduceSystemEventEnvelopeWhen(EventStreamDeletion action)
+        private ISystemEvent HandleCommandCase(EventStreamDeletion action)
         {
             HashSet<string> eventStreamAdmins;
             if (!EventStreamIdToAdmins.TryGetValue(action.EventStreamId, out eventStreamAdmins))
-                return new SystemEventEnvelope(new EventStreamIdDoesNotExist(action.EventStreamId), action);
+                return new InvalidCommandSystemEvent(new EventStreamIdDoesNotExist(action.EventStreamId));
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(action.AdminId,out userData))
-                return new SystemEventEnvelope(new UserIdDoesNotExist(action.AdminId), action); //TODO: change this error because it should not happen
+                return new InvalidCommandSystemEvent(new UserIdDoesNotExist(action.AdminId)); //TODO: change this error because it should not happen
             if (!eventStreamAdmins.Contains(userData.UserName))
-                return new SystemEventEnvelope(new AdminAccessDenied(action.EventStreamId,action.AdminId), action);
+                return new InvalidCommandSystemEvent(new AdminAccessDenied(action.EventStreamId,action.AdminId));
             var passwordManager = new PasswordManager();
             if (!passwordManager.Verify(action.AdminPassword, userData.SaltedPasswordHash, userData.PasswordSalt))
-                return new SystemEventEnvelope(new WrongPassword(userData.UserName,action.AdminPassword), action);
+                return new InvalidCommandSystemEvent(new WrongPassword(userData.UserName,action.AdminPassword));
 
             
             var systemEvent = new EventStreamDeleted(action.EventStreamId, action.EventStreamName);
             SelfUpdate(systemEvent);
-            return new SystemEventEnvelope(systemEvent, action);
+            return systemEvent;
         }
 
         private void SelfUpdate(EventStreamDeleted systemEvent)

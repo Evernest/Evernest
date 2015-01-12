@@ -1,6 +1,6 @@
 ﻿namespace EvernestFront.Service.Command
 {
-    abstract class Command
+    abstract class CommandBase
     {
         
     }

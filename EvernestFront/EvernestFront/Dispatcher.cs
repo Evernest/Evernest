@@ -18,21 +18,13 @@ namespace EvernestFront
         private SystemEventStream SystemEventStream { set; get; }
 
 
-        internal void HandleSystemEventEnvelope(SystemEventEnvelope systemEventEnvelope)
+        internal void HandleSystemEventEnvelope(ISystemEvent systemEvent)
         {
 
-            if (systemEventEnvelope.Success)
+            SystemEventStream.Push(systemEvent);
+            foreach (var p in Projections)
             {
-                SystemEventStream.Push(systemEventEnvelope.SystemEvent);
-                //TODO: SuccessCallBack on systemEventEnvelope.SystemEvent
-                foreach (var p in Projections)
-                {
-                    p.HandleSystemEvent(systemEventEnvelope.SystemEvent);
-                }
-            }
-            else
-            {
-                //TODO: ErrorCallBack on systemEventEnvelope.Error
+                p.HandleSystemEvent(systemEvent);
             }
 
             

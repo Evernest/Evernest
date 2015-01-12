@@ -1,6 +1,6 @@
 ﻿namespace EvernestFront.Service.Command
 {
-    class EventStreamDeletion : Command
+    class EventStreamDeletion : CommandBase
     {
         internal long EventStreamId { get; private set; }
         internal string EventStreamName { get; private set; }

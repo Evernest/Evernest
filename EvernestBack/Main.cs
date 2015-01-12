@@ -16,9 +16,9 @@ namespace EvernestBack
             catch (ArgumentException e)
             {
                 Console.Write(e.Message);
+                Console.Read();
                 return;
             }
-            System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
 
             const int n = 1000;
             for (int i = 0; i < n; i++ )
@@ -28,15 +28,13 @@ namespace EvernestBack
                     stream.Pull(pushAgent.RequestID /*i*/, pullAgent =>
                     {
                         Console.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
-                        file.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
                     });
                 });
-                System.Threading.Thread.Sleep(100);
+                //System.Threading.Thread.Sleep(100);
             }
             while(true)
             {}
 
-            //file.Close();
         }
     }
 }

@@ -222,7 +222,7 @@ A user can create as sources as he wishes in order to give different rights to d
 
 #### Fields
 
- * `Id` *int*: Stream identifier.
+ * `Id` *int*: Source identifier.
  * `ParentUser` *User*: User who owns the source.
  * `Name` *string*: Source name.
  * `Key` *base64-encoded int*: API access key.

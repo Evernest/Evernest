@@ -104,7 +104,13 @@
     <Compile Include="Service\Command\EventStreamCreation.cs" />
     <Compile Include="Service\Command\EventStreamDeletion.cs" />
     <Compile Include="Service\Command\CommandBase.cs" />
-    <Compile Include="Service\Service.cs" />
+    <Compile Include="Service\Command\PasswordSetting.cs" />
+    <Compile Include="Service\Command\UserCreation.cs" />
+    <Compile Include="Service\Command\UserDeletion.cs" />
+    <Compile Include="Service\Command\UserKeyCreation.cs" />
+    <Compile Include="Service\Command\UserKeyDeletion.cs" />
+    <Compile Include="Service\Command\UserRightSettingByUser.cs" />
+    <Compile Include="Service\ServiceData.cs" />
     <Compile Include="Auxiliaries\KeyGenerator.cs" />
     <Compile Include="Errors\WriteAccessDenied.cs" />
     <Compile Include="Projections\EventStreamsProjection.cs" />
@@ -112,6 +118,7 @@
     <Compile Include="Projections\SourcesProjection.cs" />
     <Compile Include="Projections\UsersProjection.cs" />
     <Compile Include="Auxiliaries\Serializer.cs" />
+    <Compile Include="Service\SystemEventProducer.cs" />
     <Compile Include="Source.cs" />
     <Compile Include="Service\UserDataForService.cs" />
     <Compile Include="SystemEventStream.cs" />

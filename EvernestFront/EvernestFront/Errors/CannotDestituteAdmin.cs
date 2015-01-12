@@ -20,5 +20,7 @@ namespace EvernestFront.Errors
             Stream = stream;
             User = user;
         }
+
+        internal CannotDestituteAdmin() { }
     }
 }

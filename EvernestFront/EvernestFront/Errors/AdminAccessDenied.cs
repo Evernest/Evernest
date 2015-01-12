@@ -11,5 +11,7 @@ namespace EvernestFront.Errors
 
         internal AdminAccessDenied(Source src)
             : base(src) { }
+
+        internal AdminAccessDenied() { }
     }
 }

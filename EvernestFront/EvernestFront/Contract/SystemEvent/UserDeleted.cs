@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace EvernestFront.Contract.SystemEvent
 {
     [DataContract]
-    class UserDeleted
+    class UserDeleted : ISystemEvent
     {
         [DataMember]
         internal string UserName { get; set; }

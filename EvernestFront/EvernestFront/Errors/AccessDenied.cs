@@ -22,5 +22,7 @@ namespace EvernestFront.Errors
             UserId = src.User.Id;
             SourceName = src.Name;
         }
+
+        protected AccessDenied() { }
     }
 }

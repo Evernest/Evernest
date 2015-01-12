@@ -18,13 +18,22 @@ namespace EvernestFront.Service
         
         internal HashSet<string> Sources { get; set; }
 
-        internal UserDataForService(string name, string hash, byte[] salt, HashSet<string> keys, HashSet<string> sources)
+        //private UserDataForService(string name, string hash, byte[] salt, HashSet<string> keys, HashSet<string> sources)
+        //{
+        //    UserName = name;
+        //    SaltedPasswordHash = hash;
+        //    PasswordSalt = salt;
+        //    Keys = keys;
+        //    Sources = sources;
+        //}
+
+        internal UserDataForService(string name, string hash, byte[] salt)
         {
             UserName = name;
             SaltedPasswordHash = hash;
             PasswordSalt = salt;
-            Keys = keys;
-            Sources = sources;
+            Keys = new HashSet<string>();
+            Sources = new HashSet<string>();
         }
 
     }

@@ -2,6 +2,6 @@
 {
     abstract class CommandBase
     {
-        
+        //TODO: add an id
     }
 }

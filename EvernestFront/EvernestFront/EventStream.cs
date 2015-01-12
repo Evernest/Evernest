@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using EvernestFront.Answers;
 using EvernestFront.Contract;
 using EvernestFront.Contract.Diff;
@@ -187,8 +189,10 @@ namespace EvernestFront
         internal Push Push(string message, User author)
         {
             long eventId = LastEventId + 1;
+            AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
             var contract = new EventContract(author, DateTime.UtcNow, message);
-            BackStream.Push(Serializing.WriteContract<EventContract>(contract), (a => Console.WriteLine(a.RequestID)));  //TODO : change this callback
+            BackStream.Push(Serializing.WriteContract<EventContract>(contract), (a => stopWaitHandle.Set()));  //TODO : change this callback
+            stopWaitHandle.WaitOne();
             return new Push(eventId);
         }
 

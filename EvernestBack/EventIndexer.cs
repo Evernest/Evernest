@@ -1,27 +1,37 @@
 ﻿using System;
 using Microsoft.WindowsAzure.Storage.Blob;
+using System.Configuration;
 
 namespace EvernestBack
 {
     class EventIndexer
     {
-        private History<long> Milestones;
-        private long TotalWrittenBytes = 0;
-        private long CurrentChunkBytes = 0;
-        private long LastPosition = 0;
-        private UInt32 EventChunkSizeInBytes;
+        private History Milestones;
+        private ulong TotalWrittenBytes = 0;
+        private ulong CurrentChunkBytes = 0;
+        private ulong LastPosition = 0;
+        private uint EventChunkSizeInBytes;
         private BufferedBlobIO BufferedStreamIO;
         private CloudBlockBlob StreamIndexBlob;
+        private uint IndexUpdateMinimumEntryCount;
+        private uint NewEntryCount;
+        private uint IndexUpdateMinimumDelay;
+        private DateTime LastIndexUpdateTime;
 
         public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, UInt32 eventChunkSizeInBytes )
         {
+            IndexUpdateMinimumEntryCount = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumEntryCount"]);
+            IndexUpdateMinimumDelay = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumDelay"]);
             BufferedStreamIO = buffer;
             EventChunkSizeInBytes = eventChunkSizeInBytes;
             StreamIndexBlob = streamIndexBlob;
-            Milestones = new History<long>();
+            Milestones = new History();
+            ReadIndexInfo();
+            LastIndexUpdateTime = DateTime.UtcNow;
+            NewEntryCount = 0;
         }
 
-        public void NotifyNewEntry(long id, long wroteBytes)
+        public void NotifyNewEntry(long id, ulong wroteBytes)
         {
             TotalWrittenBytes += wroteBytes;
             if( wroteBytes + CurrentChunkBytes > EventChunkSizeInBytes)
@@ -29,6 +39,8 @@ namespace EvernestBack
                 LastPosition += CurrentChunkBytes;
                 Milestones.Insert(id, LastPosition);
                 CurrentChunkBytes = wroteBytes;
+                NewEntryCount++;
+                UploadIndexIfMeetConditions();
             }
             else
                 CurrentChunkBytes += wroteBytes;
@@ -45,21 +57,44 @@ namespace EvernestBack
             return false;
         }
 
-
-        public void WriteIndexInfo()
+        public void UploadIndexIfMeetConditions()
         {
+            if (DateTime.UtcNow.Subtract(LastIndexUpdateTime).TotalSeconds > IndexUpdateMinimumDelay
+                && NewEntryCount > IndexUpdateMinimumEntryCount )
+            {
+                Console.WriteLine("Update!");
+                UploadIndex();
+            }
 
+        }
+
+        public void UploadIndex()
+        {
+            NewEntryCount = 0;
+            LastIndexUpdateTime = DateTime.UtcNow;
+            Byte[] serializedMilestones = Milestones.Serialize();
+            StreamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
         }
 
         private void ReadIndexInfo()
         {
- 
+            ulong position = 0;
+            if(StreamIndexBlob.Exists())
+            {
+                Milestones.ReadFromBlob(StreamIndexBlob);
+                if(Milestones.GreaterElement(ref position))
+                {
+
+                }
+                LastPosition = 0; //should retrieve last position
+                //StreamIndexBlob.GetPageRange(offset, length);
+            }
         }
 
         private bool PullFromCloud(long id, out string message)
         {
-            long firstByte = 0;
-            long lastByte = 0;
+            ulong firstByte = 0;
+            ulong lastByte = 0;
             Milestones.LowerBound(id, ref firstByte);
             if (!Milestones.UpperBound(id + 1, ref lastByte) && (lastByte = TotalWrittenBytes) == 0)
             {
@@ -72,17 +107,16 @@ namespace EvernestBack
             byteCount = BufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
             int currentPosition = 0, messageLength = 0;
             long currentID = 0;
-
             do
             {
                 currentPosition += messageLength;
                 if (!BitConverter.IsLittleEndian)
                 {
-                    Agent.Reverse(buffer, (int)currentPosition, (int)sizeof(UInt64));
-                    Agent.Reverse(buffer, (int)currentPosition + sizeof(UInt64), (int)sizeof(UInt16));
+                    Agent.Reverse(buffer, (int)currentPosition, sizeof(long));
+                    Agent.Reverse(buffer, (int)currentPosition + sizeof(UInt64), sizeof(UInt16));
                 }
                 currentID = BitConverter.ToInt64(buffer, currentPosition);
-                messageLength = BitConverter.ToUInt16(buffer, (int)currentPosition + sizeof(UInt64));
+                messageLength = BitConverter.ToUInt16(buffer, currentPosition + sizeof(UInt64));
                 currentPosition += sizeof(UInt64) + sizeof(UInt16);
             }
             while (currentID != id && currentPosition + messageLength < byteCount);

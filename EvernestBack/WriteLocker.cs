@@ -23,8 +23,8 @@ namespace EvernestBack
 		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
         private EventIndexer Indexer;
         private BufferedBlobIO WriteBuffer;
-        public long CurrentID {get ; private set;}
-       
+        public long CurrentID { get; private set; }
+
         public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer, long firstID)
         {
             Indexer = indexer;
@@ -36,9 +36,8 @@ namespace EvernestBack
         {
             Task.Run(() =>
             {
-                long wroteBytes;
-                //Console.WriteLine("Starting Storing"); //if there is a Console.Read() in the main thread, this will block this instruction
-                while (PendingEventCollection.Count > 0)
+                ulong wroteBytes;
+                while (true) //temporary fix to make sure the thread doesn't terminate early (well now it never does, "fixed")
                 {
                     PendingEvent pendingEvent = PendingEventCollection.Take();
                     Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.CallbackSuccess, pendingEvent.CallbackFailure);

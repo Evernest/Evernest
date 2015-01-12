@@ -9,7 +9,7 @@ namespace EvernestWeb.Controllers
 {
     public class AccountController : Controller
     {
-        private bool IsConnected()
+        private Connexion IsConnected()
         {
             ViewBag.Connexion = "false";
             Connexion connexion = new Connexion();
@@ -17,17 +17,50 @@ namespace EvernestWeb.Controllers
             {
                 ViewBag.Connexion = "true";
                 ViewBag.Username = connexion.Username;
-                return true;
+                return connexion;
             }
-            return false;
+            return null;
         }
 
-        // GET: Account
-        public ActionResult Index()
+        // GET: Accountpublic ActionResult Index(int id)
+        public ActionResult Index(int id = -1)
         {
-            IsConnected();
-            // nothing for the moment, but later, user could modify password here
-            return View();
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion == "true")
+            {
+                if(id==1)
+                {
+                    ViewBag.Status = "Successfully changed password.";
+                }
+                return View();
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePwd(ChangePwdModel model)
+        {
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion == "true")
+            {
+                if (ModelState.IsValid)
+                {
+                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+                    EvernestFront.Answers.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
+                    if(p.Success)
+                    {
+                        return RedirectToAction("Index", "Account", new {id=1});
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Password", "Incorrect Password.");
+                        return RedirectToAction("Index", "Account", new {id=0});
+                    }
+                }
+                return View(model);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
@@ -42,7 +75,8 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model, string returnUrl)
         {
-            if (!IsConnected())
+            IsConnected();
+            if (ViewBag.Connexion!="true")
             {
                 if (ModelState.IsValid)
                 {
@@ -75,7 +109,8 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
-            if (!IsConnected())
+            IsConnected();
+            if (ViewBag.Connexion != "true")
             {
                 if (ModelState.IsValid)
                 {

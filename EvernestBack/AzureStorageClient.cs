@@ -37,7 +37,6 @@ namespace EvernestBack
 
         private long PageBlobSize;
 
-        
         private AzureStorageClient()
         {
             Dummy = Boolean.Parse(ConfigurationManager.AppSettings["Dummy"]);
@@ -70,7 +69,7 @@ namespace EvernestBack
                 }
                 BlobClient = storageAccount.CreateCloudBlobClient();
                 StreamContainer = BlobClient.GetContainerReference("stream");
-                StreamIndexContainer = BlobClient.GetContainerReference("streamIndex");
+                StreamIndexContainer = BlobClient.GetContainerReference("streamindex");
                 try
                 {
                     StreamContainer.CreateIfNotExists();
@@ -90,6 +89,7 @@ namespace EvernestBack
     /// </summary>
     /// <param name="streamID"> The name of the stream you want.</param>
     /// <returns> The EventStream</returns>
+
         public IEventStream GetEventStream( String streamID ) //not thread-safe yet
         {
             IEventStream stream = OpenStream(streamID);
@@ -115,7 +115,6 @@ namespace EvernestBack
     /// <param name="streamID">The name of the Stream to open.</param>
     /// <returns>The EventStream.</returns>
         private IEventStream OpenStream(String streamID)
-
         {
             IEventStream stream;
             if (!OpenedStreams.TryGetValue(streamID, out stream))
@@ -146,7 +145,6 @@ namespace EvernestBack
     /// </summary>
     /// <param name="streamID">The name of the stream to create.</param>
         private void CreateEventStream(String streamID)
-
         {
             if(OpenedStreams.ContainsKey(streamID))
             {
@@ -166,5 +164,16 @@ namespace EvernestBack
 
         //missing something to close streams
 
+        public void DeleteIfExists( String streamStringID )
+        {
+            //TODO
+        }
+
+        public bool TryGetFreshEventStream(string streamStringID, out IEventStream stream)
+        {
+            //TODO
+            stream = null;
+            return false;
+        }
     }
 }

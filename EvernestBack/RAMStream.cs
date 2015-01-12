@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace EvernestBack
 {
@@ -19,9 +20,9 @@ namespace EvernestBack
         {
             StreamFileName = streamStringID + "_RAMStreamContent.txt";
             string line;
-            if (System.IO.File.Exists(StreamFileName))
+            if (File.Exists(StreamFileName))
             {
-                System.IO.StreamReader file = new System.IO.StreamReader(StreamFileName);
+                StreamReader file = new StreamReader(StreamFileName);
                 while ((line = file.ReadLine()) != null)
                 {
                     Index++;
@@ -33,7 +34,7 @@ namespace EvernestBack
 
         ~RAMStream()
         {
-            System.IO.StreamWriter file = new System.IO.StreamWriter(StreamFileName);
+            StreamWriter file = new StreamWriter(StreamFileName);
             foreach( string message in Messages )
                 file.WriteLine(message);
             file.Close();

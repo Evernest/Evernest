@@ -40,37 +40,37 @@ namespace EvernestBack
                 (UInt16) System.Text.Encoding.Unicode.GetByteCount(Message);
 
             Byte[] FinalBytes = 
-                new Byte[BuffSize+sizeof(UInt64)+sizeof(UInt16)];
+                new Byte[BuffSize+sizeof(long)+sizeof(UInt16)];
 
             Byte[] ReqIDBytes = BitConverter.GetBytes(RequestID);
             Byte[] MsgLengthBytes = BitConverter.GetBytes(BuffSize);
             System.Text.Encoding.Unicode.GetBytes(Message, 0, Message.Length, 
-                FinalBytes, (Int32) sizeof(UInt64)+sizeof(UInt16));
+                FinalBytes, (int) sizeof(long)+sizeof(UInt16));
             // ensure we use little-endianness
             if(!BitConverter.IsLittleEndian) 
             {
-                Reverse(ReqIDBytes, 0, sizeof(UInt64));
+                Reverse(ReqIDBytes, 0, sizeof(long));
                 Reverse(MsgLengthBytes, 0, sizeof(UInt16));
             }
             System.Buffer.BlockCopy(ReqIDBytes, 0, FinalBytes, 0, 
-                sizeof(UInt64));
+                sizeof(long));
             System.Buffer.BlockCopy(MsgLengthBytes, 0, FinalBytes, 
-                sizeof(UInt64), sizeof(UInt16));
-            BuffSize += sizeof(UInt64)+sizeof(UInt16);
+                sizeof(long), sizeof(UInt16));
+            BuffSize += sizeof(long)+sizeof(UInt16);
             return FinalBytes;
         }
 
         public void ReadFromStream(System.IO.Stream Input) 
             //should check whether an error happen when reading
         {
-            Byte[] Buffer = new Byte[sizeof(Int64)];
-            Input.Read(Buffer, 0, sizeof(Int64));
+            Byte[] Buffer = new Byte[sizeof(long)];
+            Input.Read(Buffer, 0, sizeof(long));
             if (!BitConverter.IsLittleEndian)
-                Reverse(Buffer, 0, sizeof(Int64));
+                Reverse(Buffer, 0, sizeof(long));
             RequestID = BitConverter.ToInt64(Buffer, 0);
-            Input.Read(Buffer, 0, sizeof(Int16));
+            Input.Read(Buffer, 0, sizeof(UInt16));
             if (!BitConverter.IsLittleEndian)
-                Reverse(Buffer, 0, sizeof(Int16));
+                Reverse(Buffer, 0, sizeof(UInt16));
             UInt16 MsgLength = BitConverter.ToUInt16(Buffer, 0);
             Byte[] MsgBuffer = new Byte[MsgLength];
             Input.Read(MsgBuffer, 0, MsgLength);

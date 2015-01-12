@@ -77,8 +77,9 @@ namespace EvernestAPI.Controllers
                 debug["Method"] = "New";
                 debug["body"] = body;
                 ans["Debug"] = debug;
-                ans["Status"] = "Error";
                 // END DEBUG //
+
+                ans["Status"] = "Error";
 
                 try
                 {
@@ -86,29 +87,26 @@ namespace EvernestAPI.Controllers
                     var iduser = EvernestFront.User.IdentifyUser(key);
                     if (!iduser.Success)
                     {
-                        var nouser = ans;
-                        nouser["Error"] = "UserNotFound";
-                        return Request.CreateResponse(HttpStatusCode.OK, nouser);
+                        ans["Error"] = "UserNotFound";
+                        return Request.CreateResponse(HttpStatusCode.OK, ans);
                     }
                     var user = iduser.User;
                     var sourceName = (string) body["SourceName"];
                     var streamId = (long) body["StreamId"];
-                    var rights = (AccessRights) body["AccessRights"];
+                    var rights = (AccessRights) body["AccessRights"]; // ?
                     var creaSource = user.CreateSource(sourceName, streamId, rights);
                     if (!creaSource.Success)
                     {
-                        var nosource = ans;
-                        nosource["Error"] = "NoSourceCreated";
-                        return Request.CreateResponse(HttpStatusCode.OK, nosource);
+                        ans["Error"] = "NoSourceCreated";
+                        return Request.CreateResponse(HttpStatusCode.OK, ans);
                     }
                     ans["Status"] = "Success";
 
                 }
                 catch
                 {
-                    var nokey = ans;
-                    nokey["Error"] = "KeyNotFound";
-                    return Request.CreateResponse(HttpStatusCode.OK, nokey);
+                    ans["Error"] = "KeyNotFound";
+                    return Request.CreateResponse(HttpStatusCode.OK, ans);
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, ans);

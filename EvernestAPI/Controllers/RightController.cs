@@ -28,7 +28,8 @@ namespace EvernestAPI.Controllers
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
-			// Get the Stream
+
+            // Get the Stream
             var getSource = Source.GetSource(sourceId);
             if (!getSource.Success)
             {
@@ -76,12 +77,13 @@ namespace EvernestAPI.Controllers
         public HttpResponseMessage Set(string sourceId, int streamId, string right)
         {
             var ans = new Hashtable();
-            var nvc = new Hashtable();
-            bool failed = false;
-            EvernestFront.User user = null;
+            Hashtable nvc;
+            var failed = false;
+
             EvernestFront.Errors.FrontError error = null;
             string errorMessage = null;
             var accessRight = AccessRights.NoRights;
+
             try
             {
                 nvc = Tools.ParseRequest(Request);
@@ -90,9 +92,10 @@ namespace EvernestAPI.Controllers
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
+            
             // Get the user
             if (nvc.ContainsKey("key")) {
-                var getUser = EvernestFront.User.GetUser((int)nvc["key"]);
+                var getUser = EvernestFront.User.GetUser((int) nvc["key"]);
                 if (!getUser.Success)
                 {
                     failed = true;
@@ -101,7 +104,7 @@ namespace EvernestAPI.Controllers
                 }
                 else
                 {
-                    user = getUser.User;
+                    var user = getUser.User;
 
                     // Convert the string to an AccessRights enum
                     switch (right.ToLower())
@@ -131,7 +134,7 @@ namespace EvernestAPI.Controllers
                     }
 
                     // Get the Source
-                    var getSource = EvernestFront.Source.GetSource(sourceId);
+                    var getSource = Source.GetSource(sourceId);
                     if (!getSource.Success)
                     {
                         failed = true;
@@ -157,8 +160,7 @@ namespace EvernestAPI.Controllers
                 errorMessage = "Missing user id.";
                 error = null;
             }
-            
-           
+                       
             // BEGIN DEBUG //
             var debug = new Hashtable();
             debug["Controller"] = "Right";
@@ -167,14 +169,13 @@ namespace EvernestAPI.Controllers
             debug["streamId"] = streamId;
             debug["right"] = accessRight;
             debug["nvc"] = nvc;
-            if (failed)
-            {
-                debug["error"] = error;
-                debug["errorMessage"] = errorMessage;
-                debug["error"] = error;
-            }
             ans["Debug"] = debug;
             // END DEBUG //
+
+            if (!failed) return Request.CreateResponse(HttpStatusCode.OK, ans);
+
+            ans["error"] = error;
+            ans["errorMessage"] = errorMessage;
 
             return Request.CreateResponse(HttpStatusCode.OK, ans);
         }

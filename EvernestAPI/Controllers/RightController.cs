@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Web;
 using System.Web.Http;
 using System.Net;
 using System.Net.Http;
@@ -16,11 +15,11 @@ namespace EvernestAPI.Controllers
         public HttpResponseMessage Get(string sourceId, int streamId)
         {
             var ans = new Hashtable();
-            var nvc = new Hashtable();
-            bool failed = false;
+            var failed = false;
             EvernestFront.Errors.FrontError error = null;
-            string errorMessage = "";
-            var accessRight = new EvernestFront.AccessRights();
+            var errorMessage = "";
+            var accessRight = new AccessRights();
+            Hashtable nvc;
             try
             {
                 nvc = Tools.ParseRequest(Request);
@@ -30,7 +29,7 @@ namespace EvernestAPI.Controllers
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
 			// Get the Stream
-            var getSource = EvernestFront.Source.GetSource(sourceId);
+            var getSource = Source.GetSource(sourceId);
             if (!getSource.Success)
             {
                 failed = true;
@@ -59,14 +58,13 @@ namespace EvernestAPI.Controllers
             debug["streamId"] = streamId;
             debug["right"] = accessRight;
             debug["nvc"] = nvc;
-            if (failed)
-            {
-                debug["error"] = error;
-                debug["errorMessage"] = errorMessage;
-                debug["error"] = error;
-            }
             ans["Debug"] = debug;
             // END DEBUG //
+
+            if (!failed) return Request.CreateResponse(HttpStatusCode.OK, ans);
+
+            ans["error"] = error;
+            ans["errorMessage"] = errorMessage;
 
             return Request.CreateResponse(HttpStatusCode.OK, ans);
         }

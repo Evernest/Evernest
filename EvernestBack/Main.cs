@@ -25,7 +25,7 @@ namespace EvernestBack
             {
                 stream.Push(i.ToString(), pushAgent =>
                 {
-                    stream.Pull(pushAgent.RequestID, pullAgent =>
+                    stream.Pull(pushAgent.RequestID /*i*/, pullAgent =>
                     {
                         Console.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
                         file.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);

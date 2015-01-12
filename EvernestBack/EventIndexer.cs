@@ -84,14 +84,16 @@ namespace EvernestBack
 
         private void ReadIndexInfo()
         {
-            try
+            ulong position = 0;
+            if(StreamIndexBlob.Exists())
             {
-                Milestones.ReadFromBlob(StreamIndexBlob); //blob may not exist
-            }
-            catch(StorageException e)
-            {
-                Milestones.Clear();
-                Console.WriteLine(e.ToString());
+                Milestones.ReadFromBlob(StreamIndexBlob);
+                if(Milestones.GreaterElement(ref position))
+                {
+
+                }
+                LastPosition = 0; //should retrieve last position
+                //StreamIndexBlob.GetPageRange(offset, length);
             }
         }
 

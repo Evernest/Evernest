@@ -100,6 +100,13 @@ namespace EvernestBack
             return leastBound != null;
         }
 
+        public bool GreaterElement(ref ulong element)
+        {
+            if(LastNode != null)
+                element = LastNode.Element;
+            return LastNode != null;
+        }
+
         public Byte[] Serialize() //missing endianness check/byte reordering
         {
             long byteCount = sizeof(long) + ElementCounter * (sizeof(long) + sizeof(ulong));
@@ -159,7 +166,9 @@ namespace EvernestBack
         {
             Byte[] sizeBytes = new Byte[sizeof(long)];
             blob.DownloadRangeToByteArray(sizeBytes, 0, 0, sizeof(long));
-            Byte[] serializedHistory = new Byte[sizeof(long)+BitConverter.ToInt64(sizeBytes, 0)*(sizeof(long) + sizeof(ulong))];
+            long byteCount = BitConverter.ToInt64(sizeBytes, 0);
+            Byte[] serializedHistory = new Byte[byteCount];
+            blob.DownloadRangeToByteArray(serializedHistory, 0, sizeof(long), byteCount);
             Deserialize(serializedHistory, 0);
         }
 

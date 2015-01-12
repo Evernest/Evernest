@@ -41,15 +41,17 @@ namespace EvernestBack
             Task.Run(() =>
             {
                 ulong wroteBytes;
-                //Console.WriteLine("Starting Storing"); //if there is a Console.Read() in the main thread, this will block this instruction
-                while (PendingEventCollection.Count > 0)
+                while (true) //temporary fix to make sure the thread doesn't terminate early (well now it never does, "fixed")
                 {
-                    PendingEvent pendingEvent = PendingEventCollection.Take();
-                    Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.Callback);
-                    wroteBytes = Write(agent);
-                    Indexer.NotifyNewEntry(CurrentID, wroteBytes);
-                    CurrentID++;
-                    agent.Processed();
+                    while (PendingEventCollection.Count > 0)
+                    {
+                        PendingEvent pendingEvent = PendingEventCollection.Take();
+                        Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.Callback);
+                        wroteBytes = Write(agent);
+                        Indexer.NotifyNewEntry(CurrentID, wroteBytes);
+                        CurrentID++;
+                        agent.Processed();
+                    }
                 }
             }
             );

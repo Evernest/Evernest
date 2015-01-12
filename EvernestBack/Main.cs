@@ -7,27 +7,7 @@ namespace EvernestBack
     {
         static void Main(string[] args)
         {
-            IEventStream stream;
-            try
-            {
-                stream = AzureStorageClient.Instance.GetNewEventStream("Test");
-            }
-            catch (ArgumentException e)
-            {
-                Console.Write(e.Message);
-                Console.Read();
-                return;
-            }
-            try
-            {
-                stream = AzureStorageClient.Instance.GetEventStream("Test2"); // Should fail
-            } catch ( ArgumentException e)
-            {
-                Console.WriteLine("Success, you failed : ");
-                Console.WriteLine(e.Message);
-                Console.Read();
-                return;
-            }
+            IEventStream stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
 
             System.IO.StreamWriter file = new System.IO.StreamWriter("log.txt");
 

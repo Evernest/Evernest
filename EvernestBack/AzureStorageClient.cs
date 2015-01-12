@@ -6,10 +6,10 @@ using System.Configuration;
 
 namespace EvernestBack
 {
-    /**
-     * AzureStorageClient represents a client connection with the azure storage service 
-     * see it as an EventStream factory
-     */
+
+    /// AzureStorageClient represents a client connection with the azure storage service 
+    /// see it as an EventStream factory
+     
     public class AzureStorageClient
     {
         private CloudBlobClient BlobClient;
@@ -22,6 +22,9 @@ namespace EvernestBack
         private uint EventChunkSize;
         private static AzureStorageClient _singleton;
 
+    /// <summary>
+    /// The unique instance of AzureStorageClient.
+    /// </summary>
         public static AzureStorageClient Instance
         {
             get
@@ -82,9 +85,11 @@ namespace EvernestBack
         }
 
 
-        /**
-         * Get a reference to an already created stream.
-         */
+    /// <summary>
+    /// Get an already created event stream
+    /// </summary>
+    /// <param name="streamID"> The name of the stream you want.</param>
+    /// <returns> The EventStream</returns>
         public IEventStream GetEventStream( String streamID ) //not thread-safe yet
         {
             IEventStream stream = OpenStream(streamID);
@@ -92,9 +97,11 @@ namespace EvernestBack
         }
 
 
-        /**
-         * Create a new stream and open it.
-         */
+    /// <summary>
+    /// Create and open an EventStream
+    /// </summary>
+    /// <param name="streamID"> The name of the new stream. </param>
+    /// <returns>The new EventStream</returns>
         public IEventStream GetNewEventStream(String streamID)
         {
             CreateEventStream(streamID);
@@ -102,10 +109,11 @@ namespace EvernestBack
             return stream;
         }
 
-        /**
-         * Open a stream and throws an exception if it does not exists
-         * 
-         */
+    /// <summary>
+    /// Open a Stream.
+    /// </summary>
+    /// <param name="streamID">The name of the Stream to open.</param>
+    /// <returns>The EventStream.</returns>
         private IEventStream OpenStream(String streamID)
 
         {
@@ -133,9 +141,10 @@ namespace EvernestBack
             return stream;
         }
 
-        /**
-         * Create a new stream (does not open it). I.e. Create the blob to store it.
-         */
+    /// <summary>
+    /// Create an EventStream
+    /// </summary>
+    /// <param name="streamID">The name of the stream to create.</param>
         private void CreateEventStream(String streamID)
 
         {

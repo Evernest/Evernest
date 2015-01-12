@@ -100,7 +100,7 @@ namespace EvernestWeb.Controllers
             EvernestFront.AccessRights accessRights_ = EvernestFront.AccessRights.NoRights; // something by default
             switch (accessRights)
             {
-                case "NoRights" : accessRights_ = EvernestFront.AccessRights.NoRights;break;
+                case "NoRights": accessRights_ = EvernestFront.AccessRights.NoRights; break;
                 case "ReadOnly": accessRights_ = EvernestFront.AccessRights.ReadOnly; break;
                 case "WriteOnly": accessRights_ = EvernestFront.AccessRights.WriteOnly; break;
                 case "ReadWrite": accessRights_ = EvernestFront.AccessRights.ReadWrite; break;
@@ -140,7 +140,7 @@ namespace EvernestWeb.Controllers
         {
             EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(streamId);
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(userId);
-            if (s.Success&&u.Success)
+            if (s.Success && u.Success)
             {
                 // fetch stream
                 StreamAndEvents streamAndEvents = new StreamAndEvents();
@@ -168,7 +168,6 @@ namespace EvernestWeb.Controllers
             Connexion connexion = IsConnected();
             if (ViewBag.Connexion != "true")
                 return View("Index");
-
             StreamAndEvents streamAndEvents = getStreamsAndEvents(id, connexion.IdUser);
             return View(streamAndEvents);
         }

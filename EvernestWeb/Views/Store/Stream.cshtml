@@ -28,7 +28,9 @@
     </div>
 
     <div>
-        @{Html.BeginForm("PushEvent", "Store", FormMethod.Post);}
+        @Html.Partial("addEventFormPartial")
+
+        <!--@{Html.BeginForm("PushEvent", "Store", FormMethod.Post);}
         @Html.AntiForgeryToken()
         <ul>
             <li>
@@ -37,7 +39,7 @@
                 <input type="hidden" name="sid" value="@{ Write(Model.Id);}" />
                 <input type="submit" value="Push an Event" />
             </li>
-        </ul>
+        </ul>-->
     </div>
 
     <!-- requested event -->

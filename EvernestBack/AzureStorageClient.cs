@@ -90,19 +90,6 @@ namespace EvernestBack
 
 
         /**
-<<<<<<< HEAD
-=======
-         * Get a reference to an already created stream.
-         */
-        public IEventStream GetEventStream( String streamID ) //not thread-safe yet
-        {
-            IEventStream stream = OpenStream(streamID);
-            return stream;
-        }
-
-
-        /**
->>>>>>> 36d408049692a16c36aba8278e2b634e88b3309a
          * Create a new stream and open it.
          */
         public IEventStream GetNewEventStream(String streamID)

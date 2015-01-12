@@ -9,10 +9,8 @@ using System.Configuration;
 
 namespace EvernestBack
 {
-    /**
-     * EventStream represents an instance of a stream of events and should be matched to a single blob
-     * should be created with AzureStorageClient
-     */
+    /// EventStream represents an instance of a stream of events and should be matched to a single blob
+    /// should be created with AzureStorageClient.
     class EventStream:IEventStream
     {
         private WriteLocker WriteLock;
@@ -29,18 +27,18 @@ namespace EvernestBack
         }
 
         // Push : Give a string, return an ID with the Callback
-        public void Push(string message, Action<IAgent> callback)
+        public void Push(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
         {
-            WriteLock.Register(message, callback);
+            WriteLock.Register(message, callbackSuccess, callbackFailure);
         }
 
         // Pull : Use the ID got when pushing to get back the original string
-        public void Pull(long id, Action<IAgent> callback)
+        public void Pull(long id, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
         {
             string message;
             if (Indexer.FetchEvent(id, out message))
             {
-                Agent msgAgent = new Agent(message, id, callback);
+                Agent msgAgent = new Agent(message, id, callbackSuccess, callbackFailure);
                 msgAgent.Processed();
             }
         }

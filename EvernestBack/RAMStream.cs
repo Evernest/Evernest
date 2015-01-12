@@ -41,7 +41,7 @@ namespace EvernestBack
             file.Close();
         }
 
-        public void Push(string message, Action<IAgent> callback)
+        public void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackfailure)
         {
             IAgent a = new MyAgent(message, Index);
             Index++;
@@ -49,7 +49,7 @@ namespace EvernestBack
             callback(a);
         }
 
-        public void Pull(long id, Action<IAgent> callback)
+        public void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackfailure)
         {
             IAgent a = new MyAgent(Messages.ElementAt((int) id), id);
             callback(a);

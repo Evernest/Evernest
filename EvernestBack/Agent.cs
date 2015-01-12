@@ -12,16 +12,18 @@ namespace EvernestBack
 
     class Agent:IAgent
     {
-        private Action<IAgent> Callback;
+        private Action<IAgent> CallbackSuccess;
+        private Action<IAgent, String> CallbackFailure;
         public long RequestID { get; private set; }
         public string Message { get; protected set; }
 
         internal Agent(string Message, long RequestID, 
-            Action<IAgent> Callback)
+            Action<IAgent> CallbackSuccess, Action<IAgent, String> CallbackFailure)
         {            
             this.Message = Message;
             this.RequestID = RequestID;
-            this.Callback = Callback;
+            this.CallbackSuccess = CallbackSuccess;
+            this.CallbackFailure = CallbackFailure;
         }
 
         public static void Reverse(Byte[] Array, int Offset, int Count)
@@ -80,12 +82,12 @@ namespace EvernestBack
 
         internal void Processed()
         {
-            Callback(this);
+            CallbackSuccess(this);
         }
 
         internal void ProcessFailed(string FeedbackMessage)
         {
-            //TODO
+            CallbackFailure(this, FeedbackMessage);
         }
     }
 }

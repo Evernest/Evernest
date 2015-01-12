@@ -16,11 +16,13 @@ namespace EvernestBack
        private class PendingEvent
         {
             public string Message { get; private set; }
-            public Action<IAgent> Callback { get; private set; }
-            public PendingEvent(string message, Action<IAgent> callback)
+            public Action<IAgent> CallbackSuccess { get; private set; }
+            public Action<IAgent, String> CallbackFailure { get; private set; }
+            public PendingEvent(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
             {
                 Message = message;
-                Callback = callback;
+                CallbackSuccess = callbackSuccess;
+                CallbackFailure = callbackFailure;
             }
         }
 
@@ -45,7 +47,7 @@ namespace EvernestBack
                 while (PendingEventCollection.Count > 0)
                 {
                     PendingEvent pendingEvent = PendingEventCollection.Take();
-                    Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.Callback);
+                    Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.CallbackSuccess, pendingEvent.CallbackFailure);
                     wroteBytes = Write(agent);
                     Indexer.NotifyNewEntry(CurrentID, wroteBytes);
                     CurrentID++;
@@ -63,9 +65,9 @@ namespace EvernestBack
             return size;
         }
 
-        public void Register(string message, Action<IAgent> callback)
+        public void Register(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callBackFailure)
         {
-            PendingEventCollection.Add(new PendingEvent(message, callback));
+            PendingEventCollection.Add(new PendingEvent(message, callbackSuccess, callBackFailure));
         }
 	}
 }

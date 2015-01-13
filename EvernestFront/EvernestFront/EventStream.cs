@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using EvernestFront.Answers;
@@ -10,6 +11,8 @@ using EvernestFront.Contract.Diff;
 using EvernestFront.Errors;
 using EvernestBack;
 using EvernestFront.Projection;
+
+//TODO : refactor callbacks and implement what to do in case of backend failure
 
 namespace EvernestFront
 {
@@ -141,8 +144,10 @@ namespace EvernestFront
             var random = new Random();
             long eventId = (long)random.Next((int)LastEventId+1);
             EventContract pulledContract=null;       
-            BackStream.Pull(eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
-            return new PullRandom(new Event(pulledContract, eventId, Name, Id));
+            BackStream.Pull(eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)), ((a,s)=> {}));  
+            if (pulledContract!=null)
+                return new PullRandom(new Event(pulledContract, eventId, Name, Id));
+            throw new NotImplementedException(); //errors to be refactored anyway
         }
 
         internal Pull Pull(long id)
@@ -153,8 +158,10 @@ namespace EvernestFront
             if (IsEventIdValid(eventId))
             {
                 EventContract pulledContract = null;
-                BackStream.Pull(eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
-                return new Pull(new Event(pulledContract, eventId, Name, Id));
+                BackStream.Pull(eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)), ((a,s)=>{}));
+                if (pulledContract !=null)
+                    return new Pull(new Event(pulledContract, eventId, Name, Id));
+                throw new NotImplementedException(); //errors to be refactored anyway
             }
             else
             {
@@ -191,7 +198,7 @@ namespace EvernestFront
             long eventId = LastEventId + 1;
             AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
             var contract = new EventContract(author, DateTime.UtcNow, message);
-            BackStream.Push(Serializing.WriteContract<EventContract>(contract), (a => stopWaitHandle.Set()));  //TODO : change this callback
+            BackStream.Push(Serializing.WriteContract<EventContract>(contract), (a => stopWaitHandle.Set()), ((a, s) => {throw new NotImplementedException();}));  //TODO : change these callbacks
             stopWaitHandle.WaitOne();
             return new Push(eventId);
         }

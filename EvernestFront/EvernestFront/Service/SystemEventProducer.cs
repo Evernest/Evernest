@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using EvernestFront.Auxiliaries;
+using EvernestFront.Utilities;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;
 using EvernestFront.Service.Command;

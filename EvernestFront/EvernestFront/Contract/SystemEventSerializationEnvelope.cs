@@ -1,5 +1,5 @@
 ﻿using System.Runtime.Serialization;
-using EvernestFront.Auxiliaries;
+using EvernestFront.Utilities;
 using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront.Contract

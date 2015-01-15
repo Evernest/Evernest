@@ -6,7 +6,7 @@ using System.Xml;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 
-namespace EvernestFront.Auxiliaries
+namespace EvernestFront.Utilities
 {
     class Serializer
     {

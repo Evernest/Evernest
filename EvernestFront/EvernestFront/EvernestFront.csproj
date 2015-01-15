@@ -60,7 +60,6 @@
     <Compile Include="Answers\SetPassword.cs" />
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="Answers\IdentifyUser.cs" />
-    <Compile Include="Auxiliaries\PasswordManager.cs" />
     <Compile Include="BuilderBase.cs" />
     <Compile Include="CheckRights.cs" />
     <Compile Include="Contract\SystemEventSerializationEnvelope.cs" />
@@ -101,9 +100,12 @@
     <Compile Include="Answers\CreateEventStream.cs" />
     <Compile Include="Answers\CreateSource.cs" />
     <Compile Include="Injector.cs" />
+    <Compile Include="Utilities\KeyGenerator.cs" />
+    <Compile Include="Utilities\PasswordManager.cs" />
     <Compile Include="Projections\EventStreamDataForProjection.cs" />
     <Compile Include="Projections\SourceDataForProjection.cs" />
     <Compile Include="Projections\UserDataForProjection.cs" />
+    <Compile Include="Utilities\Serializer.cs" />
     <Compile Include="Service\CommandReceiver.cs" />
     <Compile Include="Service\Command\EventStreamCreation.cs" />
     <Compile Include="Service\Command\EventStreamDeletion.cs" />
@@ -115,13 +117,11 @@
     <Compile Include="Service\Command\UserKeyDeletion.cs" />
     <Compile Include="Service\Command\UserRightSettingByUser.cs" />
     <Compile Include="Service\ServiceData.cs" />
-    <Compile Include="Auxiliaries\KeyGenerator.cs" />
     <Compile Include="Errors\WriteAccessDenied.cs" />
     <Compile Include="Projections\EventStreamsProjection.cs" />
     <Compile Include="Projections\IProjection.cs" />
     <Compile Include="Projections\SourcesProjection.cs" />
     <Compile Include="Projections\UsersProjection.cs" />
-    <Compile Include="Auxiliaries\Serializer.cs" />
     <Compile Include="Service\SystemEventProducer.cs" />
     <Compile Include="Source.cs" />
     <Compile Include="Service\UserDataForService.cs" />

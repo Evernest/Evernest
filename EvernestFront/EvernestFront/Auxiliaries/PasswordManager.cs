@@ -11,17 +11,17 @@ namespace EvernestFront.Auxiliaries
             var keyGenerator = new KeyGenerator();
             var passwordSalt = Encoding.ASCII.GetBytes(keyGenerator.NewSalt());
             var passwordBytes = Encoding.ASCII.GetBytes(password);
-            var hmacMD5 = new HMACMD5(passwordSalt);
-            var saltedHash = hmacMD5.ComputeHash(passwordBytes);
+            var hmacSHA256 = new HMACSHA256(passwordSalt);
+            var saltedHash = hmacSHA256.ComputeHash(passwordBytes);
             var saltedPasswordHash = Encoding.ASCII.GetString(saltedHash);
             return new KeyValuePair<string, byte[]>(saltedPasswordHash, passwordSalt);
         }
 
         internal bool Verify(string password, string hash, byte[] salt)
         {
-            var hmacMD5 = new HMACMD5(salt);
+            var hmacSHA256 = new HMACSHA256(salt);
             var passwordBytes = Encoding.ASCII.GetBytes(password);
-            var saltedHash = Encoding.ASCII.GetString(hmacMD5.ComputeHash(passwordBytes));
+            var saltedHash = Encoding.ASCII.GetString(hmacSHA256.ComputeHash(passwordBytes));
             return (hash.Equals(saltedHash));
         }
     }

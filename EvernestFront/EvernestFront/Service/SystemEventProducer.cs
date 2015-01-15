@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using EvernestFront.Auxiliaries;
 using EvernestFront.Contract.SystemEvent;
@@ -15,7 +16,9 @@ namespace EvernestFront.Service
     {
         private ServiceData _serviceData;
 
+
         internal SystemEventProducer(ServiceData serviceData)
+
         {
             _serviceData = serviceData;
         }

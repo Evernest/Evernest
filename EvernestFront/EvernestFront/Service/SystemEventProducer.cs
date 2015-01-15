@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,23 +11,49 @@ using EvernestFront.Service.Command;
 
 namespace EvernestFront.Service
 {
-    class SystemEventProducer
+    internal class SystemEventProducer
     {
         private ServiceData ServiceData { get; set; }
 
-        internal SystemEventProducer(ServiceData serviceData)
+        private Dispatcher Dispatcher { get; set; }
+
+        internal SystemEventProducer(ServiceData serviceData, Dispatcher dispatcher)
         {
             ServiceData = serviceData;
+            Dispatcher = dispatcher;
+            KeepRunning = true;
         }
 
-        internal ISystemEvent HandleCommand(CommandBase command)
+        private ConcurrentQueue<CommandBase> PendingCommandQueue = new ConcurrentQueue<CommandBase>();
+
+        public void HandleCommand(CommandBase command)
+        {
+            PendingCommandQueue.Enqueue(command);
+        }
+
+        public bool KeepRunning; //change to false to stop producing events
+
+        private void ProduceEvents()
+        {
+            Task.Run(() =>
+            {
+                while (KeepRunning)
+                {
+                    CommandBase command;
+                    if (PendingCommandQueue.TryDequeue(out command))
+                        Dispatcher.HandleSystemEventEnvelope(ConsumeCommand(command));
+                }
+            });
+        }
+
+        private ISystemEvent ConsumeCommand(CommandBase command)
         {
             ISystemEvent systemEvent = CommandToSystemEvent((dynamic)command);
             ServiceData.SelfUpdate((dynamic)systemEvent);
             return systemEvent;
         }
 
-        internal ISystemEvent CommandToSystemEvent(CommandBase command)
+        private ISystemEvent CommandToSystemEvent(CommandBase command)
         {
             return CommandToSystemEventCase((dynamic)command);
         }

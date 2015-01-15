@@ -1,8 +1,6 @@
-﻿using System;
-using EvernestFront.Answers;
+﻿using EvernestFront.Answers;
 using EvernestFront.Contract;
 using EvernestFront.Contract.Diff;
-using EvernestFront.Errors;
 
 namespace EvernestFront
 {
@@ -13,7 +11,7 @@ namespace EvernestFront
             //TODO: what if streamId does not exist?
             
             if (InternalSources.ContainsKey(sourceName))
-                return new CreateSource(new SourceNameTaken(Id, sourceName));
+                return new CreateSource(FrontError.SourceNameTaken);
 
             var sourceContract = new SourceContract(sourceName, Id, streamId, rights);
             var key = Keys.NewKey();

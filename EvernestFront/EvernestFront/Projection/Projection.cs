@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using EvernestFront.Contract;
+﻿using EvernestFront.Contract;
 using EvernestFront.Contract.Diff;
 
 namespace EvernestFront.Projection

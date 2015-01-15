@@ -1,9 +1,7 @@
-﻿using EvernestFront.Answers;
+﻿using System.Diagnostics;
+using EvernestFront.Answers;
 using EvernestFront.Contract;
 using EvernestFront.Contract.Diff;
-using EvernestFront.Errors;
-using System;
-
 namespace EvernestFront
 {
     public class Source
@@ -35,7 +33,7 @@ namespace EvernestFront
             Right = right;
         }
 
-        private static bool TryGetSource(string sourceKey, out Source source, out FrontError error)
+        private static bool TryGetSource(string sourceKey, out Source source, out FrontError? error)
         {
             SourceContract sourceContract;
             if (Projection.Projection.TryGetSourceContract(sourceKey, out sourceContract))
@@ -43,7 +41,7 @@ namespace EvernestFront
                 User user;
                 if (!User.TryGetUser(sourceContract.UserId, out user))
                 {
-                    error=new UserIdDoesNotExist(sourceContract.UserId);
+                    error = FrontError.UserIdDoesNotExist;
                     source = null;
                     return false;
                 }
@@ -52,7 +50,7 @@ namespace EvernestFront
                     EventStream eventStream;
                     if (!EventStream.TryGetStream(sourceContract.StreamId, out eventStream))
                     {
-                        error = new EventStreamIdDoesNotExist(sourceContract.StreamId);
+                        error = FrontError.EventStreamIdDoesNotExist;
                         source = null;
                         return false;
                     }
@@ -64,7 +62,7 @@ namespace EvernestFront
                     }
                 }
             }
-            error = new SourceKeyDoesNotExist(sourceKey);
+            error = FrontError.SourceKeyDoesNotExist;
             source = null;
             return false;
         }
@@ -72,11 +70,14 @@ namespace EvernestFront
         static public GetSource GetSource(string sourceKey)
         {
             Source source;
-            FrontError error;
+            FrontError? error;
             if (TryGetSource(sourceKey, out source, out error))
                 return new GetSource(source);
             else
-                return new GetSource(error);
+            {
+                Debug.Assert(error != null, "error != null");
+                return new GetSource(error.Value); //cannot be null
+            }
         }
 
 
@@ -85,7 +86,7 @@ namespace EvernestFront
             if (CanWrite())
                 return EventStream.Push(message, User);
             else
-                return new Push(new WriteAccessDenied(this));
+                return new Push(FrontError.WriteAccessDenied);
         }
 
         public PullRandom PullRandom()
@@ -93,7 +94,7 @@ namespace EvernestFront
             if (CanRead())
                 return EventStream.PullRandom();
             else
-                return new PullRandom(new ReadAccessDenied(this));
+                return new PullRandom(FrontError.ReadAccessDenied);
         }
 
         public Pull Pull(long eventId)
@@ -101,7 +102,7 @@ namespace EvernestFront
             if (CanRead())
                 return EventStream.Pull(eventId);
             else
-                return new Pull(new ReadAccessDenied(this));
+                return new Pull(FrontError.ReadAccessDenied);
         }
 
         public PullRange PullRange(long eventIdFrom, long eventIdTo)
@@ -109,7 +110,7 @@ namespace EvernestFront
             if (CanRead())
                 return EventStream.PullRange(eventIdFrom, eventIdTo);
             else
-                return new PullRange(new ReadAccessDenied(this));
+                return new PullRange(FrontError.ReadAccessDenied);
         }
 
         public SetRights SetRights(long targetUserId, AccessRights right)
@@ -117,7 +118,7 @@ namespace EvernestFront
             if (CanAdmin())
                 return EventStream.SetRight(User.Id, targetUserId, right);
             else
-                return new SetRights(new AdminAccessDenied(this));
+                return new SetRights(FrontError.AdminAccessDenied);
         }
 
         public DeleteSource Delete()

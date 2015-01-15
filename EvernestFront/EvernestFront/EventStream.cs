@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Threading;
-using System.Threading.Tasks;
 using EvernestFront.Answers;
 using EvernestFront.Contract;
 using EvernestFront.Contract.Diff;
-using EvernestFront.Errors;
 using EvernestBack;
 using EvernestFront.Projection;
 
@@ -75,13 +72,13 @@ namespace EvernestFront
             if (TryGetStream(streamId, out eventStream))
                 return new GetEventStream(eventStream);
             else
-                return new GetEventStream(new EventStreamIdDoesNotExist(streamId));
+                return new GetEventStream(FrontError.EventStreamIdDoesNotExist);
         }
 
         internal static CreateEventStream CreateEventStream(long creatorId, string streamName)
         {
             if (Projection.Projection.StreamNameExists(streamName))
-                return new CreateEventStream(new EventStreamNameTaken(streamName));
+                return new CreateEventStream(FrontError.EventStreamNameTaken);
             // this is supposed to be called by a user object, so creatorId should always exist
 
             var id = NextId();
@@ -111,9 +108,9 @@ namespace EvernestFront
         {
             User targetUser;
             if (!User.TryGetUser(targetUserId, out targetUser))
-                return new SetRights(new UserIdDoesNotExist(targetUserId));
+                return new SetRights(FrontError.UserIdDoesNotExist);
             if (!targetUser.IsNotAdmin(Id))
-                return new SetRights(new CannotDestituteAdmin(Id, targetUserId));
+                return new SetRights(FrontError.CannotDestituteAdmin);
 
             var userRightSet = new UserRightSet(adminId, Id, targetUserId, right);
 
@@ -165,7 +162,7 @@ namespace EvernestFront
             }
             else
             {
-                return new Pull(new InvalidEventId(eventId,this));
+                return new Pull(FrontError.InvalidEventId);
             }
            
         }
@@ -175,9 +172,9 @@ namespace EvernestFront
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
             if (!IsEventIdValid(fromEventId))
-                return new PullRange(new InvalidEventId(fromEventId, this));
+                return new PullRange(FrontError.InvalidEventId);
             if (!IsEventIdValid(toEventId))
-                return new PullRange(new InvalidEventId(toEventId, this));
+                return new PullRange(FrontError.InvalidEventId);
             var eventList = new List<Event>();
             for (long id = fromEventId; id <= toEventId; id++)
             {

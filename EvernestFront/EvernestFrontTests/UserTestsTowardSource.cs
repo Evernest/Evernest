@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using EvernestFront;
 using EvernestFront.Answers;
-using EvernestFront.Errors;
 using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
@@ -54,7 +52,7 @@ namespace EvernestFrontTests
             CreateSource ans = user.CreateSource(SourceName, streamId, SomeRight);
             user = UserTests.GetUser_AssertSuccess(userId);
             CreateSource ans2 = user.CreateSource(SourceName, streamId, SomeRight);
-            AssertAuxiliaries.ErrorAssert<SourceNameTaken>(ans2);
+            AssertAuxiliaries.ErrorAssert(FrontError.SourceNameTaken,ans2);
         }
 
         [Test]

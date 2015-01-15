@@ -1,5 +1,4 @@
 ﻿using System;
-using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
@@ -14,7 +13,7 @@ namespace EvernestFront.Answers
         
         //TODO : protected string requestID;
 
-        public FrontError Error { get; protected set; }
+        public FrontError? Error { get; protected set; }
 
         /// <summary>
         /// Default constructor for class Answer : allows for constructors without a parameter in subclasses.

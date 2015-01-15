@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Serialization;
-using EvernestFront.Errors;
 
 namespace EvernestFront.Contract.Diff
 {

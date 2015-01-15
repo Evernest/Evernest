@@ -16,7 +16,7 @@ namespace EvernestAPI.Controllers
         {
             var ans = new Hashtable();
             var failed = false;
-            EvernestFront.Errors.FrontError error = null;
+            EvernestFront.FrontError? error = null;
             var errorMessage = "";
             var accessRight = new AccessRights();
             Hashtable nvc;
@@ -80,7 +80,7 @@ namespace EvernestAPI.Controllers
             Hashtable nvc;
             var failed = false;
 
-            EvernestFront.Errors.FrontError error = null;
+            EvernestFront.FrontError? error = null;
             string errorMessage = null;
             var accessRight = AccessRights.NoRights;
 

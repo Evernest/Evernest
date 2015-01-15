@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using EvernestFront.Auxiliaries;
 using EvernestFront.Contract.SystemEvent;
@@ -17,33 +18,42 @@ namespace EvernestFront.Service
 
         private Dispatcher Dispatcher { get; set; }
 
+        private CancellationTokenSource tokenSource;
+
+
         internal SystemEventProducer(ServiceData serviceData, Dispatcher dispatcher)
         {
             ServiceData = serviceData;
             Dispatcher = dispatcher;
-            KeepRunning = true;
+            PendingCommandQueue=new ConcurrentQueue<CommandBase>();
+            tokenSource=new CancellationTokenSource();
         }
 
-        private ConcurrentQueue<CommandBase> PendingCommandQueue = new ConcurrentQueue<CommandBase>();
+       
+        private ConcurrentQueue<CommandBase> PendingCommandQueue;
 
         public void HandleCommand(CommandBase command)
         {
             PendingCommandQueue.Enqueue(command);
         }
 
-        public bool KeepRunning; //change to false to stop producing events
-
-        private void ProduceEvents()
+        public void StopProducing()
         {
-            Task.Run(() =>
+            tokenSource.Cancel();
+        }
+
+        public void ProduceEvents()
+        {
+            var token = tokenSource.Token;
+            Task.Run((() =>
             {
-                while (KeepRunning)
+                while (!token.IsCancellationRequested)
                 {
                     CommandBase command;
                     if (PendingCommandQueue.TryDequeue(out command))
-                        Dispatcher.HandleSystemEventEnvelope(ConsumeCommand(command));
+                        Dispatcher.ConsumeSystemEvent(ConsumeCommand(command));
                 }
-            });
+            }), token);
         }
 
         private ISystemEvent ConsumeCommand(CommandBase command)

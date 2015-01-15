@@ -11,7 +11,7 @@ namespace EvernestFront.Service
     class ServiceData
     {
         //TODO: prevent concurrency
-        //TODO: initialization on sytem stream
+        //TODO: initialization on system stream
 
         internal HashSet<string> UserNames { get; set; }
         internal Dictionary<long, UserDataForService> UserIdToDatas { get; set; }

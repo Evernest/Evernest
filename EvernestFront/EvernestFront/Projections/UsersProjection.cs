@@ -51,7 +51,7 @@ namespace EvernestFront.Projections
             }
         }
 
-        internal UsersProjection()
+        public UsersProjection()
         {
             Dictionaries = new DictionariesClass();
         }

@@ -5,7 +5,8 @@
         internal string EventStreamName { get; private set; }
         internal string CreatorName { get; private set; }
          
-        internal EventStreamCreation(string streamName, string creatorName)
+        internal EventStreamCreation(SystemEventProducer systemEventProducer, string streamName, string creatorName)
+            : base(systemEventProducer)
         {
             EventStreamName = streamName;
             CreatorName = creatorName;

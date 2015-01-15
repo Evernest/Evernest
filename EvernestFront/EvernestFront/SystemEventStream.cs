@@ -23,6 +23,9 @@ namespace EvernestFront
             _systemUser = user;
         }
 
+        public SystemEventStream() : base(long.MaxValue, "SystemEventStream",
+            ImmutableDictionary<long, AccessRights>.Empty, null) { }
+
         internal void Push(ISystemEvent systemEvent)
         {
             var contract = new SystemEventSerializationEnvelope(systemEvent);

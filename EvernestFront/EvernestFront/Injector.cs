@@ -16,10 +16,7 @@ namespace EvernestFront
 
         public CommandReceiver CommandReceiver;
 
-        private Injector()
-        {
-            
-        }
+        private Injector() { }
 
         public void Build()
         {
@@ -34,8 +31,6 @@ namespace EvernestFront
             var serviceData = new ServiceData();
             var systemEventProducer = new SystemEventProducer(serviceData);
             CommandReceiver = new CommandReceiver(systemEventProducer, serviceData, dispatcher);
-
-            
         }
     }
 }

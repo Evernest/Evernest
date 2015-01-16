@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Service.Command;
@@ -16,42 +17,49 @@ namespace EvernestFront.Service
         private ServiceData _serviceData;
         private Dispatcher _dispatcher;
 
+        private ConcurrentQueue<CommandBase> _pendingCommandQueue;
+        private CancellationTokenSource _tokenSource;
+
         public CommandReceiver(SystemEventProducer systemEventProducer,
             ServiceData serviceData, Dispatcher dispatcher)
         {
             _systemEventProducer = systemEventProducer;
             _serviceData = serviceData;
             _dispatcher = dispatcher;
-            KeepRunning = true;
+            _pendingCommandQueue=new ConcurrentQueue<CommandBase>();
+            _tokenSource=new CancellationTokenSource();
         }
+        
 
-        private ConcurrentQueue<CommandBase> _pendingCommandQueue = new ConcurrentQueue<CommandBase>();
-
-        public void HandleCommand(CommandBase command)
+        public void ReceiveCommand(CommandBase command)
         {
             _pendingCommandQueue.Enqueue(command);
         }
 
-        public bool KeepRunning; //change to false to stop producing events
-
-        private void ProduceEvents()
+        public void StopProducing()
         {
-            Task.Run(() =>
+            _tokenSource.Cancel();
+        }
+
+        public void ProduceEvents()
+        {
+            var token = _tokenSource.Token;
+            Task.Run((() =>
             {
-                while (KeepRunning)
+                while (!token.IsCancellationRequested)
                 {
                     CommandBase command;
                     if (_pendingCommandQueue.TryDequeue(out command))
                         ConsumeCommand(command);
                 }
-            });
+            }), token);
         }
 
         private void ConsumeCommand(CommandBase command)
         {
             ISystemEvent systemEvent = _systemEventProducer.CommandToSystemEvent(command);
             _serviceData.SelfUpdate(systemEvent);
-            _dispatcher.HandleSystemEventEnvelope(systemEvent);
+            _dispatcher.ConsumeSystemEvent(systemEvent);
         }
     }
 }

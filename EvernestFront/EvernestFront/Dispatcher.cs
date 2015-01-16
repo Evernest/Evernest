@@ -19,29 +19,37 @@ namespace EvernestFront
         private ICollection<IProjection> Projections { set; get; }
         private SystemEventStream SystemEventStream { set; get; }
 
-        private ConcurrentQueue<ISystemEvent> PendingEventQueue;
+        private ConcurrentQueue<ISystemEvent> _pendingEventQueue;
 
-        private CancellationTokenSource tokenSource;
+        private CancellationTokenSource _tokenSource;
+
+        public Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream)
+        {
+            Projections = projections;
+            SystemEventStream = systemEventStream;
+            _pendingEventQueue = new ConcurrentQueue<ISystemEvent>();
+            _tokenSource = new CancellationTokenSource();
+        }
 
         public void StopDispatching()
         {
-            tokenSource.Cancel();
+            _tokenSource.Cancel();
         }
 
         public void HandleEvent(ISystemEvent systemEvent)
         {
-            PendingEventQueue.Enqueue(systemEvent);
+            _pendingEventQueue.Enqueue(systemEvent);
         }
 
         public void DispatchEvents()
         {
-            var token = tokenSource.Token;
+            var token = _tokenSource.Token;
             Task.Run((() =>
             {
                 while (!token.IsCancellationRequested)
                 {
                     ISystemEvent systemEvent;
-                    if (PendingEventQueue.TryDequeue(out systemEvent))
+                    if (_pendingEventQueue.TryDequeue(out systemEvent))
                         ConsumeSystemEvent(systemEvent);
                 }
             }), token);
@@ -58,13 +66,7 @@ namespace EvernestFront
             }
         }
 
-        internal Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream)
-        {
-            Projections = projections;
-            SystemEventStream = systemEventStream;
-            PendingEventQueue = new ConcurrentQueue<ISystemEvent>();
-            tokenSource=new CancellationTokenSource();
-        }
+       
 
 
     }

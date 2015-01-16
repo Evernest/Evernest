@@ -4,16 +4,16 @@
     {
         //TODO: add an id
 
-        private readonly SystemEventProducer _systemEventProducer;
+        private readonly CommandReceiver _commandReceiver;
 
-        protected CommandBase(SystemEventProducer systemEventProducer)
+        protected CommandBase(CommandReceiver commandReceiver)
         {
-            _systemEventProducer = systemEventProducer;
+            _commandReceiver = commandReceiver;
         }
 
         public void Execute()
         {
-            _systemEventProducer.HandleCommand(this);
+            _commandReceiver.ReceiveCommand(this);
         }
     }
 }

@@ -28,8 +28,9 @@ namespace EvernestFront
 
         internal void Push(ISystemEvent systemEvent)
         {
-            var contract = new SystemEventSerializationEnvelope(systemEvent);
-            Push(Serializer.WriteContract(contract), _systemUser);
+            var serializer = new Serializer();
+            var contract = new SystemEventEnvelope(systemEvent);
+            Push(serializer.WriteContract(contract), _systemUser);
         }
     }
 

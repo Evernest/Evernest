@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="ReadOnlyCollectionsInterfaces">
       <HintPath>..\..\packages\ReadOnlyCollectionInterfaces.1.0.0\lib\NET45\ReadOnlyCollectionsInterfaces.dll</HintPath>
     </Reference>
@@ -62,7 +66,7 @@
     <Compile Include="Answers\IdentifyUser.cs" />
     <Compile Include="BuilderBase.cs" />
     <Compile Include="CheckRights.cs" />
-    <Compile Include="Contract\SystemEventSerializationEnvelope.cs" />
+    <Compile Include="Contract\SystemEventEnvelope.cs" />
     <Compile Include="Contract\SystemEvent\EventStreamDeleted.cs" />
     <Compile Include="Contract\SystemEvent\InvalidCommandSystemEvent.cs" />
     <Compile Include="Contract\SystemEvent\ISystemEvent.cs" />
@@ -76,7 +80,6 @@
     <Compile Include="Contract\SystemEvent\EventStreamCreated.cs" />
     <Compile Include="Contract\EventContract.cs" />
     <Compile Include="Contract\SystemEvent\UserCreated.cs" />
-    <Compile Include="DiffStream.cs" />
     <Compile Include="Dispatcher.cs" />
     <Compile Include="Errors\InvalidString.cs" />
     <Compile Include="Errors\SourceKeyDoesNotExist.cs" />

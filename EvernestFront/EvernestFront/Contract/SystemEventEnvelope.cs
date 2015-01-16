@@ -5,7 +5,7 @@ using EvernestFront.Contract.SystemEvent;
 namespace EvernestFront.Contract
 {
     [DataContract]
-    class SystemEventSerializationEnvelope
+    class SystemEventEnvelope
     {
         [DataMember]
         public string SystemEventType;
@@ -13,10 +13,11 @@ namespace EvernestFront.Contract
         [DataMember]
         public string SerializedSystemEvent;
 
-        public SystemEventSerializationEnvelope(ISystemEvent systemEvent)
+        public SystemEventEnvelope(ISystemEvent systemEvent)
         {
+            var serializer = new Serializer();
             SystemEventType = (systemEvent.GetType()).Name;
-            SerializedSystemEvent = Serializer.WriteContract(systemEvent);
+            SerializedSystemEvent = serializer.WriteContract(systemEvent);
         }
     }
 }

@@ -189,7 +189,8 @@ namespace EvernestFront
         {
             long eventId = LastEventId + 1;
             var contract = new EventContract(author, DateTime.UtcNow, message);
-            BackStream.Push(Serializer.WriteContract<EventContract>(contract), (a => Console.WriteLine(a.RequestID)));  //TODO : change this callback
+            var serializer = new Serializer();
+            BackStream.Push(serializer.WriteContract(contract), (a => Console.WriteLine(a.RequestID)));  //TODO : change this callback
             return new Push(eventId);
         }
 

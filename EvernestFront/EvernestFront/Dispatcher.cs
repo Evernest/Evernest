@@ -62,7 +62,7 @@ namespace EvernestFront
             SystemEventStream.Push(systemEvent);
             foreach (var p in Projections)
             {
-                p.HandleSystemEvent(systemEvent);
+                p.OnSystemEvent(systemEvent);
             }
         }
 

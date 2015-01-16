@@ -1,61 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
+using Newtonsoft.Json;
 
 namespace EvernestFront.Utilities
 {
+    public static class AllContracts
+    {
+        public static Dictionary<string, Type> GetTypeMapForEvents()
+        {
+            return typeof(AllContracts).Assembly.GetTypes()
+                .Where(t => typeof(ISystemEvent).IsAssignableFrom(t))
+                .ToDictionary(t => t.Name, t => t);
+        }
+    }
+
     class Serializer
     {
         internal string WriteContract<T>(T contract)
         {
-            var dcs = new DataContractSerializer(typeof(T));
-            var sb = new StringBuilder();
-            using (var writer = XmlWriter.Create(sb))
-            {
-                dcs.WriteObject(writer, contract);
-                writer.Flush();
-                return sb.ToString();
-            }
+            return JsonConvert.SerializeObject(contract);
         }
 
 
         internal T ReadContract<T>(string serializedContract)
         {
-            var dcs = new DataContractSerializer(typeof (T));
-            var sr = new StringReader(serializedContract);
-            using (var reader = XmlReader.Create(sr))
-            {
-                return (T) dcs.ReadObject(reader);
-            }
+            return JsonConvert.DeserializeObject<T>(serializedContract);
         }
 
         internal ISystemEvent ReadDiffEnvelope(string serializedEnvelope)
         {
-            SystemEventSerializationEnvelope serializationEnvelope = ReadContract<SystemEventSerializationEnvelope>(serializedEnvelope);
-            var diffType = serializationEnvelope.SystemEventType;
-            if (diffType == (typeof (EventStreamCreated).Name))
-                return ReadContract<EventStreamCreated>(serializationEnvelope.SerializedSystemEvent);
-            if (diffType == (typeof (PasswordSet)).Name)
-                return ReadContract<PasswordSet>(serializationEnvelope.SerializedSystemEvent);
-            if (diffType == (typeof (SourceCreated)).Name)
-                return ReadContract<SourceCreated>(serializationEnvelope.SerializedSystemEvent);
-            if (diffType == (typeof (UserCreated)).Name)
-                return ReadContract<UserCreated>(serializationEnvelope.SerializedSystemEvent);
-            if (diffType == (typeof (UserKeyCreated)).Name)
-                return ReadContract<UserKeyCreated>(serializationEnvelope.SerializedSystemEvent);
-            if (diffType == (typeof (UserRightSet)).Name)
-                return ReadContract<UserRightSet>(serializationEnvelope.SerializedSystemEvent);
-            if (diffType == (typeof (SourceDeleted)).Name)
-                return ReadContract<SourceDeleted>(serializationEnvelope.SerializedSystemEvent);
-            if (diffType == (typeof (UserKeyCreated)).Name)
-                return ReadContract<UserKeyCreated>(serializationEnvelope.SerializedSystemEvent);
-            if (diffType == (typeof (UserKeyDeleted)).Name)
-                return ReadContract<UserKeyDeleted>(serializationEnvelope.SerializedSystemEvent);
-            throw new NotImplementedException();                                //should not happen. Maybe create a dummy diff that does nothing instead of throwing an exception ?
+            SystemEventEnvelope envelope = ReadContract<SystemEventEnvelope>(serializedEnvelope);
+            string typeName = envelope.SystemEventType;
+            var map = AllContracts.GetTypeMapForEvents();
+            var type = map[typeName];
+            return
+                (ISystemEvent)
+                    typeof (string).GetMethod("JsonConvert.DeserializeObject")
+                        .MakeGenericMethod(type)
+                        .Invoke(null, new object[] {envelope.SerializedSystemEvent});
+
 
 
         }

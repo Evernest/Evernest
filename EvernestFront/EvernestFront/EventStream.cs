@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using EvernestFront.Answers;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
-using EvernestFront.Errors;
 using EvernestBack;
+
+//TODO : refactor callbacks and implement what to do in case of backend failure
 
 namespace EvernestFront
 {
@@ -17,7 +19,7 @@ namespace EvernestFront
 
         public string Name { get; private set; }
 
-        public long Count { get { return (int)BackStream.Index; } }
+        public long Count { get { return BackStream.Size(); } }
 
         public long LastEventId { get { return Count-1; } }
 
@@ -29,7 +31,7 @@ namespace EvernestFront
 
         private ImmutableDictionary<long, AccessRights> InternalRelatedUsers { get; set; }
 
-        private RAMStream BackStream { get; set; }
+        private IEventStream BackStream { get; set; }
 
 
 
@@ -40,7 +42,7 @@ namespace EvernestFront
         private static long NextId() { return ++_next; }
 
 
-        protected EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, RAMStream backStream)
+        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, IEventStream backStream)
         {
             Id = streamId;
             Name = name;
@@ -70,7 +72,7 @@ namespace EvernestFront
             if (TryGetStream(streamId, out eventStream))
                 return new GetEventStream(eventStream);
             else
-                return new GetEventStream(new EventStreamIdDoesNotExist(streamId));
+                return new GetEventStream(FrontError.EventStreamIdDoesNotExist);
         }
 
         internal static CreateEventStream CreateEventStream(long creatorId, string streamName)
@@ -81,7 +83,7 @@ namespace EvernestFront
 
             var id = NextId();
 
-            var backStream = new RAMStream(streamName);
+            var backStream = AzureStorageClient.Instance.GetNewEventStream(streamName);
 
             var streamContract = MakeEventStreamContract.NewStreamContract(streamName, backStream);
             var streamCreated = new EventStreamCreated(id, streamContract, creatorId);
@@ -106,9 +108,9 @@ namespace EvernestFront
         {
             User targetUser;
             if (!User.TryGetUser(targetUserId, out targetUser))
-                return new SetRights(new UserIdDoesNotExist(targetUserId));
+                return new SetRights(FrontError.UserIdDoesNotExist);
             if (!targetUser.IsNotAdmin(Id))
-                return new SetRights(new CannotDestituteAdmin(Id, targetUserId));
+                return new SetRights(FrontError.CannotDestituteAdmin);
 
             var userRightSet = new UserRightSet(adminId, Id, targetUserId, right);
 
@@ -138,9 +140,12 @@ namespace EvernestFront
         {
             var random = new Random();
             long eventId = (long)random.Next((int)LastEventId+1);
-            EventContract pulledContract=null;       
-            BackStream.Pull(eventId, ( a => pulledContract = Serializer.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
-            return new PullRandom(new Event(pulledContract, eventId, Name, Id));
+            EventContract pulledContract=null;
+            var serializer = new Serializer();
+            BackStream.Pull(eventId, ( a => pulledContract = serializer.ReadContract<EventContract>(a.Message)), ((a,s)=> {}));  
+            if (pulledContract!=null)
+                return new PullRandom(new Event(pulledContract, eventId, Name, Id));
+            throw new NotImplementedException(); //errors to be refactored anyway
         }
 
         internal Pull Pull(long id)
@@ -151,12 +156,15 @@ namespace EvernestFront
             if (IsEventIdValid(eventId))
             {
                 EventContract pulledContract = null;
-                BackStream.Pull(eventId, (a => pulledContract = Serializer.ReadContract<EventContract>(a.Message))); //TODO : change this
-                return new Pull(new Event(pulledContract, eventId, Name, Id));
+                var serializer = new Serializer();
+                BackStream.Pull(eventId, (a => pulledContract = serializer.ReadContract<EventContract>(a.Message)), ((a,s)=>{}));
+                if (pulledContract !=null)
+                    return new Pull(new Event(pulledContract, eventId, Name, Id));
+                return new Pull(FrontError.BackendError);
             }
             else
             {
-                return new Pull(new InvalidEventId(eventId,this));
+                return new Pull(FrontError.InvalidEventId);
             }
            
         }
@@ -166,9 +174,9 @@ namespace EvernestFront
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
             if (!IsEventIdValid(fromEventId))
-                return new PullRange(new InvalidEventId(fromEventId, this));
+                return new PullRange(FrontError.InvalidEventId);
             if (!IsEventIdValid(toEventId))
-                return new PullRange(new InvalidEventId(toEventId, this));
+                return new PullRange(FrontError.InvalidEventId);
             var eventList = new List<Event>();
             for (long id = fromEventId; id <= toEventId; id++)
             {
@@ -187,10 +195,20 @@ namespace EvernestFront
         internal Push Push(string message, User author)
         {
             long eventId = LastEventId + 1;
+            AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
+            bool success = false;
             var contract = new EventContract(author, DateTime.UtcNow, message);
             var serializer = new Serializer();
-            BackStream.Push(serializer.WriteContract(contract), (a => Console.WriteLine(a.RequestID)));  //TODO : change this callback
-            return new Push(eventId);
+            BackStream.Push(serializer.WriteContract<EventContract>(contract), (a =>
+            {
+                success = true;
+                stopWaitHandle.Set();
+            }), 
+            ((a, s) => stopWaitHandle.Set()));  
+            stopWaitHandle.WaitOne();
+            if (success)
+                return new Push(eventId);
+            return new Push(FrontError.BackendError);
         }
 
 

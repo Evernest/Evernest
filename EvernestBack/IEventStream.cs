@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 
 namespace EvernestBack
@@ -15,14 +14,14 @@ namespace EvernestBack
          * @param message The message to store
          * @param Callback The method to call when stored
          */
-        void Push(string message, Action<IAgent> Callback);
+        void Push(string message, Action<IAgent> CallbackSuccess, Action<IAgent, String> CallbackFailure);
 
         /**
          * Get a message from the stream, and call the Callback when pulled
          * @param id The index of the message you want
          * @param Callback The method to call when the message is pulled
          */
-        void Pull(long id, Action<IAgent> Callback);
+        void Pull(long id, Action<IAgent> Callback, Action<IAgent, String> CallbackFailure);
 
         /** Get a lower bound of the number of messages stored.
          *  It is possible that there are more stored messages, and that the Size is not updated yet.

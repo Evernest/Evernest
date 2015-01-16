@@ -1,0 +1,71 @@
+﻿@model EvernestWeb.ViewModels.StreamsSources
+@{
+    ViewBag.Title = "Manage my Store";
+}
+
+<h2>Manage my Store</h2>
+
+<div>@Html.ActionLink("Manage my profil", "Index", "Account")</div>
+
+<div>
+    <!-- for streams -->
+    <div>
+        <h4>Streams</h4>
+        <ul class="store-streams">
+            <li>Id - Name - Number of Events</li>
+            @if (Model != null)
+            {
+                for (int i = 0; i < Model.Streams.Count; ++i)
+                {
+                    <li><a href="/Store/Stream/@{Write(Model.Streams[i].Id);}">@Model.Streams[i].Id - @Model.Streams[i].Name - @Model.Streams[i].Count</a></li>
+                }
+            }
+            <li>
+                @{Html.BeginForm("AddStream", "Store", FormMethod.Post);}
+                @Html.AntiForgeryToken()
+                @Html.Label("addStream", "Add a Stream : ")
+                @Html.TextBox("addStream", "")
+                <input type="hidden" name="nature" value="stream"/>
+                <input type="submit" value="Add"/>
+                @{Html.EndForm();}
+            </li>
+        </ul>
+    </div>
+
+    <!-- for sources -->
+    <div>
+        <h4>Sources</h4>
+        <ul>
+            @if (Model != null)
+            {
+                for (int i = 0; i < Model.Sources.Count; ++i)
+                {
+                    <li>@Model.Sources[i].Name</li>
+                }
+            }
+            <li>
+                @{Html.BeginForm("AddSource", "Store", FormMethod.Post);}
+                @Html.AntiForgeryToken()
+                @Html.Label("addSource", "Add a Source : ")
+                @Html.TextBox("addSource", "")
+                <select name="idStream">
+                    @for (int i = 0; i < Model.Streams.Count; ++i)
+                    {
+                        <option value="@{ Write(Model.Streams[i].Id);}">@Model.Streams[i].Name</option>
+                    }
+                </select>
+                <select name="accessRights">
+                    <option value="NoRights">NoRights</option>
+                    <option value="ReadOnly">ReadOnly</option>
+                    <option value="WriteOnly">WriteOnly</option>
+                    <option value="ReadWrite">ReadWrite</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Root">Root</option>
+                </select>
+                <input type="hidden" name="nature" value="source" />
+                <input type="submit" value="Add" />
+                @{Html.EndForm();}
+            </li>
+        </ul>
+    </div>
+</div>

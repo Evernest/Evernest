@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 
@@ -41,7 +35,7 @@ namespace EvernestBack
             if( uploadedBytes > 0 )
                 Blob.DownloadRangeToByteArray(buffer, offset, srcOffset, uploadedBytes);
             Buffer.BlockCopy(WriteBuffer, Math.Max(-uploadedBytes, 0), buffer, offset+Math.Max(uploadedBytes, 0),
-                Math.Min(count - uploadedBytes, CurrentBufferPosition));
+                Math.Min(count - Math.Max(uploadedBytes, 0), CurrentBufferPosition));
             return Math.Max(0, uploadedBytes) + Math.Min(count - uploadedBytes, CurrentBufferPosition);
         }
 
@@ -56,6 +50,11 @@ namespace EvernestBack
                 CurrentBufferPosition = CurrentBufferPosition % PageSize;
                 Buffer.BlockCopy(WriteBuffer, (int) pageNumber*PageSize, WriteBuffer, 0, CurrentBufferPosition);
             }
+        }
+
+        ~BufferedBlobIO()
+        {
+            FlushBuffer();
         }
     }
 }

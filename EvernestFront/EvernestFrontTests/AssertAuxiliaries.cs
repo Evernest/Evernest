@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using EvernestFront;
-//using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using Assert = NUnit.Framework.Assert;
 using EvernestFront.Answers;
-using EvernestFront.Errors;
 
 namespace EvernestFrontTests
 {
@@ -15,11 +11,11 @@ namespace EvernestFrontTests
   
 
 
-        internal static void ErrorAssert<TError>(Answer ans)
+        internal static void ErrorAssert(FrontError err,Answer ans)
         {
             Assert.IsFalse(ans.Success);
             Assert.IsNotNull(ans.Error);
-            Assert.IsInstanceOf<TError>(ans.Error);
+            Assert.AreEqual(err, ans.Error);
         }
 
 

@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {
     public class PullRange:Answer
     {
-        //TODO : tableau d'events ? liste ? chaîne JSON ?
+
         public List<Event> Events { get; private set; }
 
         internal PullRange(FrontError err)

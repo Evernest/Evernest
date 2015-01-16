@@ -1,6 +1,5 @@
-﻿using EvernestFront.Errors;
 
-namespace EvernestFront.Answers
+﻿namespace EvernestFront.Answers
 {
     public class PullRandom : Answer
     {

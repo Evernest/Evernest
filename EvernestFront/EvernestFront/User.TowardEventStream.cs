@@ -1,5 +1,4 @@
 ﻿using EvernestFront.Answers;
-using EvernestFront.Errors;
 
 namespace EvernestFront
 {
@@ -14,11 +13,11 @@ namespace EvernestFront
         public SetRights SetRights(long streamId, long targetUserId, AccessRights right)
         {
             if (!CanAdmin(streamId))
-                return new SetRights(new AdminAccessDenied(streamId, Id));
+                return new SetRights(FrontError.AdminAccessDenied);
 
             EventStream eventStream;
             if (!EventStream.TryGetStream(streamId, out eventStream))
-                return new SetRights(new EventStreamIdDoesNotExist(streamId));
+                return new SetRights(FrontError.EventStreamIdDoesNotExist);
 
             return eventStream.SetRight(Id, targetUserId, right);
         }
@@ -38,10 +37,10 @@ namespace EvernestFront
                     return eventStream.PullRandom();
                 }
                 else
-                    return new PullRandom(new ReadAccessDenied(streamId, Id));
+                    return new PullRandom(FrontError.ReadAccessDenied);
             }
             else
-                return new PullRandom(new EventStreamIdDoesNotExist(streamId));
+                return new PullRandom(FrontError.EventStreamIdDoesNotExist);
 
         }
 
@@ -61,10 +60,10 @@ namespace EvernestFront
                     return eventStream.Pull(eventId);
                 }
                 else
-                    return new Pull(new ReadAccessDenied(streamId, Id));
+                    return new Pull(FrontError.ReadAccessDenied);
             }
             else
-                return new Pull(new EventStreamIdDoesNotExist(streamId));
+                return new Pull(FrontError.EventStreamIdDoesNotExist);
         }
 
         /// <summary>
@@ -85,10 +84,10 @@ namespace EvernestFront
                     return eventStream.PullRange(from, to);
                 }
                 else
-                    return new PullRange(new ReadAccessDenied(streamId, Id));
+                    return new PullRange(FrontError.ReadAccessDenied);
             }
             else
-                return new PullRange(new EventStreamIdDoesNotExist(streamId));
+                return new PullRange(FrontError.EventStreamIdDoesNotExist);
         }
 
         /// <summary>
@@ -108,10 +107,10 @@ namespace EvernestFront
                     //TODO: add writer id to event
                 }
                 else
-                    return new Push(new WriteAccessDenied(streamId, Id));
+                    return new Push(FrontError.WriteAccessDenied);
             }
             else
-                return new Push(new EventStreamIdDoesNotExist(streamId));
+                return new Push(FrontError.EventStreamIdDoesNotExist);
         }
 
         /// <summary>

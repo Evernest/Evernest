@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Dynamic;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using EvernestFront;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
 using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
-using EvernestFront.Answers;
-using EvernestFront.Errors;
 
 
 namespace EvernestFrontTests
@@ -23,7 +18,8 @@ namespace EvernestFrontTests
         [SetUp]
         public void ResetTables()
         {
-            ProjectionOld.Clear();
+            //TODO : clear tables ?
+            Setup.ClearAsc();
         }
 
 

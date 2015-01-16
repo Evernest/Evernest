@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using EvernestFront.Answers;
 using EvernestFront.Contract.SystemEvent;
-using EvernestFront.Errors;
 
 namespace EvernestFront
 {
@@ -85,7 +84,7 @@ namespace EvernestFront
             if (TryGetUser(userId, out user))
                 return new GetUser(user);
             else
-                return new GetUser(new UserIdDoesNotExist(userId));
+                return new GetUser(FrontError.UserIdDoesNotExist);
         }
 
         static public GetUser GetUser(string userKey)
@@ -100,7 +99,7 @@ namespace EvernestFront
                     throw new Exception("User.GetUser");
             }
             else
-                return new GetUser(new UserKeyDoesNotExist(userKey));
+                return new GetUser(FrontError.UserKeyDoesNotExist);
             
         }
 
@@ -116,7 +115,7 @@ namespace EvernestFront
                     if (user.VerifyPassword(password))
                         return new IdentifyUser(user);
                     else
-                        return new IdentifyUser(new WrongPassword(userName, password));
+                        return new IdentifyUser(FrontError.WrongPassword);
                 }
                 else
                     throw new Exception("User.IdentifyUser");
@@ -124,7 +123,7 @@ namespace EvernestFront
                 
             }
             else
-                return new IdentifyUser(new UserNameDoesNotExist(userName));
+                return new IdentifyUser(FrontError.UserNameDoesNotExist);
         }
 
         static public IdentifyUser IdentifyUser(string key)
@@ -143,7 +142,7 @@ namespace EvernestFront
 
             }
             else
-                return new IdentifyUser(new UserKeyDoesNotExist(key));
+                return new IdentifyUser(FrontError.UserKeyDoesNotExist);
         }
 
 
@@ -176,16 +175,16 @@ namespace EvernestFront
                 return new AddUser(name, id, key, password);
             }
             else
-                return new AddUser(new UserNameTaken(name));
+                return new AddUser(FrontError.UserNameTaken);
         }
 
 
         public SetPassword SetPassword(string formerPassword, string newPassword)
         {
             if (!(newPassword.Equals(System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(newPassword)))))
-                return new SetPassword(new InvalidString(newPassword));
+                return new SetPassword(FrontError.InvalidString);
             if (!VerifyPassword(formerPassword))
-                return new SetPassword(new WrongPassword(Name, formerPassword));
+                return new SetPassword(FrontError.WrongPassword);
             var passwordBytes = System.Text.Encoding.ASCII.GetBytes(newPassword);
             var hmacMD5 = new HMACMD5(PasswordSalt);
             var saltedHash = hmacMD5.ComputeHash(passwordBytes);
@@ -198,7 +197,7 @@ namespace EvernestFront
         public CreateUserKey CreateUserKey(string keyName)
         {
             if (InternalUserKeys.ContainsKey(keyName))
-                return new CreateUserKey(new UserKeyNameTaken(Id, keyName));
+                return new CreateUserKey(FrontError.UserKeyNameTaken);
             var key = Keys.NewKey();
             var userKeyCreated = new UserKeyCreated(key, Id, keyName);
             //TODO: system stream

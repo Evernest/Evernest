@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using EvernestFront;
+﻿using EvernestFront;
 using EvernestFront.Projection;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using Assert = NUnit.Framework.Assert;
 using EvernestFront.Answers;
-using EvernestFront.Errors;
 
 namespace EvernestFrontTests
 {
@@ -39,7 +35,8 @@ namespace EvernestFrontTests
         [SetUp]
         public void ResetTables()
         {
-            ProjectionOld.Clear();
+            //TODO : clear tables ?
+            Setup.ClearAsc();
         }
 
         [Test]
@@ -54,7 +51,7 @@ namespace EvernestFrontTests
         {
             long userId = AddUser_GetId_AssertSuccess(UserName);
             AddUser ans = User.AddUser(UserName);
-            AssertAuxiliaries.ErrorAssert<UserNameTaken>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.UserNameTaken,ans);
         }
 
         [Test]
@@ -81,8 +78,7 @@ namespace EvernestFrontTests
         {
             const string inexistentUserName = "InexistentUserName";
             var ans = User.IdentifyUser(inexistentUserName, "password");
-            AssertAuxiliaries.ErrorAssert<UserNameDoesNotExist>(ans);
-            Assert.AreEqual(inexistentUserName, (ans.Error as UserNameDoesNotExist).Name);
+            AssertAuxiliaries.ErrorAssert(FrontError.UserNameDoesNotExist,ans);
         }
 
         [Test]
@@ -91,7 +87,7 @@ namespace EvernestFrontTests
             AddUser addUser = User.AddUser(UserName);
             Assert.IsTrue(addUser.Success);
             IdentifyUser ans = User.IdentifyUser(UserName, "WrongPassword");
-            AssertAuxiliaries.ErrorAssert<WrongPassword>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.WrongPassword,ans);
         }
 
         [Test]
@@ -108,7 +104,7 @@ namespace EvernestFrontTests
         public void GetUser_IdDoesNotExist()
         {
             var ans = User.GetUser(42);
-            AssertAuxiliaries.ErrorAssert<UserIdDoesNotExist>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.UserIdDoesNotExist,ans);
         }
 
         
@@ -137,7 +133,7 @@ namespace EvernestFrontTests
             const string newPassword = "NewPassword";
             User user = GetUser_AssertSuccess(userId);
             SetPassword setPassword = user.SetPassword("WrongPassword", newPassword);
-            AssertAuxiliaries.ErrorAssert<WrongPassword>(setPassword);
+            AssertAuxiliaries.ErrorAssert(FrontError.WrongPassword,setPassword);
         }
 
         [Test]
@@ -149,7 +145,7 @@ namespace EvernestFrontTests
             const string badString = "£££££"; //non ASCII
             User user = GetUser_AssertSuccess(userId);
             SetPassword setPassword = user.SetPassword(initialPassword, badString);
-            AssertAuxiliaries.ErrorAssert<InvalidString>(setPassword);
+            AssertAuxiliaries.ErrorAssert(FrontError.InvalidString,setPassword);
         }
 
         

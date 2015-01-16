@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EvernestFront;
+﻿using EvernestFront;
 using EvernestFront.Answers;
-using EvernestFront.Errors;
 using EvernestFront.Projection;
 using NUnit.Framework;
 
@@ -36,7 +30,8 @@ namespace EvernestFrontTests
         [SetUp]
         public void ResetTables()
         {
-            ProjectionOld.Clear();
+            //TODO : reset tables ?
+            Setup.ClearAsc();
         }
 
         [Test]
@@ -75,7 +70,7 @@ namespace EvernestFrontTests
             var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
             user = UserTests.GetUser_AssertSuccess(userId);
             var ans = user.CreateUserKey(KeyName);
-            AssertAuxiliaries.ErrorAssert<UserKeyNameTaken>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.UserKeyNameTaken,ans);
         }
 
         [Test]
@@ -97,8 +92,7 @@ namespace EvernestFrontTests
         {
             const string inexistantKey = "InexistantKey";
             var ans = User.GetUser(inexistantKey);
-            AssertAuxiliaries.ErrorAssert<UserKeyDoesNotExist>(ans);
-            Assert.AreEqual(inexistantKey, (ans.Error as UserKeyDoesNotExist).Key);
+            AssertAuxiliaries.ErrorAssert(FrontError.UserKeyDoesNotExist,ans);
         }
 
         [Test]

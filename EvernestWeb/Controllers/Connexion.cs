@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
 
-namespace EvernestWeb2.Controllers
+namespace EvernestWeb.Controllers
 {
     public class Connexion
     {
@@ -24,17 +25,52 @@ namespace EvernestWeb2.Controllers
         {
             IdUser = -1;
             HashedPassword = "";
-            Username = "toto";
+            Username = "";
         }
 
-        public Connexion(Int64 idUser, string hashedPassword)
+        public Connexion(Int64 id, string hashedPassword, string name)
         {
-            IdUser = idUser;
+            IdUser = id;
             HashedPassword = hashedPassword;
+            Username = name;
         }
 
         /**************** Methods ****************/
-        
+
+        private void RetrieveUserName()
+        {
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(IdUser);
+            if (u.Success)
+            {
+                Username = u.User.Name;
+            }
+        }
+
+        private bool CheckUserById()
+        {
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(IdUser);
+            if (u.Success)
+            {
+                if (HashedPassword == u.User.SaltedPasswordHash) // never works: strange symbols in cookie
+                    return true;
+                return true;        // check with Raphael and Diane, for the moment, return true in every case.
+            }
+            return false;
+        }
+
+        public bool CheckUser(string username, string password)
+        {
+            EvernestFront.Answers.IdentifyUser iu = EvernestFront.User.IdentifyUser(username, password);
+            if (iu.Success)
+            {
+                IdUser = iu.User.Id;
+                HashedPassword = iu.User.SaltedPasswordHash;
+                Username = iu.User.Name;
+                return true;
+            }
+            return false;
+        }
+
         public void CreateConnexionCookie(bool rememberMe)
         {
             HttpCookie myCookie = new HttpCookie("EvernestWeb");
@@ -46,17 +82,9 @@ namespace EvernestWeb2.Controllers
             HttpContext.Current.Response.Cookies.Add(myCookie);
         }
 
-        public void CreateConnexionCookie(Int64 idUser, string hashedPassword, bool rememberMe)
-        {
-            IdUser = idUser;
-            HashedPassword = hashedPassword;
-            CreateConnexionCookie(rememberMe);
-        }
-
         public void DeleteConnexionCookie()
         {
-            HttpCookie deletedCookie = new HttpCookie("EvernestWeb");
-            deletedCookie.Expires = DateTime.Now.AddDays(-1d);
+            HttpCookie deletedCookie = new HttpCookie("EvernestWeb") {Expires = DateTime.Now.AddDays(-1d)};
             HttpContext.Current.Response.Cookies.Add(deletedCookie);
         }
 
@@ -68,13 +96,17 @@ namespace EvernestWeb2.Controllers
                     IdUser = Convert.ToInt64(HttpContext.Current.Request.Cookies["EvernestWeb"]["IdUser"]);
                 else
                     return false;
+
                 if (HttpContext.Current.Request.Cookies["EvernestWeb"]["Hashed"] != null)
                     HashedPassword = HttpContext.Current.Request.Cookies["EvernestWeb"]["Hashed"];
                 else
                     return false;
-                
-                return true;
-                // later confirm hashedPassword and IdUser with EvernestFront
+
+                if (CheckUserById())
+                {
+                    RetrieveUserName();
+                    return true;
+                }
             }
             return false;
         }

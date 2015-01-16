@@ -19,7 +19,7 @@ namespace EvernestFront
                 case (AccessRights.Root):
                     return true;
                 default:
-                    throw new Exception("CheckRights.CanRead : cas non traité");
+                    throw new Exception("CheckRights.CanRead : case not handled");
             }
         }
 
@@ -36,7 +36,7 @@ namespace EvernestFront
                 case (AccessRights.Root):
                     return true;
                 default:
-                    throw new Exception("CheckRights.CanWrite : cas non traité");
+                    throw new Exception("CheckRights.CanWrite : case not handled");
             }
         }
 
@@ -53,7 +53,7 @@ namespace EvernestFront
                 case (AccessRights.Root):
                     return true;
                 default:
-                    throw new Exception("CheckRights.CanAdmin : cas non traité");
+                    throw new Exception("CheckRights.CanAdmin : case not handled");
             }
         }
 
@@ -70,7 +70,7 @@ namespace EvernestFront
                 case (AccessRights.Root):
                     return false;
                 default:
-                    throw new Exception("CheckRights.CanAdmin : cas non traité");
+                    throw new Exception("CheckRights.CanAdmin : case not handled");
             }
         }
         

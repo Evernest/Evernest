@@ -1,6 +1,7 @@
-﻿using EvernestFront.Errors;
+
 
 namespace EvernestFront.Answers
+
 {
     public class CreateEventStream:Answer
     {

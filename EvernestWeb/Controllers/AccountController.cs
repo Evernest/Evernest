@@ -3,27 +3,64 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using EvernestWeb2.Models;
-using WebMatrix.WebData;
+using EvernestWeb.Models;
 
-namespace EvernestWeb2.Controllers
+namespace EvernestWeb.Controllers
 {
     public class AccountController : Controller
     {
-        public void IsConnected()
+        private Connexion IsConnected()
         {
             ViewBag.Connexion = "false";
             Connexion connexion = new Connexion();
             if (connexion.IsConnected())
+            {
                 ViewBag.Connexion = "true";
+                ViewBag.Username = connexion.Username;
+                return connexion;
+            }
+            return null;
         }
 
-        // GET: Account
-        public ActionResult Index()
+        // GET: Accountpublic ActionResult Index(int id)
+        public ActionResult Index(int id = -1)
         {
-            IsConnected();
-            // nothing for the moment, but later, user could modify password here
-            return View();
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion == "true")
+            {
+                if(id==1)
+                {
+                    ViewBag.Status = "Successfully changed password.";
+                }
+                return View();
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePwd(ChangePwdModel model)
+        {
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion == "true")
+            {
+                if (ModelState.IsValid)
+                {
+                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+                    EvernestFront.Answers.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
+                    if(p.Success)
+                    {
+                        return RedirectToAction("Index", "Account", new {id=1});
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Password", "Incorrect Password.");
+                        return RedirectToAction("Index", "Account", new {id=0});
+                    }
+                }
+                return View(model);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
@@ -39,14 +76,25 @@ namespace EvernestWeb2.Controllers
         public ActionResult Login(LoginModel model, string returnUrl)
         {
             IsConnected();
-            if (ModelState.IsValid)
+            if (ViewBag.Connexion!="true")
             {
-                // to modify later
-                Connexion connexion = new Connexion();
-                connexion.CreateConnexionCookie(1, model.Password, model.RememberMe);
-                return RedirectToAction("Index", "Account");
+                if (ModelState.IsValid)
+                {
+                    Connexion connexion = new Connexion();
+                    if (connexion.CheckUser(model.Username, model.Password))
+                    {
+                        connexion.CreateConnexionCookie(model.RememberMe);
+                        return RedirectToAction("Index", "Account");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Username", "Login failed.");
+                        return View(model);
+                    }
+                }
+                return View(model);
             }
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         [AllowAnonymous]
@@ -62,14 +110,32 @@ namespace EvernestWeb2.Controllers
         public ActionResult Register(RegisterModel model)
         {
             IsConnected();
-            if (ModelState.IsValid)
+            if (ViewBag.Connexion != "true")
             {
-                // to modify later
-                Connexion connexion = new Connexion();
-                connexion.CreateConnexionCookie(1, model.Password, false);
-                return RedirectToAction("Index", "Account");
+                if (ModelState.IsValid)
+                {
+                    // add user in blob
+                    EvernestFront.Answers.AddUser u = EvernestFront.User.AddUser(model.Username, model.Password);
+                    if (u.Success)
+                    {
+                        // if it is ok, then create a cookie for the session
+                        EvernestFront.Answers.GetUser g = EvernestFront.User.GetUser(u.UserId);
+                        if (g.Success)
+                        {
+                            Connexion connexion = new Connexion(g.User.Id, g.User.SaltedPasswordHash, g.User.Name);
+                            connexion.CreateConnexionCookie(false);
+                            return RedirectToAction("Index", "Account");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Username", "User Name already taken.");
+                        return View(model);
+                    }
+                }
+                return View(model);
             }
-            return View(model);
+            return RedirectToAction("Index", "Home");
         }
 
         public ActionResult LogOff()

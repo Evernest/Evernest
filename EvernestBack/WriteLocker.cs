@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Threading;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System.Configuration;
 
 
 namespace EvernestBack
@@ -16,19 +10,21 @@ namespace EvernestBack
        private class PendingEvent
         {
             public string Message { get; private set; }
-            public Action<IAgent> Callback { get; private set; }
-            public PendingEvent(string message, Action<IAgent> callback)
+            public Action<IAgent> CallbackSuccess { get; private set; }
+            public Action<IAgent, String> CallbackFailure { get; private set; }
+            public PendingEvent(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
             {
                 Message = message;
-                Callback = callback;
+                CallbackSuccess = callbackSuccess;
+                CallbackFailure = callbackFailure;
             }
         }
 
 		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
         private EventIndexer Indexer;
         private BufferedBlobIO WriteBuffer;
-        public long CurrentID {get ; private set;}
-       
+        public long CurrentID { get; private set; }
+
         public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer, long firstID)
         {
             Indexer = indexer;
@@ -40,12 +36,11 @@ namespace EvernestBack
         {
             Task.Run(() =>
             {
-                long wroteBytes;
-                //Console.WriteLine("Starting Storing"); //if there is a Console.Read() in the main thread, this will block this instruction
-                while (PendingEventCollection.Count > 0)
+                ulong wroteBytes;
+                while (true) //temporary fix to make sure the thread doesn't terminate early (well now it never does, "fixed")
                 {
                     PendingEvent pendingEvent = PendingEventCollection.Take();
-                    Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.Callback);
+                    Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.CallbackSuccess, pendingEvent.CallbackFailure);
                     wroteBytes = Write(agent);
                     Indexer.NotifyNewEntry(CurrentID, wroteBytes);
                     CurrentID++;
@@ -63,9 +58,9 @@ namespace EvernestBack
             return size;
         }
 
-        public void Register(string message, Action<IAgent> callback)
+        public void Register(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callBackFailure)
         {
-            PendingEventCollection.Add(new PendingEvent(message, callback));
+            PendingEventCollection.Add(new PendingEvent(message, callbackSuccess, callBackFailure));
         }
 	}
 }

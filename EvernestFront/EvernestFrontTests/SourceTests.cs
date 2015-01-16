@@ -1,12 +1,8 @@
-﻿using System;
-using System.Dynamic;
-using System.Runtime.InteropServices;
-using EvernestFront;
+﻿using EvernestFront;
 using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using EvernestFront.Answers;
-using EvernestFront.Errors;
 
 namespace EvernestFrontTests
 {
@@ -63,7 +59,8 @@ namespace EvernestFrontTests
         [SetUp]
         public void ClearProjection()
         {
-            ProjectionOld.Clear();
+            //TODO : clear tables ?
+            Setup.ClearAsc();
         }
 
         [Test]
@@ -96,7 +93,7 @@ namespace EvernestFrontTests
             var source = CreateSource_GetKey_AssertSuccess(userId, streamId, SourceName, SomeRight);
             User user = UserTests.GetUser_AssertSuccess(userId);
             CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadOnly);
-            AssertAuxiliaries.ErrorAssert<SourceNameTaken>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.SourceNameTaken,ans);
         }
 
         [Test]
@@ -134,8 +131,7 @@ namespace EvernestFrontTests
         {
             const string inexistantKey = "InexistantKey";
             var ans = Source.GetSource(inexistantKey);
-            AssertAuxiliaries.ErrorAssert<SourceKeyDoesNotExist>(ans);
-            Assert.AreEqual(inexistantKey, (ans.Error as SourceKeyDoesNotExist).Key);
+            AssertAuxiliaries.ErrorAssert(FrontError.SourceKeyDoesNotExist,ans);
         }
 
         [Test]
@@ -166,7 +162,7 @@ namespace EvernestFrontTests
             Source readerSource = GetSource_AssertSuccess(readerSourceKey);
             SetRights ans = readerSource.SetRights(readerId, AccessRights.ReadWrite); //reader cannot allow himself to write
             Assert.IsFalse(ans.Success);
-            AssertAuxiliaries.ErrorAssert<AdminAccessDenied>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.AdminAccessDenied,ans);
         }
 
         [Test]
@@ -179,7 +175,7 @@ namespace EvernestFrontTests
 
             Source source = GetSource_AssertSuccess(sourceKey);
             SetRights ans = source.SetRights(targetId, AccessRights.ReadWrite);
-            AssertAuxiliaries.ErrorAssert<AdminAccessDenied>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.AdminAccessDenied,ans);
         }
 
         [Test]
@@ -191,7 +187,7 @@ namespace EvernestFrontTests
 
             Source source = GetSource_AssertSuccess(sourceKey);
             SetRights ans = source.SetRights(creatorId, AccessRights.NoRights);
-            AssertAuxiliaries.ErrorAssert<CannotDestituteAdmin>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.CannotDestituteAdmin,ans);
         }
 
         [Test]
@@ -214,7 +210,7 @@ namespace EvernestFrontTests
             var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.WriteOnly); //user has no rights on stream
             Source source = GetSource_AssertSuccess(sourceKey);
             Push ans = source.Push(Message);
-            AssertAuxiliaries.ErrorAssert<WriteAccessDenied>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.WriteAccessDenied,ans);
         }
 
 
@@ -226,7 +222,7 @@ namespace EvernestFrontTests
             var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRights.ReadOnly); //source cannot write
             Source source = GetSource_AssertSuccess(sourceKey);
             var ans = source.Push(Message);
-            AssertAuxiliaries.ErrorAssert<WriteAccessDenied>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.WriteAccessDenied,ans);
         }
 
 
@@ -258,7 +254,7 @@ namespace EvernestFrontTests
             Source source = GetSource_AssertSuccess(sourceKey);
             long eventId = UserTestsTowardEventStream.PushEvent_GetId_AssertSuccess(creatorId, stream, Message);
             var ans = source.Pull(eventId);
-            AssertAuxiliaries.ErrorAssert<ReadAccessDenied>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.ReadAccessDenied,ans);
         }
 
         [Test]
@@ -270,7 +266,7 @@ namespace EvernestFrontTests
             Source source = GetSource_AssertSuccess(sourceKey);
             long eventId = UserTestsTowardEventStream.PushEvent_GetId_AssertSuccess(userId, stream, Message);
             var ans = source.Pull(eventId);
-            AssertAuxiliaries.ErrorAssert<ReadAccessDenied>(ans);
+            AssertAuxiliaries.ErrorAssert(FrontError.ReadAccessDenied,ans);
         }
 
         

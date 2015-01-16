@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using EvernestWeb2.Models;
 
-namespace EvernestWeb2.Controllers
+using EvernestWeb.Models;
+
+namespace EvernestWeb.Controllers
 {
     public class HomeController : Controller
     {
-        public void IsConnected()
+        private void IsConnected()
         {
             ViewBag.Connexion = "false";
             Connexion connexion = new Connexion();
             if (connexion.IsConnected())
+            {
                 ViewBag.Connexion = "true";
+                ViewBag.Username = connexion.Username;
+            }
         }
 
         public ActionResult Index()

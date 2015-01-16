@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 
-namespace EvernestWeb2.Models
+namespace EvernestWeb.Models
 {
     public class AccountModel
     {
@@ -54,6 +54,24 @@ namespace EvernestWeb2.Models
         [DataType(DataType.Password)]
         [Display(Name = "Confirm Password")]
         [Compare("Password", ErrorMessage = "Password and Confirm Password do not match.")]
+        public string ConfirmPassword { get; set; }
+    }
+
+    public class ChangePwdModel
+    {
+        [Required]
+        [Display(Name = "Password")]
+        public string Password { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "Password too short, at least 6 characters.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Enter New Password")]
+        public string NewPassword { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm New Password")]
+        [Compare("NewPassword", ErrorMessage = "Password and Confirm Password do not match.")]
         public string ConfirmPassword { get; set; }
     }
 }

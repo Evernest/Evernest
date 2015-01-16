@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront.Projections
 {
     class SourcesProjection : IProjection
     {
-        private ImmutableDictionary<string, SourceDataForProjection> Dictionary { get; set; }
+        private ImmutableDictionary<string, SourceDataForProjection> KeyToData { get; set; }
 
-        internal SourcesProjection()
+        public SourcesProjection()
         {
-            Dictionary = ImmutableDictionary<string, SourceDataForProjection>.Empty;
+            KeyToData = ImmutableDictionary<string, SourceDataForProjection>.Empty;
         }
 
         public void OnSystemEvent(Contract.SystemEvent.ISystemEvent systemEvent)
@@ -27,16 +28,21 @@ namespace EvernestFront.Projections
             }
         }
 
+        public bool TryGetSourceData(string key, out SourceDataForProjection data)
+        {
+            return KeyToData.TryGetValue(key, out data);
+        }
+
         private void When(SourceCreated systemEvent)
         {
             var data = new SourceDataForProjection(systemEvent.SourceName, systemEvent.UserId, 
                 systemEvent.UserName, systemEvent.EventStreamId, systemEvent.Right);
-            Dictionary = Dictionary.SetItem(systemEvent.SourceKey, data);
+            KeyToData = KeyToData.SetItem(systemEvent.SourceKey, data);
         }
 
         private void When(SourceDeleted systemEvent)
         {
-            Dictionary = Dictionary.Remove(systemEvent.SourceKey);
+            KeyToData = KeyToData.Remove(systemEvent.SourceKey);
         }
 
         //SourcesProjection is not concerned by following system events

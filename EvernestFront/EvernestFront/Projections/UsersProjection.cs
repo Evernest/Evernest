@@ -8,6 +8,64 @@ namespace EvernestFront.Projections
     {
         private DictionariesClass Dictionaries { get; set; }
 
+        public UsersProjection()
+        {
+            Dictionaries = new DictionariesClass();
+        }
+
+        public void OnSystemEvent(ISystemEvent systemEvent)
+        {
+            try
+            {
+                When((dynamic)systemEvent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("error in UsersProjection.OnSystemEvent");
+                throw;
+                //TODO: store errors in a stream and keep going
+            }
+        }
+
+        public bool TryGetUserId(string name, out long id)
+        {
+            return Dictionaries.NameToId.TryGetValue(name, out id);
+        }
+
+        public bool TryGetUserData(long id, out UserDataForProjection data)
+        {
+            return Dictionaries.IdToData.TryGetValue(id, out data);
+        }
+
+        public bool TryGetUserIdFromKey(string key, out long id)
+        {
+            return Dictionaries.KeyToId.TryGetValue(key, out id);
+        }
+
+        //better than TryGetUserId followed by TryGetUserData because Dictionaries may change between the two calls
+        public bool TryGetUserIdAndData(string name, out long id, out UserDataForProjection data)
+        {
+            var dictionaries = Dictionaries;
+            if (dictionaries.NameToId.TryGetValue(name, out id))
+                if (dictionaries.IdToData.TryGetValue(id, out data))
+                    return true;
+            id = 0;
+            data = null;
+            return false;
+        }
+
+        //better than TryGetUserId followed by TryGetUserData because Dictionaries may change between the two calls
+        public bool TryGetUserIdAndDataByKey(string key, out long id, out UserDataForProjection data)
+        {
+            var dictionaries = Dictionaries;
+            if (dictionaries.KeyToId.TryGetValue(key, out id))
+                if (dictionaries.IdToData.TryGetValue(id, out data))
+                    return true;
+            id = 0;
+            data = null;
+            return false;
+        }
+
         /// <summary>
         /// Fields containing the data of the projection are encapsulated in this class so that they are atomically all set at once.
         /// </summary>
@@ -47,24 +105,7 @@ namespace EvernestFront.Projections
             }
         }
 
-        public UsersProjection()
-        {
-            Dictionaries = new DictionariesClass();
-        }
-
-        public void OnSystemEvent(ISystemEvent systemEvent)
-        {
-            try
-            {
-                When((dynamic) systemEvent);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("error in UsersProjection.OnSystemEvent");
-                throw;
-                //TODO: store errors in a stream and keep going
-            }            
-        }
+        
 
         private void SetRight(long userId, long eventStreamId, AccessRights right)
         {

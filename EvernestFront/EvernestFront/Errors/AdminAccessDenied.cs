@@ -1,7 +1,5 @@
 ﻿
 
-using System;
-
 namespace EvernestFront.Errors
 {
     public class AdminAccessDenied : AccessDenied

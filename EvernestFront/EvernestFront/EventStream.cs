@@ -8,7 +8,6 @@ using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;
 using EvernestBack;
-using EvernestFront.Projection;
 
 namespace EvernestFront
 {

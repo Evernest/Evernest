@@ -1,7 +1,4 @@
-﻿
-
-using System;
-using EvernestFront.Errors;
+﻿using EvernestFront.Errors;
 
 namespace EvernestFront.Answers
 {

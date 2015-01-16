@@ -1,7 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Runtime.Serialization;
-using EvernestFront.Utilities;
-using EvernestFront.Errors;
+﻿using System.Runtime.Serialization;
 
 namespace EvernestFront.Contract.SystemEvent
 {

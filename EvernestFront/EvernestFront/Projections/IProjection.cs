@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Deployment.Internal;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EvernestFront.Contract.SystemEvent;
+﻿using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront.Projections
 {

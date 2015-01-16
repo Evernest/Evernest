@@ -1,6 +1,4 @@
 ﻿
-using System;
-
 namespace EvernestFront.Errors
 {
     public abstract class AccessDenied : FrontError

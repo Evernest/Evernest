@@ -1,4 +1,5 @@
 ﻿using EvernestFront.Answers;
+using EvernestFront.Service.Command;
 
 namespace EvernestFront
 {
@@ -6,8 +7,8 @@ namespace EvernestFront
     {
         public CreateEventStream CreateEventStream(string streamName)
         {
-            return EventStream.CreateEventStream(Id, streamName);
-            //move logic to this class?
+            var builder = new EventStreamsBuilder();
+            return builder.CreateEventStream(Name, streamName);
         }
 
         public SetRights SetRights(long streamId, long targetUserId, AccessRights right)

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using EvernestFront.Answers;
+using EvernestFront.Projections;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
@@ -15,6 +16,8 @@ namespace EvernestFront
 {
     public class EventStream
     {
+        private EventStreamsProjection _eventStreamsProjection;
+
         public long Id { get; private set; }
 
         public string Name { get; private set; }
@@ -24,12 +27,12 @@ namespace EvernestFront
         public long LastEventId { get { return Count-1; } }
 
 
-        public List<KeyValuePair<long, AccessRights>> RelatedUsers
+        public List<KeyValuePair<string, AccessRights>> RelatedUsers
         {
             get { return InternalRelatedUsers.ToList(); }
         }
 
-        private ImmutableDictionary<long, AccessRights> InternalRelatedUsers { get; set; }
+        private ImmutableDictionary<string, AccessRights> InternalRelatedUsers { get; set; }
 
         private IEventStream BackStream { get; set; }
 
@@ -42,8 +45,9 @@ namespace EvernestFront
         private static long NextId() { return ++_next; }
 
 
-        protected EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, IEventStream backStream)
+        internal EventStream(EventStreamsProjection projection, long streamId, string name, ImmutableDictionary<string,AccessRights> users, IEventStream backStream)
         {
+            _eventStreamsProjection = projection;
             Id = streamId;
             Name = name;
             InternalRelatedUsers = users;
@@ -75,37 +79,25 @@ namespace EvernestFront
                 return new GetEventStream(FrontError.EventStreamIdDoesNotExist);
         }
 
-        internal static CreateEventStream CreateEventStream(long creatorId, string streamName)
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //public corresponding method is a User instance method
+        internal SetRights SetRight(string adminName, string targetName, AccessRights right)
         {
-            if (Projection.ProjectionOld.StreamNameExists(streamName))
-                return new CreateEventStream(new EventStreamNameTaken(streamName));
-            // this is supposed to be called by a user object, so creatorId should always exist
+            if (!UserCanAdmin(adminName))
+                return new SetRights(FrontError.AdminAccessDenied);
 
-            var id = NextId();
-
-            var backStream = AzureStorageClient.Instance.GetNewEventStream(streamName);
-
-            var streamContract = MakeEventStreamContract.NewStreamContract(streamName, backStream);
-            var streamCreated = new EventStreamCreated(id, streamContract, creatorId);
-
-            Projection.ProjectionOld.HandleDiff(streamCreated);
-            return new CreateEventStream(id);
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-        internal SetRights SetRight(long adminId, long targetUserId, AccessRights right)
-        {
             User targetUser;
             if (!User.TryGetUser(targetUserId, out targetUser))
                 return new SetRights(FrontError.UserIdDoesNotExist);

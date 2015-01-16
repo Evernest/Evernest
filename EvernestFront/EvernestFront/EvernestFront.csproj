@@ -64,7 +64,6 @@
     <Compile Include="Answers\SetPassword.cs" />
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="Answers\IdentifyUser.cs" />
-    <Compile Include="BuilderBase.cs" />
     <Compile Include="CheckRights.cs" />
     <Compile Include="Contract\SystemEventEnvelope.cs" />
     <Compile Include="Contract\SystemEvent\EventStreamDeleted.cs" />
@@ -87,6 +86,7 @@
     <Compile Include="Answers\AddUser.cs" />
     <Compile Include="Answers\CreateEventStream.cs" />
     <Compile Include="Answers\CreateSource.cs" />
+    <Compile Include="EventStreamsBuilder.cs" />
     <Compile Include="Injector.cs" />
     <Compile Include="Utilities\KeyGenerator.cs" />
     <Compile Include="Utilities\PasswordManager.cs" />

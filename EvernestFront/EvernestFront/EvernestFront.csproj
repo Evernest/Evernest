@@ -62,7 +62,7 @@
     <Compile Include="Answers\IdentifyUser.cs" />
     <Compile Include="BuilderBase.cs" />
     <Compile Include="CheckRights.cs" />
-    <Compile Include="Contract\SystemEventSerializationEnvelope.cs" />
+    <Compile Include="Contract\SystemEventEnvelope.cs" />
     <Compile Include="Contract\SystemEvent\EventStreamDeleted.cs" />
     <Compile Include="Contract\SystemEvent\InvalidCommandSystemEvent.cs" />
     <Compile Include="Contract\SystemEvent\ISystemEvent.cs" />

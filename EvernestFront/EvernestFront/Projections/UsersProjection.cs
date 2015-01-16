@@ -56,15 +56,15 @@ namespace EvernestFront.Projections
             Dictionaries = new DictionariesClass();
         }
 
-        public void HandleSystemEvent(ISystemEvent systemEvent)
+        public void OnSystemEvent(ISystemEvent systemEvent)
         {
             try
             {
-                HandleSystemEventWhen((dynamic) systemEvent);
+                When((dynamic) systemEvent);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("error in UsersProjection.HandleSystemEvent");
+                Console.WriteLine("error in UsersProjection.OnSystemEvent");
                 throw;
                 //TODO: store errors in a stream and keep going
             }            
@@ -93,17 +93,17 @@ namespace EvernestFront.Projections
             SetRight(userId, eventStreamId, right);
         }
 
-        private void HandleSystemEventWhen(EventStreamCreated systemEvent)
+        private void When(EventStreamCreated systemEvent)
         {
             SetRight(systemEvent.CreatorName, systemEvent.StreamId, AccessRights.Admin);
         }
 
-        private void HandleSystemEventWhen(EventStreamDeleted systemEvent)
+        private void When(EventStreamDeleted systemEvent)
         {
             //delete in each user concerned?
         }
 
-        private void HandleSystemEventWhen(PasswordSet systemEvent)
+        private void When(PasswordSet systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -116,7 +116,7 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
-        private void HandleSystemEventWhen(SourceCreated systemEvent)
+        private void When(SourceCreated systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -129,7 +129,7 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
-        private void HandleSystemEventWhen(SourceDeleted systemEvent)
+        private void When(SourceDeleted systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -144,7 +144,7 @@ namespace EvernestFront.Projections
 
         
 
-        private void HandleSystemEventWhen(UserCreated systemEvent)
+        private void When(UserCreated systemEvent)
         {
             var data = new UserDataForProjection(systemEvent.UserName,
                 systemEvent.SaltedPasswordHash, systemEvent.PasswordSalt);
@@ -153,14 +153,14 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
-        private void HandleSystemEventWhen(UserDeleted systemEvent)
+        private void When(UserDeleted systemEvent)
         {
             var nti = Dictionaries.NameToId.Remove(systemEvent.UserName);
             var itd = Dictionaries.IdToData.Remove(systemEvent.UserId);
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
-        private void HandleSystemEventWhen(UserKeyCreated systemEvent)
+        private void When(UserKeyCreated systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -174,7 +174,7 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetIdToData(itd).SetKeyToId(kti);
         }
 
-        private void HandleSystemEventWhen(UserKeyDeleted systemEvent)
+        private void When(UserKeyDeleted systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -187,7 +187,7 @@ namespace EvernestFront.Projections
             var kti = Dictionaries.KeyToId.Remove(systemEvent.Key);
             Dictionaries = Dictionaries.SetIdToData(itd).SetKeyToId(kti);
         }
-        private void HandleSystemEventWhen(UserRightSet systemEvent)
+        private void When(UserRightSet systemEvent)
         {
             SetRight(systemEvent.TargetName, systemEvent.StreamId, systemEvent.Right);
         }

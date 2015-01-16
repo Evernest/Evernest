@@ -11,6 +11,6 @@ namespace EvernestFront.Projections
     internal interface IProjection
     {
 
-        void HandleSystemEvent(ISystemEvent systemEvent);
+        void OnSystemEvent(ISystemEvent systemEvent);
     }
 }

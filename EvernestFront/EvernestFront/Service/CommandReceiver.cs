@@ -51,7 +51,7 @@ namespace EvernestFront.Service
         {
             ISystemEvent systemEvent = _systemEventProducer.CommandToSystemEvent(command);
             _serviceData.SelfUpdate(systemEvent);
-            _dispatcher.HandleSystemEventEnvelope(systemEvent);
+            _dispatcher.OnSystemEventEnvelope(systemEvent);
         }
     }
 }

@@ -17,39 +17,39 @@ namespace EvernestFront.Projections
             Dictionary = ImmutableDictionary<string, SourceDataForProjection>.Empty;
         }
 
-        public void HandleSystemEvent(Contract.SystemEvent.ISystemEvent systemEvent)
+        public void OnSystemEvent(Contract.SystemEvent.ISystemEvent systemEvent)
         {
             try
             {
-                HandleSystemEventWhen((dynamic)systemEvent);
+                When((dynamic)systemEvent);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("error in SourcesProjection.HandleSystemEvent");
+                Console.WriteLine("error in SourcesProjection.OnSystemEvent");
                 throw;
                 //TODO: store errors in a stream and keep going
             }
         }
 
-        private void HandleSystemEventWhen(SourceCreated systemEvent)
+        private void When(SourceCreated systemEvent)
         {
             var data = new SourceDataForProjection(systemEvent.SourceName, systemEvent.UserId, 
                 systemEvent.UserName, systemEvent.EventStreamId, systemEvent.Right);
             Dictionary = Dictionary.SetItem(systemEvent.SourceKey, data);
         }
 
-        private void HandleSystemEventWhen(SourceDeleted systemEvent)
+        private void When(SourceDeleted systemEvent)
         {
             Dictionary = Dictionary.Remove(systemEvent.SourceKey);
         }
 
         //SourcesProjection is not concerned by following system events
-        private void HandleSystemEventWhen(EventStreamCreated systemEvent) { }
-        private void HandleSystemEventWhen(EventStreamDeleted systemEvent) { }
-        private void HandleSystemEventWhen(PasswordSet systemEvent) { }
-        private void HandleSystemEventWhen(UserCreated systemEvent) { }
-        private void HandleSystemEventWhen(UserKeyCreated systemEvent) { }
-        private void HandleSystemEventWhen(UserKeyDeleted systemEvent) { }
-        private void HandleSystemEventWhen(UserRightSet systemEvent) { }
+        private void When(EventStreamCreated systemEvent) { }
+        private void When(EventStreamDeleted systemEvent) { }
+        private void When(PasswordSet systemEvent) { }
+        private void When(UserCreated systemEvent) { }
+        private void When(UserKeyCreated systemEvent) { }
+        private void When(UserKeyDeleted systemEvent) { }
+        private void When(UserRightSet systemEvent) { }
     }
 }

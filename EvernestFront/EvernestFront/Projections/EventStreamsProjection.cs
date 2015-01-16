@@ -48,21 +48,21 @@ namespace EvernestFront.Projections
             Dictionaries = new DictionariesClass();
         }
 
-        public void HandleSystemEvent(ISystemEvent systemEvent)
+        public void OnSystemEvent(ISystemEvent systemEvent)
         {
             try
             {
-                HandleSystemEventWhen((dynamic) systemEvent);
+                When((dynamic) systemEvent);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("error in EventStreamsProjection.HandleSystemEvent");
+                Console.WriteLine("error in EventStreamsProjection.OnSystemEvent");
                 throw;
                 //TODO: store errors in a stream and keep going
             }            
         }
 
-        private void HandleSystemEventWhen(EventStreamCreated systemEvent)
+        private void When(EventStreamCreated systemEvent)
         {
             var backStream = new RAMStream(systemEvent.StreamName); //TODO: change this for real backend
             var eventStreamData = new EventStreamDataForProjection(systemEvent.StreamName, systemEvent.CreatorName,
@@ -72,14 +72,14 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
-        private void HandleSystemEventWhen(EventStreamDeleted systemEvent)
+        private void When(EventStreamDeleted systemEvent)
         {
             var nti = Dictionaries.NameToId.Remove(systemEvent.StreamName);
             var itd = Dictionaries.IdToData.Remove(systemEvent.StreamId);
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
-        private void HandleSystemEventWhen(UserRightSet systemEvent)
+        private void When(UserRightSet systemEvent)
         {
             EventStreamDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.StreamId, out data))
@@ -92,11 +92,11 @@ namespace EvernestFront.Projections
         }
 
         //EventStreamsProjection is not concerned by following system events
-        private void HandleSystemEventWhen(PasswordSet systemEvent) { }
-        private void HandleSystemEventWhen(SourceCreated systemEvent) { }
-        private void HandleSystemEventWhen(SourceDeleted systemEvent) { }
-        private void HandleSystemEventWhen(UserCreated systemEvent) { }
-        private void HandleSystemEventWhen(UserKeyCreated systemEvent) { }
-        private void HandleSystemEventWhen(UserKeyDeleted systemEvent) { }
+        private void When(PasswordSet systemEvent) { }
+        private void When(SourceCreated systemEvent) { }
+        private void When(SourceDeleted systemEvent) { }
+        private void When(UserCreated systemEvent) { }
+        private void When(UserKeyCreated systemEvent) { }
+        private void When(UserKeyDeleted systemEvent) { }
     }
 }

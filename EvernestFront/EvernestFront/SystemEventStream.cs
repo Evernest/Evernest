@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EvernestBack;
 using EvernestFront.Answers;
-using EvernestFront.Auxiliaries;
+using EvernestFront.Utilities;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 
@@ -22,6 +22,9 @@ namespace EvernestFront
         {
             _systemUser = user;
         }
+
+        public SystemEventStream() : base(long.MaxValue, "SystemEventStream",
+            ImmutableDictionary<long, AccessRights>.Empty, null) { }
 
         internal void Push(ISystemEvent systemEvent)
         {

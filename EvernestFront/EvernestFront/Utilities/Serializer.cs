@@ -9,7 +9,7 @@ using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
 using Newtonsoft.Json;
 
-namespace EvernestFront.Auxiliaries
+namespace EvernestFront.Utilities
 {
     public static class AllContracts
     {

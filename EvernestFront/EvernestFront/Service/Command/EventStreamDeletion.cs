@@ -7,7 +7,9 @@
         internal long AdminId { get; private set; }
         internal string AdminPassword { get; private set; }
 
-        internal EventStreamDeletion(long streamId, string streamName, long adminId, string adminPassword)
+        internal EventStreamDeletion(SystemEventProducer systemEventProducer, 
+            long streamId, string streamName, long adminId, string adminPassword)
+            : base(systemEventProducer)
         {
             EventStreamId = streamId;
             EventStreamName = streamName;

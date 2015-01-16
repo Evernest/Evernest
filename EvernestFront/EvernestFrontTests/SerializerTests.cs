@@ -3,7 +3,7 @@ using System.Dynamic;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using EvernestFront;
-using EvernestFront.Auxiliaries;
+using EvernestFront.Utilities;
 using EvernestFront.Contract;
 using EvernestFront.Projection;
 using NUnit.Framework;
@@ -15,7 +15,7 @@ using EvernestFront.Errors;
 namespace EvernestFrontTests
 {
     [TestFixture]
-    class SerializingTests
+    class SerializerTests
     {
         private const string UserName = "userName";
         private const string Message = "message";
@@ -30,12 +30,13 @@ namespace EvernestFrontTests
         [Test]
         public static void ReadContract_Success()
         {
+            var serializer = new Serializer();
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             var user = UserTests.GetUser_AssertSuccess(userId);
             var date = DateTime.UtcNow;
             var contract = new EventContract(user, date, Message);
-            var serializedContract = Serializer.WriteContract<EventContract>(contract);
-            var deserializedContract = Serializer.ReadContract<EventContract>(serializedContract);
+            var serializedContract = serializer.WriteContract<EventContract>(contract);
+            var deserializedContract = serializer.ReadContract<EventContract>(serializedContract);
             Assert.AreEqual(contract.AuthorId, deserializedContract.AuthorId);
             Assert.AreEqual(contract.AuthorName, deserializedContract.AuthorName);
             Assert.AreEqual(contract.Date, deserializedContract.Date);

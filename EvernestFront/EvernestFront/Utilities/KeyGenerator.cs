@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace EvernestFront.Auxiliaries
+namespace EvernestFront.Utilities
 {
     class KeyGenerator
     {

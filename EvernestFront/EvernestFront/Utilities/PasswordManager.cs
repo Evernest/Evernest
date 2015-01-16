@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace EvernestFront.Auxiliaries
+namespace EvernestFront.Utilities
 {
     class PasswordManager
     {

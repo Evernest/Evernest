@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -59,7 +60,7 @@
     <Compile Include="Answers\SetPassword.cs" />
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="Answers\IdentifyUser.cs" />
-    <Compile Include="Auxiliaries\PasswordManager.cs" />
+    <Compile Include="BuilderBase.cs" />
     <Compile Include="CheckRights.cs" />
     <Compile Include="Contract\SystemEventSerializationEnvelope.cs" />
     <Compile Include="Contract\SystemEvent\EventStreamDeleted.cs" />
@@ -98,9 +99,14 @@
     <Compile Include="Answers\AddUser.cs" />
     <Compile Include="Answers\CreateEventStream.cs" />
     <Compile Include="Answers\CreateSource.cs" />
+    <Compile Include="Injector.cs" />
+    <Compile Include="Utilities\KeyGenerator.cs" />
+    <Compile Include="Utilities\PasswordManager.cs" />
     <Compile Include="Projections\EventStreamDataForProjection.cs" />
     <Compile Include="Projections\SourceDataForProjection.cs" />
     <Compile Include="Projections\UserDataForProjection.cs" />
+    <Compile Include="Utilities\Serializer.cs" />
+    <Compile Include="Service\CommandReceiver.cs" />
     <Compile Include="Service\Command\EventStreamCreation.cs" />
     <Compile Include="Service\Command\EventStreamDeletion.cs" />
     <Compile Include="Service\Command\CommandBase.cs" />
@@ -111,16 +117,15 @@
     <Compile Include="Service\Command\UserKeyDeletion.cs" />
     <Compile Include="Service\Command\UserRightSettingByUser.cs" />
     <Compile Include="Service\ServiceData.cs" />
-    <Compile Include="Auxiliaries\KeyGenerator.cs" />
     <Compile Include="Errors\WriteAccessDenied.cs" />
     <Compile Include="Projections\EventStreamsProjection.cs" />
     <Compile Include="Projections\IProjection.cs" />
     <Compile Include="Projections\SourcesProjection.cs" />
     <Compile Include="Projections\UsersProjection.cs" />
-    <Compile Include="Auxiliaries\Serializer.cs" />
     <Compile Include="Service\SystemEventProducer.cs" />
     <Compile Include="Source.cs" />
     <Compile Include="Service\UserDataForService.cs" />
+    <Compile Include="StartUp.cs" />
     <Compile Include="SystemEventStream.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -130,6 +135,7 @@
     <Compile Include="AccessRights.cs" />
     <Compile Include="User.TowardSource.cs" />
     <Compile Include="User.TowardEventStream.cs" />
+    <Compile Include="UsersBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\EvernestBack\EvernestBack.csproj">

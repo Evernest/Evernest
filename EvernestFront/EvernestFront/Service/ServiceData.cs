@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using EvernestFront.Auxiliaries;
+using EvernestFront.Utilities;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;
 using EvernestFront.Service;
@@ -11,7 +11,7 @@ namespace EvernestFront.Service
     class ServiceData
     {
         //TODO: prevent concurrency
-        //TODO: initialization on sytem stream
+        //TODO: initialization on system stream
 
         internal HashSet<string> UserNames { get; set; }
         internal Dictionary<long, UserDataForService> UserIdToDatas { get; set; }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using EvernestFront.Auxiliaries;
+using EvernestFront.Utilities;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Errors;
 using EvernestFront.Service.Command;
@@ -14,75 +14,35 @@ namespace EvernestFront.Service
 {
     internal class SystemEventProducer
     {
-        private ServiceData ServiceData { get; set; }
-
-        private Dispatcher Dispatcher { get; set; }
-
-        private CancellationTokenSource tokenSource;
+        private ServiceData _serviceData;
 
 
-        internal SystemEventProducer(ServiceData serviceData, Dispatcher dispatcher)
+        internal SystemEventProducer(ServiceData serviceData)
+
         {
-            ServiceData = serviceData;
-            Dispatcher = dispatcher;
-            PendingCommandQueue=new ConcurrentQueue<CommandBase>();
-            tokenSource=new CancellationTokenSource();
+            _serviceData = serviceData;
         }
 
-       
-        private ConcurrentQueue<CommandBase> PendingCommandQueue;
-
-        public void HandleCommand(CommandBase command)
-        {
-            PendingCommandQueue.Enqueue(command);
-        }
-
-        public void StopProducing()
-        {
-            tokenSource.Cancel();
-        }
-
-        public void ProduceEvents()
-        {
-            var token = tokenSource.Token;
-            Task.Run((() =>
-            {
-                while (!token.IsCancellationRequested)
-                {
-                    CommandBase command;
-                    if (PendingCommandQueue.TryDequeue(out command))
-                        Dispatcher.ConsumeSystemEvent(ConsumeCommand(command));
-                }
-            }), token);
-        }
-
-        private ISystemEvent ConsumeCommand(CommandBase command)
-        {
-            ISystemEvent systemEvent = CommandToSystemEvent((dynamic)command);
-            ServiceData.SelfUpdate((dynamic)systemEvent);
-            return systemEvent;
-        }
-
-        private ISystemEvent CommandToSystemEvent(CommandBase command)
+        public ISystemEvent CommandToSystemEvent(CommandBase command)
         {
             return CommandToSystemEventCase((dynamic)command);
         }
 
         private ISystemEvent CommandToSystemEventCase(EventStreamCreation command)
         {
-            if (ServiceData.EventStreamNameExists(command.EventStreamName))
+            if (_serviceData.EventStreamNameExists(command.EventStreamName))
                 return new InvalidCommandSystemEvent(new EventStreamNameTaken(command.EventStreamName));
-            return new EventStreamCreated(ServiceData.NextEventStreamId, command.EventStreamName, command.CreatorName);
+            return new EventStreamCreated(_serviceData.NextEventStreamId, command.EventStreamName, command.CreatorName);
             //TODO: should backstream be created here?
         }
 
         private ISystemEvent CommandToSystemEventCase(EventStreamDeletion command)
         {
             HashSet<string> eventStreamAdmins;
-            if (!ServiceData.EventStreamIdToAdmins.TryGetValue(command.EventStreamId, out eventStreamAdmins))
+            if (!_serviceData.EventStreamIdToAdmins.TryGetValue(command.EventStreamId, out eventStreamAdmins))
                 return new InvalidCommandSystemEvent(new EventStreamIdDoesNotExist(command.EventStreamId));
             UserDataForService userData;
-            if (!ServiceData.UserIdToDatas.TryGetValue(command.AdminId, out userData))
+            if (!_serviceData.UserIdToDatas.TryGetValue(command.AdminId, out userData))
                 return new InvalidCommandSystemEvent(new UserIdDoesNotExist(command.AdminId));
             if (!eventStreamAdmins.Contains(userData.UserName))
                 return new InvalidCommandSystemEvent(new AdminAccessDenied(command.EventStreamId, command.AdminId));
@@ -96,7 +56,7 @@ namespace EvernestFront.Service
         private ISystemEvent CommandToSystemEventCase(PasswordSetting command)
         {
             UserDataForService userData;
-            if (!ServiceData.UserIdToDatas.TryGetValue(command.UserId, out userData))
+            if (!_serviceData.UserIdToDatas.TryGetValue(command.UserId, out userData))
                 return new InvalidCommandSystemEvent(new UserIdDoesNotExist(command.UserId));
             var passwordManager = new PasswordManager();
             if (!passwordManager.Verify(command.CurrentPassword, userData.SaltedPasswordHash, userData.PasswordSalt))
@@ -108,18 +68,18 @@ namespace EvernestFront.Service
 
         private ISystemEvent CommandToSystemEventCase(UserCreation command)
         {
-            if (ServiceData.UserNameExists(command.UserName))
+            if (_serviceData.UserNameExists(command.UserName))
                 return new InvalidCommandSystemEvent(new UserNameTaken(command.UserName));
 
             var passwordManager = new PasswordManager();
             var hashSalt = passwordManager.SaltAndHash(command.Password);
-            return new UserCreated(command.UserName, ServiceData.NextUserId, hashSalt.Key, hashSalt.Value);
+            return new UserCreated(command.UserName, _serviceData.NextUserId, hashSalt.Key, hashSalt.Value);
         }
 
         private ISystemEvent CommandToSystemEventCase(UserDeletion command)
         {
             UserDataForService userData;
-            if (!ServiceData.UserIdToDatas.TryGetValue(command.UserId, out userData))
+            if (!_serviceData.UserIdToDatas.TryGetValue(command.UserId, out userData))
                 return new InvalidCommandSystemEvent(new UserIdDoesNotExist(command.UserId));
             var passwordManager = new PasswordManager();
             if (!passwordManager.Verify(command.Password, userData.SaltedPasswordHash, userData.PasswordSalt))
@@ -131,7 +91,7 @@ namespace EvernestFront.Service
         private ISystemEvent CommandToSystemEventCase(UserKeyCreation command)
         {
             UserDataForService userData;
-            if (!ServiceData.UserIdToDatas.TryGetValue(command.UserId, out userData))
+            if (!_serviceData.UserIdToDatas.TryGetValue(command.UserId, out userData))
                 return new InvalidCommandSystemEvent(new UserIdDoesNotExist(command.UserId));
             if (userData.Keys.Contains(command.KeyName))
                 return new InvalidCommandSystemEvent(new UserKeyNameTaken(command.UserId,command.KeyName));
@@ -149,7 +109,7 @@ namespace EvernestFront.Service
         private ISystemEvent CommandToSystemEventCase(UserRightSettingByUser command)
         {
             HashSet<string> eventStreamAdmins;
-            if (!ServiceData.EventStreamIdToAdmins.TryGetValue(command.EventStreamId, out eventStreamAdmins))
+            if (!_serviceData.EventStreamIdToAdmins.TryGetValue(command.EventStreamId, out eventStreamAdmins))
                 return new InvalidCommandSystemEvent(new EventStreamIdDoesNotExist(command.EventStreamId));
             if (!eventStreamAdmins.Contains(command.AdminName))
                 return new InvalidCommandSystemEvent(new AdminAccessDenied());

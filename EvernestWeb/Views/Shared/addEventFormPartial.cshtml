@@ -1,0 +1,19 @@
+﻿@model EvernestWeb.ViewModels.StreamAndEvents
+
+@using (Html.BeginForm("PushEvent", "Store", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <fieldset>
+        <legend>Change password</legend>
+        <ol>
+            <li>
+                @Html.Label("item", "Add an event : ")
+                @Html.TextBox("item", "")
+                <input type="hidden" name="sid" value="@{ Write(Model.Id);}" />
+                <input type="submit" value="Push an Event" />
+            </li>
+        </ol>
+    </fieldset>
+}
+

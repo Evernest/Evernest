@@ -169,6 +169,7 @@
     <Content Include="Views\Store\Stream.cshtml" />
     <Content Include="Views\Shared\changePwdFormPartial.cshtml" />
     <Content Include="Views\Shared\addEventFormPartial.cshtml" />
+    <Content Include="Views\Shared\addUserFormPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

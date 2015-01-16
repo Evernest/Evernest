@@ -169,7 +169,43 @@ namespace EvernestWeb.Controllers
             if (ViewBag.Connexion != "true")
                 return View("Index");
             StreamAndEvents streamAndEvents = getStreamsAndEvents(id, connexion.IdUser);
+
+            List<Models.RightModel> RightList = new List<RightModel>
+            {
+               new RightModel { Name = "Admin", Right = EvernestFront.AccessRights.Admin },
+               new RightModel { Name = "NoRights", Right = EvernestFront.AccessRights.NoRights },
+               new RightModel { Name = "ReadOnly", Right = EvernestFront.AccessRights.ReadOnly },
+               new RightModel { Name = "ReadWrite", Right = EvernestFront.AccessRights.ReadWrite },
+               new RightModel { Name = "WriteOnly", Right = EvernestFront.AccessRights.WriteOnly },
+            };
+            ViewBag.RightList = RightList;
+            ViewBag.StreamId = id;
+
             return View(streamAndEvents);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddUser(StreamAndEvents model, int sid)
+        {
+            Connexion connexion = IsConnected();
+            if (ViewBag.Connexion != "true")
+                return View("Index");
+
+            if (model.AddUserModelObject.NewUser != null)
+            {
+                EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(model.AddUserModelObject.StreamId);
+                if (s.Success)
+                {
+                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+                    if (u.Success)
+                    {
+                        EvernestFront.Answers.GetUser n = EvernestFront.User.GetUser(model.AddUserModelObject.NewUser);
+                        u.User.SetRights(connexion.IdUser, n.User.Id, model.AddUserModelObject.Right);
+                    }
+                }
+            }
+            return RedirectToAction("Stream", "Store", new { id = sid });
         }
 
         [HttpPost]

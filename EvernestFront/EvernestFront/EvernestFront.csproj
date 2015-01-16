@@ -76,7 +76,6 @@
     <Compile Include="Contract\SystemEvent\EventStreamCreated.cs" />
     <Compile Include="Contract\EventContract.cs" />
     <Compile Include="Contract\SystemEvent\UserCreated.cs" />
-    <Compile Include="DiffStream.cs" />
     <Compile Include="Dispatcher.cs" />
     <Compile Include="Errors\InvalidString.cs" />
     <Compile Include="Errors\SourceKeyDoesNotExist.cs" />

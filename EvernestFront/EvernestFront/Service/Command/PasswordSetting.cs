@@ -8,5 +8,13 @@
 
         internal string NewPassword { get; private set; }
 
+        internal PasswordSetting(CommandReceiver commandReceiver, long userId,string currentPassword, string newPassword)
+            : base(commandReceiver)
+        {
+            UserId = userId;
+            CurrentPassword = currentPassword;
+            NewPassword = newPassword;
+        }
+
     }
 }

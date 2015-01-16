@@ -1,5 +1,4 @@
-﻿using EvernestFront.Errors;
-
+﻿
 namespace EvernestFront.Contract.SystemEvent
 {
     //TODO: add contract as soon as FrontError becomes an enum

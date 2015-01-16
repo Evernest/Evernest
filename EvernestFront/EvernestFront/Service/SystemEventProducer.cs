@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using EvernestBack;
 using EvernestFront.Utilities;
 using EvernestFront.Contract.SystemEvent;
-using EvernestFront.Errors;
 using EvernestFront.Service.Command;
 
 namespace EvernestFront.Service
@@ -25,24 +26,26 @@ namespace EvernestFront.Service
         private ISystemEvent CommandToSystemEventCase(EventStreamCreation command)
         {
             if (_serviceData.EventStreamNameExists(command.EventStreamName))
-                return new InvalidCommandSystemEvent(new EventStreamNameTaken(command.EventStreamName));
-            return new EventStreamCreated(_serviceData.NextEventStreamId, command.EventStreamName, command.CreatorName);
-            //TODO: should backstream be created here?
+                return new InvalidCommandSystemEvent(FrontError.EventStreamNameTaken);
+            var id = _serviceData.NextEventStreamId;
+            AzureStorageClient.Instance.GetNewEventStream(Convert.ToString(id));
+            return new EventStreamCreated(id, command.EventStreamName, command.CreatorName);
+            
         }
 
         private ISystemEvent CommandToSystemEventCase(EventStreamDeletion command)
         {
             HashSet<string> eventStreamAdmins;
             if (!_serviceData.EventStreamIdToAdmins.TryGetValue(command.EventStreamId, out eventStreamAdmins))
-                return new InvalidCommandSystemEvent(new EventStreamIdDoesNotExist(command.EventStreamId));
+                return new InvalidCommandSystemEvent(FrontError.EventStreamIdDoesNotExist);
             UserDataForService userData;
             if (!_serviceData.UserIdToDatas.TryGetValue(command.AdminId, out userData))
-                return new InvalidCommandSystemEvent(new UserIdDoesNotExist(command.AdminId));
+                return new InvalidCommandSystemEvent(FrontError.UserIdDoesNotExist);
             if (!eventStreamAdmins.Contains(userData.UserName))
-                return new InvalidCommandSystemEvent(new AdminAccessDenied(command.EventStreamId, command.AdminId));
+                return new InvalidCommandSystemEvent(FrontError.AdminAccessDenied);
             var passwordManager = new PasswordManager();
             if (!passwordManager.Verify(command.AdminPassword, userData.SaltedPasswordHash, userData.PasswordSalt))
-                return new InvalidCommandSystemEvent(new WrongPassword(userData.UserName, command.AdminPassword));
+                return new InvalidCommandSystemEvent(FrontError.WrongPassword);
 
             return new EventStreamDeleted(command.EventStreamId, command.EventStreamName);
         }
@@ -51,10 +54,10 @@ namespace EvernestFront.Service
         {
             UserDataForService userData;
             if (!_serviceData.UserIdToDatas.TryGetValue(command.UserId, out userData))
-                return new InvalidCommandSystemEvent(new UserIdDoesNotExist(command.UserId));
+                return new InvalidCommandSystemEvent(FrontError.UserIdDoesNotExist);
             var passwordManager = new PasswordManager();
             if (!passwordManager.Verify(command.CurrentPassword, userData.SaltedPasswordHash, userData.PasswordSalt))
-                return new InvalidCommandSystemEvent(new WrongPassword(userData.UserName, command.CurrentPassword));
+                return new InvalidCommandSystemEvent(FrontError.WrongPassword);
 
             var hashSalt = passwordManager.SaltAndHash(command.NewPassword);
             return new PasswordSet(command.UserId, hashSalt.Key, hashSalt.Value);
@@ -63,7 +66,7 @@ namespace EvernestFront.Service
         private ISystemEvent CommandToSystemEventCase(UserCreation command)
         {
             if (_serviceData.UserNameExists(command.UserName))
-                return new InvalidCommandSystemEvent(new UserNameTaken(command.UserName));
+                return new InvalidCommandSystemEvent(FrontError.UserNameTaken);
 
             var passwordManager = new PasswordManager();
             var hashSalt = passwordManager.SaltAndHash(command.Password);
@@ -74,10 +77,10 @@ namespace EvernestFront.Service
         {
             UserDataForService userData;
             if (!_serviceData.UserIdToDatas.TryGetValue(command.UserId, out userData))
-                return new InvalidCommandSystemEvent(new UserIdDoesNotExist(command.UserId));
+                return new InvalidCommandSystemEvent(FrontError.UserIdDoesNotExist);
             var passwordManager = new PasswordManager();
             if (!passwordManager.Verify(command.Password, userData.SaltedPasswordHash, userData.PasswordSalt))
-                return new InvalidCommandSystemEvent(new WrongPassword(userData.UserName, command.Password));
+                return new InvalidCommandSystemEvent(FrontError.WrongPassword);
 
             return new UserDeleted(command.UserName, command.UserId);
         }
@@ -86,9 +89,9 @@ namespace EvernestFront.Service
         {
             UserDataForService userData;
             if (!_serviceData.UserIdToDatas.TryGetValue(command.UserId, out userData))
-                return new InvalidCommandSystemEvent(new UserIdDoesNotExist(command.UserId));
+                return new InvalidCommandSystemEvent(FrontError.UserIdDoesNotExist);
             if (userData.Keys.Contains(command.KeyName))
-                return new InvalidCommandSystemEvent(new UserKeyNameTaken(command.UserId,command.KeyName));
+                return new InvalidCommandSystemEvent(FrontError.UserKeyNameTaken);
 
             var keyGenerator = new KeyGenerator();
             var key = keyGenerator.NewKey();
@@ -104,11 +107,11 @@ namespace EvernestFront.Service
         {
             HashSet<string> eventStreamAdmins;
             if (!_serviceData.EventStreamIdToAdmins.TryGetValue(command.EventStreamId, out eventStreamAdmins))
-                return new InvalidCommandSystemEvent(new EventStreamIdDoesNotExist(command.EventStreamId));
+                return new InvalidCommandSystemEvent(FrontError.EventStreamIdDoesNotExist);
             if (!eventStreamAdmins.Contains(command.AdminName))
-                return new InvalidCommandSystemEvent(new AdminAccessDenied());
+                return new InvalidCommandSystemEvent(FrontError.AdminAccessDenied);
             if (eventStreamAdmins.Contains(command.TargetName))
-                return new InvalidCommandSystemEvent(new CannotDestituteAdmin());
+                return new InvalidCommandSystemEvent(FrontError.CannotDestituteAdmin);
             return new UserRightSet(command.EventStreamId, command.TargetName, command.Right);
         }
 

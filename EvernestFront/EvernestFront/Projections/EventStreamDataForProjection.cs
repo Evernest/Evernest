@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using EvernestBack;
 
 namespace EvernestFront.Projections
 {
@@ -12,18 +13,17 @@ namespace EvernestFront.Projections
         
         internal ImmutableDictionary<string, AccessRights> RelatedUsers { get; private set; }
         
-        internal EvernestBack.RAMStream BackStream { get; private set; }
-        //this is a temporary simulator of backend
+        internal EvernestBack.IEventStream BackStream { get; private set; }
         
 
-        private EventStreamDataForProjection(string name, ImmutableDictionary<string, AccessRights> users, EvernestBack.RAMStream bs)
+        private EventStreamDataForProjection(string name, ImmutableDictionary<string, AccessRights> users, IEventStream backStream)
         {
             StreamName = name;
             RelatedUsers = users;
-            BackStream = bs;
+            BackStream = backStream;
         }
 
-        internal EventStreamDataForProjection(string name, string creatorName, EvernestBack.RAMStream backStream)
+        internal EventStreamDataForProjection(string name, string creatorName, IEventStream backStream)
         {
             StreamName = name;
             RelatedUsers = ImmutableDictionary<string, AccessRights>.Empty.SetItem(creatorName, AccessRights.Admin);

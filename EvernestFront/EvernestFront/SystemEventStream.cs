@@ -11,7 +11,7 @@ namespace EvernestFront
         private User _systemUser;
 
         protected SystemEventStream(long streamId, string name, ImmutableDictionary<long, AccessRights> users,
-            RAMStream backStream, User user )
+            IEventStream backStream, User user )
             : base(streamId, name, users, backStream)
         {
             _systemUser = user;

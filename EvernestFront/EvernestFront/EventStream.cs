@@ -42,7 +42,7 @@ namespace EvernestFront
         private static long NextId() { return ++_next; }
 
 
-        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, IEventStream backStream)
+        protected EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, IEventStream backStream)
         {
             Id = streamId;
             Name = name;

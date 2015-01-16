@@ -7,5 +7,15 @@
         internal long UserId { get; set; }
         
         internal string KeyName { get; set; }
+
+        internal UserKeyDeletion(CommandReceiver commandReceiver, string key, long userId, string keyName)
+            : base(commandReceiver)
+        {
+            Key = key;
+            UserId = userId;
+            KeyName = keyName;
+
+        }
+
     }
 }

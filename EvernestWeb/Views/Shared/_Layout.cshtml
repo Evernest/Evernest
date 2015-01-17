@@ -39,7 +39,7 @@
                     else
                     {
                         <ul>
-                            <li><a href="/Store/MyStore">Hello @ViewBag.Username</a></li>
+                            <li>@Html.ActionLink((string)("Hello " + ViewBag.Username), "MyStore", "Manager")</li>
                             <li>@Html.ActionLink("Log out", "LogOff", "Account")</li>
                         </ul>
                     }

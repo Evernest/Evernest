@@ -17,11 +17,11 @@
             {
                 for (int i = 0; i < Model.Streams.Count; ++i)
                 {
-                    <li><a href="/Store/Stream/@{Write(Model.Streams[i].Id);}">@Model.Streams[i].Id - @Model.Streams[i].Name - @Model.Streams[i].Count</a></li>
+                    <li><a href="/Manager/Stream/@{Write(Model.Streams[i].Id);}">@Model.Streams[i].Id - @Model.Streams[i].Name - @Model.Streams[i].Count</a></li>
                 }
             }
             <li>
-                @{Html.BeginForm("AddStream", "Store", FormMethod.Post);}
+                @{Html.BeginForm("AddStream", "Manager", FormMethod.Post);}
                 @Html.AntiForgeryToken()
                 @Html.Label("addStream", "Add a Stream : ")
                 @Html.TextBox("addStream", "")
@@ -44,7 +44,7 @@
                 }
             }
             <li>
-                @{Html.BeginForm("AddSource", "Store", FormMethod.Post);}
+                @{Html.BeginForm("AddSource", "Manager", FormMethod.Post);}
                 @Html.AntiForgeryToken()
                 @Html.Label("addSource", "Add a Source : ")
                 @Html.TextBox("addSource", "")

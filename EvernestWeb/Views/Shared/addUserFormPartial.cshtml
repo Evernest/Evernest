@@ -1,6 +1,6 @@
 ﻿@model EvernestWeb.ViewModels.StreamAndEvents
     
-@using (Html.BeginForm("AddUser", "Store", FormMethod.Post))
+@using (Html.BeginForm("AddUser", "Manager", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()

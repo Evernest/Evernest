@@ -88,7 +88,7 @@ namespace EvernestWeb.Controllers
                         if (u.Success)
                         {
                             StreamsSources streamsSources = getStreamsSources(u);
-                            return RedirectToAction("MyStore", "Store", new RouteValueDictionary(streamsSources));
+                            return RedirectToAction("MyStore", "Manager", new RouteValueDictionary(streamsSources));
                         }
                     }
                 }
@@ -130,7 +130,7 @@ namespace EvernestWeb.Controllers
                         // update user object
                         u = EvernestFront.User.GetUser(connexion.IdUser);
                         if (u.Success)
-                            return RedirectToAction("MyStore", "Store");
+                            return RedirectToAction("MyStore", "Manager");
                     }
                 }
             return View("Index");
@@ -205,7 +205,7 @@ namespace EvernestWeb.Controllers
                     }
                 }
             }
-            return RedirectToAction("Stream", "Store", new { id = sid });
+            return RedirectToAction("Stream", "Manager", new { id = sid });
         }
 
         [HttpPost]
@@ -226,7 +226,7 @@ namespace EvernestWeb.Controllers
                         u.User.Push(s.EventStream.Id, item);
                 }
             }
-            return RedirectToAction("Stream", "Store", new { id = sid });
+            return RedirectToAction("Stream", "Manager", new { id = sid });
         }
     }
 }

@@ -3,7 +3,7 @@
     ViewBag.Title = "Stream";
 }
 
-<h2><a href="/Store/MyStore">Manage my Store</a> &gt; Stream</h2>
+<h2><a href="/Manager/MyStore">Manage my Store</a> &gt; Stream</h2>
 
 <div>
     <div>
@@ -23,27 +23,16 @@
                         EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(Model.RelatedUsers[i].Key);
                         <li>@Model.RelatedUsers[i].Key @u.User.Name (@Model.RelatedUsers[i].Value.ToString())</li>
                     }
-                    <li>
-                        @{Html.RenderPartial("addUserFormPartial"); };
-                    </li>
                 </ul>
             }
         }
     </div>
 
     <div>
+        @Html.Partial("addUserFormPartial")
+
         @Html.Partial("addEventFormPartial")
 
-        <!--@{Html.BeginForm("PushEvent", "Store", FormMethod.Post);}
-        @Html.AntiForgeryToken()
-        <ul>
-            <li>
-                @Html.Label("item", "Add an event : ")
-                @Html.TextBox("item","")
-                <input type="hidden" name="sid" value="@{ Write(Model.Id);}" />
-                <input type="submit" value="Push an Event" />
-            </li>
-        </ul>-->
     </div>
 
     <!-- requested event -->

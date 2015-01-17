@@ -21,25 +21,22 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("About", "About", "Home")</li>
-                    @if (ViewBag.Connexion == "true")
-                    {
-                        <li>@Html.ActionLink("Manager", "Index", "Manager")</li>
-                    }
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
                 <!-- test -->
-                <div class="Evernest-menu-identification">
+                <div class="evernest-right-menu">
                     @if (ViewBag.Connexion == "false")
                     {
-                        <ul>
+                        <ul class="nav navbar-nav">
                             <li>@Html.ActionLink("Login", "Login", "Account")</li>
                             <li>@Html.ActionLink("Register", "Register", "Account")</li>
                         </ul>
                     }
                     else
                     {
-                        <ul>
-                            <li>@Html.ActionLink((string)("Hello " + ViewBag.Username), "MyStore", "Manager")</li>
+                        <ul class="nav navbar-nav">
+                            <li>@Html.ActionLink((string)("Hello " + ViewBag.Username), "Index", "Account")</li>
+                            <li>@Html.ActionLink("Manager", "Index", "Manager")</li>
                             <li>@Html.ActionLink("Log out", "LogOff", "Account")</li>
                         </ul>
                     }

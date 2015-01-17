@@ -1,26 +1,33 @@
 ﻿@model EvernestWeb.Models.ChangePwdModel
 
+<h3>Change password</h3>
+
 @using (Html.BeginForm("ChangePwd", "Account", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
-    @Html.ValidationSummary()
     <fieldset>
-        <legend>Change password</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.NewPassword)
-                @Html.PasswordFor(m => m.NewPassword)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.ConfirmPassword)
-                @Html.PasswordFor(m => m.ConfirmPassword)
-            </li>
-        </ol>
-        <input type="submit" value="Valider" />
+        <div class="form-group">
+            @Html.LabelFor(m => m.Password, "Current password")
+            <p class="text-danger">
+                @Html.ValidationMessageFor(m => m.Password)
+            </p>
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Current password" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.NewPassword, "New password")
+            <p class="text-danger">
+                @Html.ValidationMessageFor(m => m.NewPassword)
+            </p>
+            @Html.PasswordFor(m => m.NewPassword, new { @class = "form-control", @placeholder = "New password" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.ConfirmPassword, "Confirm new password")
+            <p class="text-danger">
+                @Html.ValidationMessageFor(m => m.ConfirmPassword)
+            </p>
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = "Confirm new password" })
+        </div>
+        <input type="submit" class="btn btn-primary" value="Submit" />
     </fieldset>
 }
 

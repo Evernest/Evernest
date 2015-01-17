@@ -10,28 +10,27 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
     <fieldset>
-        <legend>Login Form</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.Username)
-                @Html.TextBoxFor(m => m.Username)
+        <div class="form-group">
+            @Html.LabelFor(m => m.Username, "User name")
+            <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.Username)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password)
+            </p>
+            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @placeholder = "User name" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Password, "Password")
+            <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.Password)
-            </li>
-            <li>
-                @Html.CheckBoxFor(m => m.RememberMe)
-                @Html.LabelFor(m => m.RememberMe, new {@class = "checkbox"})
-            </li>
-        </ol>
-        <input type="submit" value="Login"/>
+            </p>
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password" })
+        </div>
+        <div class="checkbox">
+            @Html.LabelFor(m => m.RememberMe, "Remember me?")
+            @Html.CheckBoxFor(m => m.RememberMe)
+        </div>
+        <input type="submit" class="btn btn-primary" value="Login"/>
+        @Html.ActionLink("Register", "Register", new { area = "" }, new { @class = "btn btn-default" })
     </fieldset>
-    <p>
-        @Html.ActionLink("Register", "Register") if you are not member yet.
-    </p>
 }
 
 @section Scripts {

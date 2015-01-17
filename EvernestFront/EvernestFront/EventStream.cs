@@ -4,12 +4,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using EvernestFront.Responses;
-using EvernestFront.Projections;
 using EvernestFront.Service;
 using EvernestFront.Service.Command;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
-using EvernestFront.Contract.SystemEvent;
 using EvernestBack;
 
 //TODO : refactor callbacks and implement what to do in case of backend failure
@@ -72,7 +70,7 @@ namespace EvernestFront
                 return new SetRights(FrontError.CannotDestituteAdmin);
             var command = new UserRightSettingByUser(_commandReceiver,
                 targetName, Id, adminName, right);
-            command.Execute();
+            command.Send();
             return new SetRights();
         }
 

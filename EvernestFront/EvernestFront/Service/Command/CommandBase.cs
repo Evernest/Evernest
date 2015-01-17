@@ -1,4 +1,6 @@
-﻿namespace EvernestFront.Service.Command
+﻿using System;
+
+namespace EvernestFront.Service.Command
 {
     abstract class CommandBase
     {
@@ -6,14 +8,18 @@
 
         private readonly CommandReceiver _commandReceiver;
 
+        public readonly Guid Guid;
+
         protected CommandBase(CommandReceiver commandReceiver)
         {
             _commandReceiver = commandReceiver;
+            Guid = Guid.NewGuid();
         }
 
-        public void Execute()
+        public Guid Send()
         {
             _commandReceiver.ReceiveCommand(this);
+            return Guid;
         }
     }
 }

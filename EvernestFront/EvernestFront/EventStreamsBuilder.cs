@@ -36,7 +36,7 @@ namespace EvernestFront
             // this is supposed to be called by a user object, so creator should always exist
 
             var command = new EventStreamCreation(_commandReceiver, streamName, creatorName);
-            command.Execute();
+            command.Send();
             return new SystemCommandResponse();
         }
 

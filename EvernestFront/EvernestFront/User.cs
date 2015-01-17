@@ -13,7 +13,7 @@ namespace EvernestFront
 {
     public partial class User
     {
-        private CommandReceiver _commandReceiver;
+        private readonly CommandReceiver _commandReceiver;
 
         public long Id { get; private set; }
 
@@ -91,38 +91,38 @@ namespace EvernestFront
         }
 
 
-        static public AddUser AddUser(string name)
+        static public SystemCommandResponse AddUser(string name)
         {
             var builder = new UsersBuilder();
             return builder.AddUser(name);
         }
 
-        static public AddUser AddUser(string name, string password)
+        static public SystemCommandResponse AddUser(string name, string password)
         {
             var builder = new UsersBuilder();
             return builder.AddUser(name, password);
         }
 
 
-        public SetPassword SetPassword(string passwordForVerification, string newPassword)
+        public SystemCommandResponse SetPassword(string passwordForVerification, string newPassword)
         {
             var passwordManager = new PasswordManager();
             if (!passwordManager.StringIsASCII(newPassword))
-                return new SetPassword(FrontError.InvalidString);
+                return new SystemCommandResponse(FrontError.InvalidString);
             if (!VerifyPassword(passwordForVerification))
-                return new SetPassword(FrontError.WrongPassword);
+                return new SystemCommandResponse(FrontError.WrongPassword);
             var command = new PasswordSetting(_commandReceiver, Id, passwordForVerification, newPassword);
-            command.Execute();
-            return new SetPassword(Id, newPassword);
+            var guid = command.Send();
+            return new SystemCommandResponse(guid);
         }
 
-        public CreateUserKey CreateUserKey(string keyName)
+        public SystemCommandResponse CreateUserKey(string keyName)
         {
             if (InternalUserKeys.ContainsKey(keyName))
-                return new CreateUserKey(FrontError.UserKeyNameTaken);
+                return new SystemCommandResponse(FrontError.UserKeyNameTaken);
             var command = new UserKeyCreation(_commandReceiver, Id, keyName);
-            command.Execute();
-            return new CreateUserKey(key);
+            var guid = command.Send();
+            return new SystemCommandResponse(guid);
         }
 
 

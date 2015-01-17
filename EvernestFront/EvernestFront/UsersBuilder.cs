@@ -2,6 +2,7 @@
 using EvernestFront.Answers;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Projections;
+using EvernestFront.Responses;
 using EvernestFront.Service;
 using EvernestFront.Service.Command;
 using EvernestFront.Utilities;
@@ -10,9 +11,9 @@ namespace EvernestFront
 {
     public class UsersBuilder
     {
-        private UsersProjection _usersProjection;
+        private readonly UsersProjection _usersProjection;
 
-        private CommandReceiver _commandReceiver;
+        private readonly CommandReceiver _commandReceiver;
 
         public UsersBuilder()
         {
@@ -23,66 +24,65 @@ namespace EvernestFront
 
 
 
-        public GetUser GetUser(long userId)
+        public GetUserResponse GetUser(long userId)
         {
             User user;
             if (TryGetUser(userId, out user))
-                return new GetUser(user);
+                return new GetUserResponse(user);
             else
-                return new GetUser(FrontError.UserIdDoesNotExist);
+                return new GetUserResponse(FrontError.UserIdDoesNotExist);
         }
 
-        public GetUser GetUser(string userKey)
+        public GetUserResponse GetUser(string userKey)
         {
             User user;
             if (TryGetUserByKey(userKey, out user))
-                return new GetUser(user);
+                return new GetUserResponse(user);
             else
-                return new GetUser(FrontError.UserKeyDoesNotExist);
+                return new GetUserResponse(FrontError.UserKeyDoesNotExist);
         }
 
 
-        public IdentifyUser IdentifyUser(string userName, string password)
+        public IdentifyUserResponse IdentifyUser(string userName, string password)
         {
             User user;
             if (TryGetUserByName(userName, out user))
             {
                 if (user.VerifyPassword(password))
-                    return new IdentifyUser(user);
+                    return new IdentifyUserResponse(user);
                 else
-                    return new IdentifyUser(FrontError.WrongPassword);
+                    return new IdentifyUserResponse(FrontError.WrongPassword);
             }
             else
-                return new IdentifyUser(FrontError.UserNameDoesNotExist);
+                return new IdentifyUserResponse(FrontError.UserNameDoesNotExist);
         }
 
-        public IdentifyUser IdentifyUser(string key)
+        public IdentifyUserResponse IdentifyUser(string key)
         {
             User user;
             if (TryGetUserByKey(key, out user))
-                return new IdentifyUser(user);
+                return new IdentifyUserResponse(user);
             else
-                return new IdentifyUser(FrontError.UserKeyDoesNotExist);
+                return new IdentifyUserResponse(FrontError.UserKeyDoesNotExist);
         }
 
 
-        public AddUser AddUser(string name)
+        public SystemCommandResponse AddUser(string name)
         {
             var keyGenerator = new KeyGenerator();
             return AddUser(name, keyGenerator.NewPassword());
         }
 
-        public AddUser AddUser(string name, string password)
+        public SystemCommandResponse AddUser(string name, string password)
         {
             if (!_usersProjection.UserNameExists(name))
             {
                 var command = new UserCreation(_commandReceiver, name, password);
-                command.Execute();
-                //TODO
-                return new AddUser(name, id, key, password);
+                var guid = command.Send();
+                return new SystemCommandResponse(guid);
             }
             else
-                return new AddUser(FrontError.UserNameTaken);
+                return new SystemCommandResponse(FrontError.UserNameTaken);
         }
 
         internal bool TryGetUser(long userId, out User user)

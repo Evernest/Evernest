@@ -5,16 +5,21 @@ using System.Linq;
 using System.Security.Cryptography;
 using EvernestFront.Answers;
 using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Service;
+using EvernestFront.Service.Command;
+using EvernestFront.Utilities;
 
 namespace EvernestFront
 {
     public partial class User
     {
+        private CommandReceiver _commandReceiver;
+
         public long Id { get; private set; }
 
         public string Name { get; private set; }
 
-        public string SaltedPasswordHash { get; set; }
+        private string SaltedPasswordHash { get; set; }
 
         private byte[] PasswordSalt { get; set; }
 
@@ -38,19 +43,16 @@ namespace EvernestFront
 
 
 
-        //change this ? Factor with Stream.nextId() ?
-        private static long _next;
-        private static long NextId() { _next++; return _next; }
-
         //TODO : refactor hashing and conversions between string/bytes
 
 
 
 
-        private User(long id, string name, string sph, byte[] ps,
+        internal User(CommandReceiver commandReceiver, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, string> sources, 
             ImmutableDictionary<long, AccessRights> streams)
         {
+            _commandReceiver = commandReceiver;
             Id = id;
             Name = name;
             SaltedPasswordHash = sph;
@@ -60,137 +62,57 @@ namespace EvernestFront
             InternalRelatedEventStreams = streams;
         }
 
-        static internal bool TryGetUser(long userId, out User user)
-        {
-            UserContract userContract;
-            if (Projection.ProjectionOld.TryGetUserContract(userId, out userContract))
-            {
-                user = new User(userId, userContract.UserName, 
-                    userContract.SaltedPasswordHash,userContract.PasswordSalt,
-                    userContract.Keys, userContract.OwnedSources,
-                    userContract.RelatedStreams);
-                return true;
-            }
-            else
-            {
-                user = null;
-                return false;
-            }
-        }
+        
 
         static public GetUser GetUser(long userId)
         {
-            User user;
-            if (TryGetUser(userId, out user))
-                return new GetUser(user);
-            else
-                return new GetUser(FrontError.UserIdDoesNotExist);
+            var builder = new UsersBuilder();
+            return builder.GetUser(userId);
         }
 
         static public GetUser GetUser(string userKey)
         {
-            long userId;
-            if (Projection.ProjectionOld.TryGetUserIdFromKey(userKey, out userId))
-            {
-                User user;
-                if (TryGetUser(userId, out user))
-                    return new GetUser(user);
-                else
-                    throw new Exception("User.GetUser");
-            }
-            else
-                return new GetUser(FrontError.UserKeyDoesNotExist);
-            
+            var builder = new UsersBuilder();
+            return builder.GetUser(userKey);
+
         }
 
 
         static public IdentifyUser IdentifyUser(string userName, string password)
         {
-            long userId;
-            if (Projection.ProjectionOld.TryGetUserIdFromName(userName, out userId))
-            {
-                User user;
-                if (TryGetUser(userId, out user))
-                {
-                    if (user.VerifyPassword(password))
-                        return new IdentifyUser(user);
-                    else
-                        return new IdentifyUser(FrontError.WrongPassword);
-                }
-                else
-                    throw new Exception("User.IdentifyUser");
-                    //this should not happen since userId is read in the tables
-                
-            }
-            else
-                return new IdentifyUser(FrontError.UserNameDoesNotExist);
+            var builder = new UsersBuilder();
+            return builder.IdentifyUser(userName, password);
         }
 
         static public IdentifyUser IdentifyUser(string key)
         {
-            long userId;
-            if (Projection.ProjectionOld.TryGetUserIdFromKey(key, out userId))
-            {
-                User user;
-                if (TryGetUser(userId, out user))
-                {
-                    return new IdentifyUser(user);
-                }
-                else
-                    throw new Exception("User.IdentifyUser");
-                //this should not happen since userId is read in the tables
-
-            }
-            else
-                return new IdentifyUser(FrontError.UserKeyDoesNotExist);
+            var builder = new UsersBuilder();
+            return builder.IdentifyUser(key);
         }
 
 
         static public AddUser AddUser(string name)
         {
-            return AddUser(name, Keys.NewPassword());
+            var builder = new UsersBuilder();
+            return builder.AddUser(name);
         }
 
         static public AddUser AddUser(string name, string password)
         {
-            if (!Projection.ProjectionOld.UserNameExists(name))
-            {
-                var id = NextId();
-
-                var passwordSalt = System.Text.Encoding.ASCII.GetBytes(Keys.NewSalt());
-
-                var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
-                var hmacMD5 = new HMACMD5(passwordSalt);
-                var saltedHash = hmacMD5.ComputeHash(passwordBytes);
-                var saltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
-
-                var key = Keys.NewKey();
-
-                var userContract = MakeUserContract.NewUser(name, saltedPasswordHash, passwordSalt);
-                var userAdded = new UserCreated(id, userContract);
-
-                Projection.ProjectionOld.HandleDiff(userAdded);
-                //TODO: diff should be written in a stream, then sent back to be processed
-
-                return new AddUser(name, id, key, password);
-            }
-            else
-                return new AddUser(FrontError.UserNameTaken);
+            var builder = new UsersBuilder();
+            return builder.AddUser(name, password);
         }
 
 
-        public SetPassword SetPassword(string formerPassword, string newPassword)
+        public SetPassword SetPassword(string passwordForVerification, string newPassword)
         {
-            if (!(newPassword.Equals(System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(newPassword)))))
+            var passwordManager = new PasswordManager();
+            if (!passwordManager.StringIsASCII(newPassword))
                 return new SetPassword(FrontError.InvalidString);
-            if (!VerifyPassword(formerPassword))
+            if (!VerifyPassword(passwordForVerification))
                 return new SetPassword(FrontError.WrongPassword);
-            var passwordBytes = System.Text.Encoding.ASCII.GetBytes(newPassword);
-            var hmacMD5 = new HMACMD5(PasswordSalt);
-            var saltedHash = hmacMD5.ComputeHash(passwordBytes);
-            var saltedPasswordHash = System.Text.Encoding.ASCII.GetString(saltedHash);
-            var passwordSet = new PasswordSet(Id, saltedPasswordHash);
-            Projection.ProjectionOld.HandleDiff(passwordSet);
+            var command = new PasswordSetting(_commandReceiver, Id, passwordForVerification, newPassword);
+            command.Execute();
             return new SetPassword(Id, newPassword);
         }
 
@@ -198,29 +120,16 @@ namespace EvernestFront
         {
             if (InternalUserKeys.ContainsKey(keyName))
                 return new CreateUserKey(FrontError.UserKeyNameTaken);
-            var key = Keys.NewKey();
-            var userKeyCreated = new UserKeyCreated(key, Id, keyName);
-            //TODO: system stream
-            Projection.ProjectionOld.HandleDiff(userKeyCreated);
+            var command = new UserKeyCreation(_commandReceiver, Id, keyName);
+            command.Execute();
             return new CreateUserKey(key);
         }
-        public CreateUserKey CreateUserKey()
-        {
-            var keyName = "temporary constant"; //TODO: generate a non existent name
-            var ans = CreateUserKey(keyName);
-            if (ans.Success)
-                return ans;
-            else
-                throw new Exception("User.CreateUserKey: keyName generated is taken");
-        }
 
 
-        private bool VerifyPassword(string password)
+        internal bool VerifyPassword(string password)
         {
-            var hmacMD5 = new HMACMD5(PasswordSalt);
-            var passwordBytes = System.Text.Encoding.ASCII.GetBytes(password);
-            var saltedHash = System.Text.Encoding.ASCII.GetString(hmacMD5.ComputeHash(passwordBytes));
-            return (SaltedPasswordHash.Equals(saltedHash));
+            var passwordManager = new PasswordManager();
+            return passwordManager.Verify(password, SaltedPasswordHash, PasswordSalt);
         }
 
 

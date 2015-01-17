@@ -49,9 +49,19 @@ namespace EvernestFront.Projections
             if (dictionaries.NameToId.TryGetValue(name, out id))
                 if (dictionaries.IdToData.TryGetValue(id, out data))
                     return true;
+                else
+                {
+                    throw new Exception("UsersProjection.TryGetUserIdAndData");
+                    //TODO: not crash
+                }
             id = 0;
             data = null;
             return false;
+        }
+
+        public bool UserNameExists(string userName)
+        {
+            return Dictionaries.NameToId.ContainsKey(userName);
         }
 
         //better than TryGetUserId followed by TryGetUserData because Dictionaries may change between the two calls
@@ -61,6 +71,11 @@ namespace EvernestFront.Projections
             if (dictionaries.KeyToId.TryGetValue(key, out id))
                 if (dictionaries.IdToData.TryGetValue(id, out data))
                     return true;
+                else
+                {
+                    throw new Exception("UsersProjection.TryGetUserIdAndDataByKey");
+                    //TODO: not crash
+                }
             id = 0;
             data = null;
             return false;

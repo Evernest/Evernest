@@ -8,7 +8,7 @@ namespace EvernestFront
     {
         public void Start()
         {
-            var unused = Injector.Instance;
+            Injector.Instance.Build();
             //TODO: read system event stream
         }
     }

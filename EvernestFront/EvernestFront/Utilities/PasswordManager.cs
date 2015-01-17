@@ -24,5 +24,10 @@ namespace EvernestFront.Utilities
             var saltedHash = Encoding.ASCII.GetString(hmacSHA256.ComputeHash(passwordBytes));
             return (hash.Equals(saltedHash));
         }
+
+        internal bool StringIsASCII(string password)
+        {
+            return password.Equals(System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(password)));
+        }
     }
 }

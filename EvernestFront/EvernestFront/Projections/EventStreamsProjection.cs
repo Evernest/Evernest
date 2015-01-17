@@ -50,6 +50,11 @@ namespace EvernestFront.Projections
             return false;
         }
 
+        public bool EventStreamNameExists(string name)
+        {
+            return Dictionaries.NameToId.ContainsKey(name);
+        }
+
         /// <summary>
         /// Fields containing the data of the projection are encapsulated in this class so that they are atomically all set at once.
         /// </summary>

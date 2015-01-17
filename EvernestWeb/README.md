@@ -1,7 +1,13 @@
 EvernestWeb
 ===========
 
-EvernestWeb project runs the website presenting Evernest but also the user manager of the official instance of Evernest.
+EvernestWeb is a component of the Evernest event store. It is an Azure Website
+project, providing a web administration interface for Evernest, including
+functionnalities such as : user creation, stream creation and management, source
+and right management.
+
+It runs the website presenting Evernest but also the user manager of the official instance of Evernest.
+
 
 It uses ASP.NET MVC and directory organisation follow the usual conventions of this framework:
 

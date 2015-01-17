@@ -2,7 +2,7 @@
 using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
-using EvernestFront.Answers;
+using EvernestFront.Responses;
 
 namespace EvernestFrontTests
 {
@@ -32,7 +32,7 @@ namespace EvernestFrontTests
 
         internal static Source GetSource_AssertSuccess(string sourceKey)
         {
-            GetSource ans = Source.GetSource(sourceKey);
+            GetSourceResponse ans = Source.GetSource(sourceKey);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             Assert.IsNotNull(ans.Source);
@@ -50,7 +50,7 @@ namespace EvernestFrontTests
         internal static long GetEventId_AssertSuccess(string sourceKey, string message)
         {
             Source source = GetSource_AssertSuccess(sourceKey);
-            Push ans = source.Push(message);
+            PushResponse ans = source.Push(message);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             return ans.MessageId;
@@ -209,7 +209,7 @@ namespace EvernestFrontTests
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             var sourceKey = CreateSource_GetKey_AssertSuccess(userId, stream, SourceName, AccessRight.WriteOnly); //user has no rights on stream
             Source source = GetSource_AssertSuccess(sourceKey);
-            Push ans = source.Push(Message);
+            PushResponse ans = source.Push(Message);
             AssertAuxiliaries.ErrorAssert(FrontError.WriteAccessDenied,ans);
         }
 

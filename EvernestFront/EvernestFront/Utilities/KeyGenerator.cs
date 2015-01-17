@@ -21,7 +21,6 @@ namespace EvernestFront.Utilities
             return RandomString(SaltLength);
         }
 
-
         internal string NewKey()
         {
             return RandomString(KeyLength);

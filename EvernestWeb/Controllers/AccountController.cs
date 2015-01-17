@@ -46,8 +46,8 @@ namespace EvernestWeb.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
-                    EvernestFront.Answers.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
+                    EvernestFront.Responses.GetUserResponse u = EvernestFront.User.GetUser(connexion.IdUser);
+                    EvernestFront.Responses.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
                     if(p.Success)
                     {
                         return RedirectToAction("Index", "Account", new {id=1});
@@ -115,11 +115,11 @@ namespace EvernestWeb.Controllers
                 if (ModelState.IsValid)
                 {
                     // add user in blob
-                    EvernestFront.Answers.AddUser u = EvernestFront.User.AddUser(model.Username, model.Password);
+                    EvernestFront.Responses.AddUser u = EvernestFront.User.AddUser(model.Username, model.Password);
                     if (u.Success)
                     {
                         // if it is ok, then create a cookie for the session
-                        EvernestFront.Answers.GetUser g = EvernestFront.User.GetUser(u.UserId);
+                        EvernestFront.Responses.GetUserResponse g = EvernestFront.User.GetUser(u.UserId);
                         if (g.Success)
                         {
                             Connexion connexion = new Connexion(g.User.Id, g.User.SaltedPasswordHash, g.User.Name);

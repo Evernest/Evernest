@@ -14,9 +14,9 @@ namespace EvernestFront
         private ICollection<IProjection> Projections { set; get; }
         private SystemEventStream SystemEventStream { set; get; }
 
-        private ConcurrentQueue<ISystemEvent> _pendingEventQueue;
+        private readonly ConcurrentQueue<ISystemEvent> _pendingEventQueue;
 
-        private CancellationTokenSource _tokenSource;
+        private readonly CancellationTokenSource _tokenSource;
 
         public Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream)
         {

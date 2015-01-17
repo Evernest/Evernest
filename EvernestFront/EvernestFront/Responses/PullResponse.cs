@@ -1,12 +1,12 @@
 
-﻿namespace EvernestFront.Answers
+﻿namespace EvernestFront.Responses
 
 {
-    public class Pull : Answer
+    public class PullResponse : BaseResponse
     {
         public Event EventPulled {get; private set;}
 
-        internal Pull(FrontError err)
+        internal PullResponse(FrontError err)
         :base(err)
         {
         }
@@ -16,7 +16,7 @@
         /// Sets field success to true and field eventPulled to evt.
         /// </summary>
         /// <param name="evt"></param>
-        internal Pull(Event evt)
+        internal PullResponse(Event evt)
             :base()
         {
             EventPulled = evt;

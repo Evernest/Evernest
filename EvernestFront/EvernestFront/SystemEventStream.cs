@@ -8,7 +8,7 @@ namespace EvernestFront
 {
     class SystemEventStream : EventStream
     {
-        private User _systemUser;
+        private readonly User _systemUser;
 
         protected SystemEventStream(long streamId, string name, ImmutableDictionary<long, AccessRight> users,
             IEventStream backStream, User user )

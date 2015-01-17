@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography;
-using EvernestFront.Answers;
+using EvernestFront.Responses;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Service;
 using EvernestFront.Service.Command;
@@ -64,13 +64,13 @@ namespace EvernestFront
 
         
 
-        static public GetUser GetUser(long userId)
+        static public GetUserResponse GetUser(long userId)
         {
             var builder = new UsersBuilder();
             return builder.GetUser(userId);
         }
 
-        static public GetUser GetUser(string userKey)
+        static public GetUserResponse GetUser(string userKey)
         {
             var builder = new UsersBuilder();
             return builder.GetUser(userKey);
@@ -78,13 +78,13 @@ namespace EvernestFront
         }
 
 
-        static public IdentifyUser IdentifyUser(string userName, string password)
+        static public IdentifyUserResponse IdentifyUser(string userName, string password)
         {
             var builder = new UsersBuilder();
             return builder.IdentifyUser(userName, password);
         }
 
-        static public IdentifyUser IdentifyUser(string key)
+        static public IdentifyUserResponse IdentifyUser(string key)
         {
             var builder = new UsersBuilder();
             return builder.IdentifyUser(key);

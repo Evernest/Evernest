@@ -24,7 +24,7 @@ namespace EvernestAPI.Controllers
                 // BEGIN DEBUG //
                 var debug = new Hashtable();
                 debug["Controller"] = "User";
-                debug["Method"] = "GetUser";
+                debug["Method"] = "GetUserResponse";
                 debug["id"] = id;
                 debug["body"] = body;
                 ans["Debug"] = debug;

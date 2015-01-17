@@ -1,4 +1,4 @@
-﻿using EvernestFront.Answers;
+using EvernestFront.Responses;
 using EvernestFront.Projections;
 using EvernestFront.Service;
 using EvernestFront.Service.Command;
@@ -19,25 +19,25 @@ namespace EvernestFront
 
 
 
-        public GetEventStream GetEventStream(long streamId)
+        public GetEventStreamResponse GetEventStream(long streamId)
         {
             EventStream eventStream;
             if (TryGetEventStream(streamId, out eventStream))
-                return new GetEventStream(eventStream);
+                return new GetEventStreamResponse(eventStream);
             else
-                return new GetEventStream(FrontError.EventStreamIdDoesNotExist);
+                return new GetEventStreamResponse(FrontError.EventStreamIdDoesNotExist);
         }
 
         //public corresponding method is a User instance method
-        internal CreateEventStream CreateEventStream(string creatorName, string streamName)
+        internal SystemCommandResponse CreateEventStream(string creatorName, string streamName)
         {
             if (_eventStreamsProjection.EventStreamNameExists(streamName))
-                return new CreateEventStream(FrontError.EventStreamNameTaken);
+                return new SystemCommandResponse(FrontError.EventStreamNameTaken);
             // this is supposed to be called by a user object, so creator should always exist
 
             var command = new EventStreamCreation(_commandReceiver, streamName, creatorName);
             command.Execute();
-            return new CreateEventStream();
+            return new SystemCommandResponse();
         }
 
         internal bool TryGetEventStream(long eventStreamId, out EventStream eventStream)

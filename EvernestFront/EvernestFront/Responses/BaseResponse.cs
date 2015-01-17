@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace EvernestFront.Answers
+namespace EvernestFront.Responses
 {
-    public abstract class Answer
+    public abstract class BaseResponse
     {
         public override string ToString()
         {
@@ -16,9 +16,9 @@ namespace EvernestFront.Answers
         public FrontError? Error { get; protected set; }
 
         /// <summary>
-        /// Default constructor for class Answer : allows for constructors without a parameter in subclasses.
+        /// Default constructor for class BaseResponse : allows for constructors without a parameter in subclasses.
         /// </summary>
-        protected Answer()
+        protected BaseResponse()
         {
             Success = true;
         }
@@ -28,7 +28,7 @@ namespace EvernestFront.Answers
         /// Sets property Success to false and Error to err.
         /// </summary>
         /// <param name="err"></param>
-        protected Answer(FrontError err)
+        protected BaseResponse(FrontError err)
         {
             Success = false;
             Error = err;

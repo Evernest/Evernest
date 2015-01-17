@@ -5,10 +5,10 @@ namespace EvernestFront.Responses
 {
     public class RelatedUsersResponse : BaseResponse
     {
-        public List<KeyValuePair<long, AccessRight>> Users { get; private set; }
+        public List<KeyValuePair<string, AccessRight>> Users { get; private set; }
 
 
-        internal RelatedUsersResponse(List<KeyValuePair<long,AccessRight>> users)
+        internal RelatedUsersResponse(List<KeyValuePair<string,AccessRight>> users)
         {
             Users = users;
         }

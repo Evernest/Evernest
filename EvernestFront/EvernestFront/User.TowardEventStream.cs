@@ -5,22 +5,30 @@ namespace EvernestFront
 {
     partial class User
     {
-        public CreateEventStream CreateEventStream(string streamName)
+        public SystemCommandResponse CreateEventStream(string streamName)
         {
             var builder = new EventStreamsBuilder();
             return builder.CreateEventStream(Name, streamName);
         }
 
-        public SetRights SetRights(long streamId, long targetUserId, AccessRight right)
+        public SystemCommandResponse SetRight(long streamId, string targetUserName, AccessRight right)
         {
-            if (!CanAdmin(streamId))
-                return new SetRights(FrontError.AdminAccessDenied);
-
+            var builder = new EventStreamsBuilder();
             EventStream eventStream;
-            if (!EventStream.TryGetStream(streamId, out eventStream))
-                return new SetRights(FrontError.EventStreamIdDoesNotExist);
+            if (!builder.TryGetEventStream(streamId, out eventStream))
+                return new SystemCommandResponse(FrontError.EventStreamIdDoesNotExist);
 
-            return eventStream.SetRight(Id, targetUserId, right);
+            return eventStream.SetRight(Name, targetUserName, right);
+        }
+
+        public RelatedUsersResponse GetUsersRelatedToEventStream(long streamId)
+        {
+            var builder = new EventStreamsBuilder();
+            EventStream eventStream;
+            if (!builder.TryGetEventStream(streamId, out eventStream))
+                return new RelatedUsersResponse(FrontError.EventStreamIdDoesNotExist);
+
+            return eventStream.GetRelatedUsers(Name);
         }
 
         /// <summary>
@@ -30,19 +38,12 @@ namespace EvernestFront
         /// <returns></returns>
         public PullRandomResponse PullRandom(long streamId)
         {
+            var builder = new EventStreamsBuilder();
             EventStream eventStream;
-            if (EventStream.TryGetStream(streamId, out eventStream))
-            {
-                if (CanRead(streamId))
-                {
-                    return eventStream.PullRandom();
-                }
-                else
-                    return new PullRandomResponse(FrontError.ReadAccessDenied);
-            }
-            else
+            if (!builder.TryGetEventStream(streamId, out eventStream))
                 return new PullRandomResponse(FrontError.EventStreamIdDoesNotExist);
 
+            return eventStream.PullRandom(Name);
         }
 
         /// <summary>
@@ -53,18 +54,12 @@ namespace EvernestFront
         /// <returns></returns>
         public PullResponse Pull(long streamId, long eventId)
         {
+            var builder = new EventStreamsBuilder();
             EventStream eventStream;
-            if (EventStream.TryGetStream(streamId, out eventStream))
-            {
-                if (CanRead(streamId))
-                {
-                    return eventStream.Pull(eventId);
-                }
-                else
-                    return new PullResponse(FrontError.ReadAccessDenied);
-            }
-            else
+            if (!builder.TryGetEventStream(streamId, out eventStream))
                 return new PullResponse(FrontError.EventStreamIdDoesNotExist);
+
+            return eventStream.Pull(Name, eventId);
         }
 
         /// <summary>
@@ -77,18 +72,12 @@ namespace EvernestFront
         /// <returns></returns>
         public PullRangeResponse PullRange(long streamId, long from, long to)
         {
+            var builder = new EventStreamsBuilder();
             EventStream eventStream;
-            if (EventStream.TryGetStream(streamId, out eventStream))
-            {
-                if (CanRead(streamId))
-                {
-                    return eventStream.PullRange(from, to);
-                }
-                else
-                    return new PullRangeResponse(FrontError.ReadAccessDenied);
-            }
-            else
+            if (!builder.TryGetEventStream(streamId, out eventStream))
                 return new PullRangeResponse(FrontError.EventStreamIdDoesNotExist);
+
+            return eventStream.PullRange(Name, from, to);
         }
 
         /// <summary>
@@ -99,50 +88,14 @@ namespace EvernestFront
         /// <returns></returns>
         public PushResponse Push(long streamId, string message)
         {
+            var builder = new EventStreamsBuilder();
             EventStream eventStream;
-            if (EventStream.TryGetStream(streamId, out eventStream))
-            {
-                if (CanWrite(streamId))
-                {
-                    return eventStream.Push(message, this);
-                    //TODO: add writer id to event
-                }
-                else
-                    return new PushResponse(FrontError.WriteAccessDenied);
-            }
-            else
+            if (!builder.TryGetEventStream(streamId, out eventStream))
                 return new PushResponse(FrontError.EventStreamIdDoesNotExist);
+
+            return eventStream.Push(this, message);
         }
 
-        /// <summary>
-        /// Returns the right of the user about the stream. 
-        /// If the stream id does not exist, NoRights is returned : the user cannot determine whether a stream he has no right about exists. 
-        /// </summary>
-        /// <param name="streamId"></param>
-        /// <returns></returns>
-        private AccessRight GetRight(long streamId)
-        {
-            AccessRight right;
-            if (InternalRelatedEventStreams.TryGetValue(streamId, out right))
-                return right;
-            else
-                return AccessRight.NoRight;
-        }
-        internal bool CanRead(long streamId)
-        {
-            return AccessVerifier.CanRead(GetRight(streamId));
-        }
-        internal bool CanWrite(long streamId)
-        {
-            return AccessVerifier.CanWrite(GetRight(streamId));
-        }
-        internal bool CanAdmin(long streamId)
-        {
-            return AccessVerifier.CanAdmin(GetRight(streamId));
-        }
-        internal bool IsNotAdmin(long streamId)
-        {
-            return AccessVerifier.CanBeModified(GetRight(streamId));
-        }
+        
     }
 }

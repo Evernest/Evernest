@@ -62,46 +62,8 @@ namespace EvernestFront
             InternalRelatedEventStreams = streams;
         }
 
-        
+  
 
-        static public GetUserResponse GetUser(long userId)
-        {
-            var builder = new UsersBuilder();
-            return builder.GetUser(userId);
-        }
-
-        static public GetUserResponse GetUser(string userKey)
-        {
-            var builder = new UsersBuilder();
-            return builder.GetUser(userKey);
-
-        }
-
-
-        static public IdentifyUserResponse IdentifyUser(string userName, string password)
-        {
-            var builder = new UsersBuilder();
-            return builder.IdentifyUser(userName, password);
-        }
-
-        static public IdentifyUserResponse IdentifyUser(string key)
-        {
-            var builder = new UsersBuilder();
-            return builder.IdentifyUser(key);
-        }
-
-
-        static public SystemCommandResponse AddUser(string name)
-        {
-            var builder = new UsersBuilder();
-            return builder.AddUser(name);
-        }
-
-        static public SystemCommandResponse AddUser(string name, string password)
-        {
-            var builder = new UsersBuilder();
-            return builder.AddUser(name, password);
-        }
 
 
         public SystemCommandResponse SetPassword(string passwordForVerification, string newPassword)
@@ -112,6 +74,7 @@ namespace EvernestFront
             if (!VerifyPassword(passwordForVerification))
                 return new SystemCommandResponse(FrontError.WrongPassword);
             var command = new PasswordSetting(_commandReceiver, Id, passwordForVerification, newPassword);
+            command.Send();
             return new SystemCommandResponse(command.Guid);
         }
 
@@ -120,6 +83,7 @@ namespace EvernestFront
             if (InternalUserKeys.ContainsKey(keyName))
                 return new SystemCommandResponse(FrontError.UserKeyNameTaken);
             var command = new UserKeyCreation(_commandReceiver, Id, keyName);
+            command.Send();
             return new SystemCommandResponse(command.Guid);
         }
 

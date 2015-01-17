@@ -60,7 +60,6 @@
     <Compile Include="Responses\PullResponse.cs" />
     <Compile Include="Responses\PullRandomResponse.cs" />
     <Compile Include="Responses\PullRangeResponse.cs" />
-    <Compile Include="Responses\RelatedEventStreamsResponse.cs" />
     <Compile Include="Responses\RelatedUsersResponse.cs" />
     <Compile Include="Responses\IdentifyUserResponse.cs" />
     <Compile Include="CommandResultManager.cs" />

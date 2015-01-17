@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using EvernestFront.Answers;
+using EvernestFront.Responses;
 using EvernestFront.Projections;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
@@ -70,13 +70,13 @@ namespace EvernestFront
             }
         }
 
-        public static GetEventStream GetStream(long streamId)
+        public static GetEventStreamResponse GetStream(long streamId)
         {
             EventStream eventStream;
             if (TryGetStream(streamId, out eventStream))
-                return new GetEventStream(eventStream);
+                return new GetEventStreamResponse(eventStream);
             else
-                return new GetEventStream(FrontError.EventStreamIdDoesNotExist);
+                return new GetEventStreamResponse(FrontError.EventStreamIdDoesNotExist);
         }
 
 
@@ -128,7 +128,7 @@ namespace EvernestFront
             return ((id >= 0) && (id <= LastEventId));
         }
 
-        internal PullRandom PullRandom()
+        internal PullRandomResponse PullRandom()
         {
             var random = new Random();
             long eventId = (long)random.Next((int)LastEventId+1);
@@ -136,11 +136,11 @@ namespace EvernestFront
             var serializer = new Serializer();
             BackStream.Pull(eventId, ( a => pulledContract = serializer.ReadContract<EventContract>(a.Message)), ((a,s)=> {}));  
             if (pulledContract!=null)
-                return new PullRandom(new Event(pulledContract, eventId, Name, Id));
+                return new PullRandomResponse(new Event(pulledContract, eventId, Name, Id));
             throw new NotImplementedException(); //errors to be refactored anyway
         }
 
-        internal Pull Pull(long id)
+        internal PullResponse Pull(long id)
         {
             long eventId = ActualEventId(id);
 
@@ -151,40 +151,40 @@ namespace EvernestFront
                 var serializer = new Serializer();
                 BackStream.Pull(eventId, (a => pulledContract = serializer.ReadContract<EventContract>(a.Message)), ((a,s)=>{}));
                 if (pulledContract !=null)
-                    return new Pull(new Event(pulledContract, eventId, Name, Id));
-                return new Pull(FrontError.BackendError);
+                    return new PullResponse(new Event(pulledContract, eventId, Name, Id));
+                return new PullResponse(FrontError.BackendError);
             }
             else
             {
-                return new Pull(FrontError.InvalidEventId);
+                return new PullResponse(FrontError.InvalidEventId);
             }
            
         }
 
-        internal PullRange PullRange(long fromEventId, long toEventId)
+        internal PullRangeResponse PullRange(long fromEventId, long toEventId)
         {
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
             if (!IsEventIdValid(fromEventId))
-                return new PullRange(FrontError.InvalidEventId);
+                return new PullRangeResponse(FrontError.InvalidEventId);
             if (!IsEventIdValid(toEventId))
-                return new PullRange(FrontError.InvalidEventId);
+                return new PullRangeResponse(FrontError.InvalidEventId);
             var eventList = new List<Event>();
             for (long id = fromEventId; id <= toEventId; id++)
             {
-                Pull ans = Pull(id);
+                PullResponse ans = Pull(id);
                 if (!ans.Success)
                     throw new Exception();  //this should never happen : both fromEventId and toEventId are valid, so id should be valid.
                 Event pulledEvent = ans.EventPulled; //TODO : change this when PullRange gets implemented in back-end
                 eventList.Add(pulledEvent);
             }
-            return new PullRange(eventList);
+            return new PullRangeResponse(eventList);
         }
 
 
 
 
-        internal Push Push(string message, User author)
+        internal PushResponse Push(string message, User author)
         {
             long eventId = LastEventId + 1;
             AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
@@ -199,8 +199,8 @@ namespace EvernestFront
             ((a, s) => stopWaitHandle.Set()));  
             stopWaitHandle.WaitOne();
             if (success)
-                return new Push(eventId);
-            return new Push(FrontError.BackendError);
+                return new PushResponse(eventId);
+            return new PushResponse(FrontError.BackendError);
         }
 
 

@@ -1,4 +1,5 @@
-﻿using EvernestFront.Answers;
+﻿using System;
+using EvernestFront.Responses;
 using EvernestFront.Contract.SystemEvent;
 ﻿using System.Diagnostics;
 
@@ -67,66 +68,66 @@ namespace EvernestFront
             return false;
         }
 
-        static public GetSource GetSource(string sourceKey)
+        static public GetSourceResponse GetSource(string sourceKey)
         {
             Source source;
             FrontError? error;
             if (TryGetSource(sourceKey, out source, out error))
-                return new GetSource(source);
+                return new GetSourceResponse(source);
             else
             {
                 Debug.Assert(error != null, "error != null");
-                return new GetSource(error.Value); //cannot be null
+                return new GetSourceResponse(error.Value); //cannot be null
             }
         }
 
 
-        public Push Push(string message)
+        public PushResponse Push(string message)
         {
             if (CanWrite())
                 return EventStream.Push(message, User);
             else
-                return new Push(FrontError.WriteAccessDenied);
+                return new PushResponse(FrontError.WriteAccessDenied);
         }
 
-        public PullRandom PullRandom()
+        public PullRandomResponse PullRandom()
         {
             if (CanRead())
                 return EventStream.PullRandom();
             else
-                return new PullRandom(FrontError.ReadAccessDenied);
+                return new PullRandomResponse(FrontError.ReadAccessDenied);
         }
 
-        public Pull Pull(long eventId)
+        public PullResponse Pull(long eventId)
         {
             if (CanRead())
                 return EventStream.Pull(eventId);
             else
-                return new Pull(FrontError.ReadAccessDenied);
+                return new PullResponse(FrontError.ReadAccessDenied);
         }
 
-        public PullRange PullRange(long eventIdFrom, long eventIdTo)
+        public PullRangeResponse PullRange(long eventIdFrom, long eventIdTo)
         {
             if (CanRead())
                 return EventStream.PullRange(eventIdFrom, eventIdTo);
             else
-                return new PullRange(FrontError.ReadAccessDenied);
+                return new PullRangeResponse(FrontError.ReadAccessDenied);
         }
 
-        public SetRights SetRights(long targetUserId, AccessRights right)
+        public SystemCommandResponse SetRights(long targetUserId, AccessRights right)
         {
             if (CanAdmin())
                 return EventStream.SetRight(User.Id, targetUserId, right);
             else
-                return new SetRights(FrontError.AdminAccessDenied);
+                return new SystemCommandResponse(FrontError.AdminAccessDenied);
         }
 
-        public DeleteSource Delete()
+        public SystemCommandResponse Delete()
         {
             var sourceDeleted = new SourceDeleted(Key, User.Id, Name);
             Projection.ProjectionOld.HandleDiff(sourceDeleted);
             //TODO: system stream
-            return new DeleteSource();
+            return new SystemCommandResponse();
         }
 
 

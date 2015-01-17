@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EvernestFront.Answers;
+using EvernestFront.Responses;
 using EvernestFront.Projections;
 using EvernestFront.Service;
 using EvernestFront.Service.Command;
@@ -23,15 +23,15 @@ namespace EvernestFront
         }
 
         //public corresponding method is a User instance method
-        internal CreateEventStream CreateEventStream(string creatorName, string streamName)
+        internal SystemCommandResponse CreateEventStream(string creatorName, string streamName)
         {
             if (_eventStreamsProjection.EventStreamNameExists(streamName))
-                return new CreateEventStream(FrontError.EventStreamNameTaken);
+                return new SystemCommandResponse(FrontError.EventStreamNameTaken);
             // this is supposed to be called by a user object, so creator should always exist
 
             var command = new EventStreamCreation(_commandReceiver, streamName, creatorName);
             command.Execute();
-            return new CreateEventStream();
+            return new SystemCommandResponse();
         }
 
     }

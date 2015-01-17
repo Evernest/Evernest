@@ -15,6 +15,7 @@ namespace EvernestFront
         public SourcesProjection SourcesProjection;
 
         public CommandReceiver CommandReceiver;
+        public CommandResultManager CommandResultManager;
 
         private Injector() { }
 

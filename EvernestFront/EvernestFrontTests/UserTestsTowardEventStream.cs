@@ -2,7 +2,7 @@
 using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
-using EvernestFront.Answers;
+using EvernestFront.Responses;
 
 namespace EvernestFrontTests
 {
@@ -43,7 +43,7 @@ namespace EvernestFrontTests
         internal static long PushEvent_GetId_AssertSuccess(long userId, long streamId, string message)
         {
             var user = UserTests.GetUser_AssertSuccess(userId);
-            Push ans = user.Push(streamId, message);
+            PushResponse ans = user.Push(streamId, message);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             return ans.MessageId;
@@ -129,7 +129,7 @@ namespace EvernestFrontTests
 
             long user2Id = UserTests.AddUser_GetId_AssertSuccess(UserName2);
             User user2 = UserTests.GetUser_AssertSuccess(user2Id);
-            Push ans = user2.Push(streamId, Message);
+            PushResponse ans = user2.Push(streamId, Message);
             AssertAuxiliaries.ErrorAssert(FrontError.WriteAccessDenied,ans);
         }
 
@@ -139,7 +139,7 @@ namespace EvernestFrontTests
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             const long streamId = 42; //does not exist in StreamTable
             User user = UserTests.GetUser_AssertSuccess(userId);
-            Push ans = user.Push(streamId, Message);
+            PushResponse ans = user.Push(streamId, Message);
             AssertAuxiliaries.ErrorAssert(FrontError.EventStreamIdDoesNotExist,ans);
         }
 
@@ -150,7 +150,7 @@ namespace EvernestFrontTests
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, "PullRandom_Success");
             long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             User user = UserTests.GetUser_AssertSuccess(userId);
-            PullRandom ans = user.PullRandom(streamId);
+            PullRandomResponse ans = user.PullRandom(streamId);
             Assert.IsTrue(ans.Success);
             Event pulledRandom = ans.EventPulled;
             Assert.IsNotNull(pulledRandom);
@@ -165,7 +165,7 @@ namespace EvernestFrontTests
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             User user = UserTests.GetUser_AssertSuccess(userId);
-            Pull ans = user.Pull(streamId, eventId);
+            PullResponse ans = user.Pull(streamId, eventId);
             Assert.IsTrue(ans.Success);
             Event pulledById = ans.EventPulled;
             Assert.IsNotNull(pulledById);
@@ -180,7 +180,7 @@ namespace EvernestFrontTests
             long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             long eventId2 = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             User user = UserTests.GetUser_AssertSuccess(userId);
-            PullRange ans = user.PullRange(streamId, eventId, eventId2);
+            PullRangeResponse ans = user.PullRange(streamId, eventId, eventId2);
             Assert.IsTrue(ans.Success);
             var pulled = ans.Events;
             Assert.AreEqual(pulled.Count, 2);
@@ -196,7 +196,7 @@ namespace EvernestFrontTests
             SetRights_AssertSuccess(userId, streamId, user2Id, AccessRights.WriteOnly);
 
             User user2 = UserTests.GetUser_AssertSuccess(user2Id);
-            Pull ans = user2.Pull(streamId, eventId);
+            PullResponse ans = user2.Pull(streamId, eventId);
             AssertAuxiliaries.ErrorAssert(FrontError.ReadAccessDenied,ans);
         }
 

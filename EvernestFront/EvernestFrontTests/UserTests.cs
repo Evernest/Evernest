@@ -1,8 +1,7 @@
 ﻿using EvernestFront;
-using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
-using EvernestFront.Answers;
+using EvernestFront.Responses;
 
 namespace EvernestFrontTests
 {
@@ -60,7 +59,7 @@ namespace EvernestFrontTests
             const string password = "Password";
             AddUser addUser = User.AddUser(UserName, password);
             Assert.IsTrue(addUser.Success);
-            IdentifyUser ans = User.IdentifyUser(UserName, password);
+            IdentifyUserResponse ans = User.IdentifyUser(UserName, password);
             Assert.IsTrue(ans.Success);
         }
 
@@ -69,7 +68,7 @@ namespace EvernestFrontTests
         {
             AddUser user = User.AddUser(UserName);
             Assert.IsTrue(user.Success);
-            IdentifyUser ans = User.IdentifyUser(UserName, user.Password);
+            IdentifyUserResponse ans = User.IdentifyUser(UserName, user.Password);
             Assert.IsTrue(ans.Success);
         }
 
@@ -86,7 +85,7 @@ namespace EvernestFrontTests
         {
             AddUser addUser = User.AddUser(UserName);
             Assert.IsTrue(addUser.Success);
-            IdentifyUser ans = User.IdentifyUser(UserName, "WrongPassword");
+            IdentifyUserResponse ans = User.IdentifyUser(UserName, "WrongPassword");
             AssertAuxiliaries.ErrorAssert(FrontError.WrongPassword,ans);
         }
 
@@ -120,7 +119,7 @@ namespace EvernestFrontTests
             User user = GetUser_AssertSuccess(userId);
             SetPassword setPassword = user.SetPassword(initialPassword, newPassword);
             Assert.IsTrue(setPassword.Success);
-            IdentifyUser ans = User.IdentifyUser(UserName, newPassword);
+            IdentifyUserResponse ans = User.IdentifyUser(UserName, newPassword);
             Assert.IsTrue(ans.Success);
         }
 

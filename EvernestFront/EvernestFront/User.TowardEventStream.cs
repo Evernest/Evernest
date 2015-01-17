@@ -1,4 +1,4 @@
-﻿using EvernestFront.Answers;
+﻿using EvernestFront.Responses;
 using EvernestFront.Service.Command;
 
 namespace EvernestFront
@@ -28,7 +28,7 @@ namespace EvernestFront
         /// </summary>
         /// <param name="streamId"></param>
         /// <returns></returns>
-        public PullRandom PullRandom(long streamId)
+        public PullRandomResponse PullRandom(long streamId)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))
@@ -38,10 +38,10 @@ namespace EvernestFront
                     return eventStream.PullRandom();
                 }
                 else
-                    return new PullRandom(FrontError.ReadAccessDenied);
+                    return new PullRandomResponse(FrontError.ReadAccessDenied);
             }
             else
-                return new PullRandom(FrontError.EventStreamIdDoesNotExist);
+                return new PullRandomResponse(FrontError.EventStreamIdDoesNotExist);
 
         }
 
@@ -51,7 +51,7 @@ namespace EvernestFront
         /// <param name="streamId"></param>
         /// <param name="eventId"></param>
         /// <returns></returns>
-        public Pull Pull(long streamId, long eventId)
+        public PullResponse Pull(long streamId, long eventId)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))
@@ -61,10 +61,10 @@ namespace EvernestFront
                     return eventStream.Pull(eventId);
                 }
                 else
-                    return new Pull(FrontError.ReadAccessDenied);
+                    return new PullResponse(FrontError.ReadAccessDenied);
             }
             else
-                return new Pull(FrontError.EventStreamIdDoesNotExist);
+                return new PullResponse(FrontError.EventStreamIdDoesNotExist);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace EvernestFront
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public PullRange PullRange(long streamId, long from, long to)
+        public PullRangeResponse PullRange(long streamId, long from, long to)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))
@@ -85,10 +85,10 @@ namespace EvernestFront
                     return eventStream.PullRange(from, to);
                 }
                 else
-                    return new PullRange(FrontError.ReadAccessDenied);
+                    return new PullRangeResponse(FrontError.ReadAccessDenied);
             }
             else
-                return new PullRange(FrontError.EventStreamIdDoesNotExist);
+                return new PullRangeResponse(FrontError.EventStreamIdDoesNotExist);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace EvernestFront
         /// <param name="streamId"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Push Push(long streamId, string message)
+        public PushResponse Push(long streamId, string message)
         {
             EventStream eventStream;
             if (EventStream.TryGetStream(streamId, out eventStream))
@@ -108,10 +108,10 @@ namespace EvernestFront
                     //TODO: add writer id to event
                 }
                 else
-                    return new Push(FrontError.WriteAccessDenied);
+                    return new PushResponse(FrontError.WriteAccessDenied);
             }
             else
-                return new Push(FrontError.EventStreamIdDoesNotExist);
+                return new PushResponse(FrontError.EventStreamIdDoesNotExist);
         }
 
         /// <summary>

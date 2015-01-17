@@ -1,18 +1,18 @@
 
 
-namespace EvernestFront.Answers
+namespace EvernestFront.Responses
 {
-    public class IdentifyUser : Answer
+    public class IdentifyUserResponse : BaseResponse
     {
         public User User { get; private set; }
 
-        internal IdentifyUser(User user)
+        internal IdentifyUserResponse(User user)
             : base()
         {
             User = user;
         }
 
-        internal IdentifyUser(FrontError err)
+        internal IdentifyUserResponse(FrontError err)
             : base(err)
         {
             

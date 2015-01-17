@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace EvernestFront.Answers
+namespace EvernestFront.Responses
 {
-    public class PullRange:Answer
+    public class PullRangeResponse:BaseResponse
     {
 
         public List<Event> Events { get; private set; }
 
-        internal PullRange(FrontError err)
+        internal PullRangeResponse(FrontError err)
             :base(err)
         {
         }
@@ -17,7 +17,7 @@ namespace EvernestFront.Answers
         /// Sets field success to true and fills field events.
         /// </summary>
         /// <param name="eventsPulled"></param>
-        internal PullRange(List<Event> eventsPulled)
+        internal PullRangeResponse(List<Event> eventsPulled)
             :base ()
         {
             Events = eventsPulled;

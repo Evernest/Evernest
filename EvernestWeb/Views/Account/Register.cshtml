@@ -10,21 +10,21 @@
     @Html.AntiForgeryToken()
     <fieldset>
         <div class="form-group">
-            @Html.LabelFor(m => m.Username, "User name")
+            @Html.LabelFor(m => m.Username)
             <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.Username)
             </p>
             @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @placeholder = "User name" })
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.Password, "Password")
+            @Html.LabelFor(m => m.Password)
             <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.Password)
             </p>
             @Html.PasswordFor(m => m.Password, new {@class = "form-control", @placeholder = "Password"})
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.ConfirmPassword, "Confirm password")
+            @Html.LabelFor(m => m.ConfirmPassword)
             <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.ConfirmPassword)
             </p>

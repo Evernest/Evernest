@@ -2,26 +2,33 @@
 
 <h3>Change password</h3>
 
+@if (ViewBag.Status != null)
+{
+    <p class="text-success">
+        @ViewBag.Status
+    </p>
+}
+
 @using (Html.BeginForm("ChangePwd", "Account", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
     <fieldset>
         <div class="form-group">
-            @Html.LabelFor(m => m.Password, "Current password")
+            @Html.LabelFor(m => m.Password)
             <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.Password)
             </p>
             @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Current password" })
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.NewPassword, "New password")
+            @Html.LabelFor(m => m.NewPassword)
             <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.NewPassword)
             </p>
             @Html.PasswordFor(m => m.NewPassword, new { @class = "form-control", @placeholder = "New password" })
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.ConfirmPassword, "Confirm new password")
+            @Html.LabelFor(m => m.ConfirmPassword)
             <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.ConfirmPassword)
             </p>
@@ -31,7 +38,4 @@
     </fieldset>
 }
 
-@if (ViewBag.Status != null)
-{
-    <p>@ViewBag.Status</p>
-}
+

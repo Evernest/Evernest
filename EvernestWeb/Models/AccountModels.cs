@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EvernestWeb.Models
 {
@@ -28,32 +23,32 @@ namespace EvernestWeb.Models
     public class LoginModel
     {
         [Required]
-        [Display (Name = "User Name")]
+        [Display (Name = "User name")]
         public string Username { get; set; }
 
         [Required]
         [Display (Name = "Password")]
         public string Password { get; set; }
 
-        [Display(Name = "Remember Me ?")]
+        [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
 
     public class RegisterModel
     {
         [Required]
-        [Display(Name = "User Name")]
+        [Display(Name = "User name")]
         public string Username { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "Password too short, at least 6 characters.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "Password is too short. It requires at least 6 characters.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm Password")]
-        [Compare("Password", ErrorMessage = "Password and Confirm Password do not match.")]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "Password and confirmation password must match.")]
         public string ConfirmPassword { get; set; }
     }
 
@@ -64,14 +59,14 @@ namespace EvernestWeb.Models
         public string Password { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "Password too short, at least 6 characters.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "Password is too short. It requires at least 6 characters.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "Enter New Password")]
+        [Display(Name = "New password")]
         public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm New Password")]
-        [Compare("NewPassword", ErrorMessage = "Password and Confirm Password do not match.")]
+        [Display(Name = "Confirm new password")]
+        [Compare("NewPassword", ErrorMessage = "Password and confirmation password must match.")]
         public string ConfirmPassword { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+
 using EvernestWeb.Models;
 using EvernestWeb.Application;
 
@@ -19,7 +20,7 @@ namespace EvernestWeb.Controllers
             return null;
         }
 
-        // GET: Accountpublic ActionResult Index(int id)
+        // GET: Account
         public ActionResult Index(int id = -1)
         {
             Connexion connexion = IsConnected();
@@ -27,7 +28,7 @@ namespace EvernestWeb.Controllers
             {
                 if(id==1)
                 {
-                    ViewBag.Status = "Successfully changed password.";
+                    ViewBag.Status = "Password has been successfully changed.";
                 }
                 return View();
             }
@@ -55,7 +56,7 @@ namespace EvernestWeb.Controllers
                         return RedirectToAction("Index", "Account", new {id=0});
                     }
                 }
-                return View(model);
+                return RedirectToAction("Index", "Account", new { id = 0 });
             }
             return RedirectToAction("Index", "Home");
         }

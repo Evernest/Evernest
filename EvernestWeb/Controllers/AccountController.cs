@@ -82,6 +82,10 @@ namespace EvernestWeb.Controllers
                     if (connexion.CheckUser(model.Username, model.Password))
                     {
                         connexion.CreateConnexionCookie(model.RememberMe);
+                        if (Url.IsLocalUrl(returnUrl))
+                        {
+                            return Redirect(returnUrl);
+                        }
                         return RedirectToAction("Index", "Account");
                     }
                     else
@@ -136,6 +140,7 @@ namespace EvernestWeb.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [AllowAnonymous]
         public ActionResult LogOff()
         {
             Connexion connexion = new Connexion();

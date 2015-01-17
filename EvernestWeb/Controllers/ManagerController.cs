@@ -23,7 +23,7 @@ namespace EvernestWeb.Controllers
             return connexion;
         }
 
-        // GET: Store
+        // GET: Manager
         public ActionResult Index()
         {
             IsConnected();

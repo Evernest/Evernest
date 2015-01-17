@@ -17,6 +17,7 @@ namespace EvernestWeb.Controllers
             }
         }
 
+        [AllowAnonymous]
         public ActionResult Index()
         {
             IsConnected();
@@ -25,6 +26,7 @@ namespace EvernestWeb.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         public ActionResult About()
         {
             IsConnected();
@@ -32,6 +34,7 @@ namespace EvernestWeb.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         public ActionResult Contact()
         {
             IsConnected();

@@ -114,7 +114,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Connexion.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\StoreController.cs" />
+    <Compile Include="Controllers\ManagerController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -164,9 +164,9 @@
     <Content Include="Views\Account\Index.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Store\Index.cshtml" />
-    <Content Include="Views\Store\MyStore.cshtml" />
-    <Content Include="Views\Store\Stream.cshtml" />
+    <Content Include="Views\Manager\Index.cshtml" />
+    <Content Include="Views\Manager\MyStore.cshtml" />
+    <Content Include="Views\Manager\Stream.cshtml" />
     <Content Include="Views\Shared\changePwdFormPartial.cshtml" />
     <Content Include="Views\Shared\addEventFormPartial.cshtml" />
     <Content Include="Views\Shared\addUserFormPartial.cshtml" />

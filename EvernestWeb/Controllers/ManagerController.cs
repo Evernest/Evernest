@@ -9,7 +9,7 @@ using EvernestWeb.ViewModels;
 
 namespace EvernestWeb.Controllers
 {
-    public class StoreController : Controller
+    public class ManagerController : Controller
     {
         private Connexion IsConnected()
         {

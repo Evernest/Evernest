@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using EvernestWeb.Models;
+using EvernestWeb.Application;
 
 namespace EvernestWeb.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : System.Web.Mvc.Controller
     {
         private Connexion IsConnected()
         {

@@ -19,4 +19,12 @@ It uses ASP.NET MVC and directory organisation follow the usual conventions of t
 
 Application starts with `Global.asax.cs`.
 
+They are three controllers:
+
+ * `Home`: Handles static presentation pages (home, about, contact)
+ * `Account`: Handles operations on accounts (register, login, etc.)
+ * `Manager`: Handles user space manager, to interact with streams, sources, events, etc. though a graphical user interface.
+
+ `Account` and `Manager` use `EvernestFront` to store data and access user streams.
+
 

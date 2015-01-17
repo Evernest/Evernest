@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+
 using EvernestWeb.Models;
 using EvernestWeb.ViewModels;
+using EvernestWeb.Application;
 
 namespace EvernestWeb.Controllers
 {
-    public class ManagerController : Controller
+    public class ManagerController : System.Web.Mvc.Controller
     {
         private Connexion IsConnected()
         {

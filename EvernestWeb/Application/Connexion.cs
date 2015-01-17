@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Net;
-using System.Security.Policy;
 using System.Web;
-using System.Web.Mvc;
-using System.Web.Security;
 
 
-namespace EvernestWeb.Controllers
+namespace EvernestWeb.Application
 {
     public class Connexion
     {

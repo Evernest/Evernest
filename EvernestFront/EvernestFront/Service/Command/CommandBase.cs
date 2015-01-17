@@ -16,10 +16,9 @@ namespace EvernestFront.Service.Command
             Guid = Guid.NewGuid();
         }
 
-        public Guid Send()
+        public void Send()
         {
             _commandReceiver.ReceiveCommand(this);
-            return Guid;
         }
     }
 }

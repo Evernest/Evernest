@@ -112,8 +112,7 @@ namespace EvernestFront
             if (!VerifyPassword(passwordForVerification))
                 return new SystemCommandResponse(FrontError.WrongPassword);
             var command = new PasswordSetting(_commandReceiver, Id, passwordForVerification, newPassword);
-            var guid = command.Send();
-            return new SystemCommandResponse(guid);
+            return new SystemCommandResponse(command.Guid);
         }
 
         public SystemCommandResponse CreateUserKey(string keyName)
@@ -121,8 +120,7 @@ namespace EvernestFront
             if (InternalUserKeys.ContainsKey(keyName))
                 return new SystemCommandResponse(FrontError.UserKeyNameTaken);
             var command = new UserKeyCreation(_commandReceiver, Id, keyName);
-            var guid = command.Send();
-            return new SystemCommandResponse(guid);
+            return new SystemCommandResponse(command.Guid);
         }
 
 

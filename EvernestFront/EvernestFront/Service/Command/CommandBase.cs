@@ -17,10 +17,9 @@ namespace EvernestFront.Service.Command
             Guid = Guid.NewGuid();
         }
 
-        public Guid Send()
+        public void Send()
         {
             _commandReceiver.ReceiveCommand(this);
-            return Guid;
         }
 
         public abstract bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error);

@@ -1,7 +1,4 @@
-﻿using System;
-using EvernestFront.Answers;
-using EvernestFront.Contract.SystemEvent;
-using EvernestFront.Projections;
+﻿using EvernestFront.Projections;
 using EvernestFront.Responses;
 using EvernestFront.Service;
 using EvernestFront.Service.Command;
@@ -78,8 +75,7 @@ namespace EvernestFront
             if (!_usersProjection.UserNameExists(name))
             {
                 var command = new UserCreation(_commandReceiver, name, password);
-                var guid = command.Send();
-                return new SystemCommandResponse(guid);
+                return new SystemCommandResponse(command.Guid);
             }
             else
                 return new SystemCommandResponse(FrontError.UserNameTaken);

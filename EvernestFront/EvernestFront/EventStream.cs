@@ -62,16 +62,16 @@ namespace EvernestFront
 
 
         //public corresponding method is a User instance method
-        internal SetRights SetRight(string adminName, string targetName, AccessRight right)
+        internal SystemCommandResponse SetRight(string adminName, string targetName, AccessRight right)
         {
             if (!ValidateActionFromUserName(adminName, AccessAction.Admin))
-                return new SetRights(FrontError.AdminAccessDenied);
+                return new SystemCommandResponse(FrontError.AdminAccessDenied);
             if (ValidateActionFromUserName(targetName, AccessAction.Admin))
-                return new SetRights(FrontError.CannotDestituteAdmin);
+                return new SystemCommandResponse(FrontError.CannotDestituteAdmin);
             var command = new UserRightSettingByUser(_commandReceiver,
                 targetName, Id, adminName, right);
-            command.Send();
-            return new SetRights();
+            var guid = command.Send();
+            return new SystemCommandResponse(guid);
         }
 
         private bool ValidateActionFromUserName(string userName, AccessAction action)

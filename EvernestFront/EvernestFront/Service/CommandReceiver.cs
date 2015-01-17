@@ -9,12 +9,12 @@ namespace EvernestFront.Service
     class CommandReceiver
     {
         
-        private SystemEventProducer _systemEventProducer;
-        private ServiceData _serviceData;
-        private Dispatcher _dispatcher;
+        private readonly SystemEventProducer _systemEventProducer;
+        private readonly ServiceData _serviceData;
+        private readonly Dispatcher _dispatcher;
 
-        private ConcurrentQueue<CommandBase> _pendingCommandQueue;
-        private CancellationTokenSource _tokenSource;
+        private readonly ConcurrentQueue<CommandBase> _pendingCommandQueue;
+        private readonly CancellationTokenSource _tokenSource;
 
         public CommandReceiver(SystemEventProducer systemEventProducer,
             ServiceData serviceData, Dispatcher dispatcher)

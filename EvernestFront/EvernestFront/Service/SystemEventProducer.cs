@@ -9,7 +9,7 @@ namespace EvernestFront.Service
 {
     internal class SystemEventProducer
     {
-        private ServiceData _serviceData;
+        private readonly ServiceData _serviceData;
 
 
         internal SystemEventProducer(ServiceData serviceData)

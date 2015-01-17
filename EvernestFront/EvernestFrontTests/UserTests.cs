@@ -9,8 +9,6 @@ namespace EvernestFrontTests
     [TestFixture]
     public class UserTests
     {
-        private const string UserName = "userName";
-        private const string UserName2 = "userName2";
         private const string Password = "password";
 
         internal static long AddUser_GetId_AssertSuccess(string userName)
@@ -19,6 +17,14 @@ namespace EvernestFrontTests
             SystemCommandResponse add = usb.AddUser(userName, Password);
             Assert.IsTrue(add.Success);
             Assert.IsNull(add.Error);
+            var viewer = new CommandResultViewer();
+            SystemCommandResponse response;
+            while (!viewer.TryGetResult(add.CommandGuid, out response))
+            {
+                System.Threading.Thread.Sleep(50);
+            }
+            Assert.IsTrue(response.Success);
+            Assert.IsNull(response.Error);
             IdentifyUserResponse ans = usb.IdentifyUser(userName, Password);
             return ans.User.Id;
         }
@@ -42,37 +48,21 @@ namespace EvernestFrontTests
         }
 
         [Test]
-        public void AddUser_Success()
+        public void AddUser_IdentifyUser_Success()
         {
-            long userId = AddUser_GetId_AssertSuccess(UserName);
+            var userName = AssertAuxiliaries.NewName;
+            long userId = AddUser_GetId_AssertSuccess(userName);
         }
 
        
         [Test]
         public void AddUser_UserNameTaken()
         {
-            long userId = AddUser_GetId_AssertSuccess(UserName);
-            AddUser ans = User.AddUser(UserName);
+            var userName = AssertAuxiliaries.NewName;
+            long userId = AddUser_GetId_AssertSuccess(userName);
+            var usb = new UsersBuilder();
+            SystemCommandResponse ans = usb.AddUser(userName, Password);
             AssertAuxiliaries.ErrorAssert(FrontError.UserNameTaken,ans);
-        }
-
-        [Test]
-        public void AddUser_WithPassword()
-        {
-            const string password = "Password";
-            AddUser addUser = User.AddUser(UserName, password);
-            Assert.IsTrue(addUser.Success);
-            IdentifyUserResponse ans = User.IdentifyUser(UserName, password);
-            Assert.IsTrue(ans.Success);
-        }
-
-        [Test]
-        public void IdentifyUser_Success()
-        {
-            AddUser user = User.AddUser(UserName);
-            Assert.IsTrue(user.Success);
-            IdentifyUserResponse ans = User.IdentifyUser(UserName, user.Password);
-            Assert.IsTrue(ans.Success);
         }
 
         [Test]
@@ -86,17 +76,19 @@ namespace EvernestFrontTests
         [Test]
         public void IdentifyUser_WrongPassword()
         {
-            AddUser addUser = User.AddUser(UserName);
-            Assert.IsTrue(addUser.Success);
-            IdentifyUserResponse ans = User.IdentifyUser(UserName, "WrongPassword");
+            var userName = AssertAuxiliaries.NewName;
+            long userId = AddUser_GetId_AssertSuccess(userName);
+            IdentifyUserResponse ans = User.IdentifyUser(userName, "WrongPassword");
             AssertAuxiliaries.ErrorAssert(FrontError.WrongPassword,ans);
         }
 
         [Test]
         public void GetUser_Success()
         {
-            long userId = AddUser_GetId_AssertSuccess(UserName);
-            var ans = User.GetUser(userId);
+            var userName = AssertAuxiliaries.NewName;
+            long userId = AddUser_GetId_AssertSuccess(userName);
+            var usb = new UsersBuilder();
+            var ans = usb.GetUser(userId);
             Assert.IsTrue(ans.Success);
             Assert.IsNotNull(ans.User);
             Assert.IsNull(ans.Error);
@@ -105,7 +97,8 @@ namespace EvernestFrontTests
         [Test]
         public void GetUser_IdDoesNotExist()
         {
-            var ans = User.GetUser(42);
+            var usb = new UsersBuilder();
+            var ans = usb.GetUser(42);
             AssertAuxiliaries.ErrorAssert(FrontError.UserIdDoesNotExist,ans);
         }
 
@@ -115,38 +108,36 @@ namespace EvernestFrontTests
         [Test]
         public void SetPassword_Success()
         {
-            const string initialPassword = "InitialPassword";
-            var userAdded = User.AddUser(UserName, initialPassword);
-            var userId = userAdded.UserId;
+            var userName = AssertAuxiliaries.NewName;
+            var id = AddUser_GetId_AssertSuccess(userName);
             const string newPassword = "NewPassword";
-            User user = GetUser_AssertSuccess(userId);
-            SetPassword setPassword = user.SetPassword(initialPassword, newPassword);
+            User user = GetUser_AssertSuccess(id);
+            SystemCommandResponse setPassword = user.SetPassword(Password, newPassword);
             Assert.IsTrue(setPassword.Success);
-            IdentifyUserResponse ans = User.IdentifyUser(UserName, newPassword);
+            System.Threading.Thread.Sleep(100);
+            IdentifyUserResponse ans = User.IdentifyUser(userName, newPassword);
             Assert.IsTrue(ans.Success);
         }
 
         [Test]
         public void SetPassword_WrongPassword()
         {
-            const string initialPassword = "InitialPassword";
-            var userAdded = User.AddUser(UserName, initialPassword);
-            var userId = userAdded.UserId;
+            var userName = AssertAuxiliaries.NewName;
+            var id = AddUser_GetId_AssertSuccess(userName);
             const string newPassword = "NewPassword";
-            User user = GetUser_AssertSuccess(userId);
-            SetPassword setPassword = user.SetPassword("WrongPassword", newPassword);
+            User user = GetUser_AssertSuccess(id);
+            var setPassword = user.SetPassword("WrongPassword", newPassword);
             AssertAuxiliaries.ErrorAssert(FrontError.WrongPassword,setPassword);
         }
 
         [Test]
         public void SetPassword_InvalidString()
         {
-            const string initialPassword = "InitialPassword";
-            var userAdded = User.AddUser(UserName, initialPassword);
-            var userId = userAdded.UserId;
+            var userName = AssertAuxiliaries.NewName;
+            var id = AddUser_GetId_AssertSuccess(userName);
             const string badString = "£££££"; //non ASCII
-            User user = GetUser_AssertSuccess(userId);
-            SetPassword setPassword = user.SetPassword(initialPassword, badString);
+            User user = GetUser_AssertSuccess(id);
+            var setPassword = user.SetPassword(Password, badString);
             AssertAuxiliaries.ErrorAssert(FrontError.InvalidString,setPassword);
         }
 

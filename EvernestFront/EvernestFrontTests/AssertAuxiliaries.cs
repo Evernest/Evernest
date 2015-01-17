@@ -11,14 +11,14 @@ namespace EvernestFrontTests
     class AssertAuxiliaries
     {
 
-        private static int counter = 0;
+        private static int _counter = 0;
 
         public static string NewName
         {
             get
             {
-                counter = counter + 1;
-                return Convert.ToString(counter);
+                _counter = _counter + 1;
+                return Convert.ToString(_counter);
             }
         }
 

@@ -7,12 +7,8 @@ namespace EvernestFront.Responses
     {
         public List<KeyValuePair<long, AccessRight>> Users { get; private set; }
 
-<<<<<<< HEAD:EvernestFront/EvernestFront/Answers/RelatedUsers.cs
-        internal RelatedUsers(List<KeyValuePair<long,AccessRight>> users)
-=======
-        internal RelatedUsersResponse(List<KeyValuePair<long,AccessRights>> users)
->>>>>>> origin/RemoveContractsOverProjection:EvernestFront/EvernestFront/Responses/RelatedUsersResponse.cs
-            :base()
+
+        internal RelatedUsersResponse(List<KeyValuePair<long,AccessRight>> users)
         {
             Users = users;
         }

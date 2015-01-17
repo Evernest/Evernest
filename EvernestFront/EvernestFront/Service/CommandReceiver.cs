@@ -1,7 +1,9 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Responses;
 using EvernestFront.Service.Command;
 
 namespace EvernestFront.Service
@@ -9,19 +11,19 @@ namespace EvernestFront.Service
     class CommandReceiver
     {
         
-        private readonly SystemEventProducer _systemEventProducer;
         private readonly ServiceData _serviceData;
         private readonly Dispatcher _dispatcher;
+        private readonly CommandResultManager _manager;
 
         private readonly ConcurrentQueue<CommandBase> _pendingCommandQueue;
         private readonly CancellationTokenSource _tokenSource;
+       
 
-        public CommandReceiver(SystemEventProducer systemEventProducer,
-            ServiceData serviceData, Dispatcher dispatcher)
+        public CommandReceiver(ServiceData serviceData, Dispatcher dispatcher, CommandResultManager manager)
         {
-            _systemEventProducer = systemEventProducer;
             _serviceData = serviceData;
             _dispatcher = dispatcher;
+            _manager = manager;
             _pendingCommandQueue=new ConcurrentQueue<CommandBase>();
             _tokenSource=new CancellationTokenSource();
         }
@@ -53,9 +55,18 @@ namespace EvernestFront.Service
 
         private void ConsumeCommand(CommandBase command)
         {
-            ISystemEvent systemEvent = _systemEventProducer.CommandToSystemEvent(command);
-            _serviceData.SelfUpdate(systemEvent);
-            _dispatcher.ConsumeSystemEvent(systemEvent);
+            ISystemEvent systemEvent;
+            FrontError? error;
+            if (command.TryToSystemEvent(_serviceData, out systemEvent, out error))
+            {
+                _serviceData.SelfUpdate(systemEvent);
+                _dispatcher.HandleEvent(systemEvent, command.Guid);
+            }
+            else
+            {
+                Debug.Assert(error != null, "error != null");
+                _manager.AddCommandResult(command.Guid, new SystemCommandResponse((FrontError) error));
+            }
         }
     }
 }

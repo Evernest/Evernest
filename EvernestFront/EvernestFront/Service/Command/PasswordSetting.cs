@@ -1,4 +1,7 @@
-﻿namespace EvernestFront.Service.Command
+﻿using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Utilities;
+
+namespace EvernestFront.Service.Command
 {
     class PasswordSetting : CommandBase
     {
@@ -16,5 +19,28 @@
             NewPassword = newPassword;
         }
 
+
+        public override bool TryToSystemEvent(ServiceData serviceData, out Contract.SystemEvent.ISystemEvent systemEvent, out FrontError? error)
+        {
+            UserDataForService userData;
+            if (!serviceData.UserIdToDatas.TryGetValue(UserId, out userData))
+            {
+                error = FrontError.UserIdDoesNotExist;
+                systemEvent =null;
+                return false;
+            }
+            var passwordManager = new PasswordManager();
+            if (!passwordManager.Verify(CurrentPassword, userData.SaltedPasswordHash, userData.PasswordSalt))
+            {
+                error=FrontError.WrongPassword;
+                systemEvent = null;
+                return false;
+            }
+
+            var hashSalt = passwordManager.SaltAndHash(NewPassword);
+            systemEvent = new PasswordSet(UserId, hashSalt.Key, hashSalt.Value);
+            error = null;
+            return true;
+        }        
     }
 }

@@ -1,9 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Projections;
+using EvernestFront.Responses;
 
 namespace EvernestFront
 {
@@ -14,16 +16,19 @@ namespace EvernestFront
         private ICollection<IProjection> Projections { set; get; }
         private SystemEventStream SystemEventStream { set; get; }
 
-        private readonly ConcurrentQueue<ISystemEvent> _pendingEventQueue;
+        private readonly ConcurrentQueue<Tuple<Guid,ISystemEvent>> _pendingEventQueue;
 
         private readonly CancellationTokenSource _tokenSource;
 
-        public Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream)
+        private CommandResultManager Manager { set; get; }
+
+        public Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream, CommandResultManager manager)
         {
             Projections = projections;
             SystemEventStream = systemEventStream;
-            _pendingEventQueue = new ConcurrentQueue<ISystemEvent>();
+            _pendingEventQueue = new ConcurrentQueue<Tuple<Guid, ISystemEvent>>();
             _tokenSource = new CancellationTokenSource();
+            Manager = manager;
         }
 
         public void StopDispatching()
@@ -31,9 +36,9 @@ namespace EvernestFront
             _tokenSource.Cancel();
         }
 
-        public void HandleEvent(ISystemEvent systemEvent)
+        public void HandleEvent(ISystemEvent systemEvent, Guid guid)
         {
-            _pendingEventQueue.Enqueue(systemEvent);
+            _pendingEventQueue.Enqueue(new Tuple<Guid, ISystemEvent>(guid, systemEvent));
         }
 
         public void DispatchEvents()
@@ -43,15 +48,15 @@ namespace EvernestFront
             {
                 while (!token.IsCancellationRequested)
                 {
-                    ISystemEvent systemEvent;
-                    if (_pendingEventQueue.TryDequeue(out systemEvent))
-                        ConsumeSystemEvent(systemEvent);
+                    Tuple<Guid, ISystemEvent> tuple;
+                    if (_pendingEventQueue.TryDequeue(out tuple))
+                        ConsumeSystemEvent(tuple.Item2, tuple.Item1);
                 }
             }), token);
         }
     
 
-        internal void ConsumeSystemEvent(ISystemEvent systemEvent)
+        private void ConsumeSystemEvent(ISystemEvent systemEvent, Guid guid)
         {
 
             SystemEventStream.Push(systemEvent);
@@ -59,6 +64,7 @@ namespace EvernestFront
             {
                 p.OnSystemEvent(systemEvent);
             }
+            Manager.AddCommandResult(guid, new SystemCommandResponse(guid));
         }
 
        

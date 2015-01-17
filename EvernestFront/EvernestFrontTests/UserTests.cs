@@ -11,13 +11,16 @@ namespace EvernestFrontTests
     {
         private const string UserName = "userName";
         private const string UserName2 = "userName2";
+        private const string Password = "password";
 
         internal static long AddUser_GetId_AssertSuccess(string userName)
         {
-            AddUser ans = User.AddUser(userName);
-            Assert.IsTrue(ans.Success);
-            Assert.IsNull(ans.Error);
-            return ans.UserId;
+            var usb = new UsersBuilder();
+            SystemCommandResponse add = usb.AddUser(userName, Password);
+            Assert.IsTrue(add.Success);
+            Assert.IsNull(add.Error);
+            IdentifyUserResponse ans = usb.IdentifyUser(userName, Password);
+            return ans.User.Id;
         }
 
         internal static User GetUser_AssertSuccess(long userId)

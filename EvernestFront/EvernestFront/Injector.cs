@@ -24,14 +24,13 @@ namespace EvernestFront
             UsersProjection = new UsersProjection();
             EventStreamsProjection = new EventStreamsProjection();
             SourcesProjection = new SourcesProjection();
-
+            CommandResultManager = new CommandResultManager();
             var systemEventStream = new SystemEventStream();
             var dispatcher = new Dispatcher(new List<IProjection>
-                {UsersProjection, EventStreamsProjection, SourcesProjection}, systemEventStream);
+                {UsersProjection, EventStreamsProjection, SourcesProjection}, systemEventStream, CommandResultManager);
 
             var serviceData = new ServiceData();
-            var systemEventProducer = new SystemEventProducer(serviceData);
-            CommandReceiver = new CommandReceiver(systemEventProducer, serviceData, dispatcher);
+            CommandReceiver = new CommandReceiver(serviceData, dispatcher, CommandResultManager);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront.Service.Command
 {
@@ -21,5 +22,7 @@ namespace EvernestFront.Service.Command
             _commandReceiver.ReceiveCommand(this);
             return Guid;
         }
+
+        public abstract bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error);
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace EvernestFront.Service.Command
+﻿using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Utilities;
+
+namespace EvernestFront.Service.Command
 {
     class UserKeyDeletion : CommandBase
     {
@@ -17,5 +20,27 @@
 
         }
 
+
+
+
+        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        {
+            UserDataForService userData;
+            if (!serviceData.UserIdToDatas.TryGetValue(UserId, out userData))
+            {
+                error = FrontError.UserIdDoesNotExist;
+                systemEvent = null;
+                return false;
+            }
+            if (!userData.Keys.Contains(KeyName))
+            {
+                error = FrontError.UserKeyDoesNotExist;
+                systemEvent = null;
+                return false;
+            }
+            systemEvent= new UserKeyDeleted(Key, UserId, KeyName);
+            error = null;
+            return true;
+        }
     }
 }

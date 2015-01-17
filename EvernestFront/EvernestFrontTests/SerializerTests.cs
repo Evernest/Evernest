@@ -12,7 +12,6 @@ namespace EvernestFrontTests
     [TestFixture]
     class SerializerTests
     {
-        private const string UserName = "userName";
         private const string Message = "message";
 
         [SetUp]
@@ -27,7 +26,7 @@ namespace EvernestFrontTests
         public static void ReadContract_Success()
         {
             var serializer = new Serializer();
-            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var userId = UserTests.AddUser_GetId_AssertSuccess(AssertAuxiliaries.NewName);
             var user = UserTests.GetUser_AssertSuccess(userId);
             var date = DateTime.UtcNow;
             var contract = new EventContract(user, date, Message);

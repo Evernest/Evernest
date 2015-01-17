@@ -4,9 +4,9 @@ namespace EvernestFront.Answers
 {
     public class RelatedEventStreams : Answer
     {
-        public List<KeyValuePair<long, AccessRights>> Streams { get; private set; }
+        public List<KeyValuePair<long, AccessRight>> Streams { get; private set; }
 
-        internal RelatedEventStreams(List<KeyValuePair<long, AccessRights>> streams)
+        internal RelatedEventStreams(List<KeyValuePair<long, AccessRight>> streams)
             : base()
         {
             Streams = streams;

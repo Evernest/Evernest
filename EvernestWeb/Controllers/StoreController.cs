@@ -33,10 +33,10 @@ namespace EvernestWeb.Controllers
 
         private StreamsSources getStreamsSources(EvernestFront.Answers.GetUser u)
         {
-            List<KeyValuePair<long, EvernestFront.AccessRights>> listStreams = u.User.RelatedEventStreams;
+            List<KeyValuePair<long, EvernestFront.AccessRight>> listStreams = u.User.RelatedEventStreams;
             List<KeyValuePair<string, string>> listSources = u.User.Sources;
             StreamsSources streamsSources = new StreamsSources();
-            foreach (KeyValuePair<long, EvernestFront.AccessRights> elt in listStreams)
+            foreach (KeyValuePair<long, EvernestFront.AccessRight> elt in listStreams)
             {
                 EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(elt.Key);
                 if (s.Success)
@@ -95,17 +95,17 @@ namespace EvernestWeb.Controllers
             return View("Index");
         }
 
-        public EvernestFront.AccessRights StringToAccessRights(string accessRights)
+        public EvernestFront.AccessRight StringToAccessRights(string accessRights)
         {
-            EvernestFront.AccessRights accessRights_ = EvernestFront.AccessRights.NoRights; // something by default
+            EvernestFront.AccessRight accessRights_ = EvernestFront.AccessRight.NoRight; // something by default
             switch (accessRights)
             {
-                case "NoRights": accessRights_ = EvernestFront.AccessRights.NoRights; break;
-                case "ReadOnly": accessRights_ = EvernestFront.AccessRights.ReadOnly; break;
-                case "WriteOnly": accessRights_ = EvernestFront.AccessRights.WriteOnly; break;
-                case "ReadWrite": accessRights_ = EvernestFront.AccessRights.ReadWrite; break;
-                case "Admin": accessRights_ = EvernestFront.AccessRights.Admin; break;
-                case "Root": accessRights_ = EvernestFront.AccessRights.Root; break;
+                case "NoRights": accessRights_ = EvernestFront.AccessRight.NoRight; break;
+                case "ReadOnly": accessRights_ = EvernestFront.AccessRight.ReadOnly; break;
+                case "WriteOnly": accessRights_ = EvernestFront.AccessRight.WriteOnly; break;
+                case "ReadWrite": accessRights_ = EvernestFront.AccessRight.ReadWrite; break;
+                case "Admin": accessRights_ = EvernestFront.AccessRight.Admin; break;
+                case "Root": accessRights_ = EvernestFront.AccessRight.Root; break;
             }
             return accessRights_;
         }
@@ -123,7 +123,7 @@ namespace EvernestWeb.Controllers
                 if (addSource != null)
                 {
                     long idStream_ = Convert.ToInt64(idStream);
-                    EvernestFront.AccessRights accessRights_ = StringToAccessRights(accessRights);
+                    EvernestFront.AccessRight accessRights_ = StringToAccessRights(accessRights);
                     EvernestFront.Answers.CreateSource source = u.User.CreateSource(addSource, idStream_, accessRights_);
                     if (source.Success)
                     {

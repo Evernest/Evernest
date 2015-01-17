@@ -93,7 +93,7 @@ namespace EvernestAPI.Controllers
                     var user = iduser.User;
                     var sourceName = (string) body["SourceName"];
                     var streamId = (long) body["StreamId"];
-                    var rights = (AccessRights) body["AccessRights"]; // ?
+                    var rights = (AccessRight) body["AccessRights"]; // ?
                     var creaSource = user.CreateSource(sourceName, streamId, rights);
                     if (!creaSource.Success)
                     {

@@ -1,9 +1,9 @@
 ﻿
 namespace EvernestFront
 {
-    public enum AccessRights
+    public enum AccessRight
     {
-        NoRights,
+        NoRight,
         ReadOnly,
         WriteOnly,
         ReadWrite,

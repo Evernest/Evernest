@@ -12,12 +12,12 @@ namespace EvernestFront.Projections
 
         internal ImmutableDictionary<string, string> Keys { get; set; } //base64 encoded int
 
-        internal ImmutableDictionary<long, AccessRights> RelatedEventStreams { get; set; }
+        internal ImmutableDictionary<long, AccessRight> RelatedEventStreams { get; set; }
     
         internal ImmutableDictionary<string, string> Sources { get; set; } //name->key
 
         private UserDataForProjection(string name, string hash, byte[] salt,
-            ImmutableDictionary<string, string> keys, ImmutableDictionary<long, AccessRights> eventStreams,
+            ImmutableDictionary<string, string> keys, ImmutableDictionary<long, AccessRight> eventStreams,
             ImmutableDictionary<string, string> sources)
         {
             UserName = name;
@@ -30,14 +30,14 @@ namespace EvernestFront.Projections
 
         internal UserDataForProjection(string name, string hash, byte[] salt)
             : this(name, hash, salt, ImmutableDictionary<string, string>.Empty,
-                ImmutableDictionary<long, AccessRights>.Empty, ImmutableDictionary<string, string>.Empty) { }
+                ImmutableDictionary<long, AccessRight>.Empty, ImmutableDictionary<string, string>.Empty) { }
 
         internal UserDataForProjection SetPassword(string hash, byte[] salt)
         {
             return new UserDataForProjection(UserName, hash, salt, Keys, RelatedEventStreams, Sources);
         }
 
-        internal UserDataForProjection SetRight(long eventStream, AccessRights right)
+        internal UserDataForProjection SetRight(long eventStream, AccessRight right)
         {
             var eventStreams = RelatedEventStreams.SetItem(eventStream, right);
             return new UserDataForProjection(UserName, SaltedPasswordHash, PasswordSalt, Keys, eventStreams,

@@ -122,7 +122,7 @@ namespace EvernestFront.Projections
 
         
 
-        private void SetRight(long userId, long eventStreamId, AccessRights right)
+        private void SetRight(long userId, long eventStreamId, AccessRight right)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(userId, out data))
@@ -134,7 +134,7 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
-        private void SetRight(string userName, long eventStreamId, AccessRights right)
+        private void SetRight(string userName, long eventStreamId, AccessRight right)
         {
             long userId;
             if (!Dictionaries.NameToId.TryGetValue(userName, out userId))
@@ -147,7 +147,7 @@ namespace EvernestFront.Projections
 
         private void When(EventStreamCreated systemEvent)
         {
-            SetRight(systemEvent.CreatorName, systemEvent.StreamId, AccessRights.Admin);
+            SetRight(systemEvent.CreatorName, systemEvent.StreamId, AccessRight.Admin);
         }
 
         private void When(EventStreamDeleted systemEvent)

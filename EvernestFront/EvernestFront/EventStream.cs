@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using EvernestFront.Answers;
 using EvernestFront.Projections;
+using EvernestFront.Service;
+using EvernestFront.Service.Command;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvent;
@@ -16,7 +18,7 @@ namespace EvernestFront
 {
     public class EventStream
     {
-        private EventStreamsProjection _eventStreamsProjection;
+        private readonly CommandReceiver _commandReceiver;
 
         public long Id { get; private set; }
 
@@ -27,65 +29,34 @@ namespace EvernestFront
         public long LastEventId { get { return Count-1; } }
 
 
-        public List<KeyValuePair<string, AccessRights>> RelatedUsers
+        public List<KeyValuePair<string, AccessRight>> RelatedUsers
         {
             get { return InternalRelatedUsers.ToList(); }
         }
 
-        private ImmutableDictionary<string, AccessRights> InternalRelatedUsers { get; set; }
+        private ImmutableDictionary<string, AccessRight> InternalRelatedUsers { get; set; }
 
         private IEventStream BackStream { get; set; }
 
 
 
-        
 
-        // temporary
-        private static long _next = 0;
-        private static long NextId() { return ++_next; }
-
-
-        internal EventStream(EventStreamsProjection projection, long streamId, string name, ImmutableDictionary<string,AccessRights> users, IEventStream backStream)
+        internal EventStream(CommandReceiver commandReceiver, long streamId, string name, ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
         {
-            _eventStreamsProjection = projection;
+            _commandReceiver = commandReceiver;
             Id = streamId;
             Name = name;
             InternalRelatedUsers = users;
             BackStream = backStream;
         }
 
-        internal static bool TryGetStream(long streamId, out EventStream eventStream)
-        {
-            EventStreamContract streamContract;
-            if (Projection.ProjectionOld.TryGetStreamContract(streamId, out streamContract))
-            {
-                eventStream = new EventStream(streamId, streamContract.StreamName,
-                    streamContract.RelatedUsers, streamContract.BackStream);
-                return true;
-            }
-            else
-            {
-                eventStream = null;
-                return false;
-            }
-        }
+        
 
         public static GetEventStream GetStream(long streamId)
         {
-            EventStream eventStream;
-            if (TryGetStream(streamId, out eventStream))
-                return new GetEventStream(eventStream);
-            else
-                return new GetEventStream(FrontError.EventStreamIdDoesNotExist);
+            var builder = new EventStreamsBuilder();
+            return builder.GetEventStream(streamId);
         }
-
-
-
-
-
-
-
-
 
 
 
@@ -93,26 +64,26 @@ namespace EvernestFront
 
 
         //public corresponding method is a User instance method
-        internal SetRights SetRight(string adminName, string targetName, AccessRights right)
+        internal SetRights SetRight(string adminName, string targetName, AccessRight right)
         {
-            if (!UserCanAdmin(adminName))
+            if (!ValidateActionFromUserName(adminName, AccessAction.Admin))
                 return new SetRights(FrontError.AdminAccessDenied);
-
-            User targetUser;
-            if (!User.TryGetUser(targetUserId, out targetUser))
-                return new SetRights(FrontError.UserIdDoesNotExist);
-            if (!targetUser.IsNotAdmin(Id))
+            if (ValidateActionFromUserName(targetName, AccessAction.Admin))
                 return new SetRights(FrontError.CannotDestituteAdmin);
-
-            var userRightSet = new UserRightSet(adminId, Id, targetUserId, right);
-
-            Projection.ProjectionOld.HandleDiff(userRightSet);
-            //TODO: diff should be written in a stream, then sent back to be processed
-
+            var command = new UserRightSettingByUser(_commandReceiver,
+                targetName, Id, adminName, right);
+            command.Execute();
             return new SetRights();
         }
 
-
+        private bool ValidateActionFromUserName(string userName, AccessAction action)
+        {
+            var verifier = new AccessVerifier();
+            AccessRight right;
+            if (!InternalRelatedUsers.TryGetValue(userName, out right))
+                right = AccessRight.NoRight;
+            return verifier.ValidateAction(right, action);
+        }
 
 
         private long ActualEventId(long eventId)

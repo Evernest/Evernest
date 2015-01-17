@@ -11,12 +11,12 @@ namespace EvernestFront.Projections
         
         internal string StreamName { get; private set; }
         
-        internal ImmutableDictionary<string, AccessRights> RelatedUsers { get; private set; }
+        internal ImmutableDictionary<string, AccessRight> RelatedUsers { get; private set; }
         
         internal EvernestBack.IEventStream BackStream { get; private set; }
         
 
-        private EventStreamDataForProjection(string name, ImmutableDictionary<string, AccessRights> users, IEventStream backStream)
+        private EventStreamDataForProjection(string name, ImmutableDictionary<string, AccessRight> users, IEventStream backStream)
         {
             StreamName = name;
             RelatedUsers = users;
@@ -26,11 +26,11 @@ namespace EvernestFront.Projections
         internal EventStreamDataForProjection(string name, string creatorName, IEventStream backStream)
         {
             StreamName = name;
-            RelatedUsers = ImmutableDictionary<string, AccessRights>.Empty.SetItem(creatorName, AccessRights.Admin);
+            RelatedUsers = ImmutableDictionary<string, AccessRight>.Empty.SetItem(creatorName, AccessRight.Admin);
             BackStream = backStream;
         }
 
-        internal EventStreamDataForProjection SetRight(string user, AccessRights right)
+        internal EventStreamDataForProjection SetRight(string user, AccessRight right)
         {
             var users = RelatedUsers.SetItem(user, right);
             return new EventStreamDataForProjection(StreamName, users, BackStream);

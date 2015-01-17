@@ -11,7 +11,7 @@ namespace EvernestFront
             return builder.CreateEventStream(Name, streamName);
         }
 
-        public SetRights SetRights(long streamId, long targetUserId, AccessRights right)
+        public SetRights SetRights(long streamId, long targetUserId, AccessRight right)
         {
             if (!CanAdmin(streamId))
                 return new SetRights(FrontError.AdminAccessDenied);
@@ -120,29 +120,29 @@ namespace EvernestFront
         /// </summary>
         /// <param name="streamId"></param>
         /// <returns></returns>
-        private AccessRights GetRight(long streamId)
+        private AccessRight GetRight(long streamId)
         {
-            AccessRights right;
+            AccessRight right;
             if (InternalRelatedEventStreams.TryGetValue(streamId, out right))
                 return right;
             else
-                return AccessRights.NoRights;
+                return AccessRight.NoRight;
         }
         internal bool CanRead(long streamId)
         {
-            return CheckRights.CanRead(GetRight(streamId));
+            return AccessVerifier.CanRead(GetRight(streamId));
         }
         internal bool CanWrite(long streamId)
         {
-            return CheckRights.CanWrite(GetRight(streamId));
+            return AccessVerifier.CanWrite(GetRight(streamId));
         }
         internal bool CanAdmin(long streamId)
         {
-            return CheckRights.CanAdmin(GetRight(streamId));
+            return AccessVerifier.CanAdmin(GetRight(streamId));
         }
         internal bool IsNotAdmin(long streamId)
         {
-            return CheckRights.CanBeModified(GetRight(streamId));
+            return AccessVerifier.CanBeModified(GetRight(streamId));
         }
     }
 }

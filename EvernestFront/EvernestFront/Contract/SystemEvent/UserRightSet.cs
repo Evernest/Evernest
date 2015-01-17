@@ -10,9 +10,9 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         internal string TargetName;
         [DataMember]
-        internal AccessRights Right;
+        internal AccessRight Right;
 
-        internal UserRightSet(long streamId, string targetName, AccessRights right)
+        internal UserRightSet(long streamId, string targetName, AccessRight right)
         {
             StreamId = streamId;
             TargetName = targetName;

@@ -10,7 +10,7 @@ namespace EvernestFront
     {
         private User _systemUser;
 
-        protected SystemEventStream(long streamId, string name, ImmutableDictionary<long, AccessRights> users,
+        protected SystemEventStream(long streamId, string name, ImmutableDictionary<long, AccessRight> users,
             IEventStream backStream, User user )
             : base(streamId, name, users, backStream)
         {
@@ -18,7 +18,7 @@ namespace EvernestFront
         }
 
         public SystemEventStream() : base(long.MaxValue, "SystemEventStream",
-            ImmutableDictionary<long, AccessRights>.Empty, null) { }
+            ImmutableDictionary<long, AccessRight>.Empty, null) { }
 
         internal void Push(ISystemEvent systemEvent)
         {

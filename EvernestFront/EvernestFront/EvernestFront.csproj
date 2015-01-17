@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccessAction.cs" />
     <Compile Include="Answers\CreateUserKey.cs" />
     <Compile Include="Answers\DeleteSource.cs" />
     <Compile Include="Answers\GetSource.cs" />
@@ -64,7 +65,7 @@
     <Compile Include="Answers\SetPassword.cs" />
     <Compile Include="Answers\SetRights.cs" />
     <Compile Include="Answers\IdentifyUser.cs" />
-    <Compile Include="CheckRights.cs" />
+    <Compile Include="AccessVerifier.cs" />
     <Compile Include="Contract\SystemEventEnvelope.cs" />
     <Compile Include="Contract\SystemEvent\EventStreamDeleted.cs" />
     <Compile Include="Contract\SystemEvent\InvalidCommandSystemEvent.cs" />
@@ -118,7 +119,7 @@
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventStream.cs" />
-    <Compile Include="AccessRights.cs" />
+    <Compile Include="AccessRight.cs" />
     <Compile Include="User.TowardSource.cs" />
     <Compile Include="User.TowardEventStream.cs" />
     <Compile Include="UsersBuilder.cs" />

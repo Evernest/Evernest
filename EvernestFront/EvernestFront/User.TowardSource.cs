@@ -5,7 +5,7 @@ namespace EvernestFront
 {
     partial class User
     {
-        public CreateSource CreateSource(string sourceName, long streamId, AccessRights rights)
+        public CreateSource CreateSource(string sourceName, long streamId, AccessRight rights)
         {
             //TODO: what if streamId does not exist?
             

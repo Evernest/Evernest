@@ -15,7 +15,7 @@ namespace EvernestFront
 
         public EventStream EventStream { get; private set; }
 
-        public AccessRights Right { get; private set; }
+        public AccessRight Right { get; private set; }
 
         //should sources have an id?
 
@@ -24,7 +24,7 @@ namespace EvernestFront
 
 
 
-        private Source(string sourceKey, string name, User user, EventStream eventStream, AccessRights right)
+        private Source(string sourceKey, string name, User user, EventStream eventStream, AccessRight right)
         {
             Key = sourceKey;
             Name = name;
@@ -113,7 +113,7 @@ namespace EvernestFront
                 return new PullRange(FrontError.ReadAccessDenied);
         }
 
-        public SetRights SetRights(long targetUserId, AccessRights right)
+        public SetRights SetRights(long targetUserId, AccessRight right)
         {
             if (CanAdmin())
                 return EventStream.SetRight(User.Id, targetUserId, right);
@@ -138,15 +138,15 @@ namespace EvernestFront
 
         private bool CanRead()
         {
-            return (CheckRights.CanRead(Right)&&User.CanRead(EventStream.Id));
+            return (AccessVerifier.CanRead(Right)&&User.CanRead(EventStream.Id));
         }
         private bool CanWrite()
         {
-            return (CheckRights.CanWrite(Right) && User.CanWrite(EventStream.Id));
+            return (AccessVerifier.CanWrite(Right) && User.CanWrite(EventStream.Id));
         }
         private bool CanAdmin()
         {
-            return (CheckRights.CanAdmin(Right) && User.CanAdmin(EventStream.Id));
+            return (AccessVerifier.CanAdmin(Right) && User.CanAdmin(EventStream.Id));
         }
 
     }

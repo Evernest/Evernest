@@ -18,7 +18,7 @@ namespace EvernestAPI.Controllers
             var failed = false;
             EvernestFront.FrontError? error = null;
             var errorMessage = "";
-            var accessRight = new AccessRights();
+            var accessRight = new AccessRight();
             Hashtable nvc;
             try
             {
@@ -43,7 +43,7 @@ namespace EvernestAPI.Controllers
                 // The source haven't access to stream
                 if (source.EventStream.Id != streamId)
                 {
-                    accessRight = AccessRights.NoRights;
+                    accessRight = AccessRight.NoRight;
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace EvernestAPI.Controllers
 
             EvernestFront.FrontError? error = null;
             string errorMessage = null;
-            var accessRight = AccessRights.NoRights;
+            var accessRight = AccessRight.NoRight;
 
             try
             {
@@ -110,22 +110,22 @@ namespace EvernestAPI.Controllers
                     switch (right.ToLower())
                     {
                         case "none":
-                            accessRight = AccessRights.NoRights;
+                            accessRight = AccessRight.NoRight;
                             break;
                         case "readonly":
-                            accessRight = AccessRights.ReadOnly;
+                            accessRight = AccessRight.ReadOnly;
                             break;
                         case "writeonly":
-                            accessRight = AccessRights.WriteOnly;
+                            accessRight = AccessRight.WriteOnly;
                             break;
                         case "readwrite":
-                            accessRight = AccessRights.ReadWrite;
+                            accessRight = AccessRight.ReadWrite;
                             break;
                         case "admin":
-                            accessRight = AccessRights.Admin;
+                            accessRight = AccessRight.Admin;
                             break;
                         case "root":
-                            accessRight = AccessRights.Root;
+                            accessRight = AccessRight.Root;
                             break;
 
                         default:

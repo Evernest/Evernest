@@ -16,10 +16,10 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         internal long EventStreamId { get; private set; }
         [DataMember]
-        internal AccessRights Right { get; private set; }
+        internal AccessRight Right { get; private set; }
 
         
-        internal SourceCreated(string key, string name, long userId, string userName, long eventStreamId, AccessRights right)
+        internal SourceCreated(string key, string name, long userId, string userName, long eventStreamId, AccessRight right)
         {
             SourceKey = key;
             SourceName = name;

@@ -8,10 +8,10 @@
 
         internal string AdminName { get; private set; }
 
-        internal AccessRights Right { get; private set; }
+        internal AccessRight Right { get; private set; }
 
         internal UserRightSettingByUser(CommandReceiver commandReceiver, string targetName, long eventStreamId,
-            string adminName, AccessRights right)
+            string adminName, AccessRight right)
             : base(commandReceiver)
         {
             TargetName = targetName;

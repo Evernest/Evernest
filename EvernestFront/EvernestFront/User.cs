@@ -29,7 +29,7 @@ namespace EvernestFront
 
         private ImmutableDictionary<string, string> InternalSources { get; set; }
 
-        private ImmutableDictionary<long, AccessRights> InternalRelatedEventStreams { get; set; }
+        private ImmutableDictionary<long, AccessRight> InternalRelatedEventStreams { get; set; }
 
 
 
@@ -38,7 +38,7 @@ namespace EvernestFront
         public List<KeyValuePair<string, string>> Sources { get { return InternalSources.ToList(); } }
         // should return Sources, names, keys...?
 
-        public List<KeyValuePair<long, AccessRights>> RelatedEventStreams { get { return InternalRelatedEventStreams.ToList(); }}
+        public List<KeyValuePair<long, AccessRight>> RelatedEventStreams { get { return InternalRelatedEventStreams.ToList(); }}
 
 
 
@@ -50,7 +50,7 @@ namespace EvernestFront
 
         internal User(CommandReceiver commandReceiver, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, string> sources, 
-            ImmutableDictionary<long, AccessRights> streams)
+            ImmutableDictionary<long, AccessRight> streams)
         {
             _commandReceiver = commandReceiver;
             Id = id;

@@ -16,7 +16,7 @@ namespace EvernestFrontTests
         private const string StreamName = "streamName";
         private const string SourceName = "sourceName";
         private const string SourceName2 = "sourceName2";
-        private const AccessRights SomeRight = AccessRights.ReadOnly; //constant to use when the right is not decisive
+        private const AccessRight SomeRight = AccessRight.ReadOnly; //constant to use when the right is not decisive
 
         [SetUp]
         public void ResetTables()
@@ -31,11 +31,11 @@ namespace EvernestFrontTests
             long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             long streamId = UserTestsTowardEventStream.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             User user = UserTests.GetUser_AssertSuccess(userId);
-            CreateSource ans = user.CreateSource(SourceName, streamId, AccessRights.ReadWrite);
+            CreateSource ans = user.CreateSource(SourceName, streamId, AccessRight.ReadWrite);
             Assert.IsTrue(ans.Success);
             string key = ans.Key;
             Assert.IsNotNull(key);
-            CreateSource ans2 = user.CreateSource("source2", streamId, AccessRights.ReadWrite);
+            CreateSource ans2 = user.CreateSource("source2", streamId, AccessRight.ReadWrite);
             Assert.IsTrue(ans2.Success);
             string key2 = ans2.Key;
             Assert.IsNotNull(key2);

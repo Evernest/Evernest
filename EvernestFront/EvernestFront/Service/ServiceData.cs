@@ -120,7 +120,7 @@ namespace EvernestFront.Service
 
         private void SelfUpdateCase(UserRightSet systemEvent)
         {
-            if (systemEvent.Right == AccessRights.Admin)
+            if (systemEvent.Right == AccessRight.Admin)
             {
                 HashSet<string> admins;
                 if (!EventStreamIdToAdmins.TryGetValue(systemEvent.StreamId, out admins))

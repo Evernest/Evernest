@@ -42,8 +42,8 @@ namespace EvernestFrontTests
             var stream = ans.EventStream;
             Assert.AreEqual(streamId, stream.Id);
             Assert.AreEqual(StreamName, stream.Name);
-            var relatedUsers = new List<KeyValuePair<long, AccessRights>>();
-            relatedUsers.Add(new KeyValuePair<long, AccessRights>(userId,AccessRights.Admin));
+            var relatedUsers = new List<KeyValuePair<long, AccessRight>>();
+            relatedUsers.Add(new KeyValuePair<long, AccessRight>(userId,AccessRight.Admin));
             //const creatorRight when it is implemented
             Assert.AreEqual(relatedUsers, stream.RelatedUsers);
             Assert.AreEqual(0, stream.Count);

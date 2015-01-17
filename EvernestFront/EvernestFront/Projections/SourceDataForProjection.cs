@@ -11,9 +11,9 @@
 
         internal long StreamId { get; private set; }
 
-        internal AccessRights Right { get; private set; }
+        internal AccessRight Right { get; private set; }
 
-        internal SourceDataForProjection(string sourceName, long userId, string userName, long streamId, AccessRights right)
+        internal SourceDataForProjection(string sourceName, long userId, string userName, long streamId, AccessRight right)
         {
             SourceName = sourceName;
             UserId = userId;

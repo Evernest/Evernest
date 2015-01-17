@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EvernestFront.Answers;
+﻿using EvernestFront.Answers;
 using EvernestFront.Projections;
 using EvernestFront.Service;
 using EvernestFront.Service.Command;
@@ -12,14 +7,25 @@ namespace EvernestFront
 {
     class EventStreamsBuilder
     {
-        private EventStreamsProjection _eventStreamsProjection;
+        private readonly EventStreamsProjection _eventStreamsProjection;
 
-        private CommandReceiver _commandReceiver;
+        private readonly CommandReceiver _commandReceiver;
 
         public EventStreamsBuilder()
         {
             _eventStreamsProjection = Injector.Instance.EventStreamsProjection;
             _commandReceiver = Injector.Instance.CommandReceiver;
+        }
+
+
+
+        public GetEventStream GetEventStream(long streamId)
+        {
+            EventStream eventStream;
+            if (TryGetEventStream(streamId, out eventStream))
+                return new GetEventStream(eventStream);
+            else
+                return new GetEventStream(FrontError.EventStreamIdDoesNotExist);
         }
 
         //public corresponding method is a User instance method
@@ -34,5 +40,41 @@ namespace EvernestFront
             return new CreateEventStream();
         }
 
+        internal bool TryGetEventStream(long eventStreamId, out EventStream eventStream)
+        {
+            EventStreamDataForProjection eventStreamData;
+            if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
+            {
+                eventStream = ConstructEventStream(eventStreamId, eventStreamData);
+                return true;
+            }
+            else
+            {
+                eventStream = null;
+                return false;
+            }
+        }
+
+        internal bool TryGetEventStream(string eventStreamName, out EventStream eventStream)
+        {
+            long eventStreamId;
+            EventStreamDataForProjection eventStreamData;
+            if (_eventStreamsProjection.TryGetEventStreamIdAndData(eventStreamName, out eventStreamId, out eventStreamData))
+            {
+                eventStream = ConstructEventStream(eventStreamId, eventStreamData);
+                return true;
+            }
+            else
+            {
+                eventStream = null;
+                return false;
+            }
+        }
+
+        private EventStream ConstructEventStream(long eventStreamId, EventStreamDataForProjection eventStreamData)
+        {
+            return new EventStream(_commandReceiver, eventStreamId, eventStreamData.StreamName,
+                eventStreamData.RelatedUsers, eventStreamData.BackStream);
+        }
     }
 }

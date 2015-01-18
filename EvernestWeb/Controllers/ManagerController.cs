@@ -11,21 +11,9 @@ namespace EvernestWeb.Controllers
 {
     public class ManagerController : System.Web.Mvc.Controller
     {
-        private void IsConnected()
-        {
-            ViewBag.SessionAvailable = "false";
-            if (Session["User"] != null)
-            {
-                ViewBag.SessionAvailable = "true";
-                ViewBag.User = (User)Session["User"];
-            }
-        }
-
         // GET: Manager
         public ActionResult Index()
         {
-            IsConnected();
-
             return View();
         }
 
@@ -52,7 +40,6 @@ namespace EvernestWeb.Controllers
 
         public ActionResult MyStore()
         {
-            IsConnected();
             User user = (User)Session["User"];
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
             if (u.Success)
@@ -68,7 +55,6 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddStream(string addStream) // add stream
         {
-            IsConnected();
             User user = (User)Session["User"];
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
             if (u.Success)
@@ -108,7 +94,6 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddSource(string addSource, string idStream, string accessRights) // add source
         {
-            IsConnected();
             User user = (User)Session["User"];
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
             if (u.Success)
@@ -157,7 +142,6 @@ namespace EvernestWeb.Controllers
 
         public ActionResult Stream(long id)
         {
-            IsConnected();
             User user = (User)Session["User"];
             StreamAndEvents streamAndEvents = getStreamsAndEvents(id, user.Id);
 
@@ -179,7 +163,6 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddUser(StreamAndEvents model, int sid)
         {
-            IsConnected();
             User user = (User)Session["User"];
             if (model.AddUserModelObject.NewUser != null)
             {
@@ -201,7 +184,6 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult PushEvent(string item, int sid)
         {
-            IsConnected();
             User user = (User)Session["User"];
             if (item != null)
             {

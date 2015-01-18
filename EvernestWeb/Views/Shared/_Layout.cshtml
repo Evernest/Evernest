@@ -1,4 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@using EvernestWeb.Models;
+
+@{
+    ViewBag.User = null;
+    ViewBag.IsAuthenticated = false;
+    if (Session["User"] != null)
+    {
+        ViewBag.IsAuthenticated = true;
+        ViewBag.User = (User) Session["User"];
+    }
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -25,19 +36,19 @@
                 </ul>
                 <!-- test -->
                 <div class="evernest-right-menu">
-                    @if (ViewBag.SessionAvailable == "false")
+                    @if (ViewBag.IsAuthenticated)
                     {
                         <ul class="nav navbar-nav">
-                            <li>@Html.ActionLink("Login", "Login", "Account")</li>
-                            <li>@Html.ActionLink("Register", "Register", "Account")</li>
+                            <li>@Html.ActionLink((string)("Hello " + ViewBag.User.Username), "Index", "Account")</li>
+                            <li>@Html.ActionLink("Manager", "Index", "Manager")</li>
+                            <li>@Html.ActionLink("Log out", "Logout", "Account")</li>
                         </ul>
                     }
                     else
                     {
                         <ul class="nav navbar-nav">
-                            <li>@Html.ActionLink((string)("Hello " + ViewBag.User.Username), "Index", "Account")</li>
-                            <li>@Html.ActionLink("Manager", "Index", "Manager")</li>
-                            <li>@Html.ActionLink("Log out", "LogOff", "Account")</li>
+                            <li>@Html.ActionLink("Login", "Login", "Account")</li>
+                            <li>@Html.ActionLink("Register", "Register", "Account")</li>
                         </ul>
                     }
                 </div>

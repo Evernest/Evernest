@@ -7,34 +7,23 @@ namespace EvernestWeb.Controllers
 {
     public class AccountController : System.Web.Mvc.Controller
     {
-        private void IsConnected()
-        {
-            ViewBag.SessionAvailable = "false";
-            if (Session["User"] != null)
-            {
-                ViewBag.SessionAvailable = "true";
-                ViewBag.User = (User)Session["User"];
-            }
-        }
-
-        // GET: Account
+        // GET: /Account
         public ActionResult Index()
         {
-            IsConnected();
             return View();
         }
 
+        // GET: /Account/ChangePwd
         public ActionResult ChangePwd()
         {
-            IsConnected();
             return View();
         }
 
+        // POST: /Account/ChangePwd
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ChangePwd(ChangePwdModel model)
         {
-            IsConnected();
             if (ModelState.IsValid)
             {
                 User user = (User)Session["User"];
@@ -53,19 +42,19 @@ namespace EvernestWeb.Controllers
             return View(model);
         }
 
+        // GET: /Account/Login
         [AllowAnonymous]
         public ActionResult Login()
         {
-            IsConnected();
             return View();
         }
 
+        // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Login(User user, string returnUrl)
         {
-            IsConnected();
             if (ModelState.IsValid)
             {
                 EvernestFront.Answers.IdentifyUser iu = EvernestFront.User.IdentifyUser(user.Username, user.Password);
@@ -87,19 +76,19 @@ namespace EvernestWeb.Controllers
             return View(user);
         }
 
+        // GET: /Account/Register
         [AllowAnonymous]
         public ActionResult Register()
         {
-            IsConnected();
             return View();
         }
 
+        // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
-            IsConnected();
             if (ModelState.IsValid)
             {
                 // add user in blob
@@ -125,7 +114,8 @@ namespace EvernestWeb.Controllers
             return View(model);
         }
 
-        public ActionResult LogOff()
+        // GET: /Account/Logout
+        public ActionResult Logout()
         {
             Session["User"] = null;
             FormsAuthentication.SignOut();

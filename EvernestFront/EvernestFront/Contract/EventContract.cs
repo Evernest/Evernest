@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace EvernestFront.Contract
 {
@@ -15,6 +16,7 @@ namespace EvernestFront.Contract
         [DataMember]
         internal string Message { get; set; }
 
+        [JsonConstructor]
         internal EventContract(User author, DateTime date, string message)
         {
             AuthorId = author.Id;

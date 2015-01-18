@@ -114,7 +114,7 @@ namespace EvernestBack
         {
             if (!StreamExists(streamID))
             {
-                throw new ArgumentException("The stream " + streamID + " does not exists.");
+                throw new ArgumentException("The stream " + streamID + " does not exist.");
             }
 
             IEventStream stream;

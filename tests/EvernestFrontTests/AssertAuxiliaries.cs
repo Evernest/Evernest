@@ -9,15 +9,9 @@ namespace EvernestFrontTests
     class AssertAuxiliaries
     {
 
-        private static int _counter = 0;
-
         public static string NewName
         {
-            get
-            {
-                _counter = _counter + 1;
-                return Convert.ToString(_counter);
-            }
+            get { return new EvernestFront.Utilities.KeyGenerator().NewKey(); }
         }
 
         internal static void ErrorAssert<T>(FrontError err,Response<T> ans)

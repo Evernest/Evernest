@@ -13,13 +13,11 @@ namespace EvernestFrontTests
 
         internal static string CreateUserKey_ReturnKey_AssertSuccess(User user, string keyName)
         {
-            Response<Guid> ans = user.CreateUserKey(keyName);
+            Response<Tuple<string, Guid>> ans = user.CreateUserKey(keyName);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             System.Threading.Thread.Sleep(100);
-            string key = null;
-            Assert.IsTrue(user.TryGetUserKey(keyName, out key));
-            return key;
+            return ans.Result.Item1;
         }
 
         [SetUp]

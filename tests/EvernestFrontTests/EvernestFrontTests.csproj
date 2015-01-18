@@ -79,7 +79,6 @@
     <Compile Include="SourceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventStreamTests.cs" />
-    <Compile Include="UserTestsTowardEventStream.cs" />
     <Compile Include="UserTests.cs" />
     <Compile Include="UserTestsTowardSource.cs" />
     <Compile Include="UserTestsTowardUserKeys.cs" />

@@ -26,6 +26,7 @@ namespace EvernestFrontTests
             Assert.IsNull(ans.Error);
             System.Threading.Thread.Sleep(100);
             var get = user.GetEventStream(streamName);
+            Assert.IsTrue(get.Success);
             return get.Result.Id;
         }
 

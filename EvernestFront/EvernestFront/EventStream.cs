@@ -20,7 +20,11 @@ namespace EvernestFront
         
         private readonly User _user;
 
-        private readonly AccessRight _rightOfUser;
+        private readonly bool _getBySource;
+
+        private readonly Source _source;
+
+        private readonly HashSet<AccessAction> _possibleActions;
 
         public long Id { get; private set; }
 
@@ -36,7 +40,8 @@ namespace EvernestFront
         private IEventStream BackStream { get; set; }
 
 
-        internal EventStream(CommandHandler commandHandler, User user, AccessRight rightOfUser , long streamId, string name, 
+        internal EventStream(CommandHandler commandHandler, User user, bool getBySource, Source source, 
+            HashSet<AccessAction> authorizedActions, long streamId, string name, 
             ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
         {
             _commandHandler = commandHandler;
@@ -44,8 +49,10 @@ namespace EvernestFront
             Name = name;
             RelatedUsers = users;
             BackStream = backStream;
+            _possibleActions = authorizedActions;
+            _source = source;
+            _getBySource = getBySource;
             _user = user;
-            _rightOfUser = rightOfUser;
         }
 
 
@@ -70,8 +77,7 @@ namespace EvernestFront
 
         private bool ValidateAccessAction(AccessAction action)
         {
-            var verifier = new AccessVerifier();
-            return verifier.ValidateAction(_rightOfUser, action);
+            return _possibleActions.Contains(action);
         }
 
         private bool TargetUserIsAdmin(string targetUserName)

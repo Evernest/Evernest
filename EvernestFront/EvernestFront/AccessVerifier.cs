@@ -1,9 +1,30 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace EvernestFront
 {
     class AccessVerifier
     {
+        public HashSet<AccessAction> ComputePossibleAccessActions(AccessRight right)
+        {
+            switch (right)
+            {
+                case (AccessRight.NoRight):
+                    return new HashSet<AccessAction>();
+                case (AccessRight.WriteOnly):
+                    return new HashSet<AccessAction> { AccessAction.Write };
+                case (AccessRight.ReadOnly):
+                    return new HashSet<AccessAction> { AccessAction.Read };
+                case (AccessRight.ReadWrite):
+                    return new HashSet<AccessAction> { AccessAction.Write, AccessAction.Read };
+                case (AccessRight.Admin):
+                    return new HashSet<AccessAction> { AccessAction.Write, AccessAction.Read, AccessAction.Admin };
+                case (AccessRight.Root):
+                    return new HashSet<AccessAction> { AccessAction.Write, AccessAction.Read, AccessAction.Admin };
+                default:
+                    throw new Exception("AccessVerifier.ComputePossibleAccessActions : case not handled");
+            }
+        } 
 
         public bool ValidateAction(AccessRight right, AccessAction action)
         {

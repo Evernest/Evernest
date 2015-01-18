@@ -74,7 +74,9 @@ namespace EvernestFront
 
         private EventStream ConstructEventStream(User user, AccessRight right, long eventStreamId, EventStreamDataForProjection eventStreamData)
         {
-            return new EventStream(_commandReceiver, user, right, eventStreamId, eventStreamData.StreamName,
+            var accessManager = new AccessVerifier();
+            var possibleActions = accessManager.ComputePossibleAccessActions(right);
+            return new EventStream(_commandReceiver, user, false, null, possibleActions, eventStreamId, eventStreamData.StreamName,
                 eventStreamData.RelatedUsers, eventStreamData.BackStream);
         }
 

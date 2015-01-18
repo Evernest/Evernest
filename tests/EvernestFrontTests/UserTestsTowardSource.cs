@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using EvernestFront;
 using NUnit.Framework;
-using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using Assert = NUnit.Framework.Assert;
 
 namespace EvernestFrontTests
 {
@@ -74,7 +75,8 @@ namespace EvernestFrontTests
             var user = UserTests.GetUser_AssertSuccess(userId);
             var ans = user.DeleteSource(sourceId);
             Assert.IsTrue(ans.Success);
-            Assert.IsFalse(user.Sources.Contains(new KeyValuePair<string, string>(sourceName, sourceKey)));
+            Thread.Sleep(100);
+            Assert.IsFalse(user.Sources.ContainsKey(sourceName));
 
         }
 
@@ -85,11 +87,14 @@ namespace EvernestFrontTests
             long streamId = EventStreamTests.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             string key = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, SourceName, SomeRight);
             string key2 = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, SourceName2, SomeRight);
+            var sb = new SourcesBuilder();
+            var source1 = sb.GetSource(key).Result;
+            var source2 = sb.GetSource(key2).Result;
             User user = UserTests.GetUser_AssertSuccess(userId);
             var sources = user.Sources;
             Assert.AreEqual(2, sources.Count);
-            Assert.IsTrue(sources.Contains(new KeyValuePair<string, string>(SourceName, key)));
-            Assert.IsTrue(sources.Contains(new KeyValuePair<string, string>(SourceName2, key2)));
+            Assert.IsTrue(sources.Contains(new KeyValuePair<string, long>(SourceName, source1.Id)));
+            Assert.IsTrue(sources.Contains(new KeyValuePair<string, long>(SourceName2, source2.Id)));
         }
 
     }

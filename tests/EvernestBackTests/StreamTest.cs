@@ -1,11 +1,15 @@
-using System;
+﻿using System;
 using System.IO;
+using NUnit.Framework;
+using EvernestBack;
 
-namespace EvernestBack
+namespace EvernestBackTests
 {
-    internal class Test
+    [TestFixture]
+    public class StreamTest
     {
-        private static void Main(string[] args)
+        [Test]
+        public void Test1()
         {
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
 

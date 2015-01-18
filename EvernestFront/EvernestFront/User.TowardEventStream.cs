@@ -1,34 +1,53 @@
-﻿using EvernestFront.Responses;
+﻿using System.Diagnostics;
+using EvernestFront.Responses;
 using EvernestFront.Service.Command;
 
 namespace EvernestFront
 {
     partial class User
     {
+        public GetEventStreamResponse GetEventStream(long streamId)
+        {
+            var builder = new EventStreamsBuilder();
+            EventStream eventStream;
+            if (builder.TryGetEventStream(this, streamId, out eventStream))
+                return new GetEventStreamResponse(eventStream);
+            else
+                return new GetEventStreamResponse(FrontError.EventStreamIdDoesNotExist);
+        }
+
+
         public SystemCommandResponse CreateEventStream(string streamName)
         {
             var builder = new EventStreamsBuilder();
             return builder.CreateEventStream(Name, streamName);
         }
 
+
+
+        // the remaining methods should not exist as they only call public methods,
+        // but they are kept not to break the API
+
         public SystemCommandResponse SetRight(long streamId, string targetUserName, AccessRight right)
         {
-            var builder = new EventStreamsBuilder();
-            EventStream eventStream;
-            if (!builder.TryGetEventStream(streamId, out eventStream))
-                return new SystemCommandResponse(FrontError.EventStreamIdDoesNotExist);
-
-            return eventStream.SetRight(Name, targetUserName, right);
+            var response = GetEventStream(streamId);
+            if (!response.Success)
+            {
+                Debug.Assert(response.Error != null, "response.Error != null");
+                return new SystemCommandResponse((FrontError) response.Error);
+            }
+            return response.EventStream.SetRight(targetUserName, right);
         }
 
         public RelatedUsersResponse GetUsersRelatedToEventStream(long streamId)
         {
-            var builder = new EventStreamsBuilder();
-            EventStream eventStream;
-            if (!builder.TryGetEventStream(streamId, out eventStream))
-                return new RelatedUsersResponse(FrontError.EventStreamIdDoesNotExist);
-
-            return eventStream.GetRelatedUsers(Name);
+            var response = GetEventStream(streamId);
+            if (!response.Success)
+            {
+                Debug.Assert(response.Error != null, "response.Error != null");
+                return new RelatedUsersResponse((FrontError)response.Error);
+            }
+            return response.EventStream.GetRelatedUsers();
         }
 
         /// <summary>
@@ -38,12 +57,13 @@ namespace EvernestFront
         /// <returns></returns>
         public PullRandomResponse PullRandom(long streamId)
         {
-            var builder = new EventStreamsBuilder();
-            EventStream eventStream;
-            if (!builder.TryGetEventStream(streamId, out eventStream))
-                return new PullRandomResponse(FrontError.EventStreamIdDoesNotExist);
-
-            return eventStream.PullRandom(Name);
+            var response = GetEventStream(streamId);
+            if (!response.Success)
+            {
+                Debug.Assert(response.Error != null, "response.Error != null");
+                return new PullRandomResponse((FrontError)response.Error);
+            }
+            return response.EventStream.PullRandom();
         }
 
         /// <summary>
@@ -54,12 +74,13 @@ namespace EvernestFront
         /// <returns></returns>
         public PullResponse Pull(long streamId, long eventId)
         {
-            var builder = new EventStreamsBuilder();
-            EventStream eventStream;
-            if (!builder.TryGetEventStream(streamId, out eventStream))
-                return new PullResponse(FrontError.EventStreamIdDoesNotExist);
-
-            return eventStream.Pull(Name, eventId);
+            var response = GetEventStream(streamId);
+            if (!response.Success)
+            {
+                Debug.Assert(response.Error != null, "response.Error != null");
+                return new PullResponse((FrontError)response.Error);
+            }
+            return response.EventStream.Pull(eventId);
         }
 
         /// <summary>
@@ -72,12 +93,13 @@ namespace EvernestFront
         /// <returns></returns>
         public PullRangeResponse PullRange(long streamId, long from, long to)
         {
-            var builder = new EventStreamsBuilder();
-            EventStream eventStream;
-            if (!builder.TryGetEventStream(streamId, out eventStream))
-                return new PullRangeResponse(FrontError.EventStreamIdDoesNotExist);
-
-            return eventStream.PullRange(Name, from, to);
+            var response = GetEventStream(streamId);
+            if (!response.Success)
+            {
+                Debug.Assert(response.Error != null, "response.Error != null");
+                return new PullRangeResponse((FrontError)response.Error);
+            }
+            return response.EventStream.PullRange(from, to);
         }
 
         /// <summary>
@@ -88,12 +110,13 @@ namespace EvernestFront
         /// <returns></returns>
         public PushResponse Push(long streamId, string message)
         {
-            var builder = new EventStreamsBuilder();
-            EventStream eventStream;
-            if (!builder.TryGetEventStream(streamId, out eventStream))
-                return new PushResponse(FrontError.EventStreamIdDoesNotExist);
-
-            return eventStream.Push(this, message);
+            var response = GetEventStream(streamId);
+            if (!response.Success)
+            {
+                Debug.Assert(response.Error != null, "response.Error != null");
+                return new PushResponse((FrontError)response.Error);
+            }
+            return response.EventStream.Push(message);
         }
 
         

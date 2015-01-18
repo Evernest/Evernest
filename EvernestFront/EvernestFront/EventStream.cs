@@ -17,6 +17,10 @@ namespace EvernestFront
     public class EventStream
     {
         private readonly CommandReceiver _commandReceiver;
+        
+        private readonly User _user;
+
+        private readonly AccessRight _rightOfUser;
 
         public long Id { get; private set; }
 
@@ -26,56 +30,58 @@ namespace EvernestFront
 
         public long LastEventId { get { return Count-1; } }
 
-
-        //there is a public method GetUsersRelatedToEventStream in User
+        //there is a public method GetRelatedUsers
         private ImmutableDictionary<string, AccessRight> RelatedUsers { get; set; }
 
         private IEventStream BackStream { get; set; }
 
 
-
-
-        internal EventStream(CommandReceiver commandReceiver, long streamId, string name, ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
+        internal EventStream(CommandReceiver commandReceiver, User user, AccessRight rightOfUser , long streamId, string name, 
+            ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
         {
             _commandReceiver = commandReceiver;
             Id = streamId;
             Name = name;
             RelatedUsers = users;
             BackStream = backStream;
+            _user = user;
+            _rightOfUser = rightOfUser;
         }
 
 
-
-        //public corresponding method is a User instance method
-        internal RelatedUsersResponse GetRelatedUsers(string userName)
+        public RelatedUsersResponse GetRelatedUsers()
         {
-            if (!ValidateActionFromUserName(userName, AccessAction.Admin))
+            if (!ValidateAccessAction(AccessAction.Admin))
                 return new RelatedUsersResponse(FrontError.AdminAccessDenied);
             return new RelatedUsersResponse(RelatedUsers.ToList());
         }
 
-        //public corresponding method is a User instance method
-        internal SystemCommandResponse SetRight(string adminName, string targetName, AccessRight right)
+        public SystemCommandResponse SetRight(string targetName, AccessRight right)
         {
-            if (!ValidateActionFromUserName(adminName, AccessAction.Admin))
+            if (!ValidateAccessAction(AccessAction.Admin))
                 return new SystemCommandResponse(FrontError.AdminAccessDenied);
-            if (ValidateActionFromUserName(targetName, AccessAction.Admin))
+            if (TargetUserIsAdmin(targetName))
                 return new SystemCommandResponse(FrontError.CannotDestituteAdmin);
             var command = new UserRightSettingByUser(_commandReceiver,
-                targetName, Id, adminName, right);
+                targetName, Id, _user.Name, right);
             command.Send();
             return new SystemCommandResponse(command.Guid);
         }
 
-        private bool ValidateActionFromUserName(string userName, AccessAction action)
+        private bool ValidateAccessAction(AccessAction action)
+        {
+            var verifier = new AccessVerifier();
+            return verifier.ValidateAction(_rightOfUser, action);
+        }
+
+        private bool TargetUserIsAdmin(string targetUserName)
         {
             var verifier = new AccessVerifier();
             AccessRight right;
-            if (!RelatedUsers.TryGetValue(userName, out right))
+            if (!RelatedUsers.TryGetValue(targetUserName, out right))
                 right = AccessRight.NoRight;
-            return verifier.ValidateAction(right, action);
+            return verifier.ValidateAction(right, AccessAction.Admin);
         }
-
 
         private long ActualEventId(long eventId)
         {
@@ -90,10 +96,9 @@ namespace EvernestFront
             return ((id >= 0) && (id <= LastEventId));
         }
 
-        //public corresponding method is a User instance method
-        internal PullRandomResponse PullRandom(string userName)
+        public PullRandomResponse PullRandom()
         {
-            if (!ValidateActionFromUserName(userName, AccessAction.Read))
+            if (!ValidateAccessAction(AccessAction.Read))
                 return new PullRandomResponse(FrontError.ReadAccessDenied);
 
             var random = new Random();
@@ -106,10 +111,9 @@ namespace EvernestFront
             return new PullRandomResponse(new Event(pulledContract, eventId, Name, Id));
         }
 
-        //public corresponding method is a User instance method
-        internal PullResponse Pull(string userName, long eventId)
+        public PullResponse Pull(long eventId)
         {
-            if (!ValidateActionFromUserName(userName, AccessAction.Read))
+            if (!ValidateAccessAction(AccessAction.Read))
                 return new PullResponse(FrontError.ReadAccessDenied);
 
             eventId = ActualEventId(eventId);
@@ -124,10 +128,9 @@ namespace EvernestFront
         }
 
         //TODO : change this when PullRange gets implemented in back-end
-        //public corresponding method is a User instance method
-        internal PullRangeResponse PullRange(string userName, long fromEventId, long toEventId)
+        public PullRangeResponse PullRange(long fromEventId, long toEventId)
         {
-            if (!ValidateActionFromUserName(userName, AccessAction.Read))
+            if (!ValidateAccessAction(AccessAction.Read))
                 return new PullRangeResponse(FrontError.ReadAccessDenied);
 
             fromEventId = ActualEventId(fromEventId);
@@ -139,7 +142,7 @@ namespace EvernestFront
             var eventList = new List<Event>();
             for (long id = fromEventId; id <= toEventId; id++)
             {
-                PullResponse ans = Pull(userName, id);
+                PullResponse ans = Pull(id);
                 if (!ans.Success)
                     throw new Exception("EventStream.PullRange");  
                     //this should never happen : both fromEventId and toEventId are valid, so id should be valid.
@@ -150,13 +153,15 @@ namespace EvernestFront
         }
 
 
-        //public corresponding method is a User instance method
-        internal PushResponse Push(User author, string message)
+        public PushResponse Push(string message)
         {
+            if (!ValidateAccessAction(AccessAction.Write))
+                return new PushResponse(FrontError.WriteAccessDenied);
+
             long eventId = LastEventId + 1;
             var stopWaitHandle = new AutoResetEvent(false);
             bool success = false;
-            var contract = new EventContract(author, DateTime.UtcNow, message);
+            var contract = new EventContract(_user, DateTime.UtcNow, message);
             var serializer = new Serializer();
             BackStream.Push(serializer.WriteContract(contract), (a =>
             {

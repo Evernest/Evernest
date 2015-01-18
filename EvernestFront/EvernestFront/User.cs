@@ -23,9 +23,7 @@ namespace EvernestFront
 
         private byte[] PasswordSalt { get; set; }
 
-
         private ImmutableDictionary<string, string> InternalUserKeys { get; set; }
-
 
         private ImmutableDictionary<string, string> InternalSources { get; set; }
 
@@ -36,14 +34,11 @@ namespace EvernestFront
         public List<KeyValuePair<string, string>> UserKeys { get { return InternalUserKeys.ToList(); } }
 
         public List<KeyValuePair<string, string>> Sources { get { return InternalSources.ToList(); } }
-        // should return Sources, names, keys...?
 
         public List<KeyValuePair<long, AccessRight>> RelatedEventStreams { get { return InternalRelatedEventStreams.ToList(); }}
 
 
 
-
-        //TODO : refactor hashing and conversions between string/bytes
 
 
 

@@ -19,14 +19,7 @@ namespace EvernestFront
 
 
 
-        public GetEventStreamResponse GetEventStream(long streamId)
-        {
-            EventStream eventStream;
-            if (TryGetEventStream(streamId, out eventStream))
-                return new GetEventStreamResponse(eventStream);
-            else
-                return new GetEventStreamResponse(FrontError.EventStreamIdDoesNotExist);
-        }
+        
 
         //public corresponding method is a User instance method
         internal SystemCommandResponse CreateEventStream(string creatorName, string streamName)
@@ -37,15 +30,15 @@ namespace EvernestFront
 
             var command = new EventStreamCreation(_commandReceiver, streamName, creatorName);
             command.Send();
-            return new SystemCommandResponse();
+            return new SystemCommandResponse(command.Guid);
         }
 
-        internal bool TryGetEventStream(long eventStreamId, out EventStream eventStream)
+        internal bool TryGetEventStream(User user, long eventStreamId, out EventStream eventStream)
         {
             EventStreamDataForProjection eventStreamData;
             if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
             {
-                eventStream = ConstructEventStream(eventStreamId, eventStreamData);
+                eventStream = ConstructEventStream(user, eventStreamId, eventStreamData);
                 return true;
             }
             else
@@ -71,9 +64,12 @@ namespace EvernestFront
             }
         }
 
-        private EventStream ConstructEventStream(long eventStreamId, EventStreamDataForProjection eventStreamData)
+        private EventStream ConstructEventStream(User user, long eventStreamId, EventStreamDataForProjection eventStreamData)
         {
-            return new EventStream(_commandReceiver, eventStreamId, eventStreamData.StreamName,
+            AccessRight right;
+            if (!eventStreamData.RelatedUsers.TryGetValue(user.Name, out right))
+                right = AccessRight.NoRight;
+            return new EventStream(_commandReceiver, user, right, eventStreamId, eventStreamData.StreamName,
                 eventStreamData.RelatedUsers, eventStreamData.BackStream);
         }
     }

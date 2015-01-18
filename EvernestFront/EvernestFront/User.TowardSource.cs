@@ -1,42 +1,22 @@
-﻿using EvernestFront.Responses;
+﻿using System;
+using EvernestFront.Responses;
 using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront
 {
     partial class User
     {
-        public CreateSource CreateSource(string sourceName, long streamId, AccessRight rights)
+        //TODO: redefine sources
+
+        public SystemCommandResponse CreateSource(string sourceName, long streamId, AccessRight rights)
         {
-            //TODO: what if streamId does not exist?
-            
-            if (InternalSources.ContainsKey(sourceName))
-                return new CreateSource(FrontError.SourceNameTaken);
-
-            var sourceContract = new SourceContract(sourceName, Id, streamId, rights);
-            var key = Keys.NewKey();
-            var sourceCreated = new SourceCreated(key, sourceContract);
-
-            Projection.ProjectionOld.HandleDiff(sourceCreated);
-            return new CreateSource(key);
+            throw new NotImplementedException();
         }
 
 
 
-        public DeleteSource DeleteSource(string sourceName)
-        {
-            
-            string key;
-            if (InternalSources.TryGetValue(sourceName, out key))
-            {
-                var sourceDeleted = new SourceDeleted(key, Id, sourceName);
-                Projection.ProjectionOld.HandleDiff(sourceDeleted);
-                //TODO: system stream
-                return new DeleteSource();
-            }
-            else
-                return new DeleteSource();
-                //TODO: error?
-
+        public SystemCommandResponse DeleteSource(string sourceName)
+        {throw new NotImplementedException();
         }
     }
 }

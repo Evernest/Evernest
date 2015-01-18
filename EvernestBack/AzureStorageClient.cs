@@ -19,6 +19,7 @@ namespace EvernestBack
         private readonly Dictionary<String, IEventStream> _openedStreams;
 
         internal readonly long PageBlobSize;
+        internal readonly string DummyDataPath;
         internal readonly CloudBlobContainer StreamContainer;
         internal readonly CloudBlobContainer StreamIndexContainer;
 
@@ -38,6 +39,7 @@ namespace EvernestBack
                 try
                 {
                     // TODO
+                    DummyDataPath = ConfigurationManager.AppSettings["DummyDataPath"];
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
                     _bufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
                     _eventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
@@ -127,7 +129,7 @@ namespace EvernestBack
 
             if (_dummy)
             {
-                stream = new MemoryEventStream(streamID);
+                stream = new MemoryEventStream(this, streamID);
             }
             else
             {
@@ -150,7 +152,7 @@ namespace EvernestBack
             }
             if (_dummy)
             {
-                MemoryEventStream.CreateStream(streamID);
+                MemoryEventStream.CreateStream(this, streamID);
             }
             else
             {
@@ -169,7 +171,7 @@ namespace EvernestBack
         {
             if (_dummy)
             {
-                return MemoryEventStream.StreamExists(streamID);
+                return MemoryEventStream.StreamExists(this, streamID);
             }
             else
             {

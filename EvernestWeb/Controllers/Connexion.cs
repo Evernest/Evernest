@@ -39,7 +39,7 @@ namespace EvernestWeb.Controllers
 
         private void RetrieveUserName()
         {
-            EvernestFront.Responses.GetUserResponse u = EvernestFront.User.GetUser(IdUser);
+            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(IdUser);
             if (u.Success)
             {
                 Username = u.User.Name;
@@ -48,7 +48,7 @@ namespace EvernestWeb.Controllers
 
         private bool CheckUserById()
         {
-            EvernestFront.Responses.GetUserResponse u = EvernestFront.User.GetUser(IdUser);
+            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(IdUser);
             if (u.Success)
             {
                 if (HashedPassword == u.User.SaltedPasswordHash) // never works: strange symbols in cookie
@@ -60,7 +60,7 @@ namespace EvernestWeb.Controllers
 
         public bool CheckUser(string username, string password)
         {
-            EvernestFront.Responses.IdentifyUserResponse iu = EvernestFront.User.IdentifyUser(username, password);
+            EvernestFront.Responses.Response<User> iu = EvernestFront.User.IdentifyUser(username, password);
             if (iu.Success)
             {
                 IdUser = iu.User.Id;

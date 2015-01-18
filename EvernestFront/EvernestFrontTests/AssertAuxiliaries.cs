@@ -3,7 +3,6 @@
 using System;
 using EvernestFront;
 using Assert = NUnit.Framework.Assert;
-using EvernestFront.Responses;
 
 namespace EvernestFrontTests
 {
@@ -21,7 +20,7 @@ namespace EvernestFrontTests
             }
         }
 
-        internal static void ErrorAssert(FrontError err,BaseResponse ans)
+        internal static void ErrorAssert<T>(FrontError err,Response<T> ans)
         {
             Assert.IsFalse(ans.Success);
             Assert.IsNotNull(ans.Error);

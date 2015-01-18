@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using EvernestFront.Responses;
-using EvernestFront.Contract.SystemEvent;
-﻿using System.Diagnostics;
 
 namespace EvernestFront
 {
@@ -32,7 +28,7 @@ namespace EvernestFront
         }
 
         
-        public SystemCommandResponse Delete()
+        public Response<Guid> Delete()
         {
             throw new NotImplementedException();
         }

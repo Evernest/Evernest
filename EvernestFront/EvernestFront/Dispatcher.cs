@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Projections;
-using EvernestFront.Responses;
 
 namespace EvernestFront
 {
@@ -64,7 +63,7 @@ namespace EvernestFront
             {
                 p.OnSystemEvent(systemEvent);
             }
-            Manager.AddCommandResult(guid, new SystemCommandResponse(guid));
+            Manager.AddCommandResult(guid, new Response<Guid>(guid));
         }
 
        

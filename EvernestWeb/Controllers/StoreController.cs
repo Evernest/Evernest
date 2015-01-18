@@ -31,14 +31,14 @@ namespace EvernestWeb.Controllers
             return View();
         }
 
-        private StreamsSources getStreamsSources(EvernestFront.Responses.GetUserResponse u)
+        private StreamsSources getStreamsSources(EvernestFront.Responses.Response<User> u)
         {
             List<KeyValuePair<long, EvernestFront.AccessRight>> listStreams = u.User.RelatedEventStreams;
             List<KeyValuePair<string, string>> listSources = u.User.Sources;
             StreamsSources streamsSources = new StreamsSources();
             foreach (KeyValuePair<long, EvernestFront.AccessRight> elt in listStreams)
             {
-                EvernestFront.Responses.GetEventStreamResponse s = EvernestFront.EventStream.GetStream(elt.Key);
+                EvernestFront.Responses.Response<EventStream> s = EvernestFront.EventStream.GetStream(elt.Key);
                 if (s.Success)
                     streamsSources.AddEventStream(s.EventStream);
             }
@@ -58,7 +58,7 @@ namespace EvernestWeb.Controllers
             if (ViewBag.Connexion != "true")
                 return View("Index");
 
-            EvernestFront.Responses.GetUserResponse u = EvernestFront.User.GetUser(connexion.IdUser);
+            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
             if (u.Success)
             {
                 StreamsSources streamsSources = getStreamsSources(u);
@@ -76,7 +76,7 @@ namespace EvernestWeb.Controllers
             if (ViewBag.Connexion != "true")
                 return View("Index");
 
-            EvernestFront.Responses.GetUserResponse u = EvernestFront.User.GetUser(connexion.IdUser);
+            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
             if (u.Success)
                 if (addStream != null)
                 {
@@ -118,7 +118,7 @@ namespace EvernestWeb.Controllers
             if (ViewBag.Connexion != "true")
                 return View("Index");
 
-            EvernestFront.Responses.GetUserResponse u = EvernestFront.User.GetUser(connexion.IdUser);
+            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
             if (u.Success)
                 if (addSource != null)
                 {
@@ -138,8 +138,8 @@ namespace EvernestWeb.Controllers
 
         private StreamAndEvents getStreamsAndEvents(long streamId, long userId)
         {
-            EvernestFront.Responses.GetEventStreamResponse s = EvernestFront.EventStream.GetStream(streamId);
-            EvernestFront.Responses.GetUserResponse u = EvernestFront.User.GetUser(userId);
+            EvernestFront.Responses.Response<EventStream> s = EvernestFront.EventStream.GetStream(streamId);
+            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(userId);
             if (s.Success && u.Success)
             {
                 // fetch stream
@@ -155,7 +155,7 @@ namespace EvernestWeb.Controllers
                 if (s.EventStream.LastEventId > 10)
                     begin = Convert.ToInt32(s.EventStream.LastEventId) - 10;
 
-                EvernestFront.Responses.PullRangeResponse r = u.User.PullRange(streamId, begin, s.EventStream.LastEventId);
+                EvernestFront.Responses.Response<List<Event>> r = u.User.PullRange(streamId, begin, s.EventStream.LastEventId);
                 streamAndEvents.Events = r.Events;
 
                 return streamAndEvents;
@@ -182,10 +182,10 @@ namespace EvernestWeb.Controllers
 
             if (item != null)
             {
-                EvernestFront.Responses.GetEventStreamResponse s = EvernestFront.EventStream.GetStream(sid);
+                EvernestFront.Responses.Response<EventStream> s = EvernestFront.EventStream.GetStream(sid);
                 if (s.Success)
                 {
-                    EvernestFront.Responses.GetUserResponse u = EvernestFront.User.GetUser(connexion.IdUser);
+                    EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
                     if (u.Success)
                         u.User.Push(s.EventStream.Id, item);
                 }

@@ -1,7 +1,4 @@
-﻿using EvernestFront;
-using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
-using EvernestFront.Responses;
+﻿using NUnit.Framework;
 
 namespace EvernestFrontTests
 {

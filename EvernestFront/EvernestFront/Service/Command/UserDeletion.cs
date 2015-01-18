@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Eventing.Reader;
-using System.Web.UI.WebControls;
-using EvernestFront.Contract.SystemEvent;
+﻿using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Utilities;
 
 namespace EvernestFront.Service.Command

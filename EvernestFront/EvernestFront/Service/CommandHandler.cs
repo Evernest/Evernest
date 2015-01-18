@@ -1,9 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using EvernestFront.Contract.SystemEvent;
-using EvernestFront.Responses;
 using EvernestFront.Service.Command;
 
 namespace EvernestFront.Service
@@ -65,7 +65,7 @@ namespace EvernestFront.Service
             else
             {
                 Debug.Assert(error != null, "error != null");
-                _manager.AddCommandResult(command.Guid, new SystemCommandResponse((FrontError) error));
+                _manager.AddCommandResult(command.Guid, new Response<Guid>((FrontError) error));
             }
         }
     }

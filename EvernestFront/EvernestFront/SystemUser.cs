@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EvernestFront.Responses;
+﻿using System.Collections.Immutable;
 using EvernestFront.Service;
 
 namespace EvernestFront
@@ -21,14 +15,14 @@ namespace EvernestFront
             
         }
 
-        public new GetEventStreamResponse GetEventStream(long streamId)
+        public new Response<EventStream> GetEventStream(long streamId)
         {
             var builder = new EventStreamsBuilder();
             EventStream eventStream;
             if (builder.TryGetEventStreamBySystemUser(this, streamId, out eventStream))
-                return new GetEventStreamResponse(eventStream);
+                return new Response<EventStream>(eventStream);
             else
-                return new GetEventStreamResponse(FrontError.EventStreamIdDoesNotExist);
+                return new Response<EventStream>(FrontError.EventStreamIdDoesNotExist);
         }
     }
 }

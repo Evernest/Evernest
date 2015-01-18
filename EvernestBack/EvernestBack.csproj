@@ -84,7 +84,6 @@
     <Compile Include="IEventStream.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reader.cs" />
     <Compile Include="EventStream.cs" />
     <Compile Include="BufferedBlobIO.cs" />
     <Compile Include="Util.cs" />

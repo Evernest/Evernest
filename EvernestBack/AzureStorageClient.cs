@@ -130,7 +130,7 @@ namespace EvernestBack
             {
                 throw new ArgumentException("You try to open a stream that does not exists");
             }
-            // Update reference, don't seem to have an "update" method... thank you micro$oft
+            // Update reference, don't seem to have an "update" method... thank you microsoft
             _openedStreams.Remove(streamID);
             _openedStreams.Add(streamID, stream);
             return stream;
@@ -150,6 +150,7 @@ namespace EvernestBack
             }
             if (_dummy)
             {
+                // nothing to do
             }
             else
             {

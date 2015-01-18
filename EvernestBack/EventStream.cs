@@ -66,14 +66,5 @@ namespace EvernestBack
         {
             return _writeLock.CurrentID;
         }
-
-        /// <summary>
-        ///     Deprecated - Write the message of an agent to the console. To Remove.
-        /// </summary>
-        /// <param name="agent"></param>
-        public void StreamDeliver(Agent agent)
-        {
-            Console.WriteLine(agent.Message);
-        }
     }
 }

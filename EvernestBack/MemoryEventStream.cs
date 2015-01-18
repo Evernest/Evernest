@@ -80,7 +80,8 @@ namespace EvernestBack
 
         public static void CreateStream(AzureStorageClient store, string streamID)
         {
-            var file = new StreamWriter(StreamFileName(store, streamID));
+            string fn = StreamFileName(store, streamID);
+            var file = new StreamWriter(fn);
             file.Close();
         }
     }

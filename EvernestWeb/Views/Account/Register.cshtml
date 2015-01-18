@@ -5,6 +5,10 @@
 
 <h2>Register</h2>
 
+<p class="text-success">
+    @ViewBag.message
+</p>
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()

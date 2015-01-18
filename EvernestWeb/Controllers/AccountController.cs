@@ -1,10 +1,10 @@
-
 ﻿using System.Web.Mvc;
 using System.Web.Security;
 
-using EvernestWeb.Models;
-using EvernestWeb.ViewModels;
+﻿using EvernestFront;
 
+﻿using EvernestWeb.ViewModels;
+﻿
 namespace EvernestWeb.Controllers
 {
     public class AccountController : Controller
@@ -28,18 +28,21 @@ namespace EvernestWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = (User)Session["User"];
-                EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
-                EvernestFront.Answers.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
-                if(p.Success)
-                {
-                    return View(model);
-                }
-                else
+                var front = new UsersBuilder();
+                Models.User user = (Models.User) Session["User"];
+                var userReq = front.GetUser(user.Id);
+                if (!userReq.Success)
                 {
                     ModelState.AddModelError("Password", "Incorrect Password.");
                     return View(model);
                 }
+                var setPasswordReq = userReq.Result.SetPassword(model.Password, model.NewPassword);
+                if(!setPasswordReq.Success)
+                {
+                    ModelState.AddModelError("Password", "Incorrect Password.");
+                    return View(model);
+                }
+                return View(model);
             }
             return View(model);
         }
@@ -55,25 +58,30 @@ namespace EvernestWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(User user, string returnUrl)
+        public ActionResult Login(Models.User user, string returnUrl)
         {
             if (ModelState.IsValid)
             {
-                EvernestFront.Answers.IdentifyUser iu = EvernestFront.User.IdentifyUser(user.Username, user.Password);
-                if (iu.Success)
+                // Ask front for identification
+                var front = new UsersBuilder();
+                var userReq = front.IdentifyUser(user.Username, user.Password);
+                if (!userReq.Success)
                 {
-                    user.Id = iu.User.Id;
-                    Session["User"] = user;
-                    FormsAuthentication.SetAuthCookie(user.Username, user.RememberMe);
-                    if (Url.IsLocalUrl(returnUrl))
-                    {
-                        return Redirect(returnUrl);
-                    }
-                    return RedirectToAction("Index", "Account");
+                    ModelState.AddModelError("Username", "Invalid credentials.");
+                    return View(user);
                 }
 
-                ModelState.AddModelError("Username", "Invalid credentials.");
-                return View(user);
+                // Save session
+                user.Id = userReq.Result.Id;
+                Session["User"] = user;
+                FormsAuthentication.SetAuthCookie(user.Username, user.RememberMe);
+
+                // Redirect
+                if (Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                return RedirectToAction("Index", "Account");
             }
             return View(user);
         }
@@ -91,29 +99,23 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterModel model)
         {
-            if (ModelState.IsValid)
+            // Check user input
+            if (!ModelState.IsValid)
             {
-                // add user in blob
-                EvernestFront.Answers.AddUser u = EvernestFront.User.AddUser(model.Username, model.Password);
-                if (u.Success)
-                {
-                    // if it is ok, then create the session
-                    EvernestFront.Answers.GetUser g = EvernestFront.User.GetUser(u.UserId);
-                    if (g.Success)
-                    {
-                        User user = new User(g.User.Id, model.Username, model.Password);
-                        Session["User"] = user;
-                        FormsAuthentication.SetAuthCookie(user.Username, user.RememberMe);
-                        return RedirectToAction("Index", "Account");
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("Username", "This user name has already been taken.");
-                    return View(model);
-                }
+                return View(model);
             }
-            return View(model);
+
+            // Add user in front
+            var front = new UsersBuilder();
+            var addUserReq = front.AddUser(model.Username, model.Password);
+            if (!addUserReq.Success)
+            {
+                ModelState.AddModelError("Username", "This user name has already been taken.");
+                return View(model);
+            }
+
+            ViewBag.message = "User as succesfully been added.";
+            return View();
         }
 
         // GET: /Account/Logout

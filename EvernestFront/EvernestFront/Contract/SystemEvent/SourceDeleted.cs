@@ -8,15 +8,18 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         internal string SourceKey { get; set; }
         [DataMember]
-        internal long UserId { get; set; }
-        [DataMember]
         internal string SourceName { get; set; }
+        [DataMember]
+        internal long SourceId { get; set; }
+        [DataMember]
+        internal long UserId { get; set; }
 
-        internal SourceDeleted(string key, long userId, string name)
+        internal SourceDeleted(string key, string name, long id, long userId)
         {
             SourceKey = key;
-            UserId = userId;
             SourceName = name;
+            SourceId = id;
+            UserId = userId;
         }
     }
 }

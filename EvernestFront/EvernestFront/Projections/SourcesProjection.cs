@@ -14,7 +14,7 @@ namespace EvernestFront.Projections
             KeyToData = ImmutableDictionary<string, SourceDataForProjection>.Empty;
         }
 
-        public void OnSystemEvent(Contract.SystemEvent.ISystemEvent systemEvent)
+        public void OnSystemEvent(ISystemEvent systemEvent)
         {
             try
             {
@@ -35,8 +35,7 @@ namespace EvernestFront.Projections
 
         private void When(SourceCreated systemEvent)
         {
-            var data = new SourceDataForProjection(systemEvent.SourceName, systemEvent.UserId, 
-                systemEvent.UserName, systemEvent.EventStreamId, systemEvent.Right);
+            var data = new SourceDataForProjection(systemEvent.SourceName, systemEvent.SourceId, systemEvent.UserId);
             KeyToData = KeyToData.SetItem(systemEvent.SourceKey, data);
         }
 

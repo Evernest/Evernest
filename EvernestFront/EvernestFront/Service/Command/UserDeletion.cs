@@ -21,7 +21,7 @@ namespace EvernestFront.Service.Command
             Password = password;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out Contract.SystemEvent.ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
             UserDataForService userData;
             if (!serviceData.UserIdToDatas.TryGetValue(UserId, out userData))

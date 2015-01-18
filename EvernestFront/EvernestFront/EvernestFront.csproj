@@ -84,6 +84,9 @@
     <Compile Include="EventStreamsBuilder.cs" />
     <Compile Include="Injector.cs" />
     <Compile Include="Responses\SystemCommandResponse.cs" />
+    <Compile Include="Service\Command\SourceCreation.cs" />
+    <Compile Include="Service\Command\SourceDeletion.cs" />
+    <Compile Include="SourcesBuilder.cs" />
     <Compile Include="SystemUser.cs" />
     <Compile Include="Utilities\KeyGenerator.cs" />
     <Compile Include="Utilities\PasswordManager.cs" />

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace EvernestFront.Utilities
@@ -31,7 +32,7 @@ namespace EvernestFront.Utilities
             const int byteSize = 0x100;
             var allowedCharSet = new HashSet<char>(AllowedChars).ToArray();
 
-            using (var rng = new System.Security.Cryptography.RNGCryptoServiceProvider())
+            using (var rng = new RNGCryptoServiceProvider())
             {
                 var result = new StringBuilder();
                 var buf = new byte[128];

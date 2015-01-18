@@ -13,7 +13,7 @@ namespace EvernestFront.Projections
         
         internal ImmutableDictionary<string, AccessRight> RelatedUsers { get; private set; }
         
-        internal EvernestBack.IEventStream BackStream { get; private set; }
+        internal IEventStream BackStream { get; private set; }
         
 
         private EventStreamDataForProjection(string name, ImmutableDictionary<string, AccessRight> users, IEventStream backStream)

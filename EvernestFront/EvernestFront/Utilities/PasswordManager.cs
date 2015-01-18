@@ -27,7 +27,7 @@ namespace EvernestFront.Utilities
 
         internal bool StringIsASCII(string password)
         {
-            return password.Equals(System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(password)));
+            return password.Equals(Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(password)));
         }
     }
 }

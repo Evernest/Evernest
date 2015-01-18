@@ -4,32 +4,29 @@ namespace EvernestFront.Service
 {
     class UserDataForService
     {
-        internal string UserName { get; set; }
-        
-        internal string SaltedPasswordHash { get; set; }
-        
-        internal byte[] PasswordSalt { get; set; }
-        
-        internal HashSet<string> Keys { get; set; }
-        
-        internal HashSet<string> Sources { get; set; }
+        internal string UserName;
 
-        //private UserDataForService(string name, string hash, byte[] salt, HashSet<string> keys, HashSet<string> sources)
-        //{
-        //    UserName = name;
-        //    SaltedPasswordHash = hash;
-        //    PasswordSalt = salt;
-        //    Keys = keys;
-        //    Sources = sources;
-        //}
+        internal string SaltedPasswordHash;
+
+        internal byte[] PasswordSalt;
+
+        internal HashSet<string> KeyNames;
+
+        internal HashSet<string> SourceNames;
+
+        internal Dictionary<long, string> SourceIdToName; 
+
+        internal long NextSourceId;
 
         internal UserDataForService(string name, string hash, byte[] salt)
         {
             UserName = name;
             SaltedPasswordHash = hash;
             PasswordSalt = salt;
-            Keys = new HashSet<string>();
-            Sources = new HashSet<string>();
+            KeyNames = new HashSet<string>();
+            SourceNames = new HashSet<string>();
+            SourceIdToName = new Dictionary<long, string>();
+            NextSourceId = 0;
         }
 
     }

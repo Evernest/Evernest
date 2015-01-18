@@ -1,6 +1,7 @@
 ﻿using System.Web;
+using EvernestFront;
 
-[assembly: PreApplicationStartMethod(typeof(EvernestFront.StartUp), "Start")]
+[assembly: PreApplicationStartMethod(typeof(StartUp), "Start")]
 
 namespace EvernestFront
 {

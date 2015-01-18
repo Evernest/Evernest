@@ -65,7 +65,9 @@ namespace EvernestFront
         {
             if (InternalUserKeys.ContainsKey(keyName))
                 return new SystemCommandResponse(FrontError.UserKeyNameTaken);
-            var command = new UserKeyCreation(_commandHandler, Id, keyName);
+            var keyGenerator = new KeyGenerator();
+            var key = keyGenerator.NewKey();
+            var command = new UserKeyCreation(_commandHandler, Id, keyName, key);
             command.Send();
             return new SystemCommandResponse(command.Guid);
         }

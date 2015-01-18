@@ -16,7 +16,7 @@ namespace EvernestFront.Service.Command
             CreatorName = creatorName;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out Contract.SystemEvent.ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
             if (serviceData.EventStreamNameExists(EventStreamName))
             {

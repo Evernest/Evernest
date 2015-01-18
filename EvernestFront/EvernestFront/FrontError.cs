@@ -11,7 +11,9 @@
         InvalidEventId,
         InvalidString,
         ReadAccessDenied,
+        SourceIdDoesNotExist,
         SourceKeyDoesNotExist,
+        SourceNameDoesNotExist,
         SourceNameTaken,
         UnknownFrontError,
         UserIdDoesNotExist,
@@ -19,6 +21,7 @@
         UserKeyNameTaken,
         UserNameDoesNotExist,
         UserNameTaken,
+        UserOwningSourceDoesNotExist,
         WriteAccessDenied,
         WrongPassword
     }

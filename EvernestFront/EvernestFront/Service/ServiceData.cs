@@ -44,18 +44,10 @@ namespace EvernestFront.Service
         {
             return UserNames.Contains(name);
         }
-        //internal bool UserIdExists(long id)
-        //{
-        //    return UserIdToDatas.ContainsKey(id);
-        //}
         internal bool EventStreamNameExists(string name)
         {
             return EventStreamNames.Contains(name);
         }
-        //internal bool EventStreamIdExists(long id)
-        //{
-        //    return EventStreamIdToAdmins.ContainsKey(id);
-        //}
 
 
 
@@ -88,6 +80,25 @@ namespace EvernestFront.Service
             userData.PasswordSalt = systemEvent.PasswordSalt;
         }
 
+        private void When(SourceCreated systemEvent)
+        {
+            UserDataForService userData;
+            if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
+                return; //TODO: report error
+            userData.SourceNames.Add(systemEvent.SourceName);
+            userData.SourceIdToName.Add(systemEvent.SourceId, systemEvent.SourceName);
+            userData.NextSourceId++;
+        }
+
+        private void When(SourceDeleted systemEvent)
+        {
+            UserDataForService userData;
+            if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
+                return; //TODO: report error
+            userData.SourceNames.Remove(systemEvent.SourceName);
+            userData.SourceIdToName.Remove(systemEvent.SourceId);
+        }
+
         private void When(UserCreated systemEvent)
         {
             UserNames.Add(systemEvent.UserName);
@@ -107,7 +118,7 @@ namespace EvernestFront.Service
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
                 return; //TODO: report error
-            userData.Keys.Add(systemEvent.KeyName);
+            userData.KeyNames.Add(systemEvent.KeyName);
         }
 
         private void When(UserKeyDeleted systemEvent)
@@ -115,7 +126,7 @@ namespace EvernestFront.Service
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
                 return; //this can happen since existence is not checked in CommandToSystemEvent for key deletion
-            userData.Keys.Remove(systemEvent.KeyName);
+            userData.KeyNames.Remove(systemEvent.KeyName);
         }
 
         private void When(UserRightSet systemEvent)

@@ -32,7 +32,7 @@ namespace EvernestFront.Service.Command
                 systemEvent = null;
                 return false;
             }
-            if (!userData.Keys.Contains(KeyName))
+            if (!userData.KeyNames.Contains(KeyName))
             {
                 error = FrontError.UserKeyDoesNotExist;
                 systemEvent = null;

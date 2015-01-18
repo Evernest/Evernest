@@ -13,9 +13,9 @@ namespace EvernestBack
         private readonly List<string> _messages = new List<string>();
         private readonly string _streamFileName;
 
-        public MemoryEventStream(string streamStringID)
+        public MemoryEventStream(AzureStorageClient store, string streamStringID)
         {
-            _streamFileName = StreamFileName(streamStringID);
+            _streamFileName = StreamFileName(store, streamStringID);
             if (File.Exists(_streamFileName))
             {
                 var file = new StreamReader(_streamFileName);
@@ -68,19 +68,19 @@ namespace EvernestBack
             public long RequestID { get; private set; }
         }
 
-        private static string StreamFileName(string streamID)
+        private static string StreamFileName(AzureStorageClient store, string streamID)
         {
-            return streamID + "_RAMStreamContent.txt";
+            return store.DummyDataPath + streamID + "_RAMStreamContent.txt";
         }
 
-        public static bool StreamExists(string streamID)
+        public static bool StreamExists(AzureStorageClient store, string streamID)
         {
-            return (File.Exists(StreamFileName(streamID)));
+            return File.Exists(StreamFileName(store, streamID));
         }
 
-        public static void CreateStream(string streamID)
+        public static void CreateStream(AzureStorageClient store, string streamID)
         {
-            var file = new StreamWriter(StreamFileName(streamID));
+            var file = new StreamWriter(StreamFileName(store, streamID));
             file.Close();
         }
     }

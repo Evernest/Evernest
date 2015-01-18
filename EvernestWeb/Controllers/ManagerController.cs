@@ -41,19 +41,23 @@ namespace EvernestWeb.Controllers
             return View(streamsSources);
         }
 
-        // POST: /Manager/AddStream
+        // POST: /Manager/NewStream
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddStream(string addStream)
+        public ActionResult NewStream(NewStreamModel model)
         {
+            // Check user input
+            if (!ModelState.IsValid)
+                return RedirectToAction("Index", "Manager");
+
             // Get user
             Models.User user = (Models.User)Session["User"];
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
-            if (!u.Success || addStream == null)
+            if (!u.Success)
                 return RedirectToAction("Index", "Manager");
 
             // Create stream
-            EvernestFront.Answers.CreateEventStream stream = u.User.CreateEventStream(addStream);
+            EvernestFront.Answers.CreateEventStream stream = u.User.CreateEventStream(model.Name);
             if (!stream.Success)
                 return RedirectToAction("Index", "Manager");
 
@@ -67,28 +71,30 @@ namespace EvernestWeb.Controllers
             return RedirectToAction("Index", "Manager", new RouteValueDictionary(streamsSources));
         }
 
-        // POST: /Manager/AddSource
+        // POST: /Manager/NewSource
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddSource(string addSource, string idStream, string accessRights)
+        public ActionResult NewSource(NewSourceModel model)
         {
+            // Check user input
+            if (!ModelState.IsValid)
+                return RedirectToAction("Index", "Manager");
+
             // Get user
             Models.User user = (Models.User) Session["User"];
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
-            if (!u.Success || addSource == null)
+            if (!u.Success)
                 return RedirectToAction("Index", "Manager");
 
             // Create source
-            long idStream_ = Convert.ToInt64(idStream);
-            AccessRights accessRights_ = AccessRightsDictionary[accessRights];
-            EvernestFront.Answers.CreateSource source = u.User.CreateSource(addSource, idStream_, accessRights_);
-            if (!source.Success)
-                return RedirectToAction("Index", "Manager");
+            //EvernestFront.Answers.CreateSource source = u.User.CreateSource(model.Name);
+            //if (!source.Success)
+            //    return RedirectToAction("Index", "Manager");
 
             return RedirectToAction("Index", "Manager");
         }
 
-        // GET: /Manager/Strem/{Id}
+        // GET: /Manager/Stream/{Id}
         public ActionResult Stream(long id)
         {
             Models.User user = (Models.User)Session["User"];
@@ -106,6 +112,14 @@ namespace EvernestWeb.Controllers
             ViewBag.StreamId = id;
 
             return View(streamAndEvents);
+        }
+
+        // GET: /Manager/Source/{Id}
+        public ActionResult Source(long id)
+        {
+            Models.User user = (Models.User)Session["User"];
+            // Todo
+            return View();
         }
 
         // POST: /Manager/AddUser
@@ -135,18 +149,34 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult PushEvent(string item, int sid)
         {
-            Models.User user = (Models.User)Session["User"];
-            if (item != null)
-            {
-                EvernestFront.Answers.GetEventStream s = EventStream.GetStream(sid);
-                if (s.Success)
-                {
-                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
-                    if (u.Success)
-                        u.User.Push(s.EventStream.Id, item);
-                }
-            }
+            var user = (Models.User)Session["User"];
+            var s = EventStream.GetStream(sid);
+            if (!s.Success || item == null)
+                return RedirectToAction("Stream", "Manager", new { id = sid });
+            
+            var u = EvernestFront.User.GetUser(user.Id);
+            if (!u.Success)
+                return RedirectToAction("Stream", "Manager", new { id = sid });
+            
+            u.User.Push(s.EventStream.Id, item);
+
             return RedirectToAction("Stream", "Manager", new { id = sid });
+        }
+
+        // GET: /Manager/DeleteStream/{Id}
+        public ActionResult DeleteStream(long id)
+        {
+            Models.User user = (Models.User)Session["User"];
+            // Todo
+            return RedirectToAction("Stream", "Manager");
+        }
+
+        // GET: /Manager/DeleteSource/{Id}
+        public ActionResult DeleteSource(long id)
+        {
+            Models.User user = (Models.User)Session["User"];
+            // Todo
+            return RedirectToAction("Source", "Manager");
         }
     }
 }

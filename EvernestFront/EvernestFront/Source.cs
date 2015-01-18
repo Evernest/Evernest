@@ -17,7 +17,7 @@ namespace EvernestFront
 
         public AccessRights Right { get; private set; }
 
-        //should sources have an id?
+        public long Id { get; private set; }
 
 
 

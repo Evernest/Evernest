@@ -1,0 +1,34 @@
+﻿@model IEnumerable<EvernestFront.Source>
+
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Source name</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var source in Model)
+        {
+            <tr>
+                <td>@source.Id</td>
+                <td>@source.Name</td>
+                <td>@Html.ActionLink("Details", "Source", "Manager", source)</td>
+                <td>@Html.ActionLink("Delete", "DeleteSource", "Manager", source)</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td>
+                @{ Html.RenderPartial("_NewSourcePartial", new EvernestWeb.ViewModels.NewSourceModel()); }
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>

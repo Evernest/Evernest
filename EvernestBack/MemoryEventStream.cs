@@ -15,7 +15,7 @@ namespace EvernestBack
 
         public MemoryEventStream(string streamStringID)
         {
-            _streamFileName = streamStringID + "_RAMStreamContent.txt";
+            _streamFileName = StreamFileName(streamStringID);
             if (File.Exists(_streamFileName))
             {
                 var file = new StreamReader(_streamFileName);
@@ -66,6 +66,22 @@ namespace EvernestBack
 
             public string Message { get; protected set; }
             public long RequestID { get; private set; }
+        }
+
+        private static string StreamFileName(string streamID)
+        {
+            return streamID + "_RAMStreamContent.txt";
+        }
+
+        public static bool StreamExists(string streamID)
+        {
+            return (File.Exists(StreamFileName(streamID)));
+        }
+
+        public static void CreateStream(string streamID)
+        {
+            var file = new StreamWriter(StreamFileName(streamID));
+            file.Close();
         }
     }
 }

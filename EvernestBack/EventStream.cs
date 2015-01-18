@@ -18,9 +18,12 @@ namespace EvernestBack
         /// <param name="streamIndexBlob"></param>
         /// <param name="bufferSize"></param>
         /// <param name="eventChunkSize"></param>
-        public EventStream(CloudPageBlob blob, CloudBlockBlob streamIndexBlob, int bufferSize, uint eventChunkSize)
+        public EventStream(AzureStorageClient storage, string streamID, int bufferSize, uint eventChunkSize)
         {
-            var buffer = new BufferedBlobIO(blob, bufferSize);
+            var streamBlob = storage.StreamContainer.GetPageBlobReference(streamID);
+            var streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
+
+            var buffer = new BufferedBlobIO(streamBlob, bufferSize);
             _indexer = new EventIndexer(streamIndexBlob, buffer, eventChunkSize);
             _writeLock = new WriteLocker(buffer, _indexer, 0); // Initial ID = 0
             _writeLock.Store();
@@ -65,6 +68,19 @@ namespace EvernestBack
         public long Size()
         {
             return _writeLock.CurrentID;
+        }
+
+        public static void CreateStream(AzureStorageClient storage, string streamID)
+        {
+            CloudPageBlob streamBlob = storage.StreamContainer.GetPageBlobReference(streamID);
+            // CloudBlockBlob streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
+            streamBlob.Create(storage.PageBlobSize);
+            // streamIndexBlob.Create(); // not this method ?
+         }
+
+        public static bool StreamExists(AzureStorageClient storage, string streamID)
+        {
+            return storage.StreamContainer.GetPageBlobReference(streamID).Exists();
         }
     }
 }

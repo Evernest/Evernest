@@ -27,3 +27,13 @@ If Success is false, the command is dropped, because it is likely invalid (it's 
 
 Once the command is dequeued, it is treated using completely accurate data, and an accurate response can be found using a CommandResultViewer and the command GUID.
 At this point, the relevant objects have indeed been created and can be looked up to find Ids.
+
+Source public methods
+=======================================
+
+Response<Tuple<String, Guid>> User.CreateSource(string sourceName)
+Response<Source> User.GetSource(string sourceName)
+Response<Source> User.GetSource(long sourceId)
+Response<Source> SourcesBuilder.GetSource(string sourceKey)
+Response<Guid> User.SetSourceRight(string sourceKey, long streamId, AccessRight right)
+Response<Guid> User.DeleteSource(long sourceId)

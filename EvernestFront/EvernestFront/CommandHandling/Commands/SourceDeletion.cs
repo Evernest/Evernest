@@ -6,17 +6,14 @@ namespace EvernestFront.CommandHandling.Commands
     {
         internal readonly long UserId;
 
-        internal readonly string SourceName;
-
         internal readonly long SourceId;
 
         internal readonly string SourceKey;
 
-        internal SourceDeletion(CommandHandler commandHandler, long userId, string sourceName, long sourceId, string sourceKey)
+        internal SourceDeletion(CommandHandler commandHandler, long userId, long sourceId, string sourceKey)
             :base(commandHandler)
         {
             UserId = userId;
-            SourceName = sourceName;
             SourceId = sourceId;
             SourceKey = sourceKey;
         }
@@ -30,13 +27,14 @@ namespace EvernestFront.CommandHandling.Commands
                 systemEvent = null;
                 return false;
             }
-            if (!userData.SourceIdToName.ContainsKey(SourceId))
+            string sourceName;
+            if (!userData.SourceIdToName.TryGetValue(SourceId, out sourceName))
             {
                 error = FrontError.SourceIdDoesNotExist;
                 systemEvent = null;
                 return false;
             }
-            systemEvent = new SourceDeletedSystemEvent(SourceKey, SourceName, SourceId, UserId);
+            systemEvent = new SourceDeletedSystemEvent(SourceKey, sourceName, SourceId, UserId);
             error = null;
             return true;
         }

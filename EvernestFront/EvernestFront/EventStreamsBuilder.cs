@@ -107,21 +107,6 @@ namespace EvernestFront
                 eventStreamData.RelatedUsers, eventStreamData.BackStream);
         }
 
-        internal bool TryGetEventStreamBySystemUser(SystemUser user, long eventStreamId, out EventStream eventStream)
-        {
-            EventStreamDataForProjection eventStreamData;
-            if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
-            {
-                var accessManager = new AccessVerifier();
-                var possibleActions = accessManager.ComputePossibleAccessActions(AccessRight.Root);
-                eventStream = ConstructEventStream(user, false, null, possibleActions, eventStreamId, eventStreamData);
-                return true;
-            }
-            else
-            {
-                eventStream = null;
-                return false;
-            }
-        }
+        
     }
 }

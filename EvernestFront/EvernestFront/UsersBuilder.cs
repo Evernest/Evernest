@@ -142,7 +142,7 @@ namespace EvernestFront
         {
             return new User(_commandHandler, userId, userData.UserName,
                     userData.SaltedPasswordHash, userData.PasswordSalt,
-                    userData.Keys, userData.Sources,
+                    userData.Keys, userData.Sources, userData.SourceKeys,
                     userData.RelatedEventStreams);
         }
     }

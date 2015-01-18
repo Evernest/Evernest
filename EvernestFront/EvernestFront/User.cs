@@ -20,30 +20,27 @@ namespace EvernestFront
 
         private byte[] PasswordSalt { get; set; }
 
-        private ImmutableDictionary<string, string> InternalUserKeys { get; set; }
+        private IDictionary<string, string> UserKeys { get; set; }
 
-        private ImmutableDictionary<string, string> InternalSources { get; set; }
+        public IDictionary<string, long> Sources { get; private set; }
 
-        private ImmutableDictionary<long, AccessRight> InternalRelatedEventStreams { get; set; }
+        private IDictionary<long, string> SourceKeys { get; set; }
 
-        public IDictionary<string, string> UserKeys { get { return InternalUserKeys; } }
-
-        public IDictionary<string, string> Sources { get { return InternalSources; } }
-
-        public IDictionary<long, AccessRight> RelatedEventStreams { get { return InternalRelatedEventStreams; }}
+        public IDictionary<long, AccessRight> RelatedEventStreams { get; private set; }
 
         internal User(CommandHandler commandHandler, long id, string name, string sph, byte[] ps,
-            ImmutableDictionary<string, string> keys, ImmutableDictionary<string, string> sources, 
-            ImmutableDictionary<long, AccessRight> streams)
+            ImmutableDictionary<string, string> keys, ImmutableDictionary<string, long> sources, 
+            ImmutableDictionary<long, string> sourceKeys, ImmutableDictionary<long, AccessRight> streams)
         {
             _commandHandler = commandHandler;
             Id = id;
             Name = name;
             SaltedPasswordHash = sph;
             PasswordSalt = ps;
-            InternalUserKeys = keys;
-            InternalSources = sources;
-            InternalRelatedEventStreams = streams;
+            UserKeys = keys;
+            Sources = sources;
+            SourceKeys = sourceKeys;
+            RelatedEventStreams = streams;
         }
 
         public Response<Guid> SetPassword(string passwordForVerification, string newPassword)
@@ -60,7 +57,7 @@ namespace EvernestFront
 
         public Response<Tuple<string, Guid>> CreateUserKey(string keyName)
         {
-            if (InternalUserKeys.ContainsKey(keyName))
+            if (UserKeys.ContainsKey(keyName))
                 return new Response<Tuple<string, Guid>>(FrontError.UserKeyNameTaken);
             var keyGenerator = new KeyGenerator();
             var key = keyGenerator.NewKey();
@@ -78,7 +75,7 @@ namespace EvernestFront
 
         public bool TryGetUserKey(string keyName, out string key)
         {
-            return InternalUserKeys.TryGetValue(keyName, out key);
+            return UserKeys.TryGetValue(keyName, out key);
         }
 
         

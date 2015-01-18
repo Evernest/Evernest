@@ -31,12 +31,10 @@ namespace EvernestWeb.Controllers
             Models.User user = (Models.User)Session["User"];
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
             if (!u.Success)
-            {
                 return View();
-            }
 
-            StreamsSources streamsSources = Utils.getStreamsSources(u);
-            return View(streamsSources);
+            var model = new ManagerModel();
+            return View(model);
         }
 
         // POST: /Manager/NewStream
@@ -65,8 +63,9 @@ namespace EvernestWeb.Controllers
                 return RedirectToAction("Index", "Manager");
 
             // Get new stream list
-            StreamsSources streamsSources = Utils.getStreamsSources(u);
-            return RedirectToAction("Index", "Manager", new RouteValueDictionary(streamsSources));
+            //StreamsSources streamsSources = Utils.getStreamsSources(u);
+            //return RedirectToAction("Index", "Manager", new RouteValueDictionary(streamsSources));
+            return RedirectToAction("Index", "Manager");
         }
 
         // POST: /Manager/NewSource

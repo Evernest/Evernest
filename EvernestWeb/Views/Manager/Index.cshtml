@@ -1,4 +1,4 @@
-﻿@model EvernestWeb.ViewModels.StreamsSources
+﻿@model EvernestWeb.ViewModels.ManagerModel
 @{
     ViewBag.Title = "Evernest - Manager";
 }
@@ -10,14 +10,14 @@
     <div>
         <h4>Streams</h4>
 
-        @{ Html.RenderPartial("_StreamTablePartial", new List<EvernestFront.EventStream> {}); }
+        @{ Html.RenderPartial("_StreamTablePartial", Model.Streams); }
     </div>
 
     <!-- for source -->
     <div>
         <h4>Source</h4>
 
-        @{ Html.RenderPartial("_SourceTablePartial", new List<EvernestFront.Source> {}); }
+        @{ Html.RenderPartial("_SourceTablePartial", Model.Sources); }
     </div>
 
 </div>

@@ -36,30 +36,17 @@ namespace EvernestWeb.ViewModels
         public string Content { get; set; }
     }
 
-
-    // Beyond this point, a refactoring might be required
-
-    public class StreamsSources
+    /// <summary>
+    /// Data displayed in main manager page
+    /// </summary>
+    public class ManagerModel
     {
         public List<EvernestFront.EventStream> Streams { get; set; }
         public List<EvernestFront.Source> Sources { get; set; }
-
-        public StreamsSources()
-        {
-            Streams = new List<EvernestFront.EventStream>();
-            Sources = new List<EvernestFront.Source>();
-        }
-
-        public void AddEventStream(EvernestFront.EventStream es)
-        {
-            Streams.Add(es);
-        }
-
-        public void AddSource(EvernestFront.Source s)
-        {
-            Sources.Add(s);
-        }
     }
+
+
+    // Beyond this point, a refactoring might be required
 
     public class AddUserModel
     {

@@ -11,7 +11,7 @@ namespace EvernestWeb.Helpers
     /// </summary>
     public class Utils
     {
-
+        /*
         public static StreamsSources getStreamsSources(EvernestFront.Answers.GetUser u)
         {
             List<KeyValuePair<long, AccessRights>> listStreams = u.User.RelatedEventStreams;
@@ -32,7 +32,7 @@ namespace EvernestWeb.Helpers
 
             return streamsSources;
         }
-
+        */
 
 
         public static StreamAndEvents getStreamsAndEvents(long streamId, long userId)

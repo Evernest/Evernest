@@ -76,6 +76,7 @@ namespace EvernestFrontTests
             var ans = user.DeleteSource(sourceId);
             Assert.IsTrue(ans.Success);
             Thread.Sleep(100);
+            user = UserTests.GetUser_AssertSuccess(userId);
             Assert.IsFalse(user.Sources.ContainsKey(sourceName));
 
         }

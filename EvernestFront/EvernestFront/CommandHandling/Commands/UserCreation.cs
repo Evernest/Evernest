@@ -1,7 +1,7 @@
-﻿using EvernestFront.Contract.SystemEvent;
+﻿using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
-namespace EvernestFront.Service.Command
+namespace EvernestFront.CommandHandling.Commands
 {
     class UserCreation : CommandBase
     {
@@ -26,7 +26,7 @@ namespace EvernestFront.Service.Command
             }
             var passwordManager = new PasswordManager();
             var hashSalt = passwordManager.SaltAndHash(Password);
-            systemEvent= new UserCreated(UserName, serviceData.NextUserId, hashSalt.Key, hashSalt.Value);
+            systemEvent= new UserCreatedSystemEvent(UserName, serviceData.NextUserId, hashSalt.Key, hashSalt.Value);
             error = null;
             return true;
         }

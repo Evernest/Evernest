@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.Service
+namespace EvernestFront.CommandHandling
 {
     class ServiceData
     {
@@ -59,19 +59,19 @@ namespace EvernestFront.Service
             When((dynamic)systemEvent);
         }
 
-        private void When(EventStreamCreated systemEvent)
+        private void When(EventStreamCreatedSystemEvent systemEvent)
         {
             EventStreamNames.Add(systemEvent.StreamName);
             EventStreamIdToAdmins.Add(systemEvent.StreamId, new HashSet<string> { systemEvent.CreatorName });
         }
 
-        private void When(EventStreamDeleted systemEvent)
+        private void When(EventStreamDeletedSystemEvent systemEvent)
         {
             EventStreamNames.Remove(systemEvent.StreamName);
             EventStreamIdToAdmins.Remove(systemEvent.StreamId);
         }
 
-        private void When(PasswordSet systemEvent)
+        private void When(PasswordSetSystemEvent systemEvent)
         {
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
@@ -80,7 +80,7 @@ namespace EvernestFront.Service
             userData.PasswordSalt = systemEvent.PasswordSalt;
         }
 
-        private void When(SourceCreated systemEvent)
+        private void When(SourceCreatedSystemEvent systemEvent)
         {
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
@@ -90,7 +90,7 @@ namespace EvernestFront.Service
             userData.NextSourceId++;
         }
 
-        private void When(SourceDeleted systemEvent)
+        private void When(SourceDeletedSystemEvent systemEvent)
         {
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
@@ -99,7 +99,7 @@ namespace EvernestFront.Service
             userData.SourceIdToName.Remove(systemEvent.SourceId);
         }
 
-        private void When(UserCreated systemEvent)
+        private void When(UserCreatedSystemEvent systemEvent)
         {
             UserNames.Add(systemEvent.UserName);
             var userData = new UserDataForService(systemEvent.UserName, systemEvent.SaltedPasswordHash,
@@ -107,13 +107,13 @@ namespace EvernestFront.Service
             UserIdToDatas.Add(systemEvent.UserId, userData);
         }
 
-        private void When(UserDeleted systemEvent)
+        private void When(UserDeletedSystemEvent systemEvent)
         {
             UserNames.Remove(systemEvent.UserName);
             UserIdToDatas.Remove(systemEvent.UserId);
         }
 
-        private void When(UserKeyCreated systemEvent)
+        private void When(UserKeyCreatedSystemEvent systemEvent)
         {
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
@@ -121,7 +121,7 @@ namespace EvernestFront.Service
             userData.KeyNames.Add(systemEvent.KeyName);
         }
 
-        private void When(UserKeyDeleted systemEvent)
+        private void When(UserKeyDeletedSystemEvent systemEvent)
         {
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
@@ -129,7 +129,7 @@ namespace EvernestFront.Service
             userData.KeyNames.Remove(systemEvent.KeyName);
         }
 
-        private void When(UserRightSet systemEvent)
+        private void When(UserRightSetSystemEvent systemEvent)
         {
             if (systemEvent.Right == AccessRight.Admin)
             {

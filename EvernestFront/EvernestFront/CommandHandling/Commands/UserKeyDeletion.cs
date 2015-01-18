@@ -1,6 +1,6 @@
-﻿using EvernestFront.Contract.SystemEvent;
+﻿using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.Service.Command
+namespace EvernestFront.CommandHandling.Commands
 {
     class UserKeyDeletion : CommandBase
     {
@@ -36,7 +36,7 @@ namespace EvernestFront.Service.Command
                 systemEvent = null;
                 return false;
             }
-            systemEvent= new UserKeyDeleted(Key, UserId, KeyName);
+            systemEvent= new UserKeyDeletedSystemEvent(Key, UserId, KeyName);
             error = null;
             return true;
         }

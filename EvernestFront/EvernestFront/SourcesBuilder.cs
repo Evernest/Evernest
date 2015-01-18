@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using EvernestFront.CommandHandling;
 using EvernestFront.Projections;
-using EvernestFront.Responses;
-using EvernestFront.Service;
 
 namespace EvernestFront
 {
@@ -22,16 +18,16 @@ namespace EvernestFront
             _commandHandler = Injector.Instance.CommandHandler;
         }
 
-        public GetSourceResponse GetSource(string sourceKey)
+        public Response<Source> GetSource(string sourceKey)
         {
             Source source;
             FrontError? error;
             if (TryGetSource(sourceKey, out source, out error))
-                return new GetSourceResponse(source);
+                return new Response<Source>(source);
             else
             {
                 Debug.Assert(error != null, "error != null");
-                return new GetSourceResponse((FrontError) error);
+                return new Response<Source>((FrontError)error);
             }
         }
 

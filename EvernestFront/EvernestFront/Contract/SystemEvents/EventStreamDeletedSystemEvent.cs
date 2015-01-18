@@ -1,22 +1,19 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.SystemEvent
+namespace EvernestFront.Contract.SystemEvents
 {
     [DataContract]
-    class EventStreamCreated : ISystemEvent
+    class EventStreamDeletedSystemEvent : ISystemEvent
     {
         [DataMember]
         internal long StreamId;
         [DataMember]
         internal string StreamName;
-        [DataMember]
-        internal string CreatorName;
 
-        internal EventStreamCreated(long streamId, string streamName, string creatorName)
+        internal EventStreamDeletedSystemEvent(long streamId, string streamName)
         {
             StreamId = streamId;
             StreamName = streamName;
-            CreatorName = creatorName;
         }
     }
 }

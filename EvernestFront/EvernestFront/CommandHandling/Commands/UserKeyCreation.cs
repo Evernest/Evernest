@@ -1,21 +1,21 @@
-﻿using EvernestFront.Contract.SystemEvent;
+﻿using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.Service.Command
+namespace EvernestFront.CommandHandling.Commands
 {
-    class SourceCreation : CommandBase
+    class UserKeyCreation : CommandBase
     {
         internal readonly long UserId;
 
-        internal readonly string SourceName;
+        internal readonly string KeyName;
 
-        internal readonly string SourceKey;
+        internal readonly string Key;
 
-        internal SourceCreation(CommandHandler commandHandler, long userId, string sourceName, string sourceKey)
+        internal UserKeyCreation(CommandHandler commandHandler, long userId, string keyName, string key)
             :base(commandHandler)
         {
             UserId = userId;
-            SourceName = sourceName;
-            SourceKey = sourceKey;
+            KeyName = keyName;
+            Key = key;
         }
 
         public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
@@ -27,15 +27,16 @@ namespace EvernestFront.Service.Command
                 systemEvent = null;
                 return false;
             }
-            if (userData.SourceNames.Contains(SourceName))
+            if (userData.KeyNames.Contains(KeyName))
             {
-                error = FrontError.SourceNameTaken;
+                error = FrontError.UserKeyNameTaken;
                 systemEvent = null;
                 return false;
             }
-            systemEvent = new SourceCreated(SourceKey, SourceName, userData.NextSourceId, UserId);
+            systemEvent = new UserKeyCreatedSystemEvent(Key, UserId, KeyName);
             error = null;
             return true;
+
         }
     }
 }

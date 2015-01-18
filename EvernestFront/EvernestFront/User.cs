@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using EvernestFront.Service;
-using EvernestFront.Service.Command;
+using EvernestFront.CommandHandling;
+using EvernestFront.CommandHandling.Commands;
 using EvernestFront.Utilities;
 
 namespace EvernestFront

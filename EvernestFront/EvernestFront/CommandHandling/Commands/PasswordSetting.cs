@@ -1,7 +1,7 @@
-﻿using EvernestFront.Contract.SystemEvent;
+﻿using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
-namespace EvernestFront.Service.Command
+namespace EvernestFront.CommandHandling.Commands
 {
     class PasswordSetting : CommandBase
     {
@@ -38,7 +38,7 @@ namespace EvernestFront.Service.Command
             }
 
             var hashSalt = passwordManager.SaltAndHash(NewPassword);
-            systemEvent = new PasswordSet(UserId, hashSalt.Key, hashSalt.Value);
+            systemEvent = new PasswordSetSystemEvent(UserId, hashSalt.Key, hashSalt.Value);
             error = null;
             return true;
         }        

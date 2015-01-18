@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.SystemEvent
+namespace EvernestFront.Contract.SystemEvents
 {
     [DataContract]
-    class PasswordSet : ISystemEvent
+    class PasswordSetSystemEvent : ISystemEvent
     {
         [DataMember]
         internal long UserId { get; private set; }
@@ -12,7 +12,7 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         internal byte[] PasswordSalt { get; private set; }
 
-        internal PasswordSet(long userId, string hash, byte[] salt)
+        internal PasswordSetSystemEvent(long userId, string hash, byte[] salt)
         {
             UserId = userId;
             SaltedPasswordHash = hash;

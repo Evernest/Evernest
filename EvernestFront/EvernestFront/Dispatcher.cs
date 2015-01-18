@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Projections;
 
 namespace EvernestFront

@@ -1,7 +1,7 @@
 ﻿using System;
 using EvernestFront.Projections;
-using EvernestFront.Service;
-using EvernestFront.Service.Command;
+using EvernestFront.CommandHandling;
+using EvernestFront.CommandHandling.Commands;
 using EvernestFront.Utilities;
 
 namespace EvernestFront

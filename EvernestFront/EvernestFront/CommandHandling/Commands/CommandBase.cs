@@ -1,8 +1,8 @@
 ﻿using System;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.Service.Command
-{
+namespace EvernestFront.CommandHandling.Commands
+{   //TODO: name of commands should end with Command
     abstract class CommandBase
     {
         private readonly CommandHandler _commandHandler;

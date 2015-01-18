@@ -1,5 +1,5 @@
 ﻿using System;
-using EvernestFront.Service.Command;
+using EvernestFront.CommandHandling.Commands;
 using EvernestFront.Utilities;
 
 namespace EvernestFront
@@ -16,7 +16,7 @@ namespace EvernestFront
             throw new NotImplementedException();
         }
 
-        public Response<Tuple<string, Guid>> CreateSource(string sourceName, long streamId, AccessRight rights)
+        public Response<Tuple<string, Guid>> CreateSource(string sourceName)
         {
             if (InternalSources.ContainsKey(sourceName))
                 return new Response<Tuple<string, Guid>>(FrontError.SourceNameTaken);

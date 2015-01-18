@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.Projections
 {
@@ -32,24 +32,24 @@ namespace EvernestFront.Projections
             return KeyToData.TryGetValue(key, out data);
         }
 
-        private void When(SourceCreated systemEvent)
+        private void When(SourceCreatedSystemEvent systemEvent)
         {
             var data = new SourceDataForProjection(systemEvent.SourceName, systemEvent.SourceId, systemEvent.UserId);
             KeyToData = KeyToData.SetItem(systemEvent.SourceKey, data);
         }
 
-        private void When(SourceDeleted systemEvent)
+        private void When(SourceDeletedSystemEvent systemEvent)
         {
             KeyToData = KeyToData.Remove(systemEvent.SourceKey);
         }
 
         //SourcesProjection is not concerned by following system events
-        private void When(EventStreamCreated systemEvent) { }
-        private void When(EventStreamDeleted systemEvent) { }
-        private void When(PasswordSet systemEvent) { }
-        private void When(UserCreated systemEvent) { }
-        private void When(UserKeyCreated systemEvent) { }
-        private void When(UserKeyDeleted systemEvent) { }
-        private void When(UserRightSet systemEvent) { }
+        private void When(EventStreamCreatedSystemEvent systemEvent) { }
+        private void When(EventStreamDeletedSystemEvent systemEvent) { }
+        private void When(PasswordSetSystemEvent systemEvent) { }
+        private void When(UserCreatedSystemEvent systemEvent) { }
+        private void When(UserKeyCreatedSystemEvent systemEvent) { }
+        private void When(UserKeyDeletedSystemEvent systemEvent) { }
+        private void When(UserRightSetSystemEvent systemEvent) { }
     }
 }

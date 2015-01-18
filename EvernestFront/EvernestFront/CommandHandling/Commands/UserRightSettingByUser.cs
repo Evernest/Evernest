@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.Service.Command
+namespace EvernestFront.CommandHandling.Commands
 {
     class UserRightSettingByUser : CommandBase
     {
@@ -44,7 +44,7 @@ namespace EvernestFront.Service.Command
                 systemEvent = null;
                 return false;
             }
-            systemEvent= new UserRightSet(EventStreamId, TargetName, Right);
+            systemEvent= new UserRightSetSystemEvent(EventStreamId, TargetName, Right);
             error = null;
             return true;
         }

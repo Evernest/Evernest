@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.SystemEvent
+namespace EvernestFront.Contract.SystemEvents
 {
     [DataContract]
-    class UserRightSet : ISystemEvent
+    class UserRightSetSystemEvent : ISystemEvent
     {
         [DataMember]
         internal long StreamId;
@@ -12,7 +12,7 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         internal AccessRight Right;
 
-        internal UserRightSet(long streamId, string targetName, AccessRight right)
+        internal UserRightSetSystemEvent(long streamId, string targetName, AccessRight right)
         {
             StreamId = streamId;
             TargetName = targetName;

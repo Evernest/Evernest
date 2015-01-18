@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using EvernestFront.Projections;
-using EvernestFront.Service;
-using EvernestFront.Service.Command;
+using EvernestFront.CommandHandling;
+using EvernestFront.CommandHandling.Commands;
 
 namespace EvernestFront
 {

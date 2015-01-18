@@ -1,7 +1,7 @@
-﻿using EvernestFront.Contract.SystemEvent;
+﻿using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
-namespace EvernestFront.Service.Command
+namespace EvernestFront.CommandHandling.Commands
 {
     class UserDeletion : CommandBase
     {
@@ -35,7 +35,7 @@ namespace EvernestFront.Service.Command
                 systemEvent = null;
                 return false;
             }
-            systemEvent= new UserDeleted(UserName, UserId);
+            systemEvent= new UserDeletedSystemEvent(UserName, UserId);
             error = null;
             return true;
         }

@@ -1,6 +1,6 @@
-﻿using EvernestFront.Contract.SystemEvent;
+﻿using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.Service.Command
+namespace EvernestFront.CommandHandling.Commands
 {
     class SourceDeletion : CommandBase
     {
@@ -36,7 +36,7 @@ namespace EvernestFront.Service.Command
                 systemEvent = null;
                 return false;
             }
-            systemEvent = new SourceDeleted(SourceKey, SourceName, SourceId, UserId);
+            systemEvent = new SourceDeletedSystemEvent(SourceKey, SourceName, SourceId, UserId);
             error = null;
             return true;
         }

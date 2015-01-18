@@ -1,16 +1,16 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.SystemEvent
+namespace EvernestFront.Contract.SystemEvents
 {
     [DataContract]
-    class UserDeleted : ISystemEvent
+    class UserDeletedSystemEvent : ISystemEvent
     {
         [DataMember]
         internal string UserName { get; set; }
         [DataMember]
         internal long UserId { get; set; }
 
-        internal UserDeleted(string name, long userId)
+        internal UserDeletedSystemEvent(string name, long userId)
         {
             UserName = name;
             UserId = userId;

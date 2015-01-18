@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using EvernestFront.Contract.SystemEvent;
-using EvernestFront.Service.Command;
+using EvernestFront.Contract.SystemEvents;
+using EvernestFront.CommandHandling.Commands;
 
-namespace EvernestFront.Service
+namespace EvernestFront.CommandHandling
 {
     class CommandHandler
     {

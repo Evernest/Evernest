@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using EvernestFront.Contract;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 using Newtonsoft.Json;
 
 namespace EvernestFront.Utilities

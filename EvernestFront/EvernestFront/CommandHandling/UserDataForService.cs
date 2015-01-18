@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace EvernestFront.Service
+namespace EvernestFront.CommandHandling
 {
     class UserDataForService
     {

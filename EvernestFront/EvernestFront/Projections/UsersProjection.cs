@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.Projections
 {
@@ -145,17 +145,17 @@ namespace EvernestFront.Projections
             SetRight(userId, eventStreamId, right);
         }
 
-        private void When(EventStreamCreated systemEvent)
+        private void When(EventStreamCreatedSystemEvent systemEvent)
         {
             SetRight(systemEvent.CreatorName, systemEvent.StreamId, AccessRight.Admin);
         }
 
-        private void When(EventStreamDeleted systemEvent)
+        private void When(EventStreamDeletedSystemEvent systemEvent)
         {
             //delete in each user concerned?
         }
 
-        private void When(PasswordSet systemEvent)
+        private void When(PasswordSetSystemEvent systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -168,7 +168,7 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
-        private void When(SourceCreated systemEvent)
+        private void When(SourceCreatedSystemEvent systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -181,7 +181,7 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
-        private void When(SourceDeleted systemEvent)
+        private void When(SourceDeletedSystemEvent systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -196,7 +196,7 @@ namespace EvernestFront.Projections
 
         
 
-        private void When(UserCreated systemEvent)
+        private void When(UserCreatedSystemEvent systemEvent)
         {
             var data = new UserDataForProjection(systemEvent.UserName,
                 systemEvent.SaltedPasswordHash, systemEvent.PasswordSalt);
@@ -205,14 +205,14 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
-        private void When(UserDeleted systemEvent)
+        private void When(UserDeletedSystemEvent systemEvent)
         {
             var nti = Dictionaries.NameToId.Remove(systemEvent.UserName);
             var itd = Dictionaries.IdToData.Remove(systemEvent.UserId);
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
-        private void When(UserKeyCreated systemEvent)
+        private void When(UserKeyCreatedSystemEvent systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -226,7 +226,7 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetIdToData(itd).SetKeyToId(kti);
         }
 
-        private void When(UserKeyDeleted systemEvent)
+        private void When(UserKeyDeletedSystemEvent systemEvent)
         {
             UserDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
@@ -239,7 +239,7 @@ namespace EvernestFront.Projections
             var kti = Dictionaries.KeyToId.Remove(systemEvent.Key);
             Dictionaries = Dictionaries.SetIdToData(itd).SetKeyToId(kti);
         }
-        private void When(UserRightSet systemEvent)
+        private void When(UserRightSetSystemEvent systemEvent)
         {
             SetRight(systemEvent.TargetName, systemEvent.StreamId, systemEvent.Right);
         }

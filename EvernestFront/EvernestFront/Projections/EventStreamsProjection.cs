@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using EvernestBack;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.Projections
 {
@@ -87,7 +87,7 @@ namespace EvernestFront.Projections
 
         
 
-        private void When(EventStreamCreated systemEvent)
+        private void When(EventStreamCreatedSystemEvent systemEvent)
         {
             var backStream = AzureStorageClient.Instance.GetEventStream(Convert.ToString(systemEvent.StreamId));
             var eventStreamData = new EventStreamDataForProjection(systemEvent.StreamName, systemEvent.CreatorName,
@@ -97,14 +97,14 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
-        private void When(EventStreamDeleted systemEvent)
+        private void When(EventStreamDeletedSystemEvent systemEvent)
         {
             var nti = Dictionaries.NameToId.Remove(systemEvent.StreamName);
             var itd = Dictionaries.IdToData.Remove(systemEvent.StreamId);
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
-        private void When(UserRightSet systemEvent)
+        private void When(UserRightSetSystemEvent systemEvent)
         {
             EventStreamDataForProjection data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.StreamId, out data))
@@ -117,11 +117,11 @@ namespace EvernestFront.Projections
         }
 
         //EventStreamsProjection is not concerned by following system events
-        private void When(PasswordSet systemEvent) { }
-        private void When(SourceCreated systemEvent) { }
-        private void When(SourceDeleted systemEvent) { }
-        private void When(UserCreated systemEvent) { }
-        private void When(UserKeyCreated systemEvent) { }
-        private void When(UserKeyDeleted systemEvent) { }
+        private void When(PasswordSetSystemEvent systemEvent) { }
+        private void When(SourceCreatedSystemEvent systemEvent) { }
+        private void When(SourceDeletedSystemEvent systemEvent) { }
+        private void When(UserCreatedSystemEvent systemEvent) { }
+        private void When(UserKeyCreatedSystemEvent systemEvent) { }
+        private void When(UserKeyDeletedSystemEvent systemEvent) { }
     }
 }

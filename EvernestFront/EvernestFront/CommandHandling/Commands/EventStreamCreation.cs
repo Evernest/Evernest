@@ -1,8 +1,8 @@
 ﻿using System;
 using EvernestBack;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.Service.Command
+namespace EvernestFront.CommandHandling.Commands
 {
     class EventStreamCreation : CommandBase
     {
@@ -26,7 +26,7 @@ namespace EvernestFront.Service.Command
             }
             var id = serviceData.NextEventStreamId;
             AzureStorageClient.Instance.GetNewEventStream(Convert.ToString(id));
-            systemEvent = new EventStreamCreated(id, EventStreamName, CreatorName);
+            systemEvent = new EventStreamCreatedSystemEvent(id, EventStreamName, CreatorName);
             error = null;
             return true;
         }

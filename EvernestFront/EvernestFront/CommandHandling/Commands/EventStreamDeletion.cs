@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
-namespace EvernestFront.Service.Command
+namespace EvernestFront.CommandHandling.Commands
 {
     class EventStreamDeletion : CommandBase
     {
@@ -50,7 +50,7 @@ namespace EvernestFront.Service.Command
                 systemEvent = null;
                 return false;
             }
-            systemEvent= new EventStreamDeleted(EventStreamId, EventStreamName);
+            systemEvent= new EventStreamDeletedSystemEvent(EventStreamId, EventStreamName);
             error = null;
             return true;
         }

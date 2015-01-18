@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using EvernestFront.Utilities;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.Contract
 {

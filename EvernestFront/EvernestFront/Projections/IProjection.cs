@@ -1,4 +1,4 @@
-﻿using EvernestFront.Contract.SystemEvent;
+﻿using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.Projections
 {

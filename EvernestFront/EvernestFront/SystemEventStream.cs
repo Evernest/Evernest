@@ -2,7 +2,7 @@
 using EvernestBack;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
-using EvernestFront.Contract.SystemEvent;
+using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront
 {

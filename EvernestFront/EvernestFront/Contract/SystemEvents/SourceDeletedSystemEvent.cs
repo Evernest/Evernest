@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.SystemEvent
+namespace EvernestFront.Contract.SystemEvents
 {
     [DataContract]
-    class SourceDeleted : ISystemEvent
+    class SourceDeletedSystemEvent : ISystemEvent
     {
         [DataMember]
         internal string SourceKey { get; set; }
@@ -14,7 +14,7 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         internal long UserId { get; set; }
 
-        internal SourceDeleted(string key, string name, long id, long userId)
+        internal SourceDeletedSystemEvent(string key, string name, long id, long userId)
         {
             SourceKey = key;
             SourceName = name;

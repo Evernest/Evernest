@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.SystemEvent
+namespace EvernestFront.Contract.SystemEvents
 {
     [DataContract]
-    class UserKeyDeleted : ISystemEvent
+    class UserKeyCreatedSystemEvent : ISystemEvent
     {
         [DataMember]
         internal string Key { get; set; } //base64 encoded int
@@ -12,7 +12,7 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         internal string KeyName { get; set; }
 
-        internal UserKeyDeleted(string key, long userId, string name)
+        internal UserKeyCreatedSystemEvent(string key, long userId, string name)
         {
             Key = key;
             UserId = userId;

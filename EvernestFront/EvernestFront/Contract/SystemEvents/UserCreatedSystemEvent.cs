@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace EvernestFront.Contract.SystemEvent
+namespace EvernestFront.Contract.SystemEvents
 {
     [DataContract]
-    internal class UserCreated : ISystemEvent
+    internal class UserCreatedSystemEvent : ISystemEvent
     {
         [DataMember]
         internal string UserName { get; set; }
@@ -14,7 +14,7 @@ namespace EvernestFront.Contract.SystemEvent
         [DataMember]
         internal byte[] PasswordSalt { get; set; }
 
-        internal UserCreated(string name, long userId, string sph, byte[] ps)
+        internal UserCreatedSystemEvent(string name, long userId, string sph, byte[] ps)
         {
             UserName = name;
             UserId = userId;

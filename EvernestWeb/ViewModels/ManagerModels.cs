@@ -55,7 +55,7 @@ namespace EvernestWeb.ViewModels
         public string NewUser { get; set; }
 
         [Required]
-        public EvernestFront.AccessRights Right { get; set; }
+        public EvernestFront.AccessRight Right { get; set; }
 
         [Required]
         public long StreamId { get; set; }

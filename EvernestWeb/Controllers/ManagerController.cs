@@ -14,14 +14,14 @@ namespace EvernestWeb.Controllers
         /// <summary>
         /// Associate strings right names to corresponding Front objets
         /// </summary>
-        private static readonly Dictionary<string, AccessRights> AccessRightsDictionary = new Dictionary<string, AccessRights>
+        private static readonly Dictionary<string, AccessRight> AccessRightsDictionary = new Dictionary<string, AccessRight>
         {
-            {"NoRights",  AccessRights.NoRights },
-            {"ReadOnly",  AccessRights.ReadOnly },
-            {"WriteOnly", AccessRights.WriteOnly},
-            {"ReadWrite", AccessRights.ReadWrite},
-            {"Admin",     AccessRights.Admin    },
-            {"Root",      AccessRights.Root     },
+            {"NoRights",  AccessRight.NoRight },
+            {"ReadOnly",  AccessRight.ReadOnly },
+            {"WriteOnly", AccessRight.WriteOnly},
+            {"ReadWrite", AccessRight.ReadWrite},
+            {"Admin",     AccessRight.Admin    },
+            {"Root",      AccessRight.Root     },
 
         };
 

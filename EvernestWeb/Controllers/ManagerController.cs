@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Routing;
 
 using EvernestFront;
 
-using EvernestWeb.Models;
 using EvernestWeb.ViewModels;
 using EvernestWeb.Helpers;
 
@@ -100,15 +98,6 @@ namespace EvernestWeb.Controllers
             Models.User user = (Models.User)Session["User"];
             StreamAndEvents streamAndEvents = Utils.getStreamsAndEvents(id, user.Id);
 
-            List<RightModel> RightList = new List<RightModel>
-            {
-               new RightModel { Name = "Admin", Right = AccessRights.Admin },
-               new RightModel { Name = "NoRights", Right = AccessRights.NoRights },
-               new RightModel { Name = "ReadOnly", Right = AccessRights.ReadOnly },
-               new RightModel { Name = "ReadWrite", Right = AccessRights.ReadWrite },
-               new RightModel { Name = "WriteOnly", Right = AccessRights.WriteOnly },
-            };
-            ViewBag.RightList = RightList;
             ViewBag.StreamId = id;
 
             return View(streamAndEvents);

@@ -31,6 +31,8 @@ namespace EvernestBack
             {
                 _blobClient = null;
                 StreamContainer = null;
+
+                DummyDataPath = ConfigurationManager.AppSettings["DummyDataPath"];
             }
             else
             {
@@ -39,7 +41,6 @@ namespace EvernestBack
                 try
                 {
                     // TODO
-                    DummyDataPath = ConfigurationManager.AppSettings["DummyDataPath"];
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
                     _bufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
                     _eventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
@@ -162,9 +163,26 @@ namespace EvernestBack
 
         //missing something to close streams
 
-        public void DeleteIfExists(String streamStringID)
+        public void DeleteStreamIfExists(String streamID)
         {
-            //TODO
+            if (StreamExists(streamID))
+            {
+                IEventStream stream;
+                if (_openedStreams.TryGetValue(streamID, out stream))
+                {
+                    _openedStreams.Remove(streamID);        // calls destructor & closes stream
+                    stream.Dispose();
+                }
+
+                if (_dummy)
+                {
+                    MemoryEventStream.DeleteStream(this, streamID);
+                }
+                else
+                {
+                    EventStream.DeleteStream(this, streamID);
+                }   
+            }
         }
 
         public bool StreamExists(string streamID)

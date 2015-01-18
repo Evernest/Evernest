@@ -48,7 +48,7 @@ namespace EvernestBack
             return _messages.Count();
         }
 
-        ~MemoryEventStream()
+        public void Dispose()
         {
             var file = new StreamWriter(_streamFileName);
             foreach (var message in _messages)
@@ -70,7 +70,9 @@ namespace EvernestBack
 
         private static string StreamFileName(AzureStorageClient store, string streamID)
         {
-            return store.DummyDataPath + streamID + "_RAMStreamContent.txt";
+            string r = store.DummyDataPath + streamID + "_RAMStreamContent.txt";
+            Console.WriteLine("Stream file name: " + r);
+            return r;
         }
 
         public static bool StreamExists(AzureStorageClient store, string streamID)
@@ -83,6 +85,11 @@ namespace EvernestBack
             string fn = StreamFileName(store, streamID);
             var file = new StreamWriter(fn);
             file.Close();
+        }
+
+        internal static void DeleteStream(AzureStorageClient store, string streamID)
+        {
+            File.Delete(StreamFileName(store, streamID));
         }
     }
 }

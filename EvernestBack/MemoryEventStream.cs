@@ -70,7 +70,9 @@ namespace EvernestBack
 
         private static string StreamFileName(AzureStorageClient store, string streamID)
         {
-            return store.DummyDataPath + streamID + "_RAMStreamContent.txt";
+            string r = store.DummyDataPath + streamID + "_RAMStreamContent.txt";
+            Console.WriteLine("Stream file name: " + r);
+            return r;
         }
 
         public static bool StreamExists(AzureStorageClient store, string streamID)

@@ -31,6 +31,8 @@ namespace EvernestBack
             {
                 _blobClient = null;
                 StreamContainer = null;
+
+                DummyDataPath = ConfigurationManager.AppSettings["DummyDataPath"];
             }
             else
             {
@@ -39,7 +41,6 @@ namespace EvernestBack
                 try
                 {
                     // TODO
-                    DummyDataPath = ConfigurationManager.AppSettings["DummyDataPath"];
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
                     _bufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
                     _eventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);

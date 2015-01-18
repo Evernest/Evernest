@@ -16,6 +16,15 @@ namespace EvernestFront
                 return new GetEventStreamResponse(FrontError.EventStreamIdDoesNotExist);
         }
 
+        public GetEventStreamResponse GetEventStream(string streamName)
+        {
+            var builder = new EventStreamsBuilder();
+            EventStream eventStream;
+            if (builder.TryGetEventStream(this, streamName, out eventStream))
+                return new GetEventStreamResponse(eventStream);
+            else
+                return new GetEventStreamResponse(FrontError.EventStreamIdDoesNotExist);
+        }
 
         public SystemCommandResponse CreateEventStream(string streamName)
         {

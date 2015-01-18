@@ -48,6 +48,21 @@ namespace EvernestFront
             }
         }
 
+        internal bool TryGetEventStream(User user, string eventStreamName, out EventStream eventStream)
+        {
+            long eventStreamId;
+            EventStreamDataForProjection eventStreamData;
+            if (_eventStreamsProjection.TryGetEventStreamIdAndData(eventStreamName, out eventStreamId, out eventStreamData))
+            {
+                eventStream = ConstructEventStream(user, eventStreamId, eventStreamData);
+                return true;
+            }
+            else
+            {
+                eventStream = null;
+                return false;
+            }
+        }
 
         private EventStream ConstructEventStream(User user, long eventStreamId, EventStreamDataForProjection eventStreamData)
         {

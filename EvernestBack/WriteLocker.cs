@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Threading;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System.Configuration;
 
 
 namespace EvernestBack
@@ -24,16 +19,16 @@ namespace EvernestBack
             }
         }
 
-		private BlockingCollection<PendingEvent> PendingEventCollection = new BlockingCollection<PendingEvent>();
+		private ConcurrentQueue<PendingEvent> PendingEventCollection = new ConcurrentQueue<PendingEvent>();
         private EventIndexer Indexer;
         private BufferedBlobIO WriteBuffer;
-        public long CurrentID { get; private set; }
+        public long CurrentId { get; private set; }
 
-        public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer, long firstID)
+        public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer, long firstId)
         {
             Indexer = indexer;
             WriteBuffer = buffer;
-            CurrentID = firstID;
+            CurrentId = firstId;
         }
 
         public void Store()
@@ -41,15 +36,15 @@ namespace EvernestBack
             Task.Run(() =>
             {
                 ulong wroteBytes;
+                PendingEvent pendingEvent;
                 while (true) //temporary fix to make sure the thread doesn't terminate early (well now it never does, "fixed")
                 {
-                    while (PendingEventCollection.Count > 0)
+                    while (PendingEventCollection.TryDequeue(out pendingEvent))
                     {
-                        PendingEvent pendingEvent = PendingEventCollection.Take();
-                        Agent agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.Callback);
+                        Agent agent = new Agent(pendingEvent.Message, CurrentId, pendingEvent.Callback);
                         wroteBytes = Write(agent);
-                        Indexer.NotifyNewEntry(CurrentID, wroteBytes);
-                        CurrentID++;
+                        Indexer.NotifyNewEntry(CurrentId, wroteBytes);
+                        CurrentId++;
                         agent.Processed();
                     }
                 }
@@ -67,7 +62,7 @@ namespace EvernestBack
 
         public void Register(string message, Action<IAgent> callback)
         {
-            PendingEventCollection.Add(new PendingEvent(message, callback));
+            PendingEventCollection.Enqueue(new PendingEvent(message, callback));
         }
 	}
 }

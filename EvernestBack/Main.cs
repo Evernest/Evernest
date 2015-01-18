@@ -1,6 +1,4 @@
 using System;
-using System.Threading;
-using System.IO;
 
 namespace EvernestBack
 {
@@ -24,12 +22,11 @@ namespace EvernestBack
             {
                 stream.Push(i.ToString(), pushAgent =>
                 {
-                    stream.Pull(pushAgent.RequestID /*i*/, pullAgent =>
+                    stream.Pull(pushAgent.RequestID, pullAgent =>
                     {
                         Console.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
                     });
                 });
-                //System.Threading.Thread.Sleep(100);
             }
             while(true)
             {}

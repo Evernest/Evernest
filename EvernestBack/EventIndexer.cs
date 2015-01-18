@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Configuration;
 
@@ -13,7 +7,6 @@ namespace EvernestBack
     class EventIndexer
     {
         private History Milestones;
-        private ulong TotalWrittenBytes = 0;
         private ulong CurrentChunkBytes = 0;
         private ulong LastPosition = 0;
         private uint EventChunkSizeInBytes;
@@ -24,12 +17,12 @@ namespace EvernestBack
         private uint IndexUpdateMinimumDelay;
         private DateTime LastIndexUpdateTime;
 
-        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, UInt32 eventChunkSizeInBytes )
+        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer)
         {
             IndexUpdateMinimumEntryCount = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumEntryCount"]);
             IndexUpdateMinimumDelay = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumDelay"]);
             BufferedStreamIO = buffer;
-            EventChunkSizeInBytes = eventChunkSizeInBytes;
+            EventChunkSizeInBytes = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]); ;
             StreamIndexBlob = streamIndexBlob;
             Milestones = new History();
             ReadIndexInfo();
@@ -39,7 +32,6 @@ namespace EvernestBack
 
         public void NotifyNewEntry(long id, ulong wroteBytes)
         {
-            TotalWrittenBytes += wroteBytes;
             if( wroteBytes + CurrentChunkBytes > EventChunkSizeInBytes)
             {
                 LastPosition += CurrentChunkBytes;
@@ -68,7 +60,6 @@ namespace EvernestBack
             if (DateTime.UtcNow.Subtract(LastIndexUpdateTime).TotalSeconds > IndexUpdateMinimumDelay
                 && NewEntryCount > IndexUpdateMinimumEntryCount )
             {
-                Console.WriteLine("Update!");
                 UploadIndex();
             }
 
@@ -84,16 +75,13 @@ namespace EvernestBack
 
         private void ReadIndexInfo()
         {
-            ulong position = 0;
             if(StreamIndexBlob.Exists())
             {
                 Milestones.ReadFromBlob(StreamIndexBlob);
-                if(Milestones.GreaterElement(ref position))
+                if(Milestones.GreaterElement(ref LastPosition))
                 {
-
+                    //should retrieve currentChunkBytes
                 }
-                LastPosition = 0; //should retrieve last position
-                //StreamIndexBlob.GetPageRange(offset, length);
             }
         }
 
@@ -102,7 +90,7 @@ namespace EvernestBack
             ulong firstByte = 0;
             ulong lastByte = 0;
             Milestones.LowerBound(id, ref firstByte);
-            if (!Milestones.UpperBound(id + 1, ref lastByte) && (lastByte = TotalWrittenBytes) == 0)
+            if (!Milestones.UpperBound(id + 1, ref lastByte) && (lastByte = BufferedStreamIO.TotalWrittenBytes) == 0)
             {
                 message = "";
                 return false; //there's nothing written!
@@ -112,24 +100,24 @@ namespace EvernestBack
             Byte[] buffer = new Byte[byteCount];
             byteCount = BufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
             int currentPosition = 0, messageLength = 0;
-            long currentID = 0;
+            long currentId;
             do
             {
-                currentPosition += messageLength;
                 if (!BitConverter.IsLittleEndian)
                 {
-                    Agent.Reverse(buffer, (int)currentPosition, sizeof(long));
-                    Agent.Reverse(buffer, (int)currentPosition + sizeof(UInt64), sizeof(UInt16));
+                    Agent.Reverse(buffer, currentPosition, sizeof(long));
+                    Agent.Reverse(buffer, currentPosition + sizeof(ulong), sizeof(ushort));
                 }
-                currentID = BitConverter.ToInt64(buffer, currentPosition);
-                messageLength = BitConverter.ToUInt16(buffer, currentPosition + sizeof(UInt64));
-                currentPosition += sizeof(UInt64) + sizeof(UInt16);
+                currentId = BitConverter.ToInt64(buffer, currentPosition);
+                messageLength = BitConverter.ToUInt16(buffer, currentPosition + sizeof(ulong));
+                currentPosition += sizeof(ulong) + sizeof(ushort) + messageLength;
             }
-            while (currentID != id && currentPosition + messageLength < byteCount);
+            while (currentId != id && currentPosition+sizeof(ulong)+sizeof(ushort) < byteCount);
+            currentPosition -= messageLength;
             message = "";
-            if (currentID == id)
-                message = System.Text.Encoding.Unicode.GetString(buffer, (int)currentPosition, (int)messageLength);
-            return currentID == id;
+            if (currentId == id)
+                message = System.Text.Encoding.Unicode.GetString(buffer, currentPosition, messageLength);
+            return currentId == id;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace EvernestBack
@@ -12,15 +10,15 @@ namespace EvernestBack
      * This is a small test Stream storing messages in a List instead of in
      * Azure.
      */
-    public class RAMStream:IEventStream
+    public class MemoryEventStream:IEventStream
     {
         private string StreamFileName;
         List<string> Messages = new List<string>();
-        public long Index = 0;
+        public long Index;
 
-        public RAMStream(string streamStringID)
+        public MemoryEventStream(string streamStringId)
         {
-            StreamFileName = streamStringID + "_RAMStreamContent.txt";
+            StreamFileName = streamStringId + "_RAMStreamContent.txt";
             string line;
             if (File.Exists(StreamFileName))
             {
@@ -34,7 +32,7 @@ namespace EvernestBack
             }
         }
 
-        ~RAMStream()
+        ~MemoryEventStream()
         {
             StreamWriter file = new StreamWriter(StreamFileName);
             foreach( string message in Messages )
@@ -66,10 +64,10 @@ namespace EvernestBack
             public string Message { get; protected set; }
             public long RequestID { get; private set; }
 
-            public MyAgent(string Message, long Index)
+            public MyAgent(string message, long index)
             {
-                this.Message = Message;
-                this.RequestID = Index;
+                Message = message;
+                RequestID = index;
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestFront", "EvernestFront\EvernestFront\EvernestFront.csproj", "{955F313D-19ED-4F17-904B-4D95A4EE7E74}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -18,6 +18,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestBack", "EvernestBack\EvernestBack.csproj", "{98FB2D5C-0689-4F34-9B04-DE94992EB906}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestWeb", "EvernestWeb\EvernestWeb.csproj", "{43F11A4D-733B-4933-A028-87E7F757C6D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3B3F1709-44F7-4DB5-B1AB-1AA10C6C4D44}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

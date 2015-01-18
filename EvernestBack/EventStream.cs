@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
-using System.Configuration;
 
 namespace EvernestBack
 {
@@ -20,10 +14,10 @@ namespace EvernestBack
 
         private EventIndexer Indexer;
 
-        public EventStream( CloudPageBlob blob, CloudBlockBlob streamIndexBlob, int bufferSize, uint eventChunkSize)
+        public EventStream( CloudPageBlob blob, CloudBlockBlob streamIndexBlob)
         {
-            BufferedBlobIO buffer = new BufferedBlobIO(blob, bufferSize);
-            Indexer = new EventIndexer(streamIndexBlob, buffer, eventChunkSize);
+            BufferedBlobIO buffer = new BufferedBlobIO(blob);
+            Indexer = new EventIndexer(streamIndexBlob, buffer);
             WriteLock = new WriteLocker(buffer, Indexer, 0); // Initial ID = 0
             WriteLock.Store();
         }
@@ -47,7 +41,7 @@ namespace EvernestBack
 
         public long Size()
         {
-            return WriteLock.CurrentID;
+            return WriteLock.CurrentId;
         }
 
         public void StreamDeliver(Agent agent)

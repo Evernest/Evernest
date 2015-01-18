@@ -5,21 +5,19 @@ namespace EvernestFront.Service.Command
 {
     abstract class CommandBase
     {
-        //TODO: add an id
-
-        private readonly CommandReceiver _commandReceiver;
+        private readonly CommandHandler _commandHandler;
 
         public readonly Guid Guid;
 
-        protected CommandBase(CommandReceiver commandReceiver)
+        protected CommandBase(CommandHandler commandHandler)
         {
-            _commandReceiver = commandReceiver;
+            _commandHandler = commandHandler;
             Guid = Guid.NewGuid();
         }
 
         public void Send()
         {
-            _commandReceiver.ReceiveCommand(this);
+            _commandHandler.ReceiveCommand(this);
         }
 
         public abstract bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error);

@@ -16,7 +16,7 @@ namespace EvernestFront
 {
     public class EventStream
     {
-        private readonly CommandReceiver _commandReceiver;
+        private readonly CommandHandler _commandHandler;
         
         private readonly User _user;
 
@@ -36,10 +36,10 @@ namespace EvernestFront
         private IEventStream BackStream { get; set; }
 
 
-        internal EventStream(CommandReceiver commandReceiver, User user, AccessRight rightOfUser , long streamId, string name, 
+        internal EventStream(CommandHandler commandHandler, User user, AccessRight rightOfUser , long streamId, string name, 
             ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
         {
-            _commandReceiver = commandReceiver;
+            _commandHandler = commandHandler;
             Id = streamId;
             Name = name;
             RelatedUsers = users;
@@ -62,7 +62,7 @@ namespace EvernestFront
                 return new SystemCommandResponse(FrontError.AdminAccessDenied);
             if (TargetUserIsAdmin(targetName))
                 return new SystemCommandResponse(FrontError.CannotDestituteAdmin);
-            var command = new UserRightSettingByUser(_commandReceiver,
+            var command = new UserRightSettingByUser(_commandHandler,
                 targetName, Id, _user.Name, right);
             command.Send();
             return new SystemCommandResponse(command.Guid);

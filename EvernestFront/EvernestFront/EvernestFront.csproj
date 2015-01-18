@@ -90,7 +90,7 @@
     <Compile Include="Projections\SourceDataForProjection.cs" />
     <Compile Include="Projections\UserDataForProjection.cs" />
     <Compile Include="Utilities\Serializer.cs" />
-    <Compile Include="Service\CommandReceiver.cs" />
+    <Compile Include="Service\CommandHandler.cs" />
     <Compile Include="Service\Command\EventStreamCreation.cs" />
     <Compile Include="Service\Command\EventStreamDeletion.cs" />
     <Compile Include="Service\Command\CommandBase.cs" />

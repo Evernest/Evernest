@@ -11,8 +11,8 @@ namespace EvernestFront.Service.Command
 
         internal string NewPassword { get; private set; }
 
-        internal PasswordSetting(CommandReceiver commandReceiver, long userId,string currentPassword, string newPassword)
-            : base(commandReceiver)
+        internal PasswordSetting(CommandHandler commandHandler, long userId,string currentPassword, string newPassword)
+            : base(commandHandler)
         {
             UserId = userId;
             CurrentPassword = currentPassword;

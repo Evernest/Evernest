@@ -8,8 +8,11 @@ namespace EvernestFront
     {
         public void Start()
         {
-            Injector.Instance.Build();
+            var injector = Injector.Instance;
+            injector.Build();
             //TODO: read system event stream
+            injector.CommandHandler.HandleCommands();
+            injector.Dispatcher.DispatchSystemEvents();
         }
     }
 }

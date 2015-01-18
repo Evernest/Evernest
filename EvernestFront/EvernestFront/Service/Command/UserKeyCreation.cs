@@ -9,8 +9,8 @@ namespace EvernestFront.Service.Command
         
         internal string KeyName { get; set; }
 
-        internal UserKeyCreation(CommandReceiver commandReceiver, long userId, string keyName)
-            :base(commandReceiver)
+        internal UserKeyCreation(CommandHandler commandHandler, long userId, string keyName)
+            :base(commandHandler)
         {
             UserId = userId;
             KeyName = keyName;

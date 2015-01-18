@@ -11,9 +11,9 @@ namespace EvernestFront.Service.Command
         internal long AdminId { get; private set; }
         internal string AdminPassword { get; private set; }
 
-        internal EventStreamDeletion(CommandReceiver commandReceiver, 
+        internal EventStreamDeletion(CommandHandler commandHandler, 
             long streamId, string streamName, long adminId, string adminPassword)
-            : base(commandReceiver)
+            : base(commandHandler)
         {
             EventStreamId = streamId;
             EventStreamName = streamName;

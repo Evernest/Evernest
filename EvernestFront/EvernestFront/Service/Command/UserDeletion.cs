@@ -13,8 +13,8 @@ namespace EvernestFront.Service.Command
 
         internal string Password { get; private set; }
 
-        internal UserDeletion(CommandReceiver commandReceiver, long userId, string userName, string password)
-            : base(commandReceiver)
+        internal UserDeletion(CommandHandler commandHandler, long userId, string userName, string password)
+            : base(commandHandler)
         {
             UserId = userId;
             UserName = userName;

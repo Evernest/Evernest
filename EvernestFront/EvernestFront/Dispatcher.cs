@@ -41,7 +41,7 @@ namespace EvernestFront
             _pendingEventQueue.Enqueue(new Tuple<Guid, ISystemEvent>(guid, systemEvent));
         }
 
-        public void DispatchEvents()
+        public void DispatchSystemEvents()
         {
             var token = _tokenSource.Token;
             Task.Run((() =>

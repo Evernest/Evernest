@@ -5,7 +5,6 @@ namespace EvernestFront.Service
 {
     class ServiceData
     {
-        //TODO: prevent concurrency
         //TODO: initialization on system stream
 
         internal HashSet<string> UserNames { get; set; }
@@ -28,14 +27,15 @@ namespace EvernestFront.Service
         }
 
             
-        internal ServiceData()
+        internal ServiceData(long numberOfREservedIds)
         {
             UserNames = new HashSet<string>();
             UserIdToDatas = new Dictionary<long, UserDataForService>();
             EventStreamNames = new HashSet<string>();
             EventStreamIdToAdmins = new Dictionary<long, HashSet<string>>();
-            _nextUserId = 0;
-            _nextEventStreamId = 0;
+            // ids from 0 to numberOfREservedIds-1 are reserved for system
+            _nextUserId = numberOfREservedIds;
+            _nextEventStreamId = numberOfREservedIds;
         }
 
 
@@ -62,24 +62,24 @@ namespace EvernestFront.Service
 
 
 
-        internal void SelfUpdate(ISystemEvent systemEvent)
+        public void Update(ISystemEvent systemEvent)
         {
-            SelfUpdateCase((dynamic)systemEvent);
+            When((dynamic)systemEvent);
         }
 
-        private void SelfUpdateCase(EventStreamCreated systemEvent)
+        private void When(EventStreamCreated systemEvent)
         {
             EventStreamNames.Add(systemEvent.StreamName);
             EventStreamIdToAdmins.Add(systemEvent.StreamId, new HashSet<string> { systemEvent.CreatorName });
         }
 
-        private void SelfUpdateCase(EventStreamDeleted systemEvent)
+        private void When(EventStreamDeleted systemEvent)
         {
             EventStreamNames.Remove(systemEvent.StreamName);
             EventStreamIdToAdmins.Remove(systemEvent.StreamId);
         }
 
-        private void SelfUpdateCase(PasswordSet systemEvent)
+        private void When(PasswordSet systemEvent)
         {
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
@@ -88,7 +88,7 @@ namespace EvernestFront.Service
             userData.PasswordSalt = systemEvent.PasswordSalt;
         }
 
-        private void SelfUpdateCase(UserCreated systemEvent)
+        private void When(UserCreated systemEvent)
         {
             UserNames.Add(systemEvent.UserName);
             var userData = new UserDataForService(systemEvent.UserName, systemEvent.SaltedPasswordHash,
@@ -96,13 +96,13 @@ namespace EvernestFront.Service
             UserIdToDatas.Add(systemEvent.UserId, userData);
         }
 
-        private void SelfUpdateCase(UserDeleted systemEvent)
+        private void When(UserDeleted systemEvent)
         {
             UserNames.Remove(systemEvent.UserName);
             UserIdToDatas.Remove(systemEvent.UserId);
         }
 
-        private void SelfUpdateCase(UserKeyCreated systemEvent)
+        private void When(UserKeyCreated systemEvent)
         {
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
@@ -110,7 +110,7 @@ namespace EvernestFront.Service
             userData.Keys.Add(systemEvent.KeyName);
         }
 
-        private void SelfUpdateCase(UserKeyDeleted systemEvent)
+        private void When(UserKeyDeleted systemEvent)
         {
             UserDataForService userData;
             if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
@@ -118,7 +118,7 @@ namespace EvernestFront.Service
             userData.Keys.Remove(systemEvent.KeyName);
         }
 
-        private void SelfUpdateCase(UserRightSet systemEvent)
+        private void When(UserRightSet systemEvent)
         {
             if (systemEvent.Right == AccessRight.Admin)
             {

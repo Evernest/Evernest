@@ -13,7 +13,7 @@ namespace EvernestFront
 {
     public partial class User
     {
-        private readonly CommandReceiver _commandReceiver;
+        private readonly CommandHandler _commandHandler;
 
         public long Id { get; private set; }
 
@@ -43,11 +43,11 @@ namespace EvernestFront
 
 
 
-        internal User(CommandReceiver commandReceiver, long id, string name, string sph, byte[] ps,
+        internal User(CommandHandler commandHandler, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, string> sources, 
             ImmutableDictionary<long, AccessRight> streams)
         {
-            _commandReceiver = commandReceiver;
+            _commandHandler = commandHandler;
             Id = id;
             Name = name;
             SaltedPasswordHash = sph;
@@ -68,7 +68,7 @@ namespace EvernestFront
                 return new SystemCommandResponse(FrontError.InvalidString);
             if (!VerifyPassword(passwordForVerification))
                 return new SystemCommandResponse(FrontError.WrongPassword);
-            var command = new PasswordSetting(_commandReceiver, Id, passwordForVerification, newPassword);
+            var command = new PasswordSetting(_commandHandler, Id, passwordForVerification, newPassword);
             command.Send();
             return new SystemCommandResponse(command.Guid);
         }
@@ -77,7 +77,7 @@ namespace EvernestFront
         {
             if (InternalUserKeys.ContainsKey(keyName))
                 return new SystemCommandResponse(FrontError.UserKeyNameTaken);
-            var command = new UserKeyCreation(_commandReceiver, Id, keyName);
+            var command = new UserKeyCreation(_commandHandler, Id, keyName);
             command.Send();
             return new SystemCommandResponse(command.Guid);
         }

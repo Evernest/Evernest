@@ -13,9 +13,9 @@ namespace EvernestFront.Service.Command
 
         internal AccessRight Right { get; private set; }
 
-        internal UserRightSettingByUser(CommandReceiver commandReceiver, string targetName, long eventStreamId,
+        internal UserRightSettingByUser(CommandHandler commandHandler, string targetName, long eventStreamId,
             string adminName, AccessRight right)
-            : base(commandReceiver)
+            : base(commandHandler)
         {
             TargetName = targetName;
             EventStreamId = eventStreamId;

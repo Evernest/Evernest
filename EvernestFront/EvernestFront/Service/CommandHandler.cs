@@ -8,7 +8,7 @@ using EvernestFront.Service.Command;
 
 namespace EvernestFront.Service
 {
-    class CommandReceiver
+    class CommandHandler
     {
         
         private readonly ServiceData _serviceData;
@@ -19,7 +19,7 @@ namespace EvernestFront.Service
         private readonly CancellationTokenSource _tokenSource;
        
 
-        public CommandReceiver(ServiceData serviceData, Dispatcher dispatcher, CommandResultManager manager)
+        public CommandHandler(ServiceData serviceData, Dispatcher dispatcher, CommandResultManager manager)
         {
             _serviceData = serviceData;
             _dispatcher = dispatcher;
@@ -34,12 +34,12 @@ namespace EvernestFront.Service
             _pendingCommandQueue.Enqueue(command);
         }
 
-        public void StopProducing()
+        public void StopHandlingCommands()
         {
             _tokenSource.Cancel();
         }
 
-        public void ProduceEvents()
+        public void HandleCommands()
         {
             var token = _tokenSource.Token;
             Task.Run((() =>
@@ -48,18 +48,18 @@ namespace EvernestFront.Service
                 {
                     CommandBase command;
                     if (_pendingCommandQueue.TryDequeue(out command))
-                        ConsumeCommand(command);
+                        HandleCommand(command);
                 }
             }), token);
         }
 
-        private void ConsumeCommand(CommandBase command)
+        private void HandleCommand(CommandBase command)
         {
             ISystemEvent systemEvent;
             FrontError? error;
             if (command.TryToSystemEvent(_serviceData, out systemEvent, out error))
             {
-                _serviceData.SelfUpdate(systemEvent);
+                _serviceData.Update(systemEvent);
                 _dispatcher.HandleEvent(systemEvent, command.Guid);
             }
             else

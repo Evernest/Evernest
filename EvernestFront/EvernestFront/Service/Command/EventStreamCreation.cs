@@ -9,8 +9,8 @@ namespace EvernestFront.Service.Command
         internal string EventStreamName { get; private set; }
         internal string CreatorName { get; private set; }
          
-        internal EventStreamCreation(CommandReceiver commandReceiver, string streamName, string creatorName)
-            : base(commandReceiver)
+        internal EventStreamCreation(CommandHandler commandHandler, string streamName, string creatorName)
+            : base(commandHandler)
         {
             EventStreamName = streamName;
             CreatorName = creatorName;

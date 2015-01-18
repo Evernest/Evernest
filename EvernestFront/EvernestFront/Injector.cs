@@ -14,7 +14,8 @@ namespace EvernestFront
         public EventStreamsProjection EventStreamsProjection;
         public SourcesProjection SourcesProjection;
 
-        public CommandReceiver CommandReceiver;
+        public CommandHandler CommandHandler;
+        public Dispatcher Dispatcher;
         public CommandResultManager CommandResultManager;
 
         private Injector() { }
@@ -26,11 +27,11 @@ namespace EvernestFront
             SourcesProjection = new SourcesProjection();
             CommandResultManager = new CommandResultManager();
             var systemEventStream = new SystemEventStream();
-            var dispatcher = new Dispatcher(new List<IProjection>
+            Dispatcher = new Dispatcher(new List<IProjection>
                 {UsersProjection, EventStreamsProjection, SourcesProjection}, systemEventStream, CommandResultManager);
 
-            var serviceData = new ServiceData();
-            CommandReceiver = new CommandReceiver(serviceData, dispatcher, CommandResultManager);
+            var serviceData = new ServiceData(8); //8 eventStream ids and 8 user ids are reserved for system
+            CommandHandler = new CommandHandler(serviceData, Dispatcher, CommandResultManager);
         }
     }
 }

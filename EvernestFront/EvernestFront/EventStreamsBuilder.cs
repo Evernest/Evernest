@@ -9,12 +9,12 @@ namespace EvernestFront
     {
         private readonly EventStreamsProjection _eventStreamsProjection;
 
-        private readonly CommandReceiver _commandReceiver;
+        private readonly CommandHandler _commandReceiver;
 
         public EventStreamsBuilder()
         {
             _eventStreamsProjection = Injector.Instance.EventStreamsProjection;
-            _commandReceiver = Injector.Instance.CommandReceiver;
+            _commandReceiver = Injector.Instance.CommandHandler;
         }
 
 

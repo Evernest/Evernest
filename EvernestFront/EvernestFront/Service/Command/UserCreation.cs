@@ -9,8 +9,8 @@ namespace EvernestFront.Service.Command
 
         internal string Password { get; private set; }
 
-        internal UserCreation(CommandReceiver commandReceiver, string userName, string password)
-            :base(commandReceiver)
+        internal UserCreation(CommandHandler commandHandler, string userName, string password)
+            :base(commandHandler)
         {
             UserName = userName;
             Password = password;

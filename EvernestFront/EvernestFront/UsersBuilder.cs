@@ -10,12 +10,12 @@ namespace EvernestFront
     {
         private readonly UsersProjection _usersProjection;
 
-        private readonly CommandReceiver _commandReceiver;
+        private readonly CommandHandler _commandHandler;
 
         public UsersBuilder()
         {
             _usersProjection = Injector.Instance.UsersProjection;
-            _commandReceiver = Injector.Instance.CommandReceiver;
+            _commandHandler = Injector.Instance.CommandHandler;
         }
 
 
@@ -74,7 +74,7 @@ namespace EvernestFront
         {
             if (!_usersProjection.UserNameExists(name))
             {
-                var command = new UserCreation(_commandReceiver, name, password);
+                var command = new UserCreation(_commandHandler, name, password);
                 command.Send();
                 return new SystemCommandResponse(command.Guid);
             }
@@ -131,7 +131,7 @@ namespace EvernestFront
 
         private User ConstructUser(long userId, UserDataForProjection userData)
         {
-            return new User(_commandReceiver, userId, userData.UserName,
+            return new User(_commandHandler, userId, userData.UserName,
                     userData.SaltedPasswordHash, userData.PasswordSalt,
                     userData.Keys, userData.Sources,
                     userData.RelatedEventStreams);

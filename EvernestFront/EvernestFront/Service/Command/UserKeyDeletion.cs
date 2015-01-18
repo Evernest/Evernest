@@ -11,8 +11,8 @@ namespace EvernestFront.Service.Command
         
         internal string KeyName { get; set; }
 
-        internal UserKeyDeletion(CommandReceiver commandReceiver, string key, long userId, string keyName)
-            : base(commandReceiver)
+        internal UserKeyDeletion(CommandHandler commandHandler, string key, long userId, string keyName)
+            : base(commandHandler)
         {
             Key = key;
             UserId = userId;

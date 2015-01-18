@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using EvernestFront;
 using EvernestWeb.Models;
 
 namespace EvernestWeb.Controllers
@@ -46,8 +47,8 @@ namespace EvernestWeb.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
-                    EvernestFront.Responses.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
+                    EvernestFront.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
+                    EvernestFront.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
                     if(p.Success)
                     {
                         return RedirectToAction("Index", "Account", new {id=1});

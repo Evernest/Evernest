@@ -38,7 +38,7 @@ namespace EvernestWeb.ViewModels
         public string Name { get; set; }
         public long Count { get; set; }
         public long LastEventId { get; set;}
-        public List<KeyValuePair<long, EvernestFront.AccessRight>> RelatedUsers { get; set; }
+        public List<KeyValuePair<string, EvernestFront.AccessRight>> RelatedUsers { get; set; }
 
         // Events
         public List<EvernestFront.Event> Events;

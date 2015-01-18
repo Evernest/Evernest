@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using EvernestFront;
 using EvernestWeb.Models;
 using EvernestWeb.ViewModels;
 
@@ -31,22 +32,22 @@ namespace EvernestWeb.Controllers
             return View();
         }
 
-        private StreamsSources getStreamsSources(EvernestFront.Responses.Response<User> u)
+        private StreamsSources getStreamsSources(EvernestFront.Response<User> u)
         {
-            List<KeyValuePair<long, EvernestFront.AccessRight>> listStreams = u.User.RelatedEventStreams;
-            List<KeyValuePair<string, string>> listSources = u.User.Sources;
+            List<KeyValuePair<long, EvernestFront.AccessRight>> listStreams = u.Result.RelatedEventStreams;
+            List<KeyValuePair<string, string>> listSources = u.Result.Sources;
             StreamsSources streamsSources = new StreamsSources();
             foreach (KeyValuePair<long, EvernestFront.AccessRight> elt in listStreams)
             {
-                EvernestFront.Responses.Response<EventStream> s = EvernestFront.EventStream.GetStream(elt.Key);
+                EvernestFront.Response<EventStream> s = EvernestFront.EventStream.GetStream(elt.Key);
                 if (s.Success)
-                    streamsSources.AddEventStream(s.EventStream);
+                    streamsSources.AddEventStream(s.Result);
             }
             foreach (KeyValuePair<string, string> src in listSources)
             {
-                EvernestFront.Responses.GetSourceResponse s = EvernestFront.Source.GetSource(src.Value); // the second string is the Key to fetch the source
+                EvernestFront.Response<Source> s = EvernestFront.Source.GetSource(src.Value); // the second string is the Key to fetch the source
                 if (s.Success)
-                    streamsSources.AddSource(s.Source);
+                    streamsSources.AddSource(s.Result);
             }
 
             return streamsSources;
@@ -58,7 +59,7 @@ namespace EvernestWeb.Controllers
             if (ViewBag.Connexion != "true")
                 return View("Index");
 
-            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
+            EvernestFront.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
             if (u.Success)
             {
                 StreamsSources streamsSources = getStreamsSources(u);
@@ -76,11 +77,11 @@ namespace EvernestWeb.Controllers
             if (ViewBag.Connexion != "true")
                 return View("Index");
 
-            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
+            EvernestFront.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
             if (u.Success)
                 if (addStream != null)
                 {
-                    EvernestFront.Responses.CreateEventStream stream = u.User.CreateEventStream(addStream);
+                    EvernestFront.Response<Guid> stream = u.Result.CreateEventStream(addStream);
                     if (stream.Success)
                     {
                         // update user object
@@ -117,8 +118,7 @@ namespace EvernestWeb.Controllers
             Connexion connexion = IsConnected();
             if (ViewBag.Connexion != "true")
                 return View("Index");
-
-            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
+            EvernestFront.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
             if (u.Success)
                 if (addSource != null)
                 {
@@ -138,25 +138,28 @@ namespace EvernestWeb.Controllers
 
         private StreamAndEvents getStreamsAndEvents(long streamId, long userId)
         {
-            EvernestFront.Responses.Response<EventStream> s = EvernestFront.EventStream.GetStream(streamId);
-            EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(userId);
-            if (s.Success && u.Success)
+            var usb = new UsersBuilder();
+            EvernestFront.Response<User> u = usb.GetUser(userId);
+            if (!u.Success)
+                return null;
+            EvernestFront.Response<EventStream> s = u.Result.GetEventStream(streamId);
+            if (s.Success)
             {
                 // fetch stream
                 StreamAndEvents streamAndEvents = new StreamAndEvents();
-                streamAndEvents.Id = s.EventStream.Id;
-                streamAndEvents.Name = s.EventStream.Name;
-                streamAndEvents.Count = s.EventStream.Count;
-                streamAndEvents.LastEventId = s.EventStream.LastEventId;
-                streamAndEvents.RelatedUsers = s.EventStream.RelatedUsers;
+                streamAndEvents.Id = s.Result.Id;
+                streamAndEvents.Name = s.Result.Name;
+                streamAndEvents.Count = s.Result.Count;
+                streamAndEvents.LastEventId = s.Result.LastEventId;
+                streamAndEvents.RelatedUsers = s.Result.GetRelatedUsers().Result;
 
                 // fetch stream's events
                 int begin = 0;
-                if (s.EventStream.LastEventId > 10)
-                    begin = Convert.ToInt32(s.EventStream.LastEventId) - 10;
+                if (s.Result.LastEventId > 10)
+                    begin = Convert.ToInt32(s.Result.LastEventId) - 10;
 
-                EvernestFront.Responses.Response<List<Event>> r = u.User.PullRange(streamId, begin, s.EventStream.LastEventId);
-                streamAndEvents.Events = r.Events;
+                EvernestFront.Response<List<Event>> r = s.Result.PullRange(begin, s.Result.LastEventId);
+                streamAndEvents.Events = r.Result;
 
                 return streamAndEvents;
             }
@@ -182,12 +185,14 @@ namespace EvernestWeb.Controllers
 
             if (item != null)
             {
-                EvernestFront.Responses.Response<EventStream> s = EvernestFront.EventStream.GetStream(sid);
-                if (s.Success)
+                var usb = new UsersBuilder();
+                EvernestFront.Response<User> u = usb.GetUser(connexion.IdUser);
+                if (u.Success)
                 {
-                    EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
-                    if (u.Success)
-                        u.User.Push(s.EventStream.Id, item);
+
+                    EvernestFront.Response<EventStream> s = u.Result.GetEventStream(sid);
+                    if (s.Success)
+                       s.Result.Push(item);
                 }
             }
             return RedirectToAction("Stream", "Store", new { id = sid });

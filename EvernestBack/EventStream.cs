@@ -7,7 +7,7 @@ namespace EvernestBack
     /// should be created with AzureStorageClient.</summary>
     internal class EventStream : IEventStream
     {
-        private CloudBlockBlob _blob;
+        private CloudPageBlob _blob;
         private readonly EventIndexer _indexer;
         private readonly WriteLocker _writeLock;
 
@@ -20,10 +20,10 @@ namespace EvernestBack
         /// <param name="eventChunkSize"></param>
         public EventStream(AzureStorageClient storage, string streamID, int bufferSize, uint eventChunkSize)
         {
-            var streamBlob = storage.StreamContainer.GetPageBlobReference(streamID);
+            _blob = storage.StreamContainer.GetPageBlobReference(streamID);
             var streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
 
-            var buffer = new BufferedBlobIO(streamBlob, bufferSize);
+            var buffer = new BufferedBlobIO(_blob, bufferSize);
             _indexer = new EventIndexer(streamIndexBlob, buffer, eventChunkSize);
             _writeLock = new WriteLocker(buffer, _indexer, 0); // Initial ID = 0
             _writeLock.Store();

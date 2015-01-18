@@ -75,7 +75,7 @@ namespace EvernestBack
 
         public static bool StreamExists(string streamID)
         {
-            return (File.Exists(StreamFileName(streamID)));
+            return File.Exists(StreamFileName(streamID));
         }
 
         public static void CreateStream(string streamID)

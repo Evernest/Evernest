@@ -38,7 +38,7 @@ namespace EvernestFrontTests
             var getStream = user.GetEventStream(streamId);
             var stream = getStream.Result;
             var usb = new UsersBuilder();
-            var ans = stream.SetRight(targetUserName, rights);
+            var ans = stream.SetUserRight(targetUserName, rights);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             Thread.Sleep(100);
@@ -141,7 +141,7 @@ namespace EvernestFrontTests
             User reader = UserTests.GetUser_AssertSuccess(readerId);
             var getReaderStream = reader.GetEventStream(streamName);
             var readerStream = getReaderStream.Result;
-            var ans = readerStream.SetRight(readerName, AccessRight.ReadWrite);
+            var ans = readerStream.SetUserRight(readerName, AccessRight.ReadWrite);
             AssertAuxiliaries.ErrorAssert(FrontError.AdminAccessDenied, ans);
         }
 
@@ -159,7 +159,7 @@ namespace EvernestFrontTests
             User evilAdmin = UserTests.GetUser_AssertSuccess(evilAdminId);
             var getEvilAdminStream = evilAdmin.GetEventStream(streamName);
             var evilAdminStream = getEvilAdminStream.Result;
-            var ans = evilAdminStream.SetRight(creatorName, AccessRight.NoRight);
+            var ans = evilAdminStream.SetUserRight(creatorName, AccessRight.NoRight);
             AssertAuxiliaries.ErrorAssert(FrontError.CannotDestituteAdmin, ans);
         }
 

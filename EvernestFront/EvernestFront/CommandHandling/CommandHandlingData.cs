@@ -99,6 +99,11 @@ namespace EvernestFront.CommandHandling
             userData.SourceIdToName.Remove(systemEvent.SourceId);
         }
 
+        private void When(SourceRightSetSystemEvent systemEvent)
+        {
+            //nothing to do
+        }
+
         private void When(UserCreatedSystemEvent systemEvent)
         {
             UserNames.Add(systemEvent.UserName);

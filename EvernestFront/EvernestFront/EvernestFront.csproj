@@ -53,7 +53,9 @@
   <ItemGroup>
     <Compile Include="AccessAction.cs" />
     <Compile Include="AccessVerifier.cs" />
+    <Compile Include="CommandHandling\Commands\SourceRightSettingCommand.cs" />
     <Compile Include="CommandResultViewer.cs" />
+    <Compile Include="Contract\SystemEvents\SourceRightSetSystemEvent.cs" />
     <Compile Include="EventStreamBySource.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="CommandHandling\CommandResultManager.cs" />

@@ -43,6 +43,19 @@ namespace EvernestFront.Projections
             KeyToData = KeyToData.Remove(systemEvent.SourceKey);
         }
 
+        private void When(SourceRightSetSystemEvent systemEvent)
+        {
+            SourceDataForProjection sourceData;
+            if (!KeyToData.TryGetValue(systemEvent.SourceKey, out sourceData))
+            {
+                //TODO: register error
+                return;
+            }
+            sourceData = sourceData.SetSourceRight(systemEvent.EventStreamId, systemEvent.SourceRight);
+            KeyToData = KeyToData.SetItem(systemEvent.SourceKey, sourceData);
+
+        }
+
         //SourcesProjection is not concerned by following system events
         private void When(EventStreamCreatedSystemEvent systemEvent) { }
         private void When(EventStreamDeletedSystemEvent systemEvent) { }

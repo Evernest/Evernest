@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
 using EvernestFront;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
@@ -19,13 +16,14 @@ namespace EvernestFrontTests
         internal static string CreateSource_GetKey_AssignStream_AssertSuccess(long userId, long streamId, string sourceName,
             AccessRight right)
         {
-            User user = UserTests.GetUser_AssertSuccess(userId);
+            UserTests.GetUser_AssertSuccess(userId);
             var key = CreateSource_GetKey_AssertSuccess(userId, sourceName);
             var sb = new SourcesBuilder();
             var getSource = sb.GetSource(key);
             Assert.IsTrue(getSource.Success);
             Assert.IsNull(getSource.Error);
             var source = getSource.Result;
+            User user = UserTests.GetUser_AssertSuccess(userId);
             var setRight = user.SetSourceRight(source.Id, streamId, right);
             Assert.IsTrue(setRight.Success);
             Assert.IsNull(setRight.Error);
@@ -61,7 +59,7 @@ namespace EvernestFrontTests
             var getStream = adminSource.GetEventStream(streamId);
             Assert.IsTrue(getStream.Success);
             var stream = getStream.Result;
-            Response<Guid> ans = stream.SetRight(targetUserName, right);
+            Response<Guid> ans = stream.SetUserRight(targetUserName, right);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             System.Threading.Thread.Sleep(50);
@@ -144,7 +142,7 @@ namespace EvernestFrontTests
             EventStreamTests.SetRights_AssertSuccess(creatorId, streamId, readerName, AccessRight.ReadOnly);
 
             Source readerSource = GetSource_AssertSuccess(readerSourceKey);
-            var ans = readerSource.User.GetEventStream(streamId).Result.SetRight(readerName, AccessRight.ReadWrite); //reader cannot allow himself to write
+            var ans = readerSource.User.GetEventStream(streamId).Result.SetUserRight(readerName, AccessRight.ReadWrite); //reader cannot allow himself to write
             Assert.IsFalse(ans.Success);
             AssertAuxiliaries.ErrorAssert(FrontError.AdminAccessDenied,ans);
         }
@@ -161,7 +159,7 @@ namespace EvernestFrontTests
             var sourceKey = CreateSource_GetKey_AssignStream_AssertSuccess(creatorId, streamId, sourceName, AccessRight.ReadOnly); //source belongs to an admin but only has reading right
 
             Source source = GetSource_AssertSuccess(sourceKey);
-            var ans = source.GetEventStream(streamId).Result.SetRight(targetName, AccessRight.ReadWrite);
+            var ans = source.GetEventStream(streamId).Result.SetUserRight(targetName, AccessRight.ReadWrite);
             AssertAuxiliaries.ErrorAssert(FrontError.AdminAccessDenied,ans);
         }
 
@@ -176,7 +174,7 @@ namespace EvernestFrontTests
             var sourceKey = CreateSource_GetKey_AssignStream_AssertSuccess(creatorId, streamId, sourceName, AccessRight.Admin);
 
             Source source = GetSource_AssertSuccess(sourceKey);
-            var ans = source.GetEventStream(streamId).Result.SetRight(creatorName, AccessRight.NoRight);
+            var ans = source.GetEventStream(streamId).Result.SetUserRight(creatorName, AccessRight.NoRight);
             AssertAuxiliaries.ErrorAssert(FrontError.CannotDestituteAdmin,ans);
         }
 

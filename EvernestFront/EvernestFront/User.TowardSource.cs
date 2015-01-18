@@ -45,9 +45,16 @@ namespace EvernestFront
         }
 
 
-        public Response<Guid> SetSourceRight(long sourceId, long streamId, AccessRight right)
+        public Response<Guid> SetSourceRight(long sourceId, long eventStreamId, AccessRight right)
         {
-            throw new NotImplementedException();
+            string sourceKey;
+            if (!SourceKeys.TryGetValue(sourceId, out sourceKey))
+                return new Response<Guid>(FrontError.SourceIdDoesNotExist);
+
+            var command = new SourceRightSettingCommand(_commandHandler, Id, sourceId, sourceKey,
+                eventStreamId, right);
+            command.Send();
+            return new Response<Guid>(command.Guid);
         }
 
         public Response<Guid> DeleteSource(long sourceId)

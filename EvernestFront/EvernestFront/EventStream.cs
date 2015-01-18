@@ -58,7 +58,7 @@ namespace EvernestFront
             return new Response<IDictionary<string, AccessRight>>(RelatedUsers);
         }
 
-        public Response<Guid> SetRight(string targetName, AccessRight right)
+        public Response<Guid> SetUserRight(string targetName, AccessRight right)
         {
             if (!ValidateAccessAction(AccessAction.Admin))
                 return new Response<Guid>(FrontError.AdminAccessDenied);

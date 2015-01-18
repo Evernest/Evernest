@@ -194,7 +194,10 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
-        
+        private void When(SourceRightSetSystemEvent systemEvent)
+        {
+            //nothing to do
+        }
 
         private void When(UserCreatedSystemEvent systemEvent)
         {

@@ -10,6 +10,7 @@ namespace EvernestBack
     /// see it as an EventStream factory</summary>
     public class AzureStorageClient
     {
+        private static readonly object _initializeLock = new object();
         private static AzureStorageClient _singleton;
         private readonly CloudBlobClient _blobClient;
         private readonly int _bufferSize;
@@ -72,8 +73,11 @@ namespace EvernestBack
         {
             get
             {
-                if (_singleton == null)
-                    _singleton = new AzureStorageClient();
+                lock (_initializeLock)
+                {
+                    if (_singleton == null)
+                        _singleton = new AzureStorageClient();    
+                }
                 return _singleton;
             }
         }

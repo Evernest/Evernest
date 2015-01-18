@@ -26,11 +26,11 @@ namespace EvernestFront
 
         private ImmutableDictionary<long, AccessRight> InternalRelatedEventStreams { get; set; }
 
-        public List<KeyValuePair<string, string>> UserKeys { get { return InternalUserKeys.ToList(); } }
+        public IDictionary<string, string> UserKeys { get { return InternalUserKeys; } }
 
-        public List<KeyValuePair<string, string>> Sources { get { return InternalSources.ToList(); } }
+        public IDictionary<string, string> Sources { get { return InternalSources; } }
 
-        public List<KeyValuePair<long, AccessRight>> RelatedEventStreams { get { return InternalRelatedEventStreams.ToList(); }}
+        public IDictionary<long, AccessRight> RelatedEventStreams { get { return InternalRelatedEventStreams; }}
 
         internal User(CommandHandler commandHandler, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, string> sources, 

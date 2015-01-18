@@ -55,11 +55,11 @@ namespace EvernestFront
         }
 
 
-        public Response<List<KeyValuePair<string,AccessRight>>> GetRelatedUsers()
+        public Response<IDictionary<string,AccessRight>> GetRelatedUsers()
         {
             if (!ValidateAccessAction(AccessAction.Admin))
-                return new Response<List<KeyValuePair<string,AccessRight>>>(FrontError.AdminAccessDenied);
-            return new Response<List<KeyValuePair<string,AccessRight>>>(RelatedUsers.ToList());
+                return new Response<IDictionary<string, AccessRight>>(FrontError.AdminAccessDenied);
+            return new Response<IDictionary<string, AccessRight>>(RelatedUsers);
         }
 
         public Response<Guid> SetRight(string targetName, AccessRight right)

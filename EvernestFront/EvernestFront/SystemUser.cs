@@ -11,6 +11,7 @@ namespace EvernestFront
 {
     class SystemUser : User
     {
+        //TODO: do we really want system users?
 
         public SystemUser(CommandHandler commandHandler, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, string> sources, 

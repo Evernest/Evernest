@@ -14,7 +14,7 @@ namespace EvernestFront
 
 
         private ICollection<IProjection> Projections { set; get; }
-        private SystemEventStreamManager SystemEventStream { set; get; }
+        private SystemEventStream SystemEventStream { set; get; }
 
         private readonly ConcurrentQueue<Tuple<Guid,ISystemEvent>> _pendingEventQueue;
 
@@ -22,7 +22,7 @@ namespace EvernestFront
 
         private CommandResultManager Manager { set; get; }
 
-        public Dispatcher(ICollection<IProjection> projections, SystemEventStreamManager systemEventStream, CommandResultManager manager)
+        public Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream, CommandResultManager manager)
         {
             Projections = projections;
             SystemEventStream = systemEventStream;
@@ -36,7 +36,7 @@ namespace EvernestFront
             _tokenSource.Cancel();
         }
 
-        public void HandleEvent(ISystemEvent systemEvent, Guid guid)
+        public void ReceiveEvent(ISystemEvent systemEvent, Guid guid)
         {
             _pendingEventQueue.Enqueue(new Tuple<Guid, ISystemEvent>(guid, systemEvent));
         }

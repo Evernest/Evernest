@@ -60,7 +60,7 @@ namespace EvernestFront.Service
             if (command.TryToSystemEvent(_serviceData, out systemEvent, out error))
             {
                 _serviceData.Update(systemEvent);
-                _dispatcher.HandleEvent(systemEvent, command.Guid);
+                _dispatcher.ReceiveEvent(systemEvent, command.Guid);
             }
             else
             {

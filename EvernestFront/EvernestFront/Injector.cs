@@ -26,7 +26,7 @@ namespace EvernestFront
             EventStreamsProjection = new EventStreamsProjection();
             SourcesProjection = new SourcesProjection();
             CommandResultManager = new CommandResultManager();
-            var systemEventStream = new SystemEventStreamManager();
+            var systemEventStream = new SystemEventStream(0); //id for systemEventStream
             Dispatcher = new Dispatcher(new List<IProjection>
                 {UsersProjection, EventStreamsProjection, SourcesProjection}, systemEventStream, CommandResultManager);
 

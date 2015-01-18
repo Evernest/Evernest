@@ -3,8 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.WindowsAzure.Storage.Blob;
 
+//TODO: change the key to key difference to save space
+//TODO: limited space mode (automatically remove intermediate pairs when exceeding limit size)
+//TODO: various optimizations
+
 namespace EvernestBack
 {
+    /// <summary>
+    /// Binary search tree optimized for ordered insertions.
+    /// Search complexity: O(log(n))
+    /// Insertion amortized complexity: O(1) (worst case O(log(n)) )
+    /// </summary>
     internal class History
     {
         private long _elementCounter;
@@ -20,6 +29,9 @@ namespace EvernestBack
             _root = null;
         }
 
+        /// <summary>
+        /// Clear the History.
+        /// </summary>
         public void Clear()
         {
             _elementCounter = 0;
@@ -28,6 +40,12 @@ namespace EvernestBack
             _mislinked.Clear();
         }
 
+        /// <summary>
+        /// Insert a new pair (key, element) in the History.
+        /// The key must be greater or equal than the greatest key of the History.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="element"></param>
         public void Insert(long key, ulong element)
         {
             if ((_elementCounter & 1) != 0)
@@ -54,6 +72,15 @@ namespace EvernestBack
             _elementCounter++;
         }
 
+        /// <summary>
+        /// Retrieves the element with the least key which is greater (or equal) than the given key.
+        /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
+        /// </summary>
+        /// <param name="key">The key to look for.</param>
+        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <returns>
+        /// True if such an element exists, false otherwise.
+        /// </returns>
         public bool UpperBound(long key, ref ulong element)
         {
             Node current = _root, upperBound = null;
@@ -72,6 +99,15 @@ namespace EvernestBack
             return upperBound != null;
         }
 
+        /// <summary>
+        /// Retrieves the element with the greatest key which is lesser (or equal) than the given key.
+        /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
+        /// </summary>
+        /// <param name="key">The key to look for.</param>
+        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <returns>
+        /// True if such an element exists, false otherwise.
+        /// </returns>
         public bool LowerBound(long key, ref ulong element)
         {
             Node current = _root, leastBound = null;
@@ -90,6 +126,14 @@ namespace EvernestBack
             return leastBound != null;
         }
 
+        /// <summary>
+        /// Retrieves the element whose key is the greatest.
+        /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
+        /// </summary>
+        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <returns>
+        /// True if such an element exists, false otherwise.
+        /// </returns>
         public bool GreaterElement(ref ulong element)
         {
             if (_lastNode != null)
@@ -97,7 +141,13 @@ namespace EvernestBack
             return _lastNode != null;
         }
 
-        public Byte[] Serialize() //missing endianness check/byte reordering
+        /// <summary>
+        /// Encodes the History as a byte array.
+        /// </summary>
+        /// <returns>
+        /// A byte array describing the History.
+        /// </returns>
+        public byte[] Serialize() //missing endianness check/byte reordering
         {
             var byteCount = sizeof (long) + _elementCounter*(sizeof (long) + sizeof (ulong));
             var serializedHistory = new Byte[byteCount + sizeof (long)];
@@ -133,7 +183,12 @@ namespace EvernestBack
             return serializedHistory;
         }
 
-        public void Deserialize(Byte[] src, int offset)
+        /// <summary>
+        /// Clear the History, then fill it with a byte array describing an History.
+        /// </summary>
+        /// <param name="src">The byte array containing a description of the History.</param>
+        /// <param name="offset">The offset at which the description should be read.</param>
+        public void Deserialize(byte[] src, int offset)
         {
             Clear();
             var elementCount = BitConverter.ToInt64(src, offset);
@@ -148,6 +203,10 @@ namespace EvernestBack
             }
         }
 
+        /// <summary>
+        /// Clear the History, and retrieve one from the blob.
+        /// </summary>
+        /// <param name="blob">The blob from which to retrieve the History description</param>
         public void ReadFromBlob(CloudBlockBlob blob)
         {
             var sizeBytes = new Byte[sizeof (long)];

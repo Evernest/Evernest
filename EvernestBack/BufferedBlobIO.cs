@@ -66,7 +66,7 @@ namespace EvernestBack
         /// <returns>
         /// Described MemoryStream.
         /// </returns>
-        static private MemoryStream MakePaddedMemoryStream(byte[] src, int offset, int count)
+        private static MemoryStream MakePaddedMemoryStream(byte[] src, int offset, int count)
         {
             MemoryStream stream;
             int padSize = (_pageSize - (count % _pageSize)) % _pageSize;

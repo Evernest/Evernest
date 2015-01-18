@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using EvernestFront;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
-using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 

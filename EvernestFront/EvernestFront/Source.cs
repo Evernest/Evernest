@@ -6,7 +6,7 @@ using EvernestFront.Contract.SystemEvent;
 namespace EvernestFront
 {
     public class Source
-    {
+    {   //TODO: implement this
         //base64 encoded int
         public string Key { get; private set; }
 
@@ -18,7 +18,6 @@ namespace EvernestFront
 
         public AccessRight Right { get; private set; }
 
-        //should sources have an id?
 
 
 
@@ -36,36 +35,38 @@ namespace EvernestFront
 
         private static bool TryGetSource(string sourceKey, out Source source, out FrontError? error)
         {
-            SourceContract sourceContract;
-            if (Projection.ProjectionOld.TryGetSourceContract(sourceKey, out sourceContract))
-            {
-                User user;
-                if (!User.TryGetUser(sourceContract.UserId, out user))
-                {
-                    error = FrontError.UserIdDoesNotExist;
-                    source = null;
-                    return false;
-                }
-                else
-                {
-                    EventStream eventStream;
-                    if (!EventStream.TryGetStream(sourceContract.StreamId, out eventStream))
-                    {
-                        error = FrontError.EventStreamIdDoesNotExist;
-                        source = null;
-                        return false;
-                    }
-                    else
-                    {
-                        source = new Source(sourceKey, sourceContract.Name, user, eventStream, sourceContract.Right);
-                        error = null;
-                        return true;
-                    }
-                }
-            }
-            error = FrontError.SourceKeyDoesNotExist;
-            source = null;
-            return false;
+            //TODO
+            throw new NotImplementedException();
+            //SourceContract sourceContract;
+            //if (Projection.ProjectionOld.TryGetSourceContract(sourceKey, out sourceContract))
+            //{
+            //    User user;
+            //    if (!User.TryGetUser(sourceContract.UserId, out user))
+            //    {
+            //        error = FrontError.UserIdDoesNotExist;
+            //        source = null;
+            //        return false;
+            //    }
+            //    else
+            //    {
+            //        EventStream eventStream;
+            //        if (!EventStream.TryGetStream(sourceContract.StreamId, out eventStream))
+            //        {
+            //            error = FrontError.EventStreamIdDoesNotExist;
+            //            source = null;
+            //            return false;
+            //        }
+            //        else
+            //        {
+            //            source = new Source(sourceKey, sourceContract.Name, user, eventStream, sourceContract.Right);
+            //            error = null;
+            //            return true;
+            //        }
+            //    }
+            //}
+            //error = FrontError.SourceKeyDoesNotExist;
+            //source = null;
+            //return false;
         }
 
         static public GetSourceResponse GetSource(string sourceKey)
@@ -85,7 +86,7 @@ namespace EvernestFront
         public PushResponse Push(string message)
         {
             if (CanWrite())
-                return EventStream.Push(message, User);
+                return EventStream.Push(message);
             else
                 return new PushResponse(FrontError.WriteAccessDenied);
         }
@@ -114,20 +115,17 @@ namespace EvernestFront
                 return new PullRangeResponse(FrontError.ReadAccessDenied);
         }
 
-        public SystemCommandResponse SetRights(long targetUserId, AccessRight right)
+        public SystemCommandResponse SetRights(string targetUserName, AccessRight right)
         {
             if (CanAdmin())
-                return EventStream.SetRight(User.Id, targetUserId, right);
+                return EventStream.SetRight(targetUserName, right);
             else
                 return new SystemCommandResponse(FrontError.AdminAccessDenied);
         }
 
         public SystemCommandResponse Delete()
         {
-            var sourceDeleted = new SourceDeleted(Key, User.Id, Name);
-            Projection.ProjectionOld.HandleDiff(sourceDeleted);
-            //TODO: system stream
-            return new SystemCommandResponse();
+            throw new NotImplementedException();
         }
 
 
@@ -139,15 +137,17 @@ namespace EvernestFront
 
         private bool CanRead()
         {
-            return (AccessVerifier.CanRead(Right)&&User.CanRead(EventStream.Id));
+            throw new NotImplementedException();
         }
+
         private bool CanWrite()
         {
-            return (AccessVerifier.CanWrite(Right) && User.CanWrite(EventStream.Id));
+            throw new NotImplementedException();
         }
+
         private bool CanAdmin()
         {
-            return (AccessVerifier.CanAdmin(Right) && User.CanAdmin(EventStream.Id));
+            throw new NotImplementedException();
         }
 
     }

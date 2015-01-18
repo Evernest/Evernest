@@ -1,7 +1,6 @@
 ﻿//using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
-using System.Diagnostics;
 using EvernestFront;
 using Assert = NUnit.Framework.Assert;
 using EvernestFront.Responses;

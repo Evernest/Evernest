@@ -14,7 +14,7 @@ namespace EvernestFront
 
 
         private ICollection<IProjection> Projections { set; get; }
-        private SystemEventStream SystemEventStream { set; get; }
+        private SystemEventStreamManager SystemEventStream { set; get; }
 
         private readonly ConcurrentQueue<Tuple<Guid,ISystemEvent>> _pendingEventQueue;
 
@@ -22,7 +22,7 @@ namespace EvernestFront
 
         private CommandResultManager Manager { set; get; }
 
-        public Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream, CommandResultManager manager)
+        public Dispatcher(ICollection<IProjection> projections, SystemEventStreamManager systemEventStream, CommandResultManager manager)
         {
             Projections = projections;
             SystemEventStream = systemEventStream;

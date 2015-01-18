@@ -1,5 +1,4 @@
 ﻿using EvernestFront;
-using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using EvernestFront.Responses;

@@ -1,8 +1,6 @@
 ﻿using System;
-using EvernestFront;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
-using EvernestFront.Projection;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 

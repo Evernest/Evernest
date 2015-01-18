@@ -6,25 +6,23 @@ using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront
 {
-    class SystemEventStream : EventStream
+    class SystemEventStreamManager
     {
-        private readonly User _systemUser;
+        //TODO: implement this class
+        //private readonly string _systemUserName = "RootUser";
+        //private readonly SystemUser _systemUser;
+        //private EventStream _systemStream;
 
-        protected SystemEventStream(long streamId, string name, ImmutableDictionary<long, AccessRight> users,
-            IEventStream backStream, User user )
-            : base(streamId, name, users, backStream)
+        public void CreateSystemStream()
         {
-            _systemUser = user;
-        }
 
-        public SystemEventStream() : base(long.MaxValue, "SystemEventStream",
-            ImmutableDictionary<long, AccessRight>.Empty, null) { }
+        }
 
         internal void Push(ISystemEvent systemEvent)
         {
-            var serializer = new Serializer();
-            var contract = new SystemEventEnvelope(systemEvent);
-            Push(serializer.WriteContract(contract), _systemUser);
+            //var serializer = new Serializer();
+            //var contract = new SystemEventEnvelope(systemEvent);
+            //_systemStream.Push(serializer.WriteContract(contract));
         }
     }
 

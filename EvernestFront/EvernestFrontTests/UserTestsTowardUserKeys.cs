@@ -1,6 +1,4 @@
 ﻿using EvernestFront;
-using EvernestFront.Responses;
-using EvernestFront.Projection;
 using NUnit.Framework;
 
 namespace EvernestFrontTests

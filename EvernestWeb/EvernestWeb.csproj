@@ -108,11 +108,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\SessionAuthorize.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Application\Connexion.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManagerController.cs" />
     <Compile Include="Global.asax.cs">
@@ -167,9 +167,9 @@
     <Content Include="Views\Manager\Index.cshtml" />
     <Content Include="Views\Manager\MyStore.cshtml" />
     <Content Include="Views\Manager\Stream.cshtml" />
-    <Content Include="Views\Shared\changePwdFormPartial.cshtml" />
     <Content Include="Views\Shared\addEventFormPartial.cshtml" />
     <Content Include="Views\Shared\addUserFormPartial.cshtml" />
+    <Content Include="Views\Account\ChangePwd.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

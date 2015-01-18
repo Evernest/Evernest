@@ -1,11 +1,12 @@
 ﻿
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Evernest - Account";
 }
+
+<p>@Html.ActionLink("Manager", "MyStore", "Manager")</p>
 
 <h2>Edit profile</h2>
 
-<div>@Html.ActionLink("Manager", "MyStore", "Manager")</div>
-
-@Html.Partial("changePwdFormPartial")
-
+<ul>
+    <li>@Html.ActionLink("Change password", "ChangePwd", "Account")</li>
+</ul>

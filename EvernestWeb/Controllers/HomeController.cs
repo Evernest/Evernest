@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-using EvernestWeb.Application;
+using EvernestWeb.Models;
 
 namespace EvernestWeb.Controllers
 {
@@ -8,12 +8,11 @@ namespace EvernestWeb.Controllers
     {
         private void IsConnected()
         {
-            ViewBag.Connexion = "false";
-            Connexion connexion = new Connexion();
-            if (connexion.IsConnected())
+            ViewBag.SessionAvailable = "false";
+            if (Session["User"] != null)
             {
-                ViewBag.Connexion = "true";
-                ViewBag.Username = connexion.Username;
+                ViewBag.SessionAvailable = "true";
+                ViewBag.User = (User)Session["User"];
             }
         }
 

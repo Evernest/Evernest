@@ -20,8 +20,10 @@ namespace EvernestWeb.Models
         }
     }
 
-    public class LoginModel
+    public class User
     {
+        public long Id { get; set; }
+
         [Required]
         [Display (Name = "User name")]
         public string Username { get; set; }
@@ -32,6 +34,14 @@ namespace EvernestWeb.Models
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+
+        public User(long id, string username, string password)
+        {
+            Id = id;
+            Username = username;
+            Password = password;
+            RememberMe = false;
+        }
     }
 
     public class RegisterModel

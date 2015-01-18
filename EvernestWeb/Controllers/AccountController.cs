@@ -1,64 +1,56 @@
 ﻿using System.Web.Mvc;
+using System.Web.Security;
 
 using EvernestWeb.Models;
-using EvernestWeb.Application;
 
 namespace EvernestWeb.Controllers
 {
     public class AccountController : System.Web.Mvc.Controller
     {
-        private Connexion IsConnected()
+        private void IsConnected()
         {
-            ViewBag.Connexion = "false";
-            Connexion connexion = new Connexion();
-            if (connexion.IsConnected())
+            ViewBag.SessionAvailable = "false";
+            if (Session["User"] != null)
             {
-                ViewBag.Connexion = "true";
-                ViewBag.Username = connexion.Username;
-                return connexion;
+                ViewBag.SessionAvailable = "true";
+                ViewBag.User = (User)Session["User"];
             }
-            return null;
         }
 
         // GET: Account
-        public ActionResult Index(int id = -1)
+        public ActionResult Index()
         {
-            Connexion connexion = IsConnected();
-            if (ViewBag.Connexion == "true")
-            {
-                if(id==1)
-                {
-                    ViewBag.Status = "Password has been successfully changed.";
-                }
-                return View();
-            }
-            return RedirectToAction("Index", "Home");
+            IsConnected();
+            return View();
+        }
+
+        public ActionResult ChangePwd()
+        {
+            IsConnected();
+            return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ChangePwd(ChangePwdModel model)
         {
-            Connexion connexion = IsConnected();
-            if (ViewBag.Connexion == "true")
+            IsConnected();
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                User user = (User)Session["User"];
+                EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
+                EvernestFront.Answers.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
+                if(p.Success)
                 {
-                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
-                    EvernestFront.Answers.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
-                    if(p.Success)
-                    {
-                        return RedirectToAction("Index", "Account", new {id=1});
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("Password", "Incorrect Password.");
-                        return RedirectToAction("Index", "Account", new {id=0});
-                    }
+                    return View(model);
                 }
-                return RedirectToAction("Index", "Account", new { id = 0 });
+                else
+                {
+                    ModelState.AddModelError("Password", "Incorrect Password.");
+                    return View(model);
+                }
             }
-            return RedirectToAction("Index", "Home");
+            return View(model);
         }
 
         [AllowAnonymous]
@@ -71,32 +63,28 @@ namespace EvernestWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(LoginModel model, string returnUrl)
+        public ActionResult Login(User user, string returnUrl)
         {
             IsConnected();
-            if (ViewBag.Connexion!="true")
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                EvernestFront.Answers.IdentifyUser iu = EvernestFront.User.IdentifyUser(user.Username, user.Password);
+                if (iu.Success)
                 {
-                    Connexion connexion = new Connexion();
-                    if (connexion.CheckUser(model.Username, model.Password))
+                    user.Id = iu.User.Id;
+                    Session["User"] = user;
+                    FormsAuthentication.SetAuthCookie(user.Username, user.RememberMe);
+                    if (Url.IsLocalUrl(returnUrl))
                     {
-                        connexion.CreateConnexionCookie(model.RememberMe);
-                        if (Url.IsLocalUrl(returnUrl))
-                        {
-                            return Redirect(returnUrl);
-                        }
-                        return RedirectToAction("Index", "Account");
+                        return Redirect(returnUrl);
                     }
-                    else
-                    {
-                        ModelState.AddModelError("Username", "Login failed.");
-                        return View(model);
-                    }
+                    return RedirectToAction("Index", "Account");
                 }
-                return View(model);
+
+                ModelState.AddModelError("Username", "Invalid credentials.");
+                return View(user);
             }
-            return RedirectToAction("Index", "Home");
+            return View(user);
         }
 
         [AllowAnonymous]
@@ -112,39 +100,35 @@ namespace EvernestWeb.Controllers
         public ActionResult Register(RegisterModel model)
         {
             IsConnected();
-            if (ViewBag.Connexion != "true")
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                // add user in blob
+                EvernestFront.Answers.AddUser u = EvernestFront.User.AddUser(model.Username, model.Password);
+                if (u.Success)
                 {
-                    // add user in blob
-                    EvernestFront.Answers.AddUser u = EvernestFront.User.AddUser(model.Username, model.Password);
-                    if (u.Success)
+                    // if it is ok, then create the session
+                    EvernestFront.Answers.GetUser g = EvernestFront.User.GetUser(u.UserId);
+                    if (g.Success)
                     {
-                        // if it is ok, then create a cookie for the session
-                        EvernestFront.Answers.GetUser g = EvernestFront.User.GetUser(u.UserId);
-                        if (g.Success)
-                        {
-                            Connexion connexion = new Connexion(g.User.Id, g.User.SaltedPasswordHash, g.User.Name);
-                            connexion.CreateConnexionCookie(false);
-                            return RedirectToAction("Index", "Account");
-                        }
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("Username", "User Name already taken.");
-                        return View(model);
+                        User user = new User(g.User.Id, model.Username, model.Password);
+                        Session["User"] = user;
+                        FormsAuthentication.SetAuthCookie(user.Username, user.RememberMe);
+                        return RedirectToAction("Index", "Account");
                     }
                 }
-                return View(model);
+                else
+                {
+                    ModelState.AddModelError("Username", "This user name has already been taken.");
+                    return View(model);
+                }
             }
-            return RedirectToAction("Index", "Home");
+            return View(model);
         }
 
-        [AllowAnonymous]
         public ActionResult LogOff()
         {
-            Connexion connexion = new Connexion();
-            connexion.DeleteConnexionCookie();
+            Session["User"] = null;
+            FormsAuthentication.SignOut();
             return RedirectToAction("Index","Home");
         }
     }

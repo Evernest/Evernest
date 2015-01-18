@@ -25,7 +25,7 @@
                 </ul>
                 <!-- test -->
                 <div class="evernest-right-menu">
-                    @if (ViewBag.Connexion == "false")
+                    @if (ViewBag.SessionAvailable == "false")
                     {
                         <ul class="nav navbar-nav">
                             <li>@Html.ActionLink("Login", "Login", "Account")</li>
@@ -35,7 +35,7 @@
                     else
                     {
                         <ul class="nav navbar-nav">
-                            <li>@Html.ActionLink((string)("Hello " + ViewBag.Username), "Index", "Account")</li>
+                            <li>@Html.ActionLink((string)("Hello " + ViewBag.User.Username), "Index", "Account")</li>
                             <li>@Html.ActionLink("Manager", "Index", "Manager")</li>
                             <li>@Html.ActionLink("Log out", "LogOff", "Account")</li>
                         </ul>

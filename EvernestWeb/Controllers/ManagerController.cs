@@ -11,16 +11,14 @@ namespace EvernestWeb.Controllers
 {
     public class ManagerController : System.Web.Mvc.Controller
     {
-        private Connexion IsConnected()
+        private void IsConnected()
         {
-            ViewBag.Connexion = "false";
-            Connexion connexion = new Connexion();
-            if (connexion.IsConnected())
+            ViewBag.SessionAvailable = "false";
+            if (Session["User"] != null)
             {
-                ViewBag.Connexion = "true";
-                ViewBag.Username = connexion.Username;
+                ViewBag.SessionAvailable = "true";
+                ViewBag.User = (User)Session["User"];
             }
-            return connexion;
         }
 
         // GET: Manager
@@ -54,11 +52,9 @@ namespace EvernestWeb.Controllers
 
         public ActionResult MyStore()
         {
-            Connexion connexion = IsConnected();
-            if (ViewBag.Connexion != "true")
-                return View("Index");
-
-            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+            IsConnected();
+            User user = (User)Session["User"];
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
             if (u.Success)
             {
                 StreamsSources streamsSources = getStreamsSources(u);
@@ -72,11 +68,9 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddStream(string addStream) // add stream
         {
-            Connexion connexion = IsConnected();
-            if (ViewBag.Connexion != "true")
-                return View("Index");
-
-            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+            IsConnected();
+            User user = (User)Session["User"];
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
             if (u.Success)
                 if (addStream != null)
                 {
@@ -84,7 +78,7 @@ namespace EvernestWeb.Controllers
                     if (stream.Success)
                     {
                         // update user object
-                        u = EvernestFront.User.GetUser(connexion.IdUser);
+                        u = EvernestFront.User.GetUser(user.Id);
                         if (u.Success)
                         {
                             StreamsSources streamsSources = getStreamsSources(u);
@@ -114,11 +108,9 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddSource(string addSource, string idStream, string accessRights) // add source
         {
-            Connexion connexion = IsConnected();
-            if (ViewBag.Connexion != "true")
-                return View("Index");
-
-            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+            IsConnected();
+            User user = (User)Session["User"];
+            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
             if (u.Success)
                 if (addSource != null)
                 {
@@ -128,7 +120,7 @@ namespace EvernestWeb.Controllers
                     if (source.Success)
                     {
                         // update user object
-                        u = EvernestFront.User.GetUser(connexion.IdUser);
+                        u = EvernestFront.User.GetUser(user.Id);
                         if (u.Success)
                             return RedirectToAction("MyStore", "Manager");
                     }
@@ -165,10 +157,9 @@ namespace EvernestWeb.Controllers
 
         public ActionResult Stream(long id)
         {
-            Connexion connexion = IsConnected();
-            if (ViewBag.Connexion != "true")
-                return View("Index");
-            StreamAndEvents streamAndEvents = getStreamsAndEvents(id, connexion.IdUser);
+            IsConnected();
+            User user = (User)Session["User"];
+            StreamAndEvents streamAndEvents = getStreamsAndEvents(id, user.Id);
 
             List<Models.RightModel> RightList = new List<RightModel>
             {
@@ -188,20 +179,18 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddUser(StreamAndEvents model, int sid)
         {
-            Connexion connexion = IsConnected();
-            if (ViewBag.Connexion != "true")
-                return View("Index");
-
+            IsConnected();
+            User user = (User)Session["User"];
             if (model.AddUserModelObject.NewUser != null)
             {
                 EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(model.AddUserModelObject.StreamId);
                 if (s.Success)
                 {
-                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
                     if (u.Success)
                     {
                         EvernestFront.Answers.GetUser n = EvernestFront.User.GetUser(model.AddUserModelObject.NewUser);
-                        u.User.SetRights(connexion.IdUser, n.User.Id, model.AddUserModelObject.Right);
+                        u.User.SetRights(user.Id, n.User.Id, model.AddUserModelObject.Right);
                     }
                 }
             }
@@ -212,16 +201,14 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult PushEvent(string item, int sid)
         {
-            Connexion connexion = IsConnected();
-            if (ViewBag.Connexion != "true")
-                return View("Index");
-
+            IsConnected();
+            User user = (User)Session["User"];
             if (item != null)
             {
                 EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(sid);
                 if (s.Success)
                 {
-                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(connexion.IdUser);
+                    EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(user.Id);
                     if (u.Success)
                         u.User.Push(s.EventStream.Id, item);
                 }

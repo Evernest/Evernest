@@ -58,15 +58,15 @@ namespace EvernestFront
             return new Response<Guid>(command.Guid);
         }
 
-        public Response<Guid> CreateUserKey(string keyName)
+        public Response<Tuple<string, Guid>> CreateUserKey(string keyName)
         {
             if (InternalUserKeys.ContainsKey(keyName))
-                return new Response<Guid>(FrontError.UserKeyNameTaken);
+                return new Response<Tuple<string, Guid>>(FrontError.UserKeyNameTaken);
             var keyGenerator = new KeyGenerator();
             var key = keyGenerator.NewKey();
             var command = new UserKeyCreation(_commandHandler, Id, keyName, key);
             command.Send();
-            return new Response<Guid>(command.Guid);
+            return new Response<Tuple<string, Guid>>(new Tuple<string, Guid>(key, command.Guid));
         }
 
 

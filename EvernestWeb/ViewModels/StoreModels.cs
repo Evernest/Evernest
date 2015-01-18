@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -31,6 +32,19 @@ namespace EvernestWeb.ViewModels
         }
     }
 
+    public class AddUserModel
+    {
+        [Required]
+        [Display(Name = "Add User")]
+        public string NewUser { get; set; }
+
+        [Required]
+        public EvernestFront.AccessRights Right { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
+    }
+
     public class StreamAndEvents
     {
         // Stream
@@ -42,5 +56,8 @@ namespace EvernestWeb.ViewModels
 
         // Events
         public List<EvernestFront.Event> Events;
+
+        // AddUser
+        public AddUserModel AddUserModelObject { get; set; }
     }
 }

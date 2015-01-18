@@ -1,4 +1,4 @@
-﻿@model EvernestWeb.Models.RegisterModel
+﻿@model EvernestWeb.ViewModels.RegisterModel
 @{
     ViewBag.Title = "Register";
 }
@@ -8,24 +8,29 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    @Html.ValidationSummary()
     <fieldset>
-        <legend>Register Form</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.Username)
-                @Html.TextBoxFor(m => m.Username)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.ConfirmPassword)
-                @Html.PasswordFor(m => m.ConfirmPassword)
-            </li>
-        </ol>
-        <input type="submit" value="Register" />
+        <div class="form-group">
+            @Html.LabelFor(m => m.Username)
+            <p class="text-danger">
+                @Html.ValidationMessageFor(m => m.Username)
+            </p>
+            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @placeholder = "User name" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Password)
+            <p class="text-danger">
+                @Html.ValidationMessageFor(m => m.Password)
+            </p>
+            @Html.PasswordFor(m => m.Password, new {@class = "form-control", @placeholder = "Password"})
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.ConfirmPassword)
+            <p class="text-danger">
+                @Html.ValidationMessageFor(m => m.ConfirmPassword)
+            </p>
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = "Confirm password" })
+        </div>
+        <input type="submit" class="btn btn-primary" value="Register" />
     </fieldset>
 }
 

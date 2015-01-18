@@ -1,0 +1,38 @@
+﻿
+/* Right menu */
+
+.evernest-right-menu{
+    float: right;
+}
+
+
+/* For store-streams */
+
+.store-streams{
+    padding: 0px;
+    margin: 0px;
+}
+
+.store-streams li{
+    list-style-type: none;
+    background-color: #aad2ef;
+    margin: 0px 0px 1px 0px;
+    padding: 3px 10px;
+}
+
+.store-streams li:hover{
+    background-color: #b6d7ef;
+}
+
+/* Callouts */
+
+.evernest-callout-danger {
+    background-color: #fffaf0;
+    border-left: 3px solid #ff7f50;
+    padding: 0.2em 1em;
+    margin: 1em 0;
+}
+
+.evernest-callout-danger h4 {
+    color: #ff7f50;
+}

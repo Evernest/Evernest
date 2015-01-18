@@ -30,4 +30,11 @@ namespace EvernestWeb.Models
         [StringLength(4000, ErrorMessage = "Message length is between 2 and 4000 characters.", MinimumLength = 2)]
         public string Message { get; set; }
     }
+
+    public class RightModel
+    {
+        public string Name { get; set; }
+
+        public EvernestFront.AccessRights Right { get; set; }
+    }
 }

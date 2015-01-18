@@ -1,11 +1,21 @@
-﻿<!DOCTYPE html>
+﻿@using EvernestWeb.Models;
+
+@{
+    ViewBag.User = null;
+    ViewBag.IsAuthenticated = false;
+    if (Session["User"] != null)
+    {
+        ViewBag.IsAuthenticated = true;
+        ViewBag.User = (User) Session["User"];
+    }
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
-    <link rel="stylesheet" type="text/css" href="~/Content/EvernestWeb2.css" />
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
@@ -21,25 +31,24 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Store", "Index", "Store")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
                 <!-- test -->
-                <div class="Evernest-menu-identification">
-                    @if (ViewBag.Connexion == "false")
+                <div class="evernest-right-menu">
+                    @if (ViewBag.IsAuthenticated)
                     {
-                        <ul>
-                            <li>@Html.ActionLink("Login", "Login", "Account")</li>
-                            <li>@Html.ActionLink("Register", "Register", "Account")</li>
+                        <ul class="nav navbar-nav">
+                            <li>@Html.ActionLink((string)("Hello " + ViewBag.User.Username), "Index", "Account")</li>
+                            <li>@Html.ActionLink("Manager", "Index", "Manager")</li>
+                            <li>@Html.ActionLink("Log out", "Logout", "Account")</li>
                         </ul>
                     }
                     else
                     {
-                        <ul>
-                            <li><a href="/Store/MyStore">Hello @ViewBag.Username</a></li>
-                            <li>@Html.ActionLink("Log out", "LogOff", "Account")</li>
+                        <ul class="nav navbar-nav">
+                            <li>@Html.ActionLink("Login", "Login", "Account")</li>
+                            <li>@Html.ActionLink("Register", "Register", "Account")</li>
                         </ul>
                     }
                 </div>
@@ -51,7 +60,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year - Evernest</p>
         </footer>
     </div>
 

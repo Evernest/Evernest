@@ -1,4 +1,6 @@
-﻿using EvernestFront;
+﻿using System.Linq;
+using EvernestFront;
+using EvernestFront.Responses;
 using NUnit.Framework;
 
 namespace EvernestFrontTests
@@ -12,17 +14,13 @@ namespace EvernestFrontTests
 
         internal static string CreateUserKey_ReturnKey_AssertSuccess(User user, string keyName)
         {
-            CreateUserKey ans = user.CreateUserKey(keyName);
+            SystemCommandResponse ans = user.CreateUserKey(keyName);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
-            return ans.Key;
-        }
-        internal static string CreateUserKey_ReturnKey_AssertSuccess(User user)
-        {
-            CreateUserKey ans = user.CreateUserKey();
-            Assert.IsTrue(ans.Success);
-            Assert.IsNull(ans.Error);
-            return ans.Key;
+            System.Threading.Thread.Sleep(100);
+            string key = null;
+            Assert.IsTrue(user.TryGetUserKey(keyName, out key));
+            return key;
         }
 
         [SetUp]
@@ -33,32 +31,13 @@ namespace EvernestFrontTests
         }
 
         [Test]
-        public void CreateUserKey_DefaultName_Success()
-        {
-            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
-            var user = UserTests.GetUser_AssertSuccess(userId);
-            var key = CreateUserKey_ReturnKey_AssertSuccess(user);
-        }
-
-        [Test]
-        public void CreateUserKey_GivenName_Success()
+        public void CreateUserKey_Success()
         {
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             var user = UserTests.GetUser_AssertSuccess(userId);
             var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
         }
 
-
-        [Test]
-        [Ignore]
-        public void CreateUserKey_SuccessiveDefaultNames_Success()
-        {
-            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
-            var user = UserTests.GetUser_AssertSuccess(userId);
-            var key = CreateUserKey_ReturnKey_AssertSuccess(user);
-            user = UserTests.GetUser_AssertSuccess(userId);
-            var key2 = CreateUserKey_ReturnKey_AssertSuccess(user);
-        }
 
         [Test]
         public void CreateUserKey_UserKeyNameTaken()
@@ -77,7 +56,8 @@ namespace EvernestFrontTests
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             var user = UserTests.GetUser_AssertSuccess(userId);
             var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
-            var ans = User.GetUser(key);
+            var usb = new UsersBuilder();
+            var ans = usb.GetUser(key);
             Assert.IsTrue(ans.Success);
             var actualUser = ans.User;
             Assert.AreEqual(userId, actualUser.Id);
@@ -89,7 +69,8 @@ namespace EvernestFrontTests
         public void GetUser_FromUserKey_UserKeyDoesNotExist()
         {
             const string inexistantKey = "InexistantKey";
-            var ans = User.GetUser(inexistantKey);
+            var usb = new UsersBuilder();
+            var ans = usb.GetUser(inexistantKey);
             AssertAuxiliaries.ErrorAssert(FrontError.UserKeyDoesNotExist,ans);
         }
 
@@ -99,7 +80,8 @@ namespace EvernestFrontTests
             var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
             var user = UserTests.GetUser_AssertSuccess(userId);
             var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
-            var ans = User.IdentifyUser(key);
+            var usb = new UsersBuilder();
+            var ans = usb.IdentifyUser(key);
             Assert.IsTrue(ans.Success);
             var user2 = ans.User;
             Assert.AreEqual(userId, user2.Id);

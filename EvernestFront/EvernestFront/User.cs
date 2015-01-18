@@ -29,19 +29,11 @@ namespace EvernestFront
 
         private ImmutableDictionary<long, AccessRight> InternalRelatedEventStreams { get; set; }
 
-
-
         public List<KeyValuePair<string, string>> UserKeys { get { return InternalUserKeys.ToList(); } }
 
         public List<KeyValuePair<string, string>> Sources { get { return InternalSources.ToList(); } }
 
         public List<KeyValuePair<long, AccessRight>> RelatedEventStreams { get { return InternalRelatedEventStreams.ToList(); }}
-
-
-
-
-
-
 
         internal User(CommandHandler commandHandler, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, string> sources, 
@@ -56,10 +48,6 @@ namespace EvernestFront
             InternalSources = sources;
             InternalRelatedEventStreams = streams;
         }
-
-  
-
-
 
         public SystemCommandResponse SetPassword(string passwordForVerification, string newPassword)
         {
@@ -89,6 +77,10 @@ namespace EvernestFront
             return passwordManager.Verify(password, SaltedPasswordHash, PasswordSalt);
         }
 
+        public bool TryGetUserKey(string keyName, out string key)
+        {
+            return InternalUserKeys.TryGetValue(keyName, out key);
+        }
 
         
         

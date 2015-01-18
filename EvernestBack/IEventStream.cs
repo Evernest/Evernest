@@ -3,7 +3,7 @@
 namespace EvernestBack
 {
     /// <summary>The IEventStream interface represents a Stream from which you can get messages and push messages.</summary>
-    public interface IEventStream
+    public interface IEventStream : IDisposable
     {
         /// <summary>Push a message to the stream, and call the Callback when stored</summary>
         /// <param name="message">The message to store</param>

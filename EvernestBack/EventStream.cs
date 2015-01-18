@@ -29,6 +29,11 @@ namespace EvernestBack
             _writeLock.Store();
         }
 
+        public void Dispose()
+        {
+            // TODO: close blob
+        }
+
         /// <summary>
         ///     Push a message.
         /// </summary>
@@ -81,6 +86,14 @@ namespace EvernestBack
         public static bool StreamExists(AzureStorageClient storage, string streamID)
         {
             return storage.StreamContainer.GetPageBlobReference(streamID).Exists();
+        }
+
+        public static void DeleteStream(AzureStorageClient storage, string streamID)
+        {
+            CloudPageBlob streamBlob = storage.StreamContainer.GetPageBlobReference(streamID);
+            CloudBlockBlob streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
+            streamBlob.DeleteIfExists();
+            streamIndexBlob.DeleteIfExists();
         }
     }
 }

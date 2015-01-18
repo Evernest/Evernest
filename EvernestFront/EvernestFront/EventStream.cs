@@ -18,9 +18,7 @@ namespace EvernestFront
         
         private readonly User _user;
 
-        private readonly bool _getBySource;
-
-        private readonly Source _source;
+        public AccessRight UserRight { get; private set; }
 
         private readonly HashSet<AccessAction> _possibleActions;
 
@@ -38,8 +36,8 @@ namespace EvernestFront
         private IEventStream BackStream { get; set; }
 
 
-        internal EventStream(CommandHandler commandHandler, User user, bool getBySource, Source source, 
-            HashSet<AccessAction> authorizedActions, long streamId, string name, 
+        internal EventStream(CommandHandler commandHandler, User user, AccessRight userRight, 
+            HashSet<AccessAction> possibleActions, long streamId, string name, 
             ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
         {
             _commandHandler = commandHandler;
@@ -47,10 +45,9 @@ namespace EvernestFront
             Name = name;
             RelatedUsers = users;
             BackStream = backStream;
-            _possibleActions = authorizedActions;
-            _source = source;
-            _getBySource = getBySource;
+            _possibleActions = possibleActions;
             _user = user;
+            UserRight = userRight;
         }
 
 

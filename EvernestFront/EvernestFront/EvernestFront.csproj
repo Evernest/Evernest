@@ -54,6 +54,7 @@
     <Compile Include="AccessAction.cs" />
     <Compile Include="AccessVerifier.cs" />
     <Compile Include="CommandResultViewer.cs" />
+    <Compile Include="EventStreamBySource.cs" />
     <Compile Include="Response.cs" />
     <Compile Include="CommandHandling\CommandResultManager.cs" />
     <Compile Include="Contract\SystemEventEnvelope.cs" />

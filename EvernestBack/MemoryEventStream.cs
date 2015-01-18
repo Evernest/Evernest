@@ -10,13 +10,13 @@ namespace EvernestBack
      * Azure.
      */
 
-    public class RAMStream : IEventStream
+    public class MemoryEventStream : IEventStream
     {
         public long Index;
         private readonly List<string> _messages = new List<string>();
         private readonly string _streamFileName;
 
-        public RAMStream(string streamStringID)
+        public MemoryEventStream(string streamStringID)
         {
             _streamFileName = streamStringID + "_RAMStreamContent.txt";
             if (File.Exists(_streamFileName))
@@ -51,7 +51,7 @@ namespace EvernestBack
             return _messages.Count();
         }
 
-        ~RAMStream()
+        ~MemoryEventStream()
         {
             var file = new StreamWriter(_streamFileName);
             foreach (var message in _messages)

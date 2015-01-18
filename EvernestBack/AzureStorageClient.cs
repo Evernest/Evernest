@@ -119,16 +119,23 @@ namespace EvernestBack
                 // If the stream is already opened
                 return stream;
             }
-            var streamBlob = _streamContainer.GetPageBlobReference(streamID);
-            var streamIndexBlob = _streamIndexContainer.GetBlockBlobReference(streamID);
-            try
+            if (_dummy)
             {
-                stream = new EventStream(streamBlob, streamIndexBlob, _bufferSize, _eventChunkSize);
-                // TODO : Check if EventStream throws an exception if blob references does not exists
+                stream = new MemoryEventStream(streamID);
             }
-            catch (ArgumentNullException)
+            else
             {
-                throw new ArgumentException("You try to open a stream that does not exists");
+                var streamBlob = _streamContainer.GetPageBlobReference(streamID);
+                var streamIndexBlob = _streamIndexContainer.GetBlockBlobReference(streamID);
+                try
+                {
+                    stream = new EventStream(streamBlob, streamIndexBlob, _bufferSize, _eventChunkSize);
+                    // TODO : Check if EventStream throws an exception if blob references does not exists
+                }
+                catch (ArgumentNullException)
+                {
+                    throw new ArgumentException("You try to open a stream that does not exists");
+                }
             }
             // Update reference, don't seem to have an "update" method... thank you microsoft
             _openedStreams.Remove(streamID);

@@ -79,7 +79,7 @@
     <Compile Include="AzureStorageClient.cs" />
     <Compile Include="History.cs" />
     <Compile Include="EventIndexer.cs" />
-    <Compile Include="RAMStream.cs" />
+    <Compile Include="MemoryEventStream.cs" />
     <Compile Include="IAgent.cs" />
     <Compile Include="IEventStream.cs" />
     <Compile Include="Main.cs" />

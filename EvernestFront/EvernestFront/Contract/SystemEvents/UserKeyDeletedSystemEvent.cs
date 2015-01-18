@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace EvernestFront.Contract.SystemEvents
 {
@@ -12,6 +13,7 @@ namespace EvernestFront.Contract.SystemEvents
         [DataMember]
         internal string KeyName { get; set; }
 
+        [JsonConstructor]
         internal UserKeyDeletedSystemEvent(string key, long userId, string name)
         {
             Key = key;

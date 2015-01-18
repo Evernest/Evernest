@@ -1,4 +1,5 @@
 ﻿using System;
+using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
 using NUnit.Framework;
@@ -34,6 +35,24 @@ namespace EvernestFrontTests
             Assert.AreEqual(contract.AuthorName, deserializedContract.AuthorName);
             Assert.AreEqual(contract.Date, deserializedContract.Date);
             Assert.AreEqual(contract.Message, deserializedContract.Message);
+        }
+
+        [Test]
+        public static void ReadSystemEventEnvelope_Success()
+        {
+            var serializer = new Serializer();
+            const string userName = "user";
+            const string streamName = "stream";
+            const int streamId = 42;
+            var systemEvent = new EventStreamCreatedSystemEvent(streamId, streamName, userName);
+            var envelope = new SystemEventEnvelope(systemEvent);
+            var serializedContract = serializer.WriteContract(envelope);
+            var deserializedContract = serializer.ReadSystemEventEnvelope(serializedContract);
+            Assert.IsAssignableFrom<EventStreamCreatedSystemEvent>(deserializedContract);
+            var deserializedEvent = (EventStreamCreatedSystemEvent) deserializedContract;
+            Assert.AreEqual(userName, deserializedEvent.CreatorName);
+            Assert.AreEqual(streamName, deserializedEvent.StreamName);
+            Assert.AreEqual(streamId, deserializedEvent.StreamId);
         }
     }
 

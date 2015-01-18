@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace EvernestFront.Contract.SystemEvents
 {
@@ -14,6 +15,7 @@ namespace EvernestFront.Contract.SystemEvents
         [DataMember]
         internal byte[] PasswordSalt { get; set; }
 
+        [JsonConstructor]
         internal UserCreatedSystemEvent(string name, long userId, string sph, byte[] ps)
         {
             UserName = name;

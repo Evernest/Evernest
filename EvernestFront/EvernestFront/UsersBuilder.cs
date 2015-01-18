@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using EvernestFront.Projections;
 using EvernestFront.CommandHandling;
 using EvernestFront.CommandHandling.Commands;
@@ -64,17 +65,25 @@ namespace EvernestFront
         }
 
 
-        public Response<Guid> AddUser(string name)
+        public Response<Tuple<string, Guid>> AddUser(string userName)
         {
             var keyGenerator = new KeyGenerator();
-            return AddUser(name, keyGenerator.NewPassword());
+            var password = keyGenerator.NewPassword();
+            var response = AddUser(userName, password);
+            if (response.Success)
+                return new Response<Tuple<string, Guid>>(new Tuple<string, Guid>(password, response.Result));
+            else
+            {
+                Debug.Assert(response.Error != null, "response.Error != null");
+                return new Response<Tuple<string, Guid>>((FrontError) response.Error);
+            }
         }
 
-        public Response<Guid> AddUser(string name, string password)
+        public Response<Guid> AddUser(string userName, string password)
         {
-            if (!_usersProjection.UserNameExists(name))
+            if (!_usersProjection.UserNameExists(userName))
             {
-                var command = new UserCreation(_commandHandler, name, password);
+                var command = new UserCreation(_commandHandler, userName, password);
                 command.Send();
                 return new Response<Guid>(command.Guid);
             }

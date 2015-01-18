@@ -11,6 +11,8 @@ namespace EvernestBackTests
         [Test]
         public void Test1()
         {
+            AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
+
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
 
             var file = new StreamWriter("log.txt");

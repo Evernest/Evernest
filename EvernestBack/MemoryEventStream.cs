@@ -48,7 +48,7 @@ namespace EvernestBack
             return _messages.Count();
         }
 
-        ~MemoryEventStream()
+        public void Dispose()
         {
             var file = new StreamWriter(_streamFileName);
             foreach (var message in _messages)
@@ -85,6 +85,11 @@ namespace EvernestBack
             string fn = StreamFileName(store, streamID);
             var file = new StreamWriter(fn);
             file.Close();
+        }
+
+        internal static void DeleteStream(AzureStorageClient store, string streamID)
+        {
+            File.Delete(StreamFileName(store, streamID));
         }
     }
 }

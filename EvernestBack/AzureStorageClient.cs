@@ -163,9 +163,26 @@ namespace EvernestBack
 
         //missing something to close streams
 
-        public void DeleteIfExists(String streamStringID)
+        public void DeleteStreamIfExists(String streamID)
         {
-            //TODO
+            if (StreamExists(streamID))
+            {
+                IEventStream stream;
+                if (_openedStreams.TryGetValue(streamID, out stream))
+                {
+                    _openedStreams.Remove(streamID);        // calls destructor & closes stream
+                    stream.Dispose();
+                }
+
+                if (_dummy)
+                {
+                    MemoryEventStream.DeleteStream(this, streamID);
+                }
+                else
+                {
+                    EventStream.DeleteStream(this, streamID);
+                }   
+            }
         }
 
         public bool StreamExists(string streamID)

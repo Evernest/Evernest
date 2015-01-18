@@ -1,43 +1,41 @@
-﻿using EvernestFront.Answers;
-using EvernestFront.Contract;
-using EvernestFront.Contract.Diff;
+﻿using System;
+using EvernestFront.Service.Command;
+using EvernestFront.Utilities;
 
 namespace EvernestFront
 {
     partial class User
     {
-        public CreateSource CreateSource(string sourceName, long streamId, AccessRights rights)
+        public Response<Source> GetSource(string sourceName)
         {
-            //TODO: what if streamId does not exist?
-            
+            throw new NotImplementedException();
+        }
+
+        public Response<Source> GetSource(long sourceId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Response<Tuple<string, Guid>> CreateSource(string sourceName, long streamId, AccessRight rights)
+        {
             if (InternalSources.ContainsKey(sourceName))
-                return new CreateSource(FrontError.SourceNameTaken);
-
-            var sourceContract = new SourceContract(sourceName, Id, streamId, rights);
-            var key = Keys.NewKey();
-            var sourceCreated = new SourceCreated(key, sourceContract);
-
-            Projection.Projection.HandleDiff(sourceCreated);
-            return new CreateSource(key);
+                return new Response<Tuple<string, Guid>>(FrontError.SourceNameTaken);
+            var keyGenerator = new KeyGenerator();
+            var key = keyGenerator.NewKey();
+            var command = new SourceCreation(_commandHandler, Id, sourceName, key);
+            command.Send();
+            return new Response<Tuple<string, Guid>>(new Tuple<string, Guid>(key, command.Guid));
         }
 
 
-
-        public DeleteSource DeleteSource(string sourceName)
+        public Response<Guid> SetSourceRight(long sourceId, long streamId)
         {
-            
-            string key;
-            if (InternalSources.TryGetValue(sourceName, out key))
-            {
-                var sourceDeleted = new SourceDeleted(key, Id, sourceName);
-                Projection.Projection.HandleDiff(sourceDeleted);
-                //TODO: system stream
-                return new DeleteSource();
-            }
-            else
-                return new DeleteSource();
-                //TODO: error?
-
+            throw new NotImplementedException();
         }
+
+        public Response<Guid> DeleteSource(long sourceId)
+        {
+            throw new NotImplementedException();
+        } 
     }
 }

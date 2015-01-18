@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="ReadOnlyCollectionsInterfaces">
       <HintPath>..\..\packages\ReadOnlyCollectionInterfaces.1.0.0\lib\NET45\ReadOnlyCollectionsInterfaces.dll</HintPath>
     </Reference>
@@ -39,6 +43,7 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,56 +51,65 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Answers\CreateUserKey.cs" />
-    <Compile Include="Answers\DeleteSource.cs" />
-    <Compile Include="Answers\GetSource.cs" />
-    <Compile Include="Answers\GetEventStream.cs" />
-    <Compile Include="Answers\GetUser.cs" />
-    <Compile Include="Answers\Pull.cs" />
-    <Compile Include="Answers\PullRandom.cs" />
-    <Compile Include="Answers\PullRange.cs" />
-    <Compile Include="Answers\RelatedEventStreams.cs" />
-    <Compile Include="Answers\RelatedUsers.cs" />
-    <Compile Include="Answers\SetPassword.cs" />
-    <Compile Include="Answers\SetRights.cs" />
-    <Compile Include="Answers\IdentifyUser.cs" />
-    <Compile Include="CheckRights.cs" />
-    <Compile Include="Contract\Diff\DiffEnvelope.cs" />
-    <Compile Include="Contract\Diff\IDiff.cs" />
-    <Compile Include="Contract\Diff\PasswordSet.cs" />
-    <Compile Include="Contract\Diff\SourceCreated.cs" />
-    <Compile Include="Contract\Diff\SourceDeleted.cs" />
-    <Compile Include="Contract\Diff\UserKeyCreated.cs" />
-    <Compile Include="Contract\Diff\UserKeyDeleted.cs" />
-    <Compile Include="Contract\Diff\UserRightSet.cs" />
-    <Compile Include="Contract\Diff\EventStreamCreated.cs" />
-    <Compile Include="Contract\SourceContract.cs" />
+    <Compile Include="AccessAction.cs" />
+    <Compile Include="AccessVerifier.cs" />
+    <Compile Include="CommandResultViewer.cs" />
+    <Compile Include="Response.cs" />
+    <Compile Include="CommandResultManager.cs" />
+    <Compile Include="Contract\SystemEventEnvelope.cs" />
+    <Compile Include="Contract\SystemEvent\EventStreamDeleted.cs" />
+    <Compile Include="Contract\SystemEvent\InvalidCommandSystemEvent.cs" />
+    <Compile Include="Contract\SystemEvent\ISystemEvent.cs" />
+    <Compile Include="Contract\SystemEvent\PasswordSet.cs" />
+    <Compile Include="Contract\SystemEvent\SourceCreated.cs" />
+    <Compile Include="Contract\SystemEvent\SourceDeleted.cs" />
+    <Compile Include="Contract\SystemEvent\UserDeleted.cs" />
+    <Compile Include="Contract\SystemEvent\UserKeyCreated.cs" />
+    <Compile Include="Contract\SystemEvent\UserKeyDeleted.cs" />
+    <Compile Include="Contract\SystemEvent\UserRightSet.cs" />
+    <Compile Include="Contract\SystemEvent\EventStreamCreated.cs" />
     <Compile Include="Contract\EventContract.cs" />
-    <Compile Include="Contract\EventStreamContract.cs" />
-    <Compile Include="Contract\Diff\UserAdded.cs" />
-    <Compile Include="Contract\UserContract.cs" />
+    <Compile Include="Contract\SystemEvent\UserCreated.cs" />
+    <Compile Include="Dispatcher.cs" />
     <Compile Include="Event.cs" />
-    <Compile Include="Answers\Answer.cs" />
-    <Compile Include="Answers\Push.cs" />
-    <Compile Include="Answers\AddUser.cs" />
-    <Compile Include="Answers\CreateEventStream.cs" />
-    <Compile Include="Answers\CreateSource.cs" />
+    <Compile Include="EventStreamsBuilder.cs" />
+    <Compile Include="Injector.cs" />
+    <Compile Include="Service\Command\SourceCreation.cs" />
+    <Compile Include="Service\Command\SourceDeletion.cs" />
+    <Compile Include="SystemUser.cs" />
+    <Compile Include="Utilities\KeyGenerator.cs" />
+    <Compile Include="Utilities\PasswordManager.cs" />
+    <Compile Include="Projections\EventStreamDataForProjection.cs" />
+    <Compile Include="Projections\SourceDataForProjection.cs" />
+    <Compile Include="Projections\UserDataForProjection.cs" />
+    <Compile Include="Utilities\Serializer.cs" />
+    <Compile Include="Service\CommandHandler.cs" />
+    <Compile Include="Service\Command\EventStreamCreation.cs" />
+    <Compile Include="Service\Command\EventStreamDeletion.cs" />
+    <Compile Include="Service\Command\CommandBase.cs" />
+    <Compile Include="Service\Command\PasswordSetting.cs" />
+    <Compile Include="Service\Command\UserCreation.cs" />
+    <Compile Include="Service\Command\UserDeletion.cs" />
+    <Compile Include="Service\Command\UserKeyCreation.cs" />
+    <Compile Include="Service\Command\UserKeyDeletion.cs" />
+    <Compile Include="Service\Command\UserRightSettingByUser.cs" />
+    <Compile Include="Service\ServiceData.cs" />
+    <Compile Include="Projections\EventStreamsProjection.cs" />
+    <Compile Include="Projections\IProjection.cs" />
+    <Compile Include="Projections\SourcesProjection.cs" />
+    <Compile Include="Projections\UsersProjection.cs" />
     <Compile Include="FrontError.cs" />
-    <Compile Include="Keys.cs" />
-    <Compile Include="Contract\Tables.cs" />
-    <Compile Include="Projection\MakeEventStreamContract.cs" />
-    <Compile Include="Projection\MakeTables.cs" />
-    <Compile Include="Projection\MakeUserContract.cs" />
-    <Compile Include="Projection\ReadTables.cs" />
-    <Compile Include="Serializing.cs" />
     <Compile Include="Source.cs" />
+    <Compile Include="Service\UserDataForService.cs" />
+    <Compile Include="StartUp.cs" />
+    <Compile Include="SystemEventStream.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="Projection\Projection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventStream.cs" />
-    <Compile Include="AccessRights.cs" />
+    <Compile Include="AccessRight.cs" />
     <Compile Include="User.TowardSource.cs" />
     <Compile Include="User.TowardEventStream.cs" />
+    <Compile Include="UsersBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\EvernestBack\EvernestBack.csproj">
@@ -106,6 +120,7 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

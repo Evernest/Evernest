@@ -1,7 +1,6 @@
-﻿using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
-using EvernestWeb.Application;
+using EvernestWeb.Helpers;
 
 namespace EvernestWeb
 {

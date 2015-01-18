@@ -14,7 +14,7 @@ It uses ASP.NET MVC and directory organisation follow the usual conventions of t
  * `Models`, `Views`, `Controllers`: Usual MVC units.
  * `ViewModels`: Models related to the rendering of a specific view.
  * `Content`: Contains static assets (css, scritps, images, fonts).
- * `Application`: Misc classes
+ * `Helpers`: Misc classes
  * `App_Start`: Contains the code executed at application start.
 
 Application starts with `Global.asax.cs`.

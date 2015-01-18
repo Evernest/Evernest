@@ -1,49 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EvernestWeb.Models
+namespace EvernestWeb.ViewModels
 {
-    public class AccountModel
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-
-        public AccountModel()
-        {
-            Username = "";
-            Password = "";
-        }
-
-        public AccountModel(string username, string password)
-        {
-            Username = username;
-            Password = password;
-        }
-    }
-
-    public class User
-    {
-        public long Id { get; set; }
-
-        [Required]
-        [Display (Name = "User name")]
-        public string Username { get; set; }
-
-        [Required]
-        [Display (Name = "Password")]
-        public string Password { get; set; }
-
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
-
-        public User(long id, string username, string password)
-        {
-            Id = id;
-            Username = username;
-            Password = password;
-            RememberMe = false;
-        }
-    }
-
     public class RegisterModel
     {
         [Required]

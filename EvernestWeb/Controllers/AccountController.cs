@@ -2,10 +2,11 @@
 using System.Web.Security;
 
 using EvernestWeb.Models;
+using EvernestWeb.ViewModels;
 
 namespace EvernestWeb.Controllers
 {
-    public class AccountController : System.Web.Mvc.Controller
+    public class AccountController : Controller
     {
         // GET: /Account
         public ActionResult Index()

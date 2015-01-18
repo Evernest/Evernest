@@ -11,7 +11,7 @@ namespace EvernestFront.CommandHandling
     class CommandHandler
     {
         
-        private readonly ServiceData _serviceData;
+        private readonly CommandHandlingData _serviceData;
         private readonly Dispatcher _dispatcher;
         private readonly CommandResultManager _manager;
 
@@ -19,7 +19,7 @@ namespace EvernestFront.CommandHandling
         private readonly CancellationTokenSource _tokenSource;
        
 
-        public CommandHandler(ServiceData serviceData, Dispatcher dispatcher, CommandResultManager manager)
+        public CommandHandler(CommandHandlingData serviceData, Dispatcher dispatcher, CommandResultManager manager)
         {
             _serviceData = serviceData;
             _dispatcher = dispatcher;

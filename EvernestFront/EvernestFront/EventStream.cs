@@ -64,7 +64,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.AdminAccessDenied);
             if (TargetUserIsAdmin(targetName))
                 return new Response<Guid>(FrontError.CannotDestituteAdmin);
-            var command = new UserRightSettingByUserCommand(_commandHandler,
+            var command = new UserRightSettingCommand(_commandHandler,
                 targetName, Id, _user.Name, right);
             command.Send();
             return new Response<Guid>(command.Guid);

@@ -29,9 +29,9 @@ namespace EvernestFront
             var systemEventStream = new SystemEventStream(0); //id for systemEventStream
             Dispatcher = new Dispatcher(new List<IProjection>
                 {UsersProjection, EventStreamsProjection, SourcesProjection}, systemEventStream, CommandResultManager);
-
-            var serviceData = new ServiceData(8); //8 eventStream ids and 8 user ids are reserved for system
-            CommandHandler = new CommandHandler(serviceData, Dispatcher, CommandResultManager);
+            var commandHandlingData = new CommandHandlingData(8); //8 eventStream ids and 8 user ids are reserved for system
+            CommandHandler = new CommandHandler(commandHandlingData, Dispatcher, CommandResultManager);
+            //TODO: read id for systemEventStream and number of reserved ids in app.config
         }
     }
 }

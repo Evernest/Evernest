@@ -18,10 +18,10 @@ namespace EvernestFront.CommandHandling.Commands
             Key = key;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
-            UserDataForService userData;
-            if (!serviceData.UserIdToDatas.TryGetValue(UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!serviceData.UserIdToData.TryGetValue(UserId, out userData))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;

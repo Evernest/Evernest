@@ -20,6 +20,6 @@ namespace EvernestFront.CommandHandling.Commands
             _commandHandler.ReceiveCommand(this);
         }
 
-        public abstract bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error);
+        public abstract bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error);
     }
 }

@@ -16,7 +16,7 @@ namespace EvernestFront.CommandHandling.Commands
             Password = password;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
             if (serviceData.UserNameExists(UserName))
             {

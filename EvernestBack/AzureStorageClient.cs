@@ -6,8 +6,8 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
 {
-    /// AzureStorageClient represents a client connection with the azure storage service 
-    /// see it as an EventStream factory
+    /// <summary>AzureStorageClient represents a client connection with the azure storage service 
+    /// see it as an EventStream factory</summary>
     public class AzureStorageClient
     {
         private static AzureStorageClient _singleton;

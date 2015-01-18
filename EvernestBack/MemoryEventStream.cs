@@ -5,11 +5,8 @@ using System.Linq;
 
 namespace EvernestBack
 {
-    /**
-     * This is a small test Stream storing messages in a List instead of in
-     * Azure.
-     */
-
+    
+    /// <summary>This is a small test Stream storing messages in a List instead of in Azure.</summary>
     public class MemoryEventStream : IEventStream
     {
         public long Index;
@@ -32,12 +29,12 @@ namespace EvernestBack
             }
         }
 
-        public void Push(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
+        public void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
         {
             IAgent a = new MyAgent(message, Index);
             Index++;
             _messages.Add(a.Message);
-            callbackSuccess(a);
+            callback(a);
         }
 
         public void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure)

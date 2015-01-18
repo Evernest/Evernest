@@ -3,8 +3,8 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
 {
-    /// EventStream represents an instance of a stream of events and should be matched to a single blob
-    /// should be created with AzureStorageClient.
+    /// <summary>EventStream represents an instance of a stream of events and should be matched to a single blob
+    /// should be created with AzureStorageClient.</summary>
     internal class EventStream : IEventStream
     {
         private CloudBlockBlob _blob;
@@ -30,11 +30,11 @@ namespace EvernestBack
         ///     Push a message.
         /// </summary>
         /// <param name="message">The message to push. </param>
-        /// <param name="callbackSuccess">The action to do in case of success. </param>
+        /// <param name="callback">The action to do in case of success. </param>
         /// <param name="callbackFailure">The action to do in case of failure. </param>
-        public void Push(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
+        public void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
         {
-            _writeLock.Register(message, callbackSuccess, callbackFailure);
+            _writeLock.Register(message, callback, callbackFailure);
         }
 
         /// <summary>

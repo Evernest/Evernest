@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace EvernestFront
 {
     public class Source
-    {   //TODO: implement this
+    {   
         public string Key { get; private set; }
 
         public string Name { get; private set; }
@@ -27,6 +27,18 @@ namespace EvernestFront
             RelatedEventStreams = eventStreams;
         }
 
+        public Response<EventStream> GetEventStream(long eventStreamId)
+        {
+            AccessRight right;
+            if (!RelatedEventStreams.TryGetValue(eventStreamId, out right))
+                right = AccessRight.NoRight;
+            var builder = new EventStreamsBuilder();
+            EventStream eventStream;
+            if (builder.TryGetEventStream(this, right, eventStreamId, out eventStream))
+                return new Response<EventStream>(eventStream);
+            else
+                return new Response<EventStream>(FrontError.EventStreamIdDoesNotExist);
+        } 
         
         public Response<Guid> Delete()
         {

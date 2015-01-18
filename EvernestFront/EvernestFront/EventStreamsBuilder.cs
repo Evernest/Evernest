@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using EvernestFront.Projections;
 using EvernestFront.Service;
 using EvernestFront.Service.Command;
@@ -64,19 +65,45 @@ namespace EvernestFront
             }
         }
 
-        private EventStream ConstructEventStream(User user, long eventStreamId, EventStreamDataForProjection eventStreamData)
+        internal bool TryGetEventStream(Source source, AccessRight right, long eventStreamId, out EventStream eventStream)
         {
-            AccessRight right;
-            if (!eventStreamData.RelatedUsers.TryGetValue(user.Name, out right))
-                right = AccessRight.NoRight;
-            return ConstructEventStream(user, right, eventStreamId, eventStreamData);
+            EventStreamDataForProjection eventStreamData;
+            if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
+            {
+                var possibleActions = ComputePossibleActions(source.User.Name, eventStreamData);
+                var accessManager = new AccessVerifier();
+                possibleActions.IntersectWith(accessManager.ComputePossibleAccessActions(right));
+                eventStream = ConstructEventStream(source.User, true, source, possibleActions, eventStreamId, eventStreamData);
+                return true;
+            }
+            else
+            {
+                eventStream = null;
+                return false;
+            }
         }
 
-        private EventStream ConstructEventStream(User user, AccessRight right, long eventStreamId, EventStreamDataForProjection eventStreamData)
+        private HashSet<AccessAction> ComputePossibleActions(string userName,
+            EventStreamDataForProjection eventStreamData)
         {
+            AccessRight right;
+            if (!eventStreamData.RelatedUsers.TryGetValue(userName, out right))
+                right = AccessRight.NoRight;
             var accessManager = new AccessVerifier();
-            var possibleActions = accessManager.ComputePossibleAccessActions(right);
-            return new EventStream(_commandReceiver, user, false, null, possibleActions, eventStreamId, eventStreamData.StreamName,
+            return accessManager.ComputePossibleAccessActions(right);
+        } 
+
+
+        private EventStream ConstructEventStream(User user, long eventStreamId, EventStreamDataForProjection eventStreamData)
+        {
+            var possibleActions = ComputePossibleActions(user.Name, eventStreamData);
+            return ConstructEventStream(user, false, null, possibleActions, eventStreamId, eventStreamData);
+        }
+
+        private EventStream ConstructEventStream(User user, bool bySource, Source source, HashSet<AccessAction> possibleActions,
+            long eventStreamId, EventStreamDataForProjection eventStreamData)
+        {
+            return new EventStream(_commandReceiver, user, bySource, source, possibleActions, eventStreamId, eventStreamData.StreamName,
                 eventStreamData.RelatedUsers, eventStreamData.BackStream);
         }
 
@@ -85,7 +112,9 @@ namespace EvernestFront
             EventStreamDataForProjection eventStreamData;
             if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
             {
-                eventStream = ConstructEventStream(user, AccessRight.Root, eventStreamId, eventStreamData);
+                var accessManager = new AccessVerifier();
+                var possibleActions = accessManager.ComputePossibleAccessActions(AccessRight.Root);
+                eventStream = ConstructEventStream(user, false, null, possibleActions, eventStreamId, eventStreamData);
                 return true;
             }
             else

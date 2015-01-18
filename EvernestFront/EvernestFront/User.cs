@@ -50,7 +50,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.InvalidString);
             if (!VerifyPassword(passwordForVerification))
                 return new Response<Guid>(FrontError.WrongPassword);
-            var command = new PasswordSetting(_commandHandler, Id, passwordForVerification, newPassword);
+            var command = new PasswordSettingCommand(_commandHandler, Id, passwordForVerification, newPassword);
             command.Send();
             return new Response<Guid>(command.Guid);
         }
@@ -61,7 +61,7 @@ namespace EvernestFront
                 return new Response<Tuple<string, Guid>>(FrontError.UserKeyNameTaken);
             var keyGenerator = new KeyGenerator();
             var key = keyGenerator.NewKey();
-            var command = new UserKeyCreation(_commandHandler, Id, keyName, key);
+            var command = new UserKeyCreationCommand(_commandHandler, Id, keyName, key);
             command.Send();
             return new Response<Tuple<string, Guid>>(new Tuple<string, Guid>(key, command.Guid));
         }

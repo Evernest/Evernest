@@ -6,7 +6,7 @@ using EvernestFront.Projections;
 
 namespace EvernestFront
 {
-    class SourcesBuilder
+    public class SourcesBuilder
     {
         private readonly SourcesProjection _sourcesProjection;
 

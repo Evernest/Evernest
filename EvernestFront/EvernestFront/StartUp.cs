@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using EvernestFront;
+using EvernestFront.CommandHandling;
 
 [assembly: PreApplicationStartMethod(typeof(StartUp), "Start")]
 

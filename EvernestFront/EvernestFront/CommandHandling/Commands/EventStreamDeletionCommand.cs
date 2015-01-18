@@ -4,14 +4,14 @@ using EvernestFront.Utilities;
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class EventStreamDeletion : CommandBase
+    class EventStreamDeletionCommand : CommandBase
     {
         internal long EventStreamId { get; private set; }
         internal string EventStreamName { get; private set; }
         internal long AdminId { get; private set; }
         internal string AdminPassword { get; private set; }
 
-        internal EventStreamDeletion(CommandHandler commandHandler, 
+        internal EventStreamDeletionCommand(CommandHandler commandHandler, 
             long streamId, string streamName, long adminId, string adminPassword)
             : base(commandHandler)
         {

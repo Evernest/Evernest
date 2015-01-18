@@ -3,41 +3,44 @@ using EvernestFront.Utilities;
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class UserDeletion : CommandBase
+    class PasswordSettingCommand : CommandBase
     {
         internal long UserId { get; private set; }
+        
+        internal string CurrentPassword { get; private set; }
 
-        internal string UserName { get; private set; }
+        internal string NewPassword { get; private set; }
 
-        internal string Password { get; private set; }
-
-        internal UserDeletion(CommandHandler commandHandler, long userId, string userName, string password)
+        internal PasswordSettingCommand(CommandHandler commandHandler, long userId,string currentPassword, string newPassword)
             : base(commandHandler)
         {
             UserId = userId;
-            UserName = userName;
-            Password = password;
+            CurrentPassword = currentPassword;
+            NewPassword = newPassword;
         }
+
 
         public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
             UserDataForService userData;
             if (!serviceData.UserIdToDatas.TryGetValue(UserId, out userData))
             {
-                error=FrontError.UserIdDoesNotExist;
-                systemEvent = null;
+                error = FrontError.UserIdDoesNotExist;
+                systemEvent =null;
                 return false;
             }
             var passwordManager = new PasswordManager();
-            if (!passwordManager.Verify(Password, userData.SaltedPasswordHash, userData.PasswordSalt))
+            if (!passwordManager.Verify(CurrentPassword, userData.SaltedPasswordHash, userData.PasswordSalt))
             {
                 error=FrontError.WrongPassword;
                 systemEvent = null;
                 return false;
             }
-            systemEvent= new UserDeletedSystemEvent(UserName, UserId);
+
+            var hashSalt = passwordManager.SaltAndHash(NewPassword);
+            systemEvent = new PasswordSetSystemEvent(UserId, hashSalt.Key, hashSalt.Value);
             error = null;
             return true;
-        }
+        }        
     }
 }

@@ -2,24 +2,21 @@
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class UserKeyDeletion : CommandBase
+    class UserKeyCreationCommand : CommandBase
     {
-        internal string Key { get; set; } //base64 encoded int
-        
-        internal long UserId { get; set; }
-        
-        internal string KeyName { get; set; }
+        internal readonly long UserId;
 
-        internal UserKeyDeletion(CommandHandler commandHandler, string key, long userId, string keyName)
-            : base(commandHandler)
+        internal readonly string KeyName;
+
+        internal readonly string Key;
+
+        internal UserKeyCreationCommand(CommandHandler commandHandler, long userId, string keyName, string key)
+            :base(commandHandler)
         {
-            Key = key;
             UserId = userId;
             KeyName = keyName;
+            Key = key;
         }
-
-
-
 
         public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
@@ -30,15 +27,16 @@ namespace EvernestFront.CommandHandling.Commands
                 systemEvent = null;
                 return false;
             }
-            if (!userData.KeyNames.Contains(KeyName))
+            if (userData.KeyNames.Contains(KeyName))
             {
-                error = FrontError.UserKeyDoesNotExist;
+                error = FrontError.UserKeyNameTaken;
                 systemEvent = null;
                 return false;
             }
-            systemEvent= new UserKeyDeletedSystemEvent(Key, UserId, KeyName);
+            systemEvent = new UserKeyCreatedSystemEvent(Key, UserId, KeyName);
             error = null;
             return true;
+
         }
     }
 }

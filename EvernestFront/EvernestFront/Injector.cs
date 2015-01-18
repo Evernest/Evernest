@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using EvernestFront.Projections;
 using EvernestFront.CommandHandling;
+using EvernestFront.Projections;
 
 namespace EvernestFront
 {

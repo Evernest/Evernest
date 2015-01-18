@@ -83,7 +83,7 @@ namespace EvernestFront
         {
             if (!_usersProjection.UserNameExists(userName))
             {
-                var command = new UserCreation(_commandHandler, userName, password);
+                var command = new UserCreationCommand(_commandHandler, userName, password);
                 command.Send();
                 return new Response<Guid>(command.Guid);
             }

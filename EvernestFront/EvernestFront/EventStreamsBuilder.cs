@@ -29,7 +29,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.EventStreamNameTaken);
             // this is supposed to be called by a user object, so creator should always exist
 
-            var command = new EventStreamCreation(_commandReceiver, streamName, creatorName);
+            var command = new EventStreamCreationCommand(_commandReceiver, streamName, creatorName);
             command.Send();
             return new Response<Guid>(command.Guid);
         }

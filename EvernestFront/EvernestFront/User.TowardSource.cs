@@ -39,7 +39,7 @@ namespace EvernestFront
                 return new Response<Tuple<string, Guid>>(FrontError.SourceNameTaken);
             var keyGenerator = new KeyGenerator();
             var key = keyGenerator.NewKey();
-            var command = new SourceCreation(_commandHandler, Id, sourceName, key);
+            var command = new SourceCreationCommand(_commandHandler, Id, sourceName, key);
             command.Send();
             return new Response<Tuple<string, Guid>>(new Tuple<string, Guid>(key, command.Guid));
         }
@@ -56,7 +56,7 @@ namespace EvernestFront
             if (!SourceKeys.TryGetValue(sourceId, out sourceKey))
                 return new Response<Guid>(FrontError.SourceIdDoesNotExist);
 
-            var command = new SourceDeletion(_commandHandler, Id, sourceId, sourceKey);
+            var command = new SourceDeletionCommand(_commandHandler, Id, sourceId, sourceKey);
             command.Send();
             return new Response<Guid>(command.Guid);
         } 

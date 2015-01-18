@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
 using EvernestFront.CommandHandling;
 using EvernestFront.CommandHandling.Commands;
@@ -68,7 +67,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.AdminAccessDenied);
             if (TargetUserIsAdmin(targetName))
                 return new Response<Guid>(FrontError.CannotDestituteAdmin);
-            var command = new UserRightSettingByUser(_commandHandler,
+            var command = new UserRightSettingByUserCommand(_commandHandler,
                 targetName, Id, _user.Name, right);
             command.Send();
             return new Response<Guid>(command.Guid);

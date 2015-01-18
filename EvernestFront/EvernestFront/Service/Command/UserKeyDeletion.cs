@@ -16,7 +16,6 @@ namespace EvernestFront.Service.Command
             Key = key;
             UserId = userId;
             KeyName = keyName;
-
         }
 
 

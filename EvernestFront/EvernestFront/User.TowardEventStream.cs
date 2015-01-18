@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace EvernestFront
 {
@@ -32,6 +30,10 @@ namespace EvernestFront
             return builder.CreateEventStream(Name, streamName);
         }
 
-        
+        //password is asked again because event stream deletion is a major operation
+        public Response<Guid> DeleteEventStream(long eventStreamId, string password)
+        {
+            throw new NotImplementedException();
+        } 
     }
 }

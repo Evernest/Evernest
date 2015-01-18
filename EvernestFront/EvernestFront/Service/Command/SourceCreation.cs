@@ -8,16 +8,13 @@ namespace EvernestFront.Service.Command
 
         internal readonly string SourceName;
 
-        internal readonly long SourceId;
-
         internal readonly string SourceKey;
 
-        internal SourceCreation(CommandHandler commandHandler, long userId, string sourceName, long sourceId, string sourceKey)
+        internal SourceCreation(CommandHandler commandHandler, long userId, string sourceName, string sourceKey)
             :base(commandHandler)
         {
             UserId = userId;
             SourceName = sourceName;
-            SourceId = sourceId;
             SourceKey = sourceKey;
         }
 
@@ -36,7 +33,7 @@ namespace EvernestFront.Service.Command
                 systemEvent = null;
                 return false;
             }
-            systemEvent = new SourceCreated(SourceKey, SourceName, SourceId, UserId);
+            systemEvent = new SourceCreated(SourceKey, SourceName, userData.NextSourceId, UserId);
             error = null;
             return true;
         }

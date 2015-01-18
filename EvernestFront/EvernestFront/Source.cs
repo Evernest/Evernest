@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace EvernestFront
 {
@@ -40,10 +39,6 @@ namespace EvernestFront
                 return new Response<EventStream>(FrontError.EventStreamIdDoesNotExist);
         } 
         
-        public Response<Guid> Delete()
-        {
-            throw new NotImplementedException();
-        }
 
 
 

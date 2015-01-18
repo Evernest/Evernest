@@ -1,72 +1,63 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.WindowsAzure.Storage.Blob;
-using System;
-
 
 namespace EvernestBack
 {
-    class History
+    internal class History
     {
-        private class Node
-        {
-            public Node(long key, ulong element, Node left, Node right)
-            {
-                Key = key;
-                Element = element;
-                Left = left;
-                Right = right;
-            }
-            public long Key {get; private set;}
-            public ulong Element {get; private set;}
-            public Node Left {get; set; }
-            public Node Right {get; set; }
-        }
+        private long _elementCounter;
+        private Node _lastNode;
+        private Node _root;
+        private readonly Stack<Node> _mislinked;
 
         public History()
         {
-            ElementCounter = 0;
-            Mislinked = new Stack<Node>();
-            LastNode = null;
-            Root = null;
+            _elementCounter = 0;
+            _mislinked = new Stack<Node>();
+            _lastNode = null;
+            _root = null;
         }
 
         public void Clear()
         {
-            ElementCounter = 0;
-            LastNode = null;
-            Root = null;
-            Mislinked.Clear();
+            _elementCounter = 0;
+            _lastNode = null;
+            _root = null;
+            _mislinked.Clear();
         }
 
         public void Insert(long key, ulong element)
         {
-            if((ElementCounter & 1) != 0)
+            if ((_elementCounter & 1) != 0)
             {
-                LastNode.Right = new Node(key, element, null, null);
-                for(long tmp = ElementCounter; (tmp & 2) != 0 ; tmp>>=1, Mislinked.Pop() );
+                _lastNode.Right = new Node(key, element, null, null);
+                for (var tmp = _elementCounter; (tmp & 2) != 0; tmp >>= 1, _mislinked.Pop())
+                {
+                }
             }
             else
             {
-                if (LastNode != null)
+                if (_lastNode != null)
                 {
-                    Node lastMislinkedNode = Mislinked.Last();
-                    lastMislinkedNode.Right = LastNode = new Node(key, element, lastMislinkedNode.Right, null);
-                    Mislinked.Push(LastNode);
+                    var lastMislinkedNode = _mislinked.Last();
+                    lastMislinkedNode.Right = _lastNode = new Node(key, element, lastMislinkedNode.Right, null);
+                    _mislinked.Push(_lastNode);
                 }
                 else
                 {
-                    LastNode = Root = new Node(key, element, null, null);
-                    Mislinked.Push( LastNode );
+                    _lastNode = _root = new Node(key, element, null, null);
+                    _mislinked.Push(_lastNode);
                 }
             }
-            ElementCounter++;
+            _elementCounter++;
         }
 
         public bool UpperBound(long key, ref ulong element)
         {
-            Node current = Root, upperBound = null;
-            while( current != null )
+            Node current = _root, upperBound = null;
+            while (current != null)
             {
                 if (current.Key < key)
                     current = current.Right;
@@ -76,17 +67,17 @@ namespace EvernestBack
                     current = current.Left;
                 }
             }
-            if(upperBound != null)
+            if (upperBound != null)
                 element = upperBound.Element;
             return upperBound != null;
         }
 
         public bool LowerBound(long key, ref ulong element)
         {
-            Node current = Root, leastBound = null;
-            while( current != null )
+            Node current = _root, leastBound = null;
+            while (current != null)
             {
-                if( current.Key > key)
+                if (current.Key > key)
                     current = current.Right;
                 else
                 {
@@ -94,47 +85,45 @@ namespace EvernestBack
                     current = current.Left;
                 }
             }
-            if(leastBound != null)
+            if (leastBound != null)
                 element = leastBound.Element;
             return leastBound != null;
         }
 
         public bool GreaterElement(ref ulong element)
         {
-            if(LastNode != null)
-                element = LastNode.Element;
-            return LastNode != null;
+            if (_lastNode != null)
+                element = _lastNode.Element;
+            return _lastNode != null;
         }
 
         public Byte[] Serialize() //missing endianness check/byte reordering
         {
-            long byteCount = sizeof(long) + ElementCounter * (sizeof(long) + sizeof(ulong));
-            Byte[] serializedHistory = new Byte[byteCount+sizeof(long)];
-            Byte[] sizeBytes = BitConverter.GetBytes(byteCount);
-            Byte[] treeCountBytes = BitConverter.GetBytes(ElementCounter);
-            Buffer.BlockCopy(sizeBytes, 0, serializedHistory, 0, sizeof(long));
-            Buffer.BlockCopy(treeCountBytes, 0, serializedHistory, sizeof(long), sizeof(long));
-            int offset = sizeof(long)+sizeof(long);
+            var byteCount = sizeof (long) + _elementCounter*(sizeof (long) + sizeof (ulong));
+            var serializedHistory = new Byte[byteCount + sizeof (long)];
+            var sizeBytes = BitConverter.GetBytes(byteCount);
+            var treeCountBytes = BitConverter.GetBytes(_elementCounter);
+            Buffer.BlockCopy(sizeBytes, 0, serializedHistory, 0, sizeof (long));
+            Buffer.BlockCopy(treeCountBytes, 0, serializedHistory, sizeof (long), sizeof (long));
+            var offset = sizeof (long) + sizeof (long);
             //infix traversal (writes nodes in their key's order)
-            Stack<Node> currentlyVisitedNodes = new Stack<Node>();
+            var currentlyVisitedNodes = new Stack<Node>();
             Node currentNode;
-            currentlyVisitedNodes.Push(Root);
+            currentlyVisitedNodes.Push(_root);
             while ((currentNode = currentlyVisitedNodes.Last().Left) != null)
                 currentlyVisitedNodes.Push(currentNode);
-            Byte[] keyBytes;
-            Byte[] elementBytes;
             while (currentlyVisitedNodes.Count > 0)
             {
                 currentNode = currentlyVisitedNodes.First();
-                keyBytes = BitConverter.GetBytes(currentNode.Key);
-                elementBytes = BitConverter.GetBytes(currentNode.Element);
-                Buffer.BlockCopy(keyBytes, 0, serializedHistory, offset, sizeof(long));
-                offset += sizeof(long);
-                Buffer.BlockCopy(elementBytes, 0, serializedHistory, offset, sizeof(ulong));
-                offset += sizeof(ulong);
+                var keyBytes = BitConverter.GetBytes(currentNode.Key);
+                var elementBytes = BitConverter.GetBytes(currentNode.Element);
+                Buffer.BlockCopy(keyBytes, 0, serializedHistory, offset, sizeof (long));
+                offset += sizeof (long);
+                Buffer.BlockCopy(elementBytes, 0, serializedHistory, offset, sizeof (ulong));
+                offset += sizeof (ulong);
                 currentNode = currentNode.Right;
                 currentlyVisitedNodes.Pop();
-                if(currentNode != null)
+                if (currentNode != null)
                 {
                     currentlyVisitedNodes.Push(currentNode);
                     while ((currentNode = currentlyVisitedNodes.First().Left) != null)
@@ -147,33 +136,42 @@ namespace EvernestBack
         public void Deserialize(Byte[] src, int offset)
         {
             Clear();
-            long elementCount = BitConverter.ToInt64(src, offset);
-            long key;
-            ulong element;
-            offset += sizeof(long);
-            for( long i = 0 ; i < elementCount ; i++ )
+            var elementCount = BitConverter.ToInt64(src, offset);
+            offset += sizeof (long);
+            for (long i = 0; i < elementCount; i++)
             {
-                key = BitConverter.ToInt64(src, offset);
-                offset += sizeof(long);
-                element = BitConverter.ToUInt64(src, offset);
-                offset += sizeof(ulong);
+                var key = BitConverter.ToInt64(src, offset);
+                offset += sizeof (long);
+                var element = BitConverter.ToUInt64(src, offset);
+                offset += sizeof (ulong);
                 Insert(key, element);
             }
         }
 
         public void ReadFromBlob(CloudBlockBlob blob)
         {
-            Byte[] sizeBytes = new Byte[sizeof(long)];
-            blob.DownloadRangeToByteArray(sizeBytes, 0, 0, sizeof(long));
-            long byteCount = BitConverter.ToInt64(sizeBytes, 0);
-            Byte[] serializedHistory = new Byte[byteCount];
-            blob.DownloadRangeToByteArray(serializedHistory, 0, sizeof(long), byteCount);
+            var sizeBytes = new Byte[sizeof (long)];
+            blob.DownloadRangeToByteArray(sizeBytes, 0, 0, sizeof (long));
+            var byteCount = BitConverter.ToInt64(sizeBytes, 0);
+            var serializedHistory = new Byte[byteCount];
+            blob.DownloadRangeToByteArray(serializedHistory, 0, sizeof (long), byteCount);
             Deserialize(serializedHistory, 0);
         }
 
-        private Stack<Node> Mislinked;
-        private Node Root;
-        private Node LastNode;
-        private long ElementCounter;
+        private class Node
+        {
+            public Node(long key, ulong element, Node left, Node right)
+            {
+                Key = key;
+                Element = element;
+                Left = left;
+                Right = right;
+            }
+
+            public long Key { get; private set; }
+            public ulong Element { get; private set; }
+            public Node Left { get; set; }
+            public Node Right { get; set; }
+        }
     }
 }

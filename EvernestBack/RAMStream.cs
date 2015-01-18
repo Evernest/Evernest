@@ -1,74 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace EvernestBack
 {
-
     /**
      * This is a small test Stream storing messages in a List instead of in
      * Azure.
      */
-    public class RAMStream:IEventStream
+
+    public class RAMStream : IEventStream
     {
-        private string StreamFileName;
-        List<string> Messages = new List<string>();
-        public long Index = 0;
+        public long Index;
+        private readonly List<string> _messages = new List<string>();
+        private readonly string _streamFileName;
 
         public RAMStream(string streamStringID)
         {
-            StreamFileName = streamStringID + "_RAMStreamContent.txt";
-            string line;
-            if (File.Exists(StreamFileName))
+            _streamFileName = streamStringID + "_RAMStreamContent.txt";
+            if (File.Exists(_streamFileName))
             {
-                StreamReader file = new StreamReader(StreamFileName);
+                var file = new StreamReader(_streamFileName);
+                string line;
                 while ((line = file.ReadLine()) != null)
                 {
                     Index++;
-                    Messages.Add(line);
+                    _messages.Add(line);
                 }
                 file.Close();
             }
         }
 
-        ~RAMStream()
-        {
-            StreamWriter file = new StreamWriter(StreamFileName);
-            foreach( string message in Messages )
-                file.WriteLine(message);
-            file.Close();
-        }
-
-        public void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackfailure)
+        public void Push(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
         {
             IAgent a = new MyAgent(message, Index);
             Index++;
-            Messages.Add(a.Message);
-            callback(a);
+            _messages.Add(a.Message);
+            callbackSuccess(a);
         }
 
-        public void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackfailure)
+        public void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
         {
-            IAgent a = new MyAgent(Messages.ElementAt((int) id), id);
+            IAgent a = new MyAgent(_messages.ElementAt((int) id), id);
             callback(a);
         }
 
         public long Size()
         {
-            return Messages.Count();
+            return _messages.Count();
         }
 
-        private class MyAgent:IAgent
+        ~RAMStream()
         {
+            var file = new StreamWriter(_streamFileName);
+            foreach (var message in _messages)
+                file.WriteLine(message);
+            file.Close();
+        }
+
+        private class MyAgent : IAgent
+        {
+            public MyAgent(string message, long index)
+            {
+                Message = message;
+                RequestID = index;
+            }
+
             public string Message { get; protected set; }
             public long RequestID { get; private set; }
-
-            public MyAgent(string Message, long Index)
-            {
-                this.Message = Message;
-                this.RequestID = Index;
-            }
         }
     }
 }

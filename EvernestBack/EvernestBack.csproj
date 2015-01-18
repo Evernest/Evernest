@@ -87,6 +87,7 @@
     <Compile Include="Reader.cs" />
     <Compile Include="EventStream.cs" />
     <Compile Include="BufferedBlobIO.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="WriteLocker.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,12 +1,12 @@
 ﻿using System;
 
-
 namespace EvernestBack
 {
     /**
      * The IEventStream interface represents a Stream from which you can get mes-
      * sages and push messages.
      */
+
     public interface IEventStream
     {
         /**
@@ -14,14 +14,14 @@ namespace EvernestBack
          * @param message The message to store
          * @param Callback The method to call when stored
          */
-        void Push(string message, Action<IAgent> CallbackSuccess, Action<IAgent, String> CallbackFailure);
+        void Push(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure);
 
         /**
          * Get a message from the stream, and call the Callback when pulled
          * @param id The index of the message you want
          * @param Callback The method to call when the message is pulled
          */
-        void Pull(long id, Action<IAgent> Callback, Action<IAgent, String> CallbackFailure);
+        void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure);
 
         /** Get a lower bound of the number of messages stored.
          *  It is possible that there are more stored messages, and that the Size is not updated yet.

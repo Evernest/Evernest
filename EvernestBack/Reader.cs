@@ -1,20 +1,22 @@
 ﻿using System;
-
+using System.IO;
 
 namespace EvernestBack
 {
-    class Reader:Agent
+    internal class Reader : Agent
     {
-        System.IO.Stream readStream;
-        public Reader(string Message, long RequestID, System.IO.Stream readStream, Action<IAgent> CallbackSuccess, Action<IAgent, String> CallbackFailure)
-            :base(Message, RequestID, CallbackSuccess, CallbackFailure) // TODO : remove ulong cast when Agent updated
+        private readonly Stream _readStream;
+
+        public Reader(string message, long requestId, Stream readStream,
+            Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
+            : base(message, requestId, callbackSuccess, callbackFailure) // TODO : remove ulong cast when Agent updated
         {
-            this.readStream = readStream;
+            _readStream = readStream;
         }
-        
+
         private void Read()
         {
-            ReadFromStream(readStream);
+            ReadFromStream(_readStream);
             Processed();
         }
     }

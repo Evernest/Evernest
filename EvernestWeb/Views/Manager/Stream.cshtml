@@ -1,0 +1,59 @@
+﻿@model EvernestWeb.ViewModels.StreamAndEvents
+@{
+    ViewBag.Title = "Stream";
+}
+
+<h2><a href="/Manager/MyStore">Manage my Store</a> &gt; Stream</h2>
+
+<div>
+    <div>
+        <h4>Stream</h4>
+        @{
+            if (Model != null)
+            {
+                <ul>
+                    <li>Id : @Model.Id</li>
+                    <li>Name : @Model.Name</li>
+                    <li>Total Events : @Model.Count</li>
+                </ul>
+                <ul>
+                    <li>Related Users</li>
+                    @for (int i = 0; i < @Model.RelatedUsers.Count; ++i)
+                    {
+                        EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(Model.RelatedUsers[i].Key);
+                        <li>@Model.RelatedUsers[i].Key @u.User.Name (@Model.RelatedUsers[i].Value.ToString())</li>
+                    }
+                </ul>
+            }
+        }
+    </div>
+
+    <div>
+        @Html.Partial("addUserFormPartial")
+
+        @Html.Partial("addEventFormPartial")
+
+    </div>
+
+    <!-- requested event -->
+    @{
+        
+    }
+
+    <div>
+        <h4>Last Events</h4>
+        @{
+            if (Model.Events != null)
+            {
+                <ul>
+                    <li>Id - Message etc...</li>
+                    @for (int i = Model.Events.Count - 1; i >= 0; --i)
+                    {
+                        <li>@Model.Events[i].Id - @Model.Events[i].Message</li>
+                    }
+
+                </ul>
+            }
+        }
+    </div>
+</div>

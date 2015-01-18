@@ -60,12 +60,23 @@ namespace EvernestAPI
           
             config.Routes.MapHttpRoute(
                 name: "APISourceNew",
-                routeTemplate: "{controller}/New",
+                routeTemplate: "{controller}/New/",
                 constraints: new {},
                 defaults: new
                 {
                     action="New",
                 }
+                );
+
+            config.Routes.MapHttpRoute(
+                name: "APIUserAdd",
+                routeTemplate: "{controller}/Add/{username}/{password}",
+                constraints: new
+                {
+                    username = @"[a-zA-Z0-9]*",
+                    password = @"[a-zA-Z0-9]*",
+                },
+                defaults: new {}
                 );
         }
     }

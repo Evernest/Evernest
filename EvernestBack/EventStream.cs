@@ -3,50 +3,97 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
 {
-    /**
-     * EventStream represents an instance of a stream of events and should be matched to a single blob
-     * should be created with AzureStorageClient
-     */
-    class EventStream:IEventStream
+    /// <summary>EventStream represents an instance of a stream of events and should be matched to a single blob
+    /// should be created with AzureStorageClient.</summary>
+    internal class EventStream : IEventStream
     {
-        private WriteLocker WriteLock;
-        private CloudBlockBlob Blob;
+        private CloudPageBlob _blob;
+        private readonly EventIndexer _indexer;
+        private readonly WriteLocker _writeLock;
 
-        private EventIndexer Indexer;
-
-        public EventStream( CloudPageBlob blob, CloudBlockBlob streamIndexBlob)
+        /// <summary>
+        ///     Construct a new EventStream.
+        /// </summary>
+        /// <param name="blob"></param>
+        /// <param name="streamIndexBlob"></param>
+        /// <param name="bufferSize"></param>
+        /// <param name="eventChunkSize"></param>
+        public EventStream(AzureStorageClient storage, string streamID)
         {
-            BufferedBlobIO buffer = new BufferedBlobIO(blob);
-            Indexer = new EventIndexer(streamIndexBlob, buffer);
-            WriteLock = new WriteLocker(buffer, Indexer, 0); // Initial ID = 0
-            WriteLock.Store();
+            _blob = storage.StreamContainer.GetPageBlobReference(streamID);
+            var streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
+
+            var buffer = new BufferedBlobIO(_blob);
+            _indexer = new EventIndexer(streamIndexBlob, buffer);
+            _writeLock = new WriteLocker(buffer, _indexer, 0); // Initial ID = 0
+            _writeLock.Store();
         }
 
-        // Push : Give a string, return an ID with the Callback
-        public void Push(string message, Action<IAgent> callback)
+        public void Dispose()
         {
-            WriteLock.Register(message, callback);
+            // TODO: close blob
         }
 
-        // Pull : Use the ID got when pushing to get back the original string
-        public void Pull(long id, Action<IAgent> callback)
+        /// <summary>
+        ///     Push a message.
+        /// </summary>
+        /// <param name="message">The message to push. </param>
+        /// <param name="callback">The action to do in case of success. </param>
+        /// <param name="callbackFailure">The action to do in case of failure. </param>
+        public void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
+        {
+            _writeLock.Register(message, callback, callbackFailure);
+        }
+
+        /// <summary>
+        ///     Pull a message.
+        /// </summary>
+        /// <param name="id">The index of the message to pull. </param>
+        /// <param name="callback"> The action to do in case of success. </param>
+        /// <param name="callbackFailure"> The action to do in case of failure. </param>
+        public void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
         {
             string message;
-            if (Indexer.FetchEvent(id, out message))
+            var success = _indexer.FetchEvent(id, out message);
+            var msgAgent = new Agent(message, id, callback, callbackFailure);
+            if (success)
             {
-                Agent msgAgent = new Agent(message, id, callback);
                 msgAgent.Processed();
+            }
+            else
+            {
+                msgAgent.ProcessFailed("Can not fetch the message.");
             }
         }
 
+        /// <summary>
+        ///     Get the total number of element in the blob.
+        /// </summary>
+        /// <returns>Size of the blob.</returns>
         public long Size()
         {
-            return WriteLock.CurrentId;
+            return _writeLock.CurrentID;
         }
 
-        public void StreamDeliver(Agent agent)
+        public static void CreateStream(AzureStorageClient storage, string streamID)
         {
-            Console.WriteLine(agent.Message);
+            CloudPageBlob streamBlob = storage.StreamContainer.GetPageBlobReference(streamID);
+            // CloudBlockBlob streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
+            streamBlob.Create(storage.PageBlobSize);
+            // streamIndexBlob.Create(); // not this method ?
+         }
+
+        public static bool StreamExists(AzureStorageClient storage, string streamID)
+        {
+            return storage.StreamContainer.GetPageBlobReference(streamID).Exists();
+        }
+
+        public static void DeleteStream(AzureStorageClient storage, string streamID)
+        {
+            CloudPageBlob streamBlob = storage.StreamContainer.GetPageBlobReference(streamID);
+            CloudBlockBlob streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
+            streamBlob.DeleteIfExists();
+            streamIndexBlob.DeleteIfExists();
         }
     }
 }

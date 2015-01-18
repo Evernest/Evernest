@@ -1,74 +1,92 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-
+using System.Linq;
 namespace EvernestBack
 {
-
-    /**
-     * This is a small test Stream storing messages in a List instead of in
-     * Azure.
-     */
-    public class MemoryEventStream:IEventStream
+    /// <summary>This is a small test Stream storing messages in a List instead of in Azure.</summary>
+    public class MemoryEventStream : IEventStream
     {
-        private string StreamFileName;
-        List<string> Messages = new List<string>();
         public long Index;
+        private readonly List<string> _messages = new List<string>();
+        private readonly string _streamFileName;
 
-        public MemoryEventStream(string streamStringId)
+        public MemoryEventStream(AzureStorageClient store, string streamStringID)
         {
-            StreamFileName = streamStringId + "_RAMStreamContent.txt";
-            string line;
-            if (File.Exists(StreamFileName))
+            _streamFileName = StreamFileName(store, streamStringID);
+            if (File.Exists(_streamFileName))
             {
-                StreamReader file = new StreamReader(StreamFileName);
+                var file = new StreamReader(_streamFileName);
+                string line;
                 while ((line = file.ReadLine()) != null)
                 {
                     Index++;
-                    Messages.Add(line);
+                    _messages.Add(line);
                 }
                 file.Close();
             }
         }
 
-        ~MemoryEventStream()
-        {
-            StreamWriter file = new StreamWriter(StreamFileName);
-            foreach( string message in Messages )
-                file.WriteLine(message);
-            file.Close();
-        }
-
-        public void Push(string message, Action<IAgent> callback)
+        public void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
         {
             IAgent a = new MyAgent(message, Index);
             Index++;
-            Messages.Add(a.Message);
+            _messages.Add(a.Message);
             callback(a);
         }
 
-        public void Pull(long id, Action<IAgent> callback)
+        public void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
         {
-            IAgent a = new MyAgent(Messages.ElementAt((int) id), id);
+            IAgent a = new MyAgent(_messages.ElementAt((int)id), id);
             callback(a);
         }
 
         public long Size()
         {
-            return Messages.Count();
+            return _messages.Count();
         }
 
-        private class MyAgent:IAgent
+        public void Dispose()
         {
-            public string Message { get; protected set; }
-            public long RequestID { get; private set; }
+            var file = new StreamWriter(_streamFileName);
+            foreach (var message in _messages)
+                file.WriteLine(message);
+            file.Close();
+        }
 
+        private class MyAgent : IAgent
+        {
             public MyAgent(string message, long index)
             {
                 Message = message;
                 RequestID = index;
             }
+            public string Message { get; protected set; }
+            public long RequestID { get; private set; }
+        }
+
+        private static string StreamFileName(AzureStorageClient store, string streamID)
+        {
+            string r = store.DummyDataPath + streamID + "_RAMStreamContent.txt";
+            Console.WriteLine("Stream file name: " + r);
+            return r;
+        }
+
+        public static bool StreamExists(AzureStorageClient store, string streamID)
+        {
+            return File.Exists(StreamFileName(store, streamID));
+        }
+
+        public static void CreateStream(AzureStorageClient store, string streamID)
+        {
+            string fn = StreamFileName(store, streamID);
+            var file = new StreamWriter(fn);
+            file.Close();
+        }
+
+        internal static void DeleteStream(AzureStorageClient store, string streamID)
+        {
+            File.Delete(StreamFileName(store, streamID));
         }
     }
 }

@@ -1,43 +1,36 @@
-﻿using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
 {
-    ///AzureStorageClient represents a client connection with the azure storage service 
-    ///see it as an EventStream factory
+    /// <summary>AzureStorageClient represents a client connection with the azure storage service 
+    /// see it as an EventStream factory</summary>
     public class AzureStorageClient
     {
-        private CloudBlobClient BlobClient;
-        private Dictionary<String, IEventStream> OpenedStreams;
-        private CloudBlobContainer StreamContainer;
-        private CloudBlobContainer StreamIndexContainer;
-        private bool Dummy;
-
+        private static readonly object _initializeLock = new object();
         private static AzureStorageClient _singleton;
+        private readonly CloudBlobClient _blobClient;
+        private readonly bool _dummy;
+        private readonly Dictionary<String, IEventStream> _openedStreams;
 
-        public static AzureStorageClient Instance
-        {
-            get
-            {
-                if (_singleton == null)
-                    _singleton = new AzureStorageClient();
-                return _singleton;   
-            }
-        }
-
-        private long PageBlobSize;
+        internal readonly long PageBlobSize;
+        internal readonly string DummyDataPath;
+        internal readonly CloudBlobContainer StreamContainer;
+        internal readonly CloudBlobContainer StreamIndexContainer;
 
         private AzureStorageClient()
         {
-            Dummy = Boolean.Parse(ConfigurationManager.AppSettings["Dummy"]);
-            OpenedStreams = new Dictionary<String, IEventStream>();
-            if (Dummy) // temporary dummy mode
+            _dummy = Boolean.Parse(ConfigurationManager.AppSettings["Dummy"]);
+            _openedStreams = new Dictionary<String, IEventStream>();
+            if (_dummy) // temporary dummy mode
             {
-                BlobClient = null;
+                _blobClient = null;
                 StreamContainer = null;
+
+                DummyDataPath = ConfigurationManager.AppSettings["DummyDataPath"];
             }
             else
             {
@@ -58,9 +51,9 @@ namespace EvernestBack
                     Console.Error.WriteLine("Source : {0}", e.Source);
                     return;
                 }
-                BlobClient = storageAccount.CreateCloudBlobClient();
-                StreamContainer = BlobClient.GetContainerReference("stream");
-                StreamIndexContainer = BlobClient.GetContainerReference("streamindex");
+                _blobClient = storageAccount.CreateCloudBlobClient();
+                StreamContainer = _blobClient.GetContainerReference("stream");
+                StreamIndexContainer = _blobClient.GetContainerReference("streamindex");
                 try
                 {
                     StreamContainer.CreateIfNotExists();
@@ -73,78 +66,141 @@ namespace EvernestBack
             }
         }
 
-        ///Get a reference to an already created stream.
-        public IEventStream GetEventStream( String streamId ) //not thread-safe yet
+        /// <summary>
+        ///     The unique instance of AzureStorageClient.
+        /// </summary>
+        public static AzureStorageClient Instance
         {
-            return OpenStream(streamId);
+            get
+            {
+                lock (_initializeLock)
+                {
+                    if (_singleton == null)
+                        _singleton = new AzureStorageClient();    
+                }
+                return _singleton;
+            }
         }
 
-        ///Create a new stream and open it.
-        public IEventStream GetNewEventStream(String streamId)
+        /// <summary>
+        ///     Get an already created event stream
+        /// </summary>
+        /// <param name="streamID"> The name of the stream you want.</param>
+        /// <returns> The EventStream</returns>
+        public IEventStream GetEventStream(String streamID) //not thread-safe yet
         {
-            CreateEventStream(streamId);
-            IEventStream stream =  OpenStream(streamId);
+            var stream = OpenStream(streamID);
             return stream;
         }
 
-        ///Open a stream and throws an exception if it does not exists
-        private IEventStream OpenStream(String streamId)
+        /// <summary>
+        ///     Create and open an EventStream
+        /// </summary>
+        /// <param name="streamID"> The name of the new stream. </param>
+        /// <returns>The new EventStream</returns>
+        public IEventStream GetNewEventStream(String streamID)
         {
-            IEventStream stream;
-            if (!OpenedStreams.TryGetValue(streamId, out stream))
-            { // If OpenedStreams doesn't contains streamId, there is a problem
-                throw new ArgumentException("The stream " + streamId + " does not exists.");
+            CreateEventStream(streamID);
+            var stream = OpenStream(streamID);
+            return stream;
+        }
+
+        /// <summary>
+        ///     Open a Stream.
+        /// </summary>
+        /// <param name="streamID">The name of the Stream to open.</param>
+        /// <returns>The EventStream.</returns>
+        private IEventStream OpenStream(String streamID)
+        {
+            if (!StreamExists(streamID))
+            {
+                throw new ArgumentException("The stream " + streamID + " does not exists.");
             }
-            if(stream != null)
+
+            IEventStream stream;
+            if (_openedStreams.TryGetValue(streamID, out stream))
             {
                 // If the stream is already opened
                 return stream;
             }
-            CloudPageBlob streamBlob = StreamContainer.GetPageBlobReference(streamId);
-            CloudBlockBlob streamIndexBlob = StreamIndexContainer.GetBlockBlobReference(streamId);
-            try
+            if (_dummy)
             {
-                stream = new EventStream(streamBlob, streamIndexBlob);
-                // TODO : Check if EventStream throws an exception if blob references does not exists
-            }
-            catch(ArgumentNullException) { throw new ArgumentException("You try to open a stream that does not exists"); }
-            // Update reference, don't seem to have an "update" method... thank you micro$oft
-            OpenedStreams.Remove(streamId);
-            OpenedStreams.Add(streamId, stream);
-            return stream;
-        }
-
-        ///Create a new stream (does not open it). I.e. Create the blob to store it.
-        private void CreateEventStream(string streamId)
-        {
-            if(OpenedStreams.ContainsKey(streamId))
-            {
-                // If we want to create a stream that already exists
-                throw new ArgumentException("You want to create a stream with a name already used.\nStream : " + streamId);
-            }
-            if(Dummy)
-            {
+                stream = new MemoryEventStream(this, streamID);
             }
             else
             {
-                CloudPageBlob streamBlob = StreamContainer.GetPageBlobReference(streamId);
-                streamBlob.Create(PageBlobSize);
-                OpenedStreams.Add(streamId, null);
+                stream = new EventStream(this, streamID);
+            }
+
+            _openedStreams.Add(streamID, stream);
+            return stream;
+        }
+
+        /// <summary>
+        ///     Create an EventStream
+        /// </summary>
+        /// <param name="streamID">The name of the stream to create.</param>
+        private void CreateEventStream(String streamID)
+        {
+            if (StreamExists(streamID))
+            {
+                throw new ArgumentException("Stream already exists : " + streamID);
+            }
+            if (_dummy)
+            {
+                MemoryEventStream.CreateStream(this, streamID);
+            }
+            else
+            {
+                EventStream.CreateStream(this, streamID);
             }
         }
 
         //missing something to close streams
 
-        public void DeleteIfExists( String streamStringId )
+        public void DeleteStreamIfExists(string streamID)
         {
-            //TODO
+            if (StreamExists(streamID))
+            {
+                IEventStream stream;
+                if (_openedStreams.TryGetValue(streamID, out stream))
+                {
+                    _openedStreams.Remove(streamID);        // calls destructor & closes stream
+                    stream.Dispose();
+                }
+
+                if (_dummy)
+                {
+                    MemoryEventStream.DeleteStream(this, streamID);
+                }
+                else
+                {
+                    EventStream.DeleteStream(this, streamID);
+                }   
+            }
         }
 
-        public bool TryGetFreshEventStream(string streamStringId, out IEventStream stream)
+        public bool StreamExists(string streamID)
         {
-            //TODO
+            if (_dummy)
+            {
+                return MemoryEventStream.StreamExists(this, streamID);
+            }
+            else
+            {
+                return EventStream.StreamExists(this, streamID);
+            }
+        }
+
+        public bool TryGetFreshEventStream(string streamStringID, out IEventStream stream)
+        {
             stream = null;
-            return false;
+            if (StreamExists(streamStringID))
+            {
+                return false;
+            }
+            stream = GetNewEventStream(streamStringID);
+            return true;
         }
     }
 }

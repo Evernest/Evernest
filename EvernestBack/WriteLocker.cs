@@ -1,68 +1,74 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Threading;
 using System.Threading.Tasks;
-
 
 namespace EvernestBack
 {
-    class WriteLocker
-	{
-       private class PendingEvent
-        {
-            public string Message { get; private set; }
-            public Action<IAgent> Callback { get; private set; }
-            public PendingEvent(string message, Action<IAgent> callback)
-            {
-                Message = message;
-                Callback = callback;
-            }
-        }
+    internal class WriteLocker
+    {
+        private readonly EventIndexer _indexer;
 
-		private ConcurrentQueue<PendingEvent> PendingEventCollection = new ConcurrentQueue<PendingEvent>();
-        private EventIndexer Indexer;
-        private BufferedBlobIO WriteBuffer;
-        public long CurrentId { get; private set; }
+        private readonly ConcurrentQueue<PendingEvent> _pendingEventCollection =
+            new ConcurrentQueue<PendingEvent>();
+
+        private readonly BufferedBlobIO _writeBuffer;
 
         public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer, long firstId)
         {
-            Indexer = indexer;
-            WriteBuffer = buffer;
-            CurrentId = firstId;
+            _indexer = indexer;
+            _writeBuffer = buffer;
+            CurrentID = firstId;
         }
+
+        public long CurrentID { get; private set; }
 
         public void Store()
         {
             Task.Run(() =>
             {
-                ulong wroteBytes;
                 PendingEvent pendingEvent;
-                while (true) //temporary fix to make sure the thread doesn't terminate early (well now it never does, "fixed")
+                while (true)
+                    //temporary fix to make sure the thread doesn't terminate early (well now it never does, "fixed")
                 {
-                    while (PendingEventCollection.TryDequeue(out pendingEvent))
+                    while (_pendingEventCollection.TryDequeue(out pendingEvent))
                     {
-                        Agent agent = new Agent(pendingEvent.Message, CurrentId, pendingEvent.Callback);
-                        wroteBytes = Write(agent);
-                        Indexer.NotifyNewEntry(CurrentId, wroteBytes);
-                        CurrentId++;
+                        var agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.CallbackSuccess,
+                            pendingEvent.CallbackFailure);
+                        ulong wroteBytes = Write(agent);
+                        _indexer.NotifyNewEntry(CurrentID, wroteBytes);
+                        CurrentID++;
                         agent.Processed();
                     }
                 }
             }
-            );
+                );
         }
 
         private UInt16 Write(Agent prod)
         {
             UInt16 size;
-            Byte[] bytes = prod.Serialize(out size);
-            WriteBuffer.Push(bytes, 0, size);
+            var bytes = prod.Serialize(out size);
+            _writeBuffer.Push(bytes, 0, size);
             return size;
         }
 
-        public void Register(string message, Action<IAgent> callback)
+        public void Register(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callBackFailure)
         {
-            PendingEventCollection.Enqueue(new PendingEvent(message, callback));
+            _pendingEventCollection.Enqueue(new PendingEvent(message, callbackSuccess, callBackFailure));
         }
-	}
+
+        private class PendingEvent
+        {
+            public PendingEvent(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
+            {
+                Message = message;
+                CallbackSuccess = callbackSuccess;
+                CallbackFailure = callbackFailure;
+            }
+
+            public string Message { get; private set; }
+            public Action<IAgent> CallbackSuccess { get; private set; }
+            public Action<IAgent, String> CallbackFailure { get; private set; }
+        }
+    }
 }

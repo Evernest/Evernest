@@ -14,13 +14,13 @@ namespace EvernestBack
     /// Speeds up network transactions with buffered output.
     /// Minimizes latency between a push and the availability of corresponding data.
     /// </summary>
-    class BufferedBlobIO
+    internal class BufferedBlobIO
     {
         public byte[] WriteBuffer {get; private set;}
-        public CloudPageBlob Blob {get; private set;}
-        private int CurrentBufferPosition, MaximumBufferSize;
-        private long CurrentPage;
-        private const Int16 PageSize = 512;
+        public CloudPageBlob Blob {get; private set;} //wait, why did i make this accessible already?!
+        private int _currentBufferPosition, _maximumBufferSize;
+        private long _currentPage;
+        private const Int16 _pageSize = 512;
         public ulong TotalWrittenBytes {get; private set;}
 
         public BufferedBlobIO( CloudPageBlob blob)
@@ -29,14 +29,14 @@ namespace EvernestBack
             byte[] buffer = new byte[sizeof(ulong)+sizeof(long)];
             Blob.DownloadRangeToByteArray(buffer, 0, 0, sizeof(ulong)+sizeof(long));
             TotalWrittenBytes = BitConverter.ToUInt64(buffer, 0);
-            CurrentPage = BitConverter.ToInt64(buffer, sizeof(ulong))+1;
+            _currentPage = BitConverter.ToInt64(buffer, sizeof(ulong))+1;
             int bufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
-            MaximumBufferSize = ((bufferSize / PageSize) + 2) * PageSize;
+            _maximumBufferSize = ((bufferSize / _pageSize) + 1) * _pageSize;
             //WriteBuffer allocation and coherence
-            WriteBuffer = new byte[MaximumBufferSize];
-            CurrentBufferPosition = (int) (TotalWrittenBytes % (ulong) PageSize);
-            if(CurrentBufferPosition != 0)
-                Blob.DownloadRangeToByteArray(WriteBuffer, 0, (int)TotalWrittenBytes - CurrentBufferPosition, CurrentBufferPosition);
+            WriteBuffer = new byte[_maximumBufferSize];
+            _currentBufferPosition = (int) (TotalWrittenBytes % (ulong) _pageSize);
+            if(_currentBufferPosition != 0)
+                Blob.DownloadRangeToByteArray(WriteBuffer, 0, (int)TotalWrittenBytes - _currentBufferPosition, _currentBufferPosition);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace EvernestBack
         }
 
         /// <summary>
-        /// Make a MemoryStream containing given data of size multiple of PageSize.
+        /// Make a MemoryStream containing given data of size multiple of _pageSize.
         /// </summary>
         /// <param name="src">
         /// The source byte array.
@@ -69,7 +69,7 @@ namespace EvernestBack
         static private MemoryStream MakePaddedMemoryStream(byte[] src, int offset, int count)
         {
             MemoryStream stream;
-            int padSize = (PageSize - (count % PageSize)) % PageSize;
+            int padSize = (_pageSize - (count % _pageSize)) % _pageSize;
             if (padSize != 0)
             {
                 stream = new MemoryStream(count + padSize);
@@ -101,14 +101,14 @@ namespace EvernestBack
         /// </returns>
         private bool DirectUpload(byte[] src, int offset, int count)
         {
-            int pageNumber = count / PageSize;
+            int pageNumber = count / _pageSize;
             MemoryStream stream = MakePaddedMemoryStream(src, offset, count);
             try
             {
-                Blob.WritePages(stream, PageSize * CurrentPage); //should ensure no error happens
-                CurrentPage += pageNumber;
-                CurrentBufferPosition = count % PageSize;
-                Buffer.BlockCopy(src, pageNumber * PageSize, WriteBuffer, 0, CurrentBufferPosition);
+                Blob.WritePages(stream, _pageSize * _currentPage); //should ensure no error happens
+                _currentPage += pageNumber;
+                _currentBufferPosition = count % _pageSize;
+                Buffer.BlockCopy(src, pageNumber * _pageSize, WriteBuffer, 0, _currentBufferPosition);
             }
             catch (StorageException e)
             {
@@ -123,10 +123,10 @@ namespace EvernestBack
         /// </summary>
         private void UpdateSizeInfo()
         {
-            byte[] sizeInfoBytes = new byte[PageSize];
+            byte[] sizeInfoBytes = new byte[_pageSize];
             Buffer.BlockCopy(BitConverter.GetBytes(TotalWrittenBytes), 0, sizeInfoBytes, 0, sizeof(ulong));
-            Buffer.BlockCopy(BitConverter.GetBytes(CurrentPage-1), 0, sizeInfoBytes, sizeof(ulong), sizeof(long));
-            Stream sizeInfoStream = new MemoryStream(sizeInfoBytes, 0, PageSize);
+            Buffer.BlockCopy(BitConverter.GetBytes(_currentPage-1), 0, sizeInfoBytes, sizeof(ulong), sizeof(long));
+            Stream sizeInfoStream = new MemoryStream(sizeInfoBytes, 0, _pageSize);
             Blob.WritePages(sizeInfoStream, 0);
         }
 
@@ -148,17 +148,17 @@ namespace EvernestBack
         /// </returns>
         public bool Push( byte[] src, int offset, int count )
         {
-            if(CurrentBufferPosition + count > MaximumBufferSize)
+            if(_currentBufferPosition + count > _maximumBufferSize)
             {
-                int firstBatchBytes = MaximumBufferSize-CurrentBufferPosition;
-                Buffer.BlockCopy(src, offset, WriteBuffer, CurrentBufferPosition, firstBatchBytes);
-                CurrentBufferPosition = MaximumBufferSize;
+                int firstBatchBytes = _maximumBufferSize-_currentBufferPosition;
+                Buffer.BlockCopy(src, offset, WriteBuffer, _currentBufferPosition, firstBatchBytes);
+                _currentBufferPosition = _maximumBufferSize;
                 TotalWrittenBytes += (ulong) firstBatchBytes;
                 if (FlushBuffer())
                 {
                     count -= firstBatchBytes;
                     offset += firstBatchBytes;
-                    if (count > MaximumBufferSize)
+                    if (count > _maximumBufferSize)
                     {
                         if (DirectUpload(src, offset, count))
                         {
@@ -171,13 +171,13 @@ namespace EvernestBack
                 }
                 else
                 {
-                    CurrentBufferPosition -= firstBatchBytes;
+                    _currentBufferPosition -= firstBatchBytes;
                     TotalWrittenBytes -= (ulong) firstBatchBytes;
                     return false;
                 }
             }
-            Buffer.BlockCopy(src, offset, WriteBuffer, CurrentBufferPosition, count);
-            CurrentBufferPosition += count;
+            Buffer.BlockCopy(src, offset, WriteBuffer, _currentBufferPosition, count);
+            _currentBufferPosition += count;
             TotalWrittenBytes += (ulong) count;
             return true;
         }
@@ -203,13 +203,13 @@ namespace EvernestBack
         /// <returns>The number of successfully read bytes</returns>
         public int DownloadRangeToByteArray(byte[] buffer, int offset, int srcOffset, int count)
         {
-            srcOffset += PageSize; //the first Page is dedicated to blob size info
-            int uploadedBytes = Math.Min((int) CurrentPage*PageSize - srcOffset, count);
+            srcOffset += _pageSize; //the first Page is dedicated to blob size info
+            int uploadedBytes = Math.Min((int) _currentPage*_pageSize - srcOffset, count);
             if( uploadedBytes > 0 )
                 Blob.DownloadRangeToByteArray(buffer, offset, srcOffset, uploadedBytes);
-            Buffer.BlockCopy(WriteBuffer, Math.Max(-uploadedBytes, 0), buffer, offset+Math.Max(uploadedBytes, 0),
-                Math.Min(count - Math.Max(uploadedBytes, 0), CurrentBufferPosition));
-            return Math.Max(0, uploadedBytes) + Math.Min(count - uploadedBytes, CurrentBufferPosition);
+            Buffer.BlockCopy(WriteBuffer, Math.Max(-uploadedBytes, 0), buffer, offset + Math.Max(uploadedBytes, 0),
+                Math.Min(count - Math.Max(uploadedBytes, 0), _currentBufferPosition));
+            return Math.Max(0, uploadedBytes) + Math.Min(count - uploadedBytes, _currentBufferPosition);
         }
 
         /// <summary>
@@ -221,9 +221,9 @@ namespace EvernestBack
         /// </returns>
         public bool FlushBuffer() //not thread safe, "endianness-dependant"
         {
-            if (CurrentBufferPosition != 0)
+            if (_currentBufferPosition != 0)
             {
-                if (!DirectUpload(WriteBuffer, 0, CurrentBufferPosition))
+                if (!DirectUpload(WriteBuffer, 0, _currentBufferPosition))
                     return false;
                 UpdateSizeInfo();
             }

@@ -2,17 +2,29 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using EvernestFront.Answers;
+using System.Threading;
+using EvernestFront.CommandHandling;
+using EvernestFront.CommandHandling.Commands;
+using EvernestFront.Utilities;
 using EvernestFront.Contract;
-using EvernestFront.Contract.Diff;
-using EvernestFront.Errors;
 using EvernestBack;
-using EvernestFront.Projection;
+
+//TODO : refactor callbacks and implement what to do in case of backend failure
 
 namespace EvernestFront
 {
     public class EventStream
     {
+        private readonly CommandHandler _commandHandler;
+        
+        private readonly User _user;
+
+        private readonly bool _getBySource;
+
+        private readonly Source _source;
+
+        private readonly HashSet<AccessAction> _possibleActions;
+
         public long Id { get; private set; }
 
         public string Name { get; private set; }
@@ -21,105 +33,60 @@ namespace EvernestFront
 
         public long LastEventId { get { return Count-1; } }
 
-
-        public List<KeyValuePair<long, AccessRights>> RelatedUsers
-        {
-            get { return InternalRelatedUsers.ToList(); }
-        }
-
-        private ImmutableDictionary<long, AccessRights> InternalRelatedUsers { get; set; }
+        //there is a public method GetRelatedUsers
+        private ImmutableDictionary<string, AccessRight> RelatedUsers { get; set; }
 
         private IEventStream BackStream { get; set; }
 
 
-
-        
-
-        // temporary
-        private static long _next = 0;
-        private static long NextId() { return ++_next; }
-
-
-        private EventStream(long streamId, string name, ImmutableDictionary<long,AccessRights> users, IEventStream backStream)
+        internal EventStream(CommandHandler commandHandler, User user, bool getBySource, Source source, 
+            HashSet<AccessAction> authorizedActions, long streamId, string name, 
+            ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
         {
+            _commandHandler = commandHandler;
             Id = streamId;
             Name = name;
-            InternalRelatedUsers = users;
+            RelatedUsers = users;
             BackStream = backStream;
+            _possibleActions = authorizedActions;
+            _source = source;
+            _getBySource = getBySource;
+            _user = user;
         }
 
-        internal static bool TryGetStream(long streamId, out EventStream eventStream)
+
+        public Response<IDictionary<string,AccessRight>> GetRelatedUsers()
         {
-            EventStreamContract streamContract;
-            if (Projection.Projection.TryGetStreamContract(streamId, out streamContract))
-            {
-                eventStream = new EventStream(streamId, streamContract.StreamName,
-                    streamContract.RelatedUsers, streamContract.BackStream);
-                return true;
-            }
-            else
-            {
-                eventStream = null;
-                return false;
-            }
+            if (!ValidateAccessAction(AccessAction.Admin))
+                return new Response<IDictionary<string, AccessRight>>(FrontError.AdminAccessDenied);
+            return new Response<IDictionary<string, AccessRight>>(RelatedUsers);
         }
 
-        public static GetEventStream GetStream(long streamId)
+        public Response<Guid> SetRight(string targetName, AccessRight right)
         {
-            EventStream eventStream;
-            if (TryGetStream(streamId, out eventStream))
-                return new GetEventStream(eventStream);
-            else
-                return new GetEventStream(new EventStreamIdDoesNotExist(streamId));
+            if (!ValidateAccessAction(AccessAction.Admin))
+                return new Response<Guid>(FrontError.AdminAccessDenied);
+            if (TargetUserIsAdmin(targetName))
+                return new Response<Guid>(FrontError.CannotDestituteAdmin);
+            var command = new UserRightSettingByUser(_commandHandler,
+                targetName, Id, _user.Name, right);
+            command.Send();
+            return new Response<Guid>(command.Guid);
         }
 
-        internal static CreateEventStream CreateEventStream(long creatorId, string streamName)
+        private bool ValidateAccessAction(AccessAction action)
         {
-            if (Projection.Projection.StreamNameExists(streamName))
-                return new CreateEventStream(new EventStreamNameTaken(streamName));
-            // this is supposed to be called by a user object, so creatorId should always exist
-
-            var id = NextId();
-
-            var backStream = AzureStorageClient.Instance.GetNewEventStream(streamName);
-
-            var streamContract = MakeEventStreamContract.NewStreamContract(streamName, backStream);
-            var streamCreated = new EventStreamCreated(id, streamContract, creatorId);
-
-            Projection.Projection.HandleDiff(streamCreated);
-            return new CreateEventStream(id);
+            return _possibleActions.Contains(action);
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-        internal SetRights SetRight(long adminId, long targetUserId, AccessRights right)
+        private bool TargetUserIsAdmin(string targetUserName)
         {
-            User targetUser;
-            if (!User.TryGetUser(targetUserId, out targetUser))
-                return new SetRights(new UserIdDoesNotExist(targetUserId));
-            if (!targetUser.IsNotAdmin(Id))
-                return new SetRights(new CannotDestituteAdmin(Id, targetUserId));
-
-            var userRightSet = new UserRightSet(adminId, Id, targetUserId, right);
-
-            Projection.Projection.HandleDiff(userRightSet);
-            //TODO: diff should be written in a stream, then sent back to be processed
-
-            return new SetRights();
+            var verifier = new AccessVerifier();
+            AccessRight right;
+            if (!RelatedUsers.TryGetValue(targetUserName, out right))
+                right = AccessRight.NoRight;
+            return verifier.ValidateAction(right, AccessAction.Admin);
         }
-
-
-
 
         private long ActualEventId(long eventId)
         {
@@ -134,62 +101,83 @@ namespace EvernestFront
             return ((id >= 0) && (id <= LastEventId));
         }
 
-        internal PullRandom PullRandom()
+        public Response<Event> PullRandom()
         {
+            if (!ValidateAccessAction(AccessAction.Read))
+                return new Response<Event>(FrontError.ReadAccessDenied);
+
             var random = new Random();
             long eventId = (long)random.Next((int)LastEventId+1);
-            EventContract pulledContract=null;       
-            BackStream.Pull(eventId, ( a => pulledContract = Serializing.ReadContract<EventContract>(a.Message)));  //TODO : change this when we implement fire-and-forget with website
-            return new PullRandom(new Event(pulledContract, eventId, Name, Id));
+            EventContract pulledContract=null;
+            var serializer = new Serializer();
+            BackStream.Pull(eventId, ( a => pulledContract = serializer.ReadContract<EventContract>(a.Message)), ((a,s)=> {}));  
+            if (pulledContract==null)
+                return new Response<Event>(FrontError.BackendError);
+            return new Response<Event>(new Event(pulledContract, eventId, Name, Id));
         }
 
-        internal Pull Pull(long id)
+        public Response<Event> Pull(long eventId)
         {
-            long eventId = ActualEventId(id);
+            if (!ValidateAccessAction(AccessAction.Read))
+                return new Response<Event>(FrontError.ReadAccessDenied);
 
-
-            if (IsEventIdValid(eventId))
-            {
-                EventContract pulledContract = null;
-                BackStream.Pull(eventId, (a => pulledContract = Serializing.ReadContract<EventContract>(a.Message))); //TODO : change this
-                return new Pull(new Event(pulledContract, eventId, Name, Id));
-            }
-            else
-            {
-                return new Pull(new InvalidEventId(eventId,this));
-            }
-           
+            eventId = ActualEventId(eventId);
+            if (!IsEventIdValid(eventId))
+                return new Response<Event>(FrontError.InvalidEventId);
+            EventContract pulledContract = null;
+            var serializer = new Serializer();
+            BackStream.Pull(eventId, (a => pulledContract = serializer.ReadContract<EventContract>(a.Message)), ((a, s) => { }));
+            if (pulledContract == null)
+                return new Response<Event>(FrontError.BackendError);
+            return new Response<Event>(new Event(pulledContract, eventId, Name, Id));
         }
 
-        internal PullRange PullRange(long fromEventId, long toEventId)
+        //TODO : change this when PullRange gets implemented in back-end
+        public Response<List<Event>> PullRange(long fromEventId, long toEventId)
         {
+            if (!ValidateAccessAction(AccessAction.Read))
+                return new Response<List<Event>>(FrontError.ReadAccessDenied);
+
             fromEventId = ActualEventId(fromEventId);
             toEventId = ActualEventId(toEventId);
             if (!IsEventIdValid(fromEventId))
-                return new PullRange(new InvalidEventId(fromEventId, this));
+                return new Response<List<Event>>(FrontError.InvalidEventId);
             if (!IsEventIdValid(toEventId))
-                return new PullRange(new InvalidEventId(toEventId, this));
+                return new Response<List<Event>>(FrontError.InvalidEventId);
             var eventList = new List<Event>();
             for (long id = fromEventId; id <= toEventId; id++)
             {
-                Pull ans = Pull(id);
+                Response<Event> ans = Pull(id);
                 if (!ans.Success)
-                    throw new Exception();  //this should never happen : both fromEventId and toEventId are valid, so id should be valid.
-                Event pulledEvent = ans.EventPulled; //TODO : change this when PullRange gets implemented in back-end
+                    throw new Exception("EventStream.PullRange");  
+                    //this should never happen : both fromEventId and toEventId are valid, so id should be valid.
+                Event pulledEvent = ans.Result; 
                 eventList.Add(pulledEvent);
             }
-            return new PullRange(eventList);
+            return new Response<List<Event>>(eventList);
         }
 
 
-
-
-        internal Push Push(string message, User author)
+        public Response<long> Push(string message)
         {
+            if (!ValidateAccessAction(AccessAction.Write))
+                return new Response<long>(FrontError.WriteAccessDenied);
+
             long eventId = LastEventId + 1;
-            var contract = new EventContract(author, DateTime.UtcNow, message);
-            BackStream.Push(Serializing.WriteContract<EventContract>(contract), (a => Console.WriteLine(a.RequestID)));  //TODO : change this callback
-            return new Push(eventId);
+            var stopWaitHandle = new AutoResetEvent(false);
+            bool success = false;
+            var contract = new EventContract(_user, DateTime.UtcNow, message);
+            var serializer = new Serializer();
+            BackStream.Push(serializer.WriteContract(contract), (a =>
+            {
+                success = true;
+                stopWaitHandle.Set();
+            }), 
+            ((a, s) => stopWaitHandle.Set()));
+            stopWaitHandle.WaitOne();
+            if (success)
+                return new Response<long>(eventId);
+            return new Response<long>(FrontError.BackendError);
         }
 
 

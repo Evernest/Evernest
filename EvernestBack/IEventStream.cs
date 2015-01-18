@@ -1,32 +1,27 @@
 ﻿using System;
 
-
 namespace EvernestBack
 {
-    /**
-     * The IEventStream interface represents a Stream from which you can get mes-
-     * sages and push messages.
-     */
+    /// <summary>The IEventStream interface represents a Stream from which you can get messages and push messages.</summary>
     public interface IEventStream
     {
-        /**
-         * Push a message to the stream, and call the Callback when stored
-         * @param message The message to store
-         * @param Callback The method to call when stored
-         */
-        void Push(string message, Action<IAgent> CallbackSuccess, Action<IAgent, String> CallbackFailure);
+        /// <summary>Push a message to the stream, and call the Callback when stored</summary>
+        /// <param name="message">The message to store</param>
+        /// <param name="callback">The method to call when stored</param>
+        /// <param name="callbackFailure">The method to call if the message failed to be pushed</param>
+        void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackFailure);
 
-        /**
-         * Get a message from the stream, and call the Callback when pulled
-         * @param id The index of the message you want
-         * @param Callback The method to call when the message is pulled
-         */
-        void Pull(long id, Action<IAgent> Callback, Action<IAgent, String> CallbackFailure);
+        /// <summary>Get a message from the stream, and call the Callback when pulled</summary>
+        /// <param name="id">The index of the message you want</param>
+        /// <param name="callback">The method to call when the message is pulled</param>
+        /// <param name="callbackFailure">The method to call if the message failed to be pulled</param>
+        void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure);
 
-        /** Get a lower bound of the number of messages stored.
-         *  It is possible that there are more stored messages, and that the Size is not updated yet.
-         *  In particular, Size() - 1 is always valid as index, as soon as it is positive or 0.
-         */
+        /// <summary>
+        ///     Get a lower bound of the number of messages stored
+        ///     It is possible that there are more stored messages, and that the Size is not updated yet.
+        ///     In particular, Size() - 1 is always valid as index, as soon as it is positive or 0.
+        /// </summary>
         long Size();
     }
 }

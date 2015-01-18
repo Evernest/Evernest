@@ -1,54 +1,55 @@
 ﻿using System;
+using System.IO;
 using Microsoft.WindowsAzure.Storage.Blob;
-
-
 
 namespace EvernestBack
 {
-    class BufferedBlobIO
+    internal class BufferedBlobIO
     {
-        public Byte[] WriteBuffer {get; protected set;}
-        public CloudPageBlob Blob {get; private set;}
-        private int CurrentBufferPosition, MaximumBufferSize;
-        private long CurrentPage = 0;
-        private UInt16 CurrentBufferOffset = 0;
         private const Int16 PageSize = 512;
+        private UInt16 _currentBufferOffset = 0;
+        private int _currentBufferPosition;
+        private long _currentPage;
+        private readonly int _maximumBufferSize;
 
-        public BufferedBlobIO( CloudPageBlob blob, int bufferSize )
+        public BufferedBlobIO(CloudPageBlob blob, int bufferSize)
         {
             Blob = blob;
-            MaximumBufferSize = ((bufferSize/PageSize)+2)*PageSize;
-            WriteBuffer = new Byte[MaximumBufferSize];
+            _maximumBufferSize = ((bufferSize/PageSize) + 2)*PageSize;
+            WriteBuffer = new Byte[_maximumBufferSize];
         }
 
-        public void Push( Byte[] src, int offset, int count )
+        public Byte[] WriteBuffer { get; protected set; }
+        public CloudPageBlob Blob { get; private set; }
+
+        public void Push(Byte[] src, int offset, int count)
         {
-            if (CurrentBufferPosition + count > MaximumBufferSize)
+            if (_currentBufferPosition + count > _maximumBufferSize)
                 FlushBuffer();
-            Buffer.BlockCopy(src, offset, WriteBuffer, (int)CurrentBufferPosition, count);
-            CurrentBufferPosition += count;
+            Buffer.BlockCopy(src, offset, WriteBuffer, _currentBufferPosition, count);
+            _currentBufferPosition += count;
         }
 
         public int DownloadRangeToByteArray(Byte[] buffer, int offset, int srcOffset, int count)
         {
-            int uploadedBytes = (int) CurrentPage*PageSize - srcOffset;
-            if( uploadedBytes > 0 )
+            var uploadedBytes = (int) _currentPage*PageSize - srcOffset;
+            if (uploadedBytes > 0)
                 Blob.DownloadRangeToByteArray(buffer, offset, srcOffset, uploadedBytes);
-            Buffer.BlockCopy(WriteBuffer, Math.Max(-uploadedBytes, 0), buffer, offset+Math.Max(uploadedBytes, 0),
-                Math.Min(count - Math.Max(uploadedBytes, 0), CurrentBufferPosition));
-            return Math.Max(0, uploadedBytes) + Math.Min(count - uploadedBytes, CurrentBufferPosition);
+            Buffer.BlockCopy(WriteBuffer, Math.Max(-uploadedBytes, 0), buffer, offset + Math.Max(uploadedBytes, 0),
+                Math.Min(count - Math.Max(uploadedBytes, 0), _currentBufferPosition));
+            return Math.Max(0, uploadedBytes) + Math.Min(count - uploadedBytes, _currentBufferPosition);
         }
 
         public void FlushBuffer()
         {
-            if (CurrentBufferPosition != 0)
+            if (_currentBufferPosition != 0)
             {
-                int pageNumber = (CurrentBufferPosition/PageSize);
-                System.IO.Stream stream = new System.IO.MemoryStream(WriteBuffer, 0, MaximumBufferSize);
-                Blob.WritePages(stream, PageSize*CurrentPage, null, null, null, null); //should ensure no error happens
-                CurrentPage += pageNumber;
-                CurrentBufferPosition = CurrentBufferPosition % PageSize;
-                Buffer.BlockCopy(WriteBuffer, (int) pageNumber*PageSize, WriteBuffer, 0, CurrentBufferPosition);
+                var pageNumber = (_currentBufferPosition/PageSize);
+                Stream stream = new MemoryStream(WriteBuffer, 0, _maximumBufferSize);
+                Blob.WritePages(stream, PageSize*_currentPage); //should ensure no error happens
+                _currentPage += pageNumber;
+                _currentBufferPosition = _currentBufferPosition%PageSize;
+                Buffer.BlockCopy(WriteBuffer, pageNumber*PageSize, WriteBuffer, 0, _currentBufferPosition);
             }
         }
 

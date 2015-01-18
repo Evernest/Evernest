@@ -1,6 +1,5 @@
-﻿using System.Linq;
+﻿using System;
 using EvernestFront;
-using EvernestFront.Responses;
 using NUnit.Framework;
 
 namespace EvernestFrontTests
@@ -14,7 +13,7 @@ namespace EvernestFrontTests
 
         internal static string CreateUserKey_ReturnKey_AssertSuccess(User user, string keyName)
         {
-            SystemCommandResponse ans = user.CreateUserKey(keyName);
+            Response<Guid> ans = user.CreateUserKey(keyName);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             System.Threading.Thread.Sleep(100);
@@ -59,7 +58,7 @@ namespace EvernestFrontTests
             var usb = new UsersBuilder();
             var ans = usb.GetUser(key);
             Assert.IsTrue(ans.Success);
-            var actualUser = ans.User;
+            var actualUser = ans.Result;
             Assert.AreEqual(userId, actualUser.Id);
             Assert.AreEqual(user.Name, actualUser.Name);
             //other asserts?
@@ -83,7 +82,7 @@ namespace EvernestFrontTests
             var usb = new UsersBuilder();
             var ans = usb.IdentifyUser(key);
             Assert.IsTrue(ans.Success);
-            var user2 = ans.User;
+            var user2 = ans.Result;
             Assert.AreEqual(userId, user2.Id);
             Assert.AreEqual(user.Name, user2.Name);
             //other asserts?

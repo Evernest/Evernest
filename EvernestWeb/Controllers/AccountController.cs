@@ -46,7 +46,7 @@ namespace EvernestWeb.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    EvernestFront.Responses.GetUserResponse u = EvernestFront.User.GetUser(connexion.IdUser);
+                    EvernestFront.Responses.Response<User> u = EvernestFront.User.GetUser(connexion.IdUser);
                     EvernestFront.Responses.SetPassword p = u.User.SetPassword(model.Password, model.NewPassword);
                     if(p.Success)
                     {
@@ -119,7 +119,7 @@ namespace EvernestWeb.Controllers
                     if (u.Success)
                     {
                         // if it is ok, then create a cookie for the session
-                        EvernestFront.Responses.GetUserResponse g = EvernestFront.User.GetUser(u.UserId);
+                        EvernestFront.Responses.Response<User> g = EvernestFront.User.GetUser(u.UserId);
                         if (g.Success)
                         {
                             Connexion connexion = new Connexion(g.User.Id, g.User.SaltedPasswordHash, g.User.Name);

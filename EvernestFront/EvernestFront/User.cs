@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Security.Cryptography;
-using EvernestFront.Responses;
-using EvernestFront.Contract.SystemEvent;
 using EvernestFront.Service;
 using EvernestFront.Service.Command;
 using EvernestFront.Utilities;
@@ -49,27 +46,27 @@ namespace EvernestFront
             InternalRelatedEventStreams = streams;
         }
 
-        public SystemCommandResponse SetPassword(string passwordForVerification, string newPassword)
+        public Response<Guid> SetPassword(string passwordForVerification, string newPassword)
         {
             var passwordManager = new PasswordManager();
             if (!passwordManager.StringIsASCII(newPassword))
-                return new SystemCommandResponse(FrontError.InvalidString);
+                return new Response<Guid>(FrontError.InvalidString);
             if (!VerifyPassword(passwordForVerification))
-                return new SystemCommandResponse(FrontError.WrongPassword);
+                return new Response<Guid>(FrontError.WrongPassword);
             var command = new PasswordSetting(_commandHandler, Id, passwordForVerification, newPassword);
             command.Send();
-            return new SystemCommandResponse(command.Guid);
+            return new Response<Guid>(command.Guid);
         }
 
-        public SystemCommandResponse CreateUserKey(string keyName)
+        public Response<Guid> CreateUserKey(string keyName)
         {
             if (InternalUserKeys.ContainsKey(keyName))
-                return new SystemCommandResponse(FrontError.UserKeyNameTaken);
+                return new Response<Guid>(FrontError.UserKeyNameTaken);
             var keyGenerator = new KeyGenerator();
             var key = keyGenerator.NewKey();
             var command = new UserKeyCreation(_commandHandler, Id, keyName, key);
             command.Send();
-            return new SystemCommandResponse(command.Guid);
+            return new Response<Guid>(command.Guid);
         }
 
 

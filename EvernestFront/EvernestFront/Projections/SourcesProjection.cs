@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Immutable;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using EvernestFront.Contract.SystemEvent;
 
 namespace EvernestFront.Projections

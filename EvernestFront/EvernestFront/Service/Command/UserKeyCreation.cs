@@ -1,5 +1,4 @@
 ﻿using EvernestFront.Contract.SystemEvent;
-using EvernestFront.Utilities;
 
 namespace EvernestFront.Service.Command
 {

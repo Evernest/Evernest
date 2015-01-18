@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using EvernestFront.Responses;
 
 namespace EvernestFront
 {
@@ -29,7 +28,7 @@ namespace EvernestFront
         }
 
         
-        public SystemCommandResponse Delete()
+        public Response<Guid> Delete()
         {
             throw new NotImplementedException();
         }

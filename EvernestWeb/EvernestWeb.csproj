@@ -108,7 +108,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Application\SessionAuthorize.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -118,10 +117,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\StoreModel.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\AccountModels.cs" />
     <Compile Include="ViewModels\StoreModels.cs" />
+    <Compile Include="Helpers\SessionAuthorize.cs" />
+    <Compile Include="Helpers\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Theme\bootstrap.css" />

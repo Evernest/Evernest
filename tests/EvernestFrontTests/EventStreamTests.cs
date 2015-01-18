@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using EvernestFront;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
@@ -40,6 +41,7 @@ namespace EvernestFrontTests
             var ans = stream.SetRight(targetUserName, rights);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
+            Thread.Sleep(100);
         }
 
         internal static long PushEvent_GetId_AssertSuccess(long userId, long streamId, string message)
@@ -69,10 +71,6 @@ namespace EvernestFrontTests
             var stream = ans.Result;
             Assert.AreEqual(streamId, stream.Id);
             Assert.AreEqual(streamName, stream.Name);
-            var resp = stream.GetRelatedUsers();
-            var relatedUsers = new List<KeyValuePair<long, AccessRight>>();
-            relatedUsers.Add(new KeyValuePair<long, AccessRight>(userId,AccessRight.Admin));
-            Assert.AreEqual(relatedUsers, resp.Result);
             Assert.AreEqual(0, stream.Count);
         }
 

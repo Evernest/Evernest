@@ -7,9 +7,9 @@ namespace EvernestFrontTests
     [TestFixture]
     class UserTestsTowardUserKeys
     {
-        private const string UserName = "userName";
-        private const string UserName2 = "userName2";
-        private const string KeyName = "keyName";
+        private string _userName;
+        private string _userName2;
+        private string _keyName;
 
         internal static string CreateUserKey_ReturnKey_AssertSuccess(User user, string keyName)
         {
@@ -23,36 +23,38 @@ namespace EvernestFrontTests
         [SetUp]
         public void ResetTables()
         {
-            //TODO : reset tables ?
+            _userName = AssertAuxiliaries.NewName;
+            _userName2 = AssertAuxiliaries.NewName;
+            _keyName = AssertAuxiliaries.NewName;
             Setup.ClearAsc();
         }
 
         [Test]
         public void CreateUserKey_Success()
         {
-            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var userId = UserTests.AddUser_GetId_AssertSuccess(_userName);
             var user = UserTests.GetUser_AssertSuccess(userId);
-            var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
+            var key = CreateUserKey_ReturnKey_AssertSuccess(user, _keyName);
         }
 
 
         [Test]
         public void CreateUserKey_UserKeyNameTaken()
         {
-            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var userId = UserTests.AddUser_GetId_AssertSuccess(_userName);
             var user = UserTests.GetUser_AssertSuccess(userId);
-            var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
+            var key = CreateUserKey_ReturnKey_AssertSuccess(user, _keyName);
             user = UserTests.GetUser_AssertSuccess(userId);
-            var ans = user.CreateUserKey(KeyName);
+            var ans = user.CreateUserKey(_keyName);
             AssertAuxiliaries.ErrorAssert(FrontError.UserKeyNameTaken,ans);
         }
 
         [Test]
         public void GetUser_FromUserKey_Success()
         {
-            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var userId = UserTests.AddUser_GetId_AssertSuccess(_userName);
             var user = UserTests.GetUser_AssertSuccess(userId);
-            var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
+            var key = CreateUserKey_ReturnKey_AssertSuccess(user, _keyName);
             var usb = new UsersBuilder();
             var ans = usb.GetUser(key);
             Assert.IsTrue(ans.Success);
@@ -74,9 +76,9 @@ namespace EvernestFrontTests
         [Test]
         public void IdentifyUser_Success()
         {
-            var userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
+            var userId = UserTests.AddUser_GetId_AssertSuccess(_userName);
             var user = UserTests.GetUser_AssertSuccess(userId);
-            var key = CreateUserKey_ReturnKey_AssertSuccess(user, KeyName);
+            var key = CreateUserKey_ReturnKey_AssertSuccess(user, _keyName);
             var usb = new UsersBuilder();
             var ans = usb.IdentifyUser(key);
             Assert.IsTrue(ans.Success);

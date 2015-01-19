@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using EvernestFront;
 using EvernestFront.Contract;
@@ -78,7 +79,7 @@ namespace EvernestFrontTests
             Assert.IsTrue(ans.Success);
             Thread.Sleep(100);
             user = UserTests.GetUser_AssertSuccess(userId);
-            Assert.IsFalse(user.SourceNameToId.ContainsKey(sourceName));
+            Assert.IsFalse(user.Sources.Contains(sourceId));
 
         }
 
@@ -93,10 +94,10 @@ namespace EvernestFrontTests
             var source1 = sb.GetSource(key).Result;
             var source2 = sb.GetSource(key2).Result;
             User user = UserTests.GetUser_AssertSuccess(userId);
-            var sources = user.SourceNameToId;
-            Assert.AreEqual(2, sources.Count);
-            Assert.IsTrue(sources.Contains(new KeyValuePair<string, long>(SourceName, source1.Id)));
-            Assert.IsTrue(sources.Contains(new KeyValuePair<string, long>(SourceName2, source2.Id)));
+            var sources = user.Sources.ToList();
+            Assert.AreEqual(2, sources.Count());
+            Assert.IsTrue(sources.Contains(source1.Id));
+            Assert.IsTrue(sources.Contains(source2.Id));
         }
 
     }

@@ -45,7 +45,7 @@ namespace EvernestFrontTests
             const string streamName = "stream";
             const int streamId = 42;
             var systemEvent = new EventStreamCreatedSystemEvent(streamId, streamName, userName);
-            var envelope = new SystemEventEnvelope(systemEvent.GetType().ToString(), serializer.WriteContract(systemEvent));
+            var envelope = new SystemEventEnvelope(systemEvent.GetType().Name, serializer.WriteContract(systemEvent));
             var serializedContract = serializer.WriteContract(envelope);
             var deserializedContract = serializer.ReadSystemEventEnvelope(serializedContract);
             Assert.IsAssignableFrom<EventStreamCreatedSystemEvent>(deserializedContract);

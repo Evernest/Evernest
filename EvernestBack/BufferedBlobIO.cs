@@ -14,7 +14,7 @@ namespace EvernestBack
     /// Speeds up network transactions with buffered output.
     /// Minimizes latency between a push and the availability of corresponding data.
     /// </summary>
-    internal class BufferedBlobIO
+    internal class BufferedBlobIO:IDisposable
     {
         public byte[] WriteBuffer {get; private set;}
         public CloudPageBlob Blob {get; private set;} //wait, why did i make this accessible already?!
@@ -239,9 +239,7 @@ namespace EvernestBack
             return true;
         }
 
-        //mmmh destructors are never called at the good time in this language (sigh), so not sure it's that usefull
-        //IDisposable?
-        ~BufferedBlobIO()
+        public void Dispose()
         {
             FlushBuffer();
         }

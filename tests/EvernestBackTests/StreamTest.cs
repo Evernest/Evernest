@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using NUnit.Framework;
 using EvernestBack;
 
@@ -7,16 +8,12 @@ namespace EvernestBackTests
     [TestFixture]
     public class StreamTest
     {
-        [Test]
-        public void PushAndPull()
+        public void MultiplePushAndPull(IEventStream stream, int count)
         {
-            AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
-            var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
-            const int n = 1000;
-            var tbl = new bool[n];
-            for (var i = 0; i < n; i++)
+            var tbl = new bool[count];
+            for (var i = 0; i < count; i++)
                 tbl[i] = false;
-            for (var i = 0; i < n; i++)
+            for (var i = 0; i < count; i++)
             {
                 stream.Push(i.ToString(),
                     pushAgent =>
@@ -24,7 +21,7 @@ namespace EvernestBackTests
                         stream.Pull(pushAgent.RequestID, pullAgent =>
                         {
                             Console.WriteLine(pullAgent.RequestID);
-                            tbl[pullAgent.RequestID] = true;
+                            tbl[int.Parse(pullAgent.Message)] = true;
                         },
                             (pullAgent, message) =>
                             {
@@ -42,8 +39,16 @@ namespace EvernestBackTests
             while (!ok)
             {
                 ok = true;
-                for (var i = 0; i < 1000 && ok; ok = (ok && tbl[i]), i++) ;
+                for (var i = 0; i < count && ok; ok = (ok && tbl[i]), i++) ;
             }
+        }
+
+        [Test]
+        public void PushAndPull()
+        {
+            AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
+            var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
+            MultiplePushAndPull(stream, 500);
         }
 
         [Test]
@@ -71,5 +76,14 @@ namespace EvernestBackTests
             Assert.IsTrue(success);
         }
 
+        [Test]
+        public void TwoBatches()
+        {
+            AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
+            var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
+            MultiplePushAndPull(stream, 100);
+            Thread.Sleep(3000);
+            MultiplePushAndPull(stream, 100);
+        }
     }
 }

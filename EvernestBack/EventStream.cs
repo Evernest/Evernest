@@ -10,6 +10,7 @@ namespace EvernestBack
         private CloudPageBlob _blob;
         private readonly EventIndexer _indexer;
         private readonly WriteLocker _writeLock;
+        private BufferedBlobIO _bufferedIO;
 
         /// <summary>
         ///     Construct a new EventStream.
@@ -19,15 +20,15 @@ namespace EvernestBack
             _blob = storage.StreamContainer.GetPageBlobReference(streamID);
             var streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
 
-            var buffer = new BufferedBlobIO(_blob);
-            _indexer = new EventIndexer(streamIndexBlob, buffer);
-            _writeLock = new WriteLocker(buffer, _indexer, _indexer.ReadIndexInfo());
-            _writeLock.Store();
+            _bufferedIO = new BufferedBlobIO(_blob);
+            _indexer = new EventIndexer(streamIndexBlob, _bufferedIO);
+            _writeLock = new WriteLocker(_bufferedIO, _indexer, _indexer.ReadIndexInfo());
         }
 
         public void Dispose()
         {
             // TODO: close blob
+            //_bufferedIO.Dispose();
         }
 
         /// <summary>

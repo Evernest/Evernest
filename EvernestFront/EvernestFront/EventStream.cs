@@ -58,6 +58,15 @@ namespace EvernestFront
             return new Response<IDictionary<string, AccessRight>>(RelatedUsers);
         }
 
+        public Response<Guid> SetUserRight(long targetId, AccessRight right)
+        {
+            var usersBuilder = new UsersBuilder();
+            User targetUser;
+            if (!usersBuilder.TryGetUser(targetId, out targetUser))
+                return new Response<Guid>(FrontError.UserIdDoesNotExist);
+            return SetUserRight(targetUser.Name, right);
+        }
+
         public Response<Guid> SetUserRight(string targetName, AccessRight right)
         {
             if (!ValidateAccessAction(AccessAction.Admin))

@@ -152,7 +152,7 @@ namespace EvernestFront.Projections
 
         private void When(EventStreamDeletedSystemEvent systemEvent)
         {
-            //delete in each user concerned?
+            //TODO : delete in each user concerned?
         }
 
         private void When(PasswordSetSystemEvent systemEvent)

@@ -1,25 +1,34 @@
 ﻿@model IEnumerable<EvernestFront.EventStream>
 
-<table>
+<table class="table table-striped">
     <thead>
-    <tr>
-        <th>Id</th>
-        <th>Stream name</th>
-        <th></th>
-        <th></th>
-    </tr>
+        <tr>
+            <th>#</th>
+            <th>Stream name</th>
+            <th></th>
+            <th></th>
+        </tr>
     </thead>
 
     <tbody>
-    @foreach (var stream in Model)
-    {
-        <tr>
-            <td>@stream.Id</td>
-            <td>@stream.Name</td>
-            <td>@Html.ActionLink("Details", "Stream", "Manager", stream)</td>
-            <td>@Html.ActionLink("Delete", "DeleteStream", "Manager", stream)</td>
-        </tr>
-    }
+        @foreach (var stream in Model)
+        {
+            <tr>
+                <td>@stream.Id</td>
+                <td>@stream.Name</td>
+                <td>@Html.ActionLink("Details", "Stream", "Manager", stream)</td>
+                <td>@Html.ActionLink("Delete", "DeleteStream", "Manager", stream)</td>
+            </tr>
+        }
+        @if (!Model.Any())
+        {
+            <tr>
+                <td></td>
+                <td><em>You have no stream yet.</em></td>
+                <td></td>
+                <td></td>
+            </tr>
+        }
     </tbody>
     <tfoot>
         <tr>

@@ -33,6 +33,8 @@ namespace EvernestWeb.Controllers
                 return View();
 
             var model = new ManagerModel();
+            model.Streams = new List<EventStream>();
+            model.Sources = new List<Source>();
             return View(model);
         }
 

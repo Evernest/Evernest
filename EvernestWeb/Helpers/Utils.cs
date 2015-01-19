@@ -37,6 +37,8 @@ namespace EvernestWeb.Helpers
 
         public static StreamAndEvents getStreamsAndEvents(long streamId, long userId)
         {
+            return null;
+            /*
             EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(streamId);
             EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(userId);
             if (s.Success && u.Success)
@@ -59,7 +61,7 @@ namespace EvernestWeb.Helpers
 
                 return streamAndEvents;
             }
-            return null;
+            */
         }
 
     }

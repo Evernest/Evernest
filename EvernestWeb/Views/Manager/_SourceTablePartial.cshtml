@@ -1,9 +1,9 @@
 ﻿@model IEnumerable<EvernestFront.Source>
 
-<table>
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>Id</th>
+            <th>#</th>
             <th>Source name</th>
             <th></th>
             <th></th>
@@ -18,6 +18,15 @@
                 <td>@source.Name</td>
                 <td>@Html.ActionLink("Details", "Source", "Manager", source)</td>
                 <td>@Html.ActionLink("Delete", "DeleteSource", "Manager", source)</td>
+            </tr>
+        }
+        @if (!Model.Any())
+        {
+            <tr>
+                <td></td>
+                <td><em>You have no source yet.</em></td>
+                <td></td>
+                <td></td>
             </tr>
         }
     </tbody>

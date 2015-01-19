@@ -7,7 +7,7 @@ namespace EvernestFront
 {
     public class StartUp
     {
-        public void Start()
+        public static void Start()
         {
             var injector = Injector.Instance;
             injector.Build();

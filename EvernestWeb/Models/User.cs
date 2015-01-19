@@ -16,13 +16,5 @@ namespace EvernestWeb.Models
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
-
-        public User(long id, string username, string password)
-        {
-            Id = id;
-            Username = username;
-            Password = password;
-            RememberMe = false;
-        }
     }
 }

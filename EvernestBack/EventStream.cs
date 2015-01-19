@@ -27,8 +27,9 @@ namespace EvernestBack
 
         public void Dispose()
         {
-            // TODO: close blob
-            //_bufferedIO.Dispose();
+            _writeLock.Dispose();
+            _indexer.Dispose();
+            _bufferedIO.Dispose();
         }
 
         /// <summary>

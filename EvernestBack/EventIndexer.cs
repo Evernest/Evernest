@@ -5,7 +5,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
 {
-    internal class EventIndexer
+    internal class EventIndexer:IDisposable
     {
         private History _milestones;
         private ulong _currentChunkBytes;
@@ -137,6 +137,11 @@ namespace EvernestBack
             if (currentId == id)
                 message = Encoding.Unicode.GetString(buffer, currentPosition, messageLength);
             return currentId == id;
+        }
+
+        public void Dispose()
+        {
+            UploadIndex();
         }
     }
 }

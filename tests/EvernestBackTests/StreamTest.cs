@@ -25,14 +25,14 @@ namespace EvernestBackTests
                         },
                             (pullAgent, message) =>
                             {
-                                Console.WriteLine("PullAgent : " + pullAgent.RequestID + "failed with message :\n" +
+                                throw new Exception("PullAgent : " + pullAgent.RequestID + "failed with message :\n" +
                                                   message);
                             }
                             );
                     },
                     (pushAgent, message) =>
                     {
-                        Console.WriteLine("Push Agent : " + pushAgent.RequestID + "failed with message :\n" + message);
+                        throw new Exception("Push Agent : " + pushAgent.RequestID + "failed with message :\n" + message);
                     });
             }
             var ok = false;
@@ -84,6 +84,28 @@ namespace EvernestBackTests
             MultiplePushAndPull(stream, 100);
             Thread.Sleep(3000);
             MultiplePushAndPull(stream, 100);
+        }
+
+        [Test]
+        public void Persistance()
+        {
+            AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
+            var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
+            int count = 100;
+            MultiplePushAndPull(stream, count);
+            AzureStorageClient.Instance.CloseStream("TEST");
+            stream = AzureStorageClient.Instance.GetEventStream("TEST");
+            for (var i = 0; i < count; i++)
+            {
+                stream.Pull(i,
+                    pullAgent =>
+                    {
+                        Console.WriteLine(i);
+                        Assert.AreEqual(i, int.Parse(pullAgent.Message));
+                    },
+                    (pullAgent, message) => { Assert.Fail(); }
+                    );
+            }
         }
     }
 }

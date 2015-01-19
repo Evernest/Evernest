@@ -16,15 +16,21 @@ namespace EvernestFront.CommandHandling.Commands
             CreatorName = creatorName;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
         {
-            if (serviceData.EventStreamNameExists(EventStreamName))
+            if (!commandHandlingData.UserNames.Contains(CreatorName))
+            {
+                systemEvent = null;
+                error = FrontError.UserNameDoesNotExist;
+                return false;
+            }
+            if (commandHandlingData.EventStreamNames.Contains(EventStreamName))
             {
                 systemEvent = null;
                 error = FrontError.EventStreamNameTaken;
                 return false;
             }
-            var id = serviceData.NextEventStreamId;
+            var id = commandHandlingData.NextEventStreamId;
             AzureStorageClient.Instance.GetNewEventStream(Convert.ToString(id));
             systemEvent = new EventStreamCreatedSystemEvent(id, EventStreamName, CreatorName);
             error = null;

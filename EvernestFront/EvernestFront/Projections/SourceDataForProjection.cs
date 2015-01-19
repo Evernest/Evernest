@@ -29,6 +29,8 @@ namespace EvernestFront.Projections
         internal SourceDataForProjection SetSourceRight(long eventStreamId, AccessRight right)
         {
             var eventStreams = RelatedEventStreams.SetItem(eventStreamId, right);
+            if (right == AccessRight.NoRight)
+                eventStreams = eventStreams.Remove(eventStreamId);
             return new SourceDataForProjection(SourceName, SourceId, UserId, eventStreams);
         }
     }

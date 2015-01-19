@@ -23,10 +23,10 @@ namespace EvernestFront.CommandHandling.Commands
             Right = right;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
         {
             HashSet<string> eventStreamAdmins;
-            if (!serviceData.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
+            if (!commandHandlingData.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
             {
                 error=FrontError.EventStreamIdDoesNotExist;
                 systemEvent = null;

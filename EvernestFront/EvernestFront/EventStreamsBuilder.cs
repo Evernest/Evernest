@@ -23,13 +23,13 @@ namespace EvernestFront
         
 
         //public corresponding method is a User instance method
-        internal Response<Guid> CreateEventStream(string creatorName, string streamName)
+        internal Response<Guid> CreateEventStream(User user, string streamName)
         {
             if (_eventStreamsProjection.EventStreamNameExists(streamName))
                 return new Response<Guid>(FrontError.EventStreamNameTaken);
             // this is supposed to be called by a user object, so creator should always exist
 
-            var command = new EventStreamCreationCommand(_commandReceiver, streamName, creatorName);
+            var command = new EventStreamCreationCommand(_commandReceiver, streamName, user.Name);
             command.Send();
             return new Response<Guid>(command.Guid);
         }

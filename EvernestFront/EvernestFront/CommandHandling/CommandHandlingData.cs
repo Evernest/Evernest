@@ -14,19 +14,9 @@ namespace EvernestFront.CommandHandling
         internal HashSet<string> EventStreamNames { get; set; }
         internal Dictionary<long, HashSet<string>> EventStreamIdToAdmins { get; set; }
 
-        private long _nextUserId;
+        internal long NextUserId;
 
-        internal long NextUserId
-        {
-            get { return (_nextUserId++); }
-        }
-
-        private long _nextEventStreamId;
-
-        internal long NextEventStreamId
-        {
-            get { return (_nextEventStreamId++); }
-        }
+        internal long NextEventStreamId;
 
             
         internal CommandHandlingData(long numberOfREservedIds)
@@ -36,21 +26,9 @@ namespace EvernestFront.CommandHandling
             EventStreamNames = new HashSet<string>();
             EventStreamIdToAdmins = new Dictionary<long, HashSet<string>>();
             // ids from 0 to numberOfREservedIds-1 are reserved for system
-            _nextUserId = numberOfREservedIds;
-            _nextEventStreamId = numberOfREservedIds;
+            NextUserId = numberOfREservedIds;
+            NextEventStreamId = numberOfREservedIds;
         }
-
-
-
-        internal bool UserNameExists(string name)
-        {
-            return UserNames.Contains(name);
-        }
-        internal bool EventStreamNameExists(string name)
-        {
-            return EventStreamNames.Contains(name);
-        }
-
 
 
 
@@ -65,6 +43,7 @@ namespace EvernestFront.CommandHandling
         {
             EventStreamNames.Add(systemEvent.StreamName);
             EventStreamIdToAdmins.Add(systemEvent.StreamId, new HashSet<string> { systemEvent.CreatorName });
+            NextEventStreamId++;
         }
 
         private void When(EventStreamDeletedSystemEvent systemEvent)
@@ -113,6 +92,7 @@ namespace EvernestFront.CommandHandling
             var userData = new CommandHandlingUserData(systemEvent.UserName, systemEvent.SaltedPasswordHash,
                 systemEvent.PasswordSalt);
             UserIdToData.Add(systemEvent.UserId, userData);
+            NextUserId++;
         }
 
         private void When(UserDeletedSystemEvent systemEvent)

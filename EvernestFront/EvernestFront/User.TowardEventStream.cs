@@ -1,5 +1,6 @@
 ﻿using System;
 using EvernestBack;
+using EvernestFront.Contract;
 
 namespace EvernestFront
 {
@@ -28,7 +29,7 @@ namespace EvernestFront
         public Response<Guid> CreateEventStream(string streamName)
         {
             var builder = new EventStreamsBuilder();
-            return builder.CreateEventStream(Name, streamName);
+            return builder.CreateEventStream(this, streamName);
         }
 
         //password is asked again because event stream deletion is a major operation

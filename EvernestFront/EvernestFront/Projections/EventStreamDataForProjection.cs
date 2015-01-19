@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using EvernestBack;
+using EvernestFront.Contract;
 
 namespace EvernestFront.Projections
 {
@@ -33,6 +34,8 @@ namespace EvernestFront.Projections
         internal EventStreamDataForProjection SetRight(string user, AccessRight right)
         {
             var users = RelatedUsers.SetItem(user, right);
+            if (right == AccessRight.NoRight)
+                users = users.Remove(user);
             return new EventStreamDataForProjection(StreamName, users, BackStream);
         }
     }

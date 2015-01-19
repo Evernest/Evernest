@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using EvernestFront.Contract;
 using EvernestFront.Projections;
 using EvernestFront.CommandHandling;
 using EvernestFront.CommandHandling.Commands;

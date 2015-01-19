@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EvernestFront.Contract;
 
 namespace EvernestWeb.ViewModels
 {
@@ -55,7 +56,7 @@ namespace EvernestWeb.ViewModels
         public string NewUser { get; set; }
 
         [Required]
-        public EvernestFront.AccessRight Right { get; set; }
+        public AccessRight Right { get; set; }
 
         [Required]
         public long StreamId { get; set; }
@@ -68,7 +69,7 @@ namespace EvernestWeb.ViewModels
         public string Name { get; set; }
         public long Count { get; set; }
         public long LastEventId { get; set;}
-        public List<KeyValuePair<string, EvernestFront.AccessRight>> RelatedUsers { get; set; }
+        public List<KeyValuePair<string, AccessRight>> RelatedUsers { get; set; }
 
         // Events
         public List<EvernestFront.Event> Events;

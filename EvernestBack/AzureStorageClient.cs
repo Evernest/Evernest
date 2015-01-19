@@ -156,13 +156,7 @@ namespace EvernestBack
         {
             if (StreamExists(streamID))
             {
-                IEventStream stream;
-                if (_openedStreams.TryGetValue(streamID, out stream))
-                {
-                    _openedStreams.Remove(streamID);        // calls destructor & closes stream
-                    stream.Dispose();
-                }
-
+                CloseStream(streamID);
                 if (_dummy)
                 {
                     MemoryEventStream.DeleteStream(this, streamID);
@@ -171,6 +165,16 @@ namespace EvernestBack
                 {
                     EventStream.DeleteStream(this, streamID);
                 }   
+            }
+        }
+
+        public void CloseStream(string streamID)
+        {
+            IEventStream stream;
+            if (_openedStreams.TryGetValue(streamID, out stream))
+            {
+                _openedStreams.Remove(streamID);        // calls destructor & closes stream
+                stream.Dispose();
             }
         }
 

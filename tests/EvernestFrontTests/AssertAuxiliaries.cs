@@ -2,6 +2,7 @@
 
 using System;
 using EvernestFront;
+using EvernestFront.Contract;
 using Assert = NUnit.Framework.Assert;
 
 namespace EvernestFrontTests

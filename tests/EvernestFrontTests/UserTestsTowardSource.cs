@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using EvernestFront;
+using EvernestFront.Contract;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 

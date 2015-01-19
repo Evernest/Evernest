@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using EvernestFront.Contract;
 
 namespace EvernestFront.Projections
 {
@@ -44,6 +45,8 @@ namespace EvernestFront.Projections
         internal UserDataForProjection SetUserRight(long eventStream, AccessRight right)
         {
             var eventStreams = RelatedEventStreams.SetItem(eventStream, right);
+            if (right == AccessRight.NoRight)
+                eventStreams = eventStreams.Remove(eventStream);
             return new UserDataForProjection(UserName, SaltedPasswordHash, PasswordSalt, Keys, eventStreams,
                 Sources, SourceKeys);
         }

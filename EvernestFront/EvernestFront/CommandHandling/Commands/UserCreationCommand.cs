@@ -1,4 +1,5 @@
-﻿using EvernestFront.Contract.SystemEvents;
+﻿using EvernestFront.Contract;
+using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
 namespace EvernestFront.CommandHandling.Commands
@@ -16,9 +17,9 @@ namespace EvernestFront.CommandHandling.Commands
             Password = password;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
         {
-            if (serviceData.UserNameExists(UserName))
+            if (commandHandlingData.UserNames.Contains(UserName))
             {
                 error=FrontError.UserNameTaken;
                 systemEvent = null;
@@ -26,7 +27,7 @@ namespace EvernestFront.CommandHandling.Commands
             }
             var passwordManager = new PasswordManager();
             var hashSalt = passwordManager.SaltAndHash(Password);
-            systemEvent= new UserCreatedSystemEvent(UserName, serviceData.NextUserId, hashSalt.Key, hashSalt.Value);
+            systemEvent= new UserCreatedSystemEvent(UserName, commandHandlingData.NextUserId, hashSalt.Key, hashSalt.Value);
             error = null;
             return true;
         }

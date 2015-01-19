@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
@@ -21,17 +22,17 @@ namespace EvernestFront.CommandHandling.Commands
             AdminPassword = adminPassword;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
         {
             HashSet<string> eventStreamAdmins;
-            if (!serviceData.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
+            if (!commandHandlingData.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
             {
                 error = FrontError.EventStreamIdDoesNotExist;
                 systemEvent = null;
                 return false;
             }
             CommandHandlingUserData userData;
-            if (!serviceData.UserIdToData.TryGetValue(AdminId, out userData))
+            if (!commandHandlingData.UserIdToData.TryGetValue(AdminId, out userData))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;

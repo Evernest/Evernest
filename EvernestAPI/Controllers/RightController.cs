@@ -4,6 +4,8 @@ using System.Net;
 using System.Net.Http;
 using EvernestAPI.Models;
 using EvernestFront;
+using EvernestFront.Contract;
+
 namespace EvernestAPI.Controllers
 {
     public class RightController : ApiController
@@ -15,7 +17,7 @@ namespace EvernestAPI.Controllers
         public HttpResponseMessage Get(string sourceId, int streamId)
         {
             var ans = new Hashtable();
-            Hashtable body;
+
             try
             {
                 body = Tools.ParseRequest(Request);
@@ -83,7 +85,17 @@ namespace EvernestAPI.Controllers
         public HttpResponseMessage Set(string sourceId, int streamId, string right)
         {
             var ans = new Hashtable();
+<<<<<<< HEAD
             Hashtable body;
+=======
+            Hashtable nvc;
+            var failed = false;
+
+            FrontError? error = null;
+            string errorMessage = null;
+            var accessRight = AccessRight.NoRight;
+
+>>>>>>> origin/master
             try
             {
                 body = Tools.ParseRequest(Request);

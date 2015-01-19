@@ -1,4 +1,5 @@
-﻿using EvernestFront.Contract.SystemEvents;
+﻿using EvernestFront.Contract;
+using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.CommandHandling.Commands
 {
@@ -21,10 +22,10 @@ namespace EvernestFront.CommandHandling.Commands
 
 
 
-        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
         {
             CommandHandlingUserData userData;
-            if (!serviceData.UserIdToData.TryGetValue(UserId, out userData))
+            if (!commandHandlingData.UserIdToData.TryGetValue(UserId, out userData))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;

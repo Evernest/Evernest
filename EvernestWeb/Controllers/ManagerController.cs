@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 
 using EvernestFront;
-
+using EvernestFront.Contract;
 using EvernestWeb.ViewModels;
 using EvernestWeb.Helpers;
 

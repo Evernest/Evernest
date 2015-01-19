@@ -1,4 +1,6 @@
-﻿namespace EvernestFront
+﻿using EvernestFront.Contract;
+
+namespace EvernestFront
 {
     public class Response<T>
     {

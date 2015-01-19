@@ -134,7 +134,7 @@ namespace EvernestBack
         /// <returns>
         /// True if such an element exists, false otherwise.
         /// </returns>
-        public bool GreaterElement(ref ulong element)
+        public bool GreatestElement(ref ulong element)
         {
             if (_lastNode != null)
                 element = _lastNode.Element;

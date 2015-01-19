@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using NUnit.Framework;
 using EvernestBack;
 
@@ -9,7 +8,7 @@ namespace EvernestBackTests
     public class StreamTest
     {
         [Test]
-        public void Test1()
+        public void PushAndPull()
         {
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
@@ -24,6 +23,7 @@ namespace EvernestBackTests
                     {
                         stream.Pull(pushAgent.RequestID, pullAgent =>
                         {
+                            Console.WriteLine(pullAgent.RequestID);
                             tbl[pullAgent.RequestID] = true;
                         },
                             (pullAgent, message) =>
@@ -45,5 +45,31 @@ namespace EvernestBackTests
                 for (var i = 0; i < 1000 && ok; ok = (ok && tbl[i]), i++) ;
             }
         }
+
+        [Test]
+        public void BigPush()
+        {
+            AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
+            var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
+            string str = new string(' ', UInt16.MaxValue);
+            bool success = false, done = false;
+            stream.Push(str,
+                pushAgent =>
+                {
+                    stream.Pull(pushAgent.RequestID,
+                        pullAgent =>
+                        {
+                            success = pullAgent.Message == str;
+                            done = true;
+                        },
+                        (pullAgent, message) => { done = true; }
+                        );
+                },
+                (pushAgent, message) => { done = true; }
+                );
+            while (!done) ;
+            Assert.IsTrue(success);
+        }
+
     }
 }

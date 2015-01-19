@@ -34,8 +34,8 @@ namespace EvernestBack
                     {
                         var agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.CallbackSuccess,
                             pendingEvent.CallbackFailure);
-                        ulong wroteBytes = Write(agent);
-                        _indexer.NotifyNewEntry(CurrentID, wroteBytes);
+                        int wroteBytes = Write(agent);
+                        _indexer.NotifyNewEntry(CurrentID, (ulong) wroteBytes);
                         CurrentID++;
                         agent.Processed();
                     }
@@ -44,9 +44,9 @@ namespace EvernestBack
                 );
         }
 
-        private UInt16 Write(Agent prod)
+        private int Write(Agent prod)
         {
-            UInt16 size;
+            int size;
             var bytes = prod.Serialize(out size);
             _writeBuffer.Push(bytes, 0, size);
             return size;

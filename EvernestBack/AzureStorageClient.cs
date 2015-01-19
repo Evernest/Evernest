@@ -143,17 +143,11 @@ namespace EvernestBack
         private void CreateEventStream(String streamID)
         {
             if (StreamExists(streamID))
-            {
                 throw new ArgumentException("Stream already exists : " + streamID);
-            }
             if (_dummy)
-            {
                 MemoryEventStream.CreateStream(this, streamID);
-            }
             else
-            {
                 EventStream.CreateStream(this, streamID);
-            }
         }
 
         //missing something to close streams

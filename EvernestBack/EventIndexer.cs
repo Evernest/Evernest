@@ -17,6 +17,7 @@ namespace EvernestBack
         private uint _newEntryCount;
         private uint _indexUpdateMinimumDelay;
         private DateTime _lastIndexUpdateTime;
+        private HashCache _cache;
 
         public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer)
         {
@@ -28,6 +29,7 @@ namespace EvernestBack
             _milestones = new History();
             _lastIndexUpdateTime = DateTime.UtcNow;
             _newEntryCount = 0;
+            _cache = new HashCache(Int32.Parse(ConfigurationManager.AppSettings["CacheSize"]));
         }
 
         public void NotifyNewEntry(long id, ulong wroteBytes)
@@ -46,13 +48,25 @@ namespace EvernestBack
 
         public bool FetchEvent(long id, out string message)
         {
-            return PullFromLocalCache(id, out message) || PullFromCloud(id, out message);
+            if (PullFromLocalCache(id, out message))
+            {
+                Console.WriteLine("Pull from cache.");
+                return true;
+            } else { 
+                if (PullFromCloud(id, out message)) 
+                {
+                    Console.WriteLine("Encache.");
+                    _cache.Add(id, message); 
+                    return true;
+                } 
+            }
+            return false;
         }
 
         private bool PullFromLocalCache(long id, out string message)
         {
-            message = ""; //no cache yet
-            return false;
+            message = _cache.Get(id); 
+            return !message.Equals("", StringComparison.InvariantCulture);
         }
 
         public void UploadIndexIfMeetConditions()

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Projections;
 
-namespace EvernestFront
+namespace EvernestFront.CommandHandling
 {
     class Dispatcher
     {

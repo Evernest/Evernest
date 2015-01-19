@@ -2,7 +2,7 @@
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class SourceCreation : CommandBase
+    class SourceCreationCommand : CommandBase
     {
         internal readonly long UserId;
 
@@ -10,7 +10,7 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal readonly string SourceKey;
 
-        internal SourceCreation(CommandHandler commandHandler, long userId, string sourceName, string sourceKey)
+        internal SourceCreationCommand(CommandHandler commandHandler, long userId, string sourceName, string sourceKey)
             :base(commandHandler)
         {
             UserId = userId;
@@ -18,10 +18,10 @@ namespace EvernestFront.CommandHandling.Commands
             SourceKey = sourceKey;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
-            UserDataForService userData;
-            if (!serviceData.UserIdToDatas.TryGetValue(UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!serviceData.UserIdToData.TryGetValue(UserId, out userData))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;

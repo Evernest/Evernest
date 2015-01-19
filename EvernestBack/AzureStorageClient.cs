@@ -13,9 +13,7 @@ namespace EvernestBack
         private static readonly object _initializeLock = new object();
         private static AzureStorageClient _singleton;
         private readonly CloudBlobClient _blobClient;
-        private readonly int _bufferSize;
         private readonly bool _dummy;
-        private readonly uint _eventChunkSize;
         private readonly Dictionary<String, IEventStream> _openedStreams;
 
         internal readonly long PageBlobSize;
@@ -42,8 +40,6 @@ namespace EvernestBack
                 {
                     // TODO
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
-                    _bufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
-                    _eventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
                     PageBlobSize = UInt32.Parse(ConfigurationManager.AppSettings["PageBlobSize"]);
                     storageAccount = CloudStorageAccount.Parse(connectionString);
                 }
@@ -118,7 +114,7 @@ namespace EvernestBack
         {
             if (!StreamExists(streamID))
             {
-                throw new ArgumentException("The stream " + streamID + " does not exists.");
+                throw new ArgumentException("The stream " + streamID + " does not exist.");
             }
 
             IEventStream stream;
@@ -127,14 +123,13 @@ namespace EvernestBack
                 // If the stream is already opened
                 return stream;
             }
-
             if (_dummy)
             {
                 stream = new MemoryEventStream(this, streamID);
             }
             else
             {
-                stream = new EventStream(this, streamID, _bufferSize, _eventChunkSize);
+                stream = new EventStream(this, streamID);
             }
 
             _openedStreams.Add(streamID, stream);
@@ -148,22 +143,16 @@ namespace EvernestBack
         private void CreateEventStream(String streamID)
         {
             if (StreamExists(streamID))
-            {
                 throw new ArgumentException("Stream already exists : " + streamID);
-            }
             if (_dummy)
-            {
                 MemoryEventStream.CreateStream(this, streamID);
-            }
             else
-            {
                 EventStream.CreateStream(this, streamID);
-            }
         }
 
         //missing something to close streams
 
-        public void DeleteStreamIfExists(String streamID)
+        public void DeleteStreamIfExists(string streamID)
         {
             if (StreamExists(streamID))
             {

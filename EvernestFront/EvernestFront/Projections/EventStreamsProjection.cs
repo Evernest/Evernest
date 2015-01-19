@@ -120,6 +120,7 @@ namespace EvernestFront.Projections
         private void When(PasswordSetSystemEvent systemEvent) { }
         private void When(SourceCreatedSystemEvent systemEvent) { }
         private void When(SourceDeletedSystemEvent systemEvent) { }
+        private void When(SourceRightSetSystemEvent systemEvent) { }
         private void When(UserCreatedSystemEvent systemEvent) { }
         private void When(UserKeyCreatedSystemEvent systemEvent) { }
         private void When(UserKeyDeletedSystemEvent systemEvent) { }

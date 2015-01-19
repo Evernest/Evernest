@@ -6,7 +6,7 @@ namespace EvernestBack
     {
         public static void Reverse(Byte[] array, int offset, int count)
         {
-            for (UInt16 i = 0; i < count; i++)
+            for (UInt16 i = 0; i < count/2; i++)
             {
                 var tmp = array[offset + i];
                 array[offset + i] = array[offset + count - 1 - i];

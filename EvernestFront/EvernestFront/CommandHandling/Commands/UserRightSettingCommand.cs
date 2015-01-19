@@ -3,7 +3,7 @@ using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class UserRightSettingByUser : CommandBase
+    class UserRightSettingCommand : CommandBase
     {
         internal string TargetName { get; private set; }
 
@@ -13,7 +13,7 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal AccessRight Right { get; private set; }
 
-        internal UserRightSettingByUser(CommandHandler commandHandler, string targetName, long eventStreamId,
+        internal UserRightSettingCommand(CommandHandler commandHandler, string targetName, long eventStreamId,
             string adminName, AccessRight right)
             : base(commandHandler)
         {
@@ -23,7 +23,7 @@ namespace EvernestFront.CommandHandling.Commands
             Right = right;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
             HashSet<string> eventStreamAdmins;
             if (!serviceData.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))

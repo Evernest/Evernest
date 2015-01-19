@@ -101,7 +101,7 @@ namespace EvernestFrontTests
         public void GetUser_IdDoesNotExist()
         {
             var usb = new UsersBuilder();
-            var ans = usb.GetUser(42);
+            var ans = usb.GetUser(4265468);
             AssertAuxiliaries.ErrorAssert(FrontError.UserIdDoesNotExist,ans);
         }
 

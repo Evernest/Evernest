@@ -3,7 +3,7 @@ using EvernestFront.Utilities;
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class UserDeletion : CommandBase
+    class UserDeletionCommand : CommandBase
     {
         internal long UserId { get; private set; }
 
@@ -11,7 +11,7 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal string Password { get; private set; }
 
-        internal UserDeletion(CommandHandler commandHandler, long userId, string userName, string password)
+        internal UserDeletionCommand(CommandHandler commandHandler, long userId, string userName, string password)
             : base(commandHandler)
         {
             UserId = userId;
@@ -19,10 +19,10 @@ namespace EvernestFront.CommandHandling.Commands
             Password = password;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
-            UserDataForService userData;
-            if (!serviceData.UserIdToDatas.TryGetValue(UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!serviceData.UserIdToData.TryGetValue(UserId, out userData))
             {
                 error=FrontError.UserIdDoesNotExist;
                 systemEvent = null;

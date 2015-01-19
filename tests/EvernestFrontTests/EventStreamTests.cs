@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using EvernestFront;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
@@ -26,6 +27,7 @@ namespace EvernestFrontTests
             Assert.IsNull(ans.Error);
             System.Threading.Thread.Sleep(100);
             var get = user.GetEventStream(streamName);
+            Assert.IsTrue(get.Success);
             return get.Result.Id;
         }
 
@@ -36,9 +38,10 @@ namespace EvernestFrontTests
             var getStream = user.GetEventStream(streamId);
             var stream = getStream.Result;
             var usb = new UsersBuilder();
-            var ans = stream.SetRight(targetUserName, rights);
+            var ans = stream.SetUserRight(targetUserName, rights);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
+            Thread.Sleep(100);
         }
 
         internal static long PushEvent_GetId_AssertSuccess(long userId, long streamId, string message)
@@ -68,10 +71,6 @@ namespace EvernestFrontTests
             var stream = ans.Result;
             Assert.AreEqual(streamId, stream.Id);
             Assert.AreEqual(streamName, stream.Name);
-            var resp = stream.GetRelatedUsers();
-            var relatedUsers = new List<KeyValuePair<long, AccessRight>>();
-            relatedUsers.Add(new KeyValuePair<long, AccessRight>(userId,AccessRight.Admin));
-            Assert.AreEqual(relatedUsers, resp.Result);
             Assert.AreEqual(0, stream.Count);
         }
 
@@ -142,7 +141,7 @@ namespace EvernestFrontTests
             User reader = UserTests.GetUser_AssertSuccess(readerId);
             var getReaderStream = reader.GetEventStream(streamName);
             var readerStream = getReaderStream.Result;
-            var ans = readerStream.SetRight(readerName, AccessRight.ReadWrite);
+            var ans = readerStream.SetUserRight(readerName, AccessRight.ReadWrite);
             AssertAuxiliaries.ErrorAssert(FrontError.AdminAccessDenied, ans);
         }
 
@@ -160,7 +159,7 @@ namespace EvernestFrontTests
             User evilAdmin = UserTests.GetUser_AssertSuccess(evilAdminId);
             var getEvilAdminStream = evilAdmin.GetEventStream(streamName);
             var evilAdminStream = getEvilAdminStream.Result;
-            var ans = evilAdminStream.SetRight(creatorName, AccessRight.NoRight);
+            var ans = evilAdminStream.SetUserRight(creatorName, AccessRight.NoRight);
             AssertAuxiliaries.ErrorAssert(FrontError.CannotDestituteAdmin, ans);
         }
 

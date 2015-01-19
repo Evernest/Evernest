@@ -25,5 +25,11 @@ namespace EvernestFront.Projections
 
         internal SourceDataForProjection(string sourceName, long sourceId, long userId)
             : this(sourceName, sourceId, userId, ImmutableDictionary<long, AccessRight>.Empty) { }
+
+        internal SourceDataForProjection SetSourceRight(long eventStreamId, AccessRight right)
+        {
+            var eventStreams = RelatedEventStreams.SetItem(eventStreamId, right);
+            return new SourceDataForProjection(SourceName, SourceId, UserId, eventStreams);
+        }
     }
 }

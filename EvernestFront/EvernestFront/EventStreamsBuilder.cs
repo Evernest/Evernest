@@ -29,7 +29,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.EventStreamNameTaken);
             // this is supposed to be called by a user object, so creator should always exist
 
-            var command = new EventStreamCreation(_commandReceiver, streamName, creatorName);
+            var command = new EventStreamCreationCommand(_commandReceiver, streamName, creatorName);
             command.Send();
             return new Response<Guid>(command.Guid);
         }
@@ -65,15 +65,18 @@ namespace EvernestFront
             }
         }
 
-        internal bool TryGetEventStream(Source source, AccessRight right, long eventStreamId, out EventStream eventStream)
+        internal bool TryGetEventStreamBySource(Source source, AccessRight sourceRight, long eventStreamId, out EventStream eventStream)
         {
             EventStreamDataForProjection eventStreamData;
             if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
             {
-                var possibleActions = ComputePossibleActions(source.User.Name, eventStreamData);
                 var accessManager = new AccessVerifier();
-                possibleActions.IntersectWith(accessManager.ComputePossibleAccessActions(right));
-                eventStream = ConstructEventStream(source.User, true, source, possibleActions, eventStreamId, eventStreamData);
+                var userRight = GetUserRight(source.User.Name, eventStreamData);
+                var possibleActions = accessManager.ComputePossibleAccessActions(userRight);
+                possibleActions.IntersectWith(accessManager.ComputePossibleAccessActions(sourceRight));
+                eventStream = new EventStreamBySource(_commandReceiver, source.User, userRight, source, sourceRight,
+                    possibleActions, eventStreamId, eventStreamData.StreamName,
+                    eventStreamData.RelatedUsers, eventStreamData.BackStream);
                 return true;
             }
             else
@@ -83,45 +86,21 @@ namespace EvernestFront
             }
         }
 
-        private HashSet<AccessAction> ComputePossibleActions(string userName,
-            EventStreamDataForProjection eventStreamData)
+        private AccessRight GetUserRight(string userName, EventStreamDataForProjection eventStreamData)
         {
             AccessRight right;
             if (!eventStreamData.RelatedUsers.TryGetValue(userName, out right))
                 right = AccessRight.NoRight;
-            var accessManager = new AccessVerifier();
-            return accessManager.ComputePossibleAccessActions(right);
-        } 
-
+            return right;
+        }
 
         private EventStream ConstructEventStream(User user, long eventStreamId, EventStreamDataForProjection eventStreamData)
         {
-            var possibleActions = ComputePossibleActions(user.Name, eventStreamData);
-            return ConstructEventStream(user, false, null, possibleActions, eventStreamId, eventStreamData);
-        }
-
-        private EventStream ConstructEventStream(User user, bool bySource, Source source, HashSet<AccessAction> possibleActions,
-            long eventStreamId, EventStreamDataForProjection eventStreamData)
-        {
-            return new EventStream(_commandReceiver, user, bySource, source, possibleActions, eventStreamId, eventStreamData.StreamName,
+            var accessManager = new AccessVerifier();
+            var userRight = GetUserRight(user.Name, eventStreamData);
+            var possibleActions = accessManager.ComputePossibleAccessActions(userRight);
+            return new EventStream(_commandReceiver, user, userRight, possibleActions, eventStreamId, eventStreamData.StreamName,
                 eventStreamData.RelatedUsers, eventStreamData.BackStream);
-        }
-
-        internal bool TryGetEventStreamBySystemUser(SystemUser user, long eventStreamId, out EventStream eventStream)
-        {
-            EventStreamDataForProjection eventStreamData;
-            if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
-            {
-                var accessManager = new AccessVerifier();
-                var possibleActions = accessManager.ComputePossibleAccessActions(AccessRight.Root);
-                eventStream = ConstructEventStream(user, false, null, possibleActions, eventStreamId, eventStreamData);
-                return true;
-            }
-            else
-            {
-                eventStream = null;
-                return false;
-            }
         }
     }
 }

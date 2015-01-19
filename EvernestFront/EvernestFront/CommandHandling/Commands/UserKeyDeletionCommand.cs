@@ -2,7 +2,7 @@
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class UserKeyDeletion : CommandBase
+    class UserKeyDeletionCommand : CommandBase
     {
         internal string Key { get; set; } //base64 encoded int
         
@@ -10,7 +10,7 @@ namespace EvernestFront.CommandHandling.Commands
         
         internal string KeyName { get; set; }
 
-        internal UserKeyDeletion(CommandHandler commandHandler, string key, long userId, string keyName)
+        internal UserKeyDeletionCommand(CommandHandler commandHandler, string key, long userId, string keyName)
             : base(commandHandler)
         {
             Key = key;
@@ -21,10 +21,10 @@ namespace EvernestFront.CommandHandling.Commands
 
 
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
-            UserDataForService userData;
-            if (!serviceData.UserIdToDatas.TryGetValue(UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!serviceData.UserIdToData.TryGetValue(UserId, out userData))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;

@@ -1,11 +1,12 @@
 ﻿using System.Web;
 using EvernestFront;
+using EvernestFront.CommandHandling;
 
 [assembly: PreApplicationStartMethod(typeof(StartUp), "Start")]
 
 namespace EvernestFront
 {
-    public class StartUp
+    public static class StartUp
     {
         public static void Start()
         {

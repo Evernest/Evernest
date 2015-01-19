@@ -4,19 +4,19 @@ using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class EventStreamCreation : CommandBase
+    class EventStreamCreationCommand : CommandBase
     {
         internal string EventStreamName { get; private set; }
         internal string CreatorName { get; private set; }
          
-        internal EventStreamCreation(CommandHandler commandHandler, string streamName, string creatorName)
+        internal EventStreamCreationCommand(CommandHandler commandHandler, string streamName, string creatorName)
             : base(commandHandler)
         {
             EventStreamName = streamName;
             CreatorName = creatorName;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
             if (serviceData.EventStreamNameExists(EventStreamName))
             {

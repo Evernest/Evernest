@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace EvernestFront.Contract
 {
@@ -15,12 +16,17 @@ namespace EvernestFront.Contract
         [DataMember]
         internal string Message { get; set; }
 
-        internal EventContract(User author, DateTime date, string message)
+        [JsonConstructor]
+        internal EventContract(string authorName, long authorId, DateTime date, string message)
         {
-            AuthorId = author.Id;
-            AuthorName = author.Name;
+            AuthorId = authorId;
+            AuthorName = authorName;
             Date = date;
             Message = message;
+        }
+        internal EventContract(User author, DateTime date, string message)
+            :this(author.Name, author.Id, date, message)
+        {
         }
 
         internal EventContract(Source authorSource, DateTime date, string message)

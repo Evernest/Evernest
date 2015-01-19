@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 
-namespace EvernestFront
+namespace EvernestFront.CommandHandling
 {
     class CommandResultManager
     {

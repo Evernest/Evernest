@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using NUnit.Framework;
 using EvernestBack;
 
@@ -9,16 +8,12 @@ namespace EvernestBackTests
     public class StreamTest
     {
         [Test]
-        public void Test1()
+        public void PushAndPull()
         {
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
-
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
-
-            var file = new StreamWriter("log.txt");
-
             const int n = 1000;
-            var tbl = new bool[n + 500];
+            var tbl = new bool[n];
             for (var i = 0; i < n; i++)
                 tbl[i] = false;
             for (var i = 0; i < n; i++)
@@ -28,9 +23,8 @@ namespace EvernestBackTests
                     {
                         stream.Pull(pushAgent.RequestID, pullAgent =>
                         {
+                            Console.WriteLine(pullAgent.RequestID);
                             tbl[pullAgent.RequestID] = true;
-                            Console.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
-                            file.WriteLine(pullAgent.Message + ". ID : " + pullAgent.RequestID);
                         },
                             (pullAgent, message) =>
                             {
@@ -43,21 +37,39 @@ namespace EvernestBackTests
                     {
                         Console.WriteLine("Push Agent : " + pushAgent.RequestID + "failed with message :\n" + message);
                     });
-                //System.Threading.Thread.Sleep(100);
-            } //this won't happen with an infinite loop, but anyway, this isn't that important
+            }
             var ok = false;
             while (!ok)
             {
                 ok = true;
-                for (var i = 0; i < 1000 && ok; ok = (ok && tbl[i]), i++)
-                {
-                }
+                for (var i = 0; i < 1000 && ok; ok = (ok && tbl[i]), i++) ;
             }
-
-            file.Close();
-
-            //I suspect this operation to block Console.WriteLine (thus preventing the other thread to run)
-            //so I added a console.read() in the callback to have the time to see the message after pushing enter
         }
+
+        [Test]
+        public void BigPush()
+        {
+            AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
+            var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
+            string str = new string(' ', UInt16.MaxValue);
+            bool success = false, done = false;
+            stream.Push(str,
+                pushAgent =>
+                {
+                    stream.Pull(pushAgent.RequestID,
+                        pullAgent =>
+                        {
+                            success = pullAgent.Message == str;
+                            done = true;
+                        },
+                        (pullAgent, message) => { done = true; }
+                        );
+                },
+                (pushAgent, message) => { done = true; }
+                );
+            while (!done) ;
+            Assert.IsTrue(success);
+        }
+
     }
 }

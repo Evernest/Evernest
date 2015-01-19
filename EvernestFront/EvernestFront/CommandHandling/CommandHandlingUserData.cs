@@ -2,7 +2,7 @@
 
 namespace EvernestFront.CommandHandling
 {
-    class UserDataForService
+    class CommandHandlingUserData
     {
         internal string UserName;
 
@@ -18,7 +18,7 @@ namespace EvernestFront.CommandHandling
 
         internal long NextSourceId;
 
-        internal UserDataForService(string name, string hash, byte[] salt)
+        internal CommandHandlingUserData(string name, string hash, byte[] salt)
         {
             UserName = name;
             SaltedPasswordHash = hash;

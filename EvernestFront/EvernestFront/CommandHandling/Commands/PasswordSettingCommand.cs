@@ -3,7 +3,7 @@ using EvernestFront.Utilities;
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class PasswordSetting : CommandBase
+    class PasswordSettingCommand : CommandBase
     {
         internal long UserId { get; private set; }
         
@@ -11,7 +11,7 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal string NewPassword { get; private set; }
 
-        internal PasswordSetting(CommandHandler commandHandler, long userId,string currentPassword, string newPassword)
+        internal PasswordSettingCommand(CommandHandler commandHandler, long userId,string currentPassword, string newPassword)
             : base(commandHandler)
         {
             UserId = userId;
@@ -20,10 +20,10 @@ namespace EvernestFront.CommandHandling.Commands
         }
 
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
-            UserDataForService userData;
-            if (!serviceData.UserIdToDatas.TryGetValue(UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!serviceData.UserIdToData.TryGetValue(UserId, out userData))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent =null;

@@ -4,14 +4,14 @@ using EvernestFront.Utilities;
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class EventStreamDeletion : CommandBase
+    class EventStreamDeletionCommand : CommandBase
     {
         internal long EventStreamId { get; private set; }
         internal string EventStreamName { get; private set; }
         internal long AdminId { get; private set; }
         internal string AdminPassword { get; private set; }
 
-        internal EventStreamDeletion(CommandHandler commandHandler, 
+        internal EventStreamDeletionCommand(CommandHandler commandHandler, 
             long streamId, string streamName, long adminId, string adminPassword)
             : base(commandHandler)
         {
@@ -21,7 +21,7 @@ namespace EvernestFront.CommandHandling.Commands
             AdminPassword = adminPassword;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
             HashSet<string> eventStreamAdmins;
             if (!serviceData.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
@@ -30,8 +30,8 @@ namespace EvernestFront.CommandHandling.Commands
                 systemEvent = null;
                 return false;
             }
-            UserDataForService userData;
-            if (!serviceData.UserIdToDatas.TryGetValue(AdminId, out userData))
+            CommandHandlingUserData userData;
+            if (!serviceData.UserIdToData.TryGetValue(AdminId, out userData))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;

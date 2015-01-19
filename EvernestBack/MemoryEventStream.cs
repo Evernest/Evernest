@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 namespace EvernestBack
 {
-    
     /// <summary>This is a small test Stream storing messages in a List instead of in Azure.</summary>
     public class MemoryEventStream : IEventStream
     {
@@ -39,7 +37,7 @@ namespace EvernestBack
 
         public void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
         {
-            IAgent a = new MyAgent(_messages.ElementAt((int) id), id);
+            IAgent a = new MyAgent(_messages.ElementAt((int)id), id);
             callback(a);
         }
 
@@ -63,7 +61,6 @@ namespace EvernestBack
                 Message = message;
                 RequestID = index;
             }
-
             public string Message { get; protected set; }
             public long RequestID { get; private set; }
         }

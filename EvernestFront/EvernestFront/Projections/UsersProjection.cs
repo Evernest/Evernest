@@ -130,7 +130,7 @@ namespace EvernestFront.Projections
                 //TODO: report error
                 return;
             }
-            var itd = Dictionaries.IdToData.SetItem(userId, data.SetRight(eventStreamId, right));
+            var itd = Dictionaries.IdToData.SetItem(userId, data.SetUserRight(eventStreamId, right));
             Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
@@ -177,7 +177,7 @@ namespace EvernestFront.Projections
                 return;
             }
             var itd = Dictionaries.IdToData.SetItem(systemEvent.UserId,
-                data.AddSource(systemEvent.SourceName, systemEvent.SourceKey));
+                data.AddSource(systemEvent.SourceName, systemEvent.SourceId, systemEvent.SourceKey));
             Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
@@ -190,11 +190,14 @@ namespace EvernestFront.Projections
                 return;
             }
             var itd = Dictionaries.IdToData.SetItem(systemEvent.UserId,
-                data.RemoveSource(systemEvent.SourceName));
+                data.RemoveSource(systemEvent.SourceName, systemEvent.SourceId));
             Dictionaries = Dictionaries.SetIdToData(itd);
         }
 
-        
+        private void When(SourceRightSetSystemEvent systemEvent)
+        {
+            //nothing to do
+        }
 
         private void When(UserCreatedSystemEvent systemEvent)
         {

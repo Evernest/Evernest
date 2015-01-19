@@ -54,9 +54,12 @@
   <ItemGroup>
     <Compile Include="AccessAction.cs" />
     <Compile Include="AccessVerifier.cs" />
+    <Compile Include="CommandHandling\Commands\SourceRightSettingCommand.cs" />
     <Compile Include="CommandResultViewer.cs" />
+    <Compile Include="Contract\SystemEvents\SourceRightSetSystemEvent.cs" />
+    <Compile Include="EventStreamBySource.cs" />
     <Compile Include="Response.cs" />
-    <Compile Include="CommandResultManager.cs" />
+    <Compile Include="CommandHandling\CommandResultManager.cs" />
     <Compile Include="Contract\SystemEventEnvelope.cs" />
     <Compile Include="Contract\SystemEvents\EventStreamDeletedSystemEvent.cs" />
     <Compile Include="Contract\SystemEvents\ISystemEvent.cs" />
@@ -70,14 +73,13 @@
     <Compile Include="Contract\SystemEvents\EventStreamCreatedSystemEvent.cs" />
     <Compile Include="Contract\EventContract.cs" />
     <Compile Include="Contract\SystemEvents\UserCreatedSystemEvent.cs" />
-    <Compile Include="Dispatcher.cs" />
+    <Compile Include="CommandHandling\Dispatcher.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventStreamsBuilder.cs" />
     <Compile Include="Injector.cs" />
-    <Compile Include="CommandHandling\Commands\SourceCreation.cs" />
-    <Compile Include="CommandHandling\Commands\SourceDeletion.cs" />
+    <Compile Include="CommandHandling\Commands\SourceCreationCommand.cs" />
+    <Compile Include="CommandHandling\Commands\SourceDeletionCommand.cs" />
     <Compile Include="SourcesBuilder.cs" />
-    <Compile Include="SystemUser.cs" />
     <Compile Include="Utilities\KeyGenerator.cs" />
     <Compile Include="Utilities\PasswordManager.cs" />
     <Compile Include="Projections\EventStreamDataForProjection.cs" />
@@ -85,23 +87,23 @@
     <Compile Include="Projections\UserDataForProjection.cs" />
     <Compile Include="Utilities\Serializer.cs" />
     <Compile Include="CommandHandling\CommandHandler.cs" />
-    <Compile Include="CommandHandling\Commands\EventStreamCreation.cs" />
-    <Compile Include="CommandHandling\Commands\EventStreamDeletion.cs" />
+    <Compile Include="CommandHandling\Commands\EventStreamCreationCommand.cs" />
+    <Compile Include="CommandHandling\Commands\EventStreamDeletionCommand.cs" />
     <Compile Include="CommandHandling\Commands\CommandBase.cs" />
-    <Compile Include="CommandHandling\Commands\PasswordSetting.cs" />
-    <Compile Include="CommandHandling\Commands\UserCreation.cs" />
-    <Compile Include="CommandHandling\Commands\UserDeletion.cs" />
-    <Compile Include="CommandHandling\Commands\UserKeyCreation.cs" />
-    <Compile Include="CommandHandling\Commands\UserKeyDeletion.cs" />
-    <Compile Include="CommandHandling\Commands\UserRightSettingByUser.cs" />
-    <Compile Include="CommandHandling\ServiceData.cs" />
+    <Compile Include="CommandHandling\Commands\PasswordSettingCommand.cs" />
+    <Compile Include="CommandHandling\Commands\UserCreationCommand.cs" />
+    <Compile Include="CommandHandling\Commands\UserDeletionCommand.cs" />
+    <Compile Include="CommandHandling\Commands\UserKeyCreationCommand.cs" />
+    <Compile Include="CommandHandling\Commands\UserKeyDeletionCommand.cs" />
+    <Compile Include="CommandHandling\Commands\UserRightSettingCommand.cs" />
+    <Compile Include="CommandHandling\CommandHandlingData.cs" />
     <Compile Include="Projections\EventStreamsProjection.cs" />
     <Compile Include="Projections\IProjection.cs" />
     <Compile Include="Projections\SourcesProjection.cs" />
     <Compile Include="Projections\UsersProjection.cs" />
     <Compile Include="FrontError.cs" />
     <Compile Include="Source.cs" />
-    <Compile Include="CommandHandling\UserDataForService.cs" />
+    <Compile Include="CommandHandling\CommandHandlingUserData.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="SystemEventStream.cs" />
     <Compile Include="User.cs" />
@@ -120,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

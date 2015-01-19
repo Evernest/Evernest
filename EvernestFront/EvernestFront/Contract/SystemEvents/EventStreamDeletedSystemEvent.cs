@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace EvernestFront.Contract.SystemEvents
 {
@@ -10,6 +11,7 @@ namespace EvernestFront.Contract.SystemEvents
         [DataMember]
         internal string StreamName;
 
+        [JsonConstructor]
         internal EventStreamDeletedSystemEvent(long streamId, string streamName)
         {
             StreamId = streamId;

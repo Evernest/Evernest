@@ -8,16 +8,16 @@ namespace EvernestBack
     {
         private readonly EventIndexer _indexer;
 
-        private readonly BlockingCollection<PendingEvent> _pendingEventCollection =
-            new BlockingCollection<PendingEvent>();
+        private readonly ConcurrentQueue<PendingEvent> _pendingEventCollection =
+            new ConcurrentQueue<PendingEvent>();
 
         private readonly BufferedBlobIO _writeBuffer;
 
-        public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer, long firstID)
+        public WriteLocker(BufferedBlobIO buffer, EventIndexer indexer, long firstId)
         {
             _indexer = indexer;
             _writeBuffer = buffer;
-            CurrentID = firstID;
+            CurrentID = firstId;
         }
 
         public long CurrentID { get; private set; }
@@ -26,24 +26,27 @@ namespace EvernestBack
         {
             Task.Run(() =>
             {
+                PendingEvent pendingEvent;
                 while (true)
                     //temporary fix to make sure the thread doesn't terminate early (well now it never does, "fixed")
                 {
-                    var pendingEvent = _pendingEventCollection.Take();
-                    var agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.CallbackSuccess,
-                        pendingEvent.CallbackFailure);
-                    ulong wroteBytes = Write(agent);
-                    _indexer.NotifyNewEntry(CurrentID, wroteBytes);
-                    CurrentID++;
-                    agent.Processed();
+                    while (_pendingEventCollection.TryDequeue(out pendingEvent))
+                    {
+                        var agent = new Agent(pendingEvent.Message, CurrentID, pendingEvent.CallbackSuccess,
+                            pendingEvent.CallbackFailure);
+                        int wroteBytes = Write(agent);
+                        _indexer.NotifyNewEntry(CurrentID, (ulong) wroteBytes);
+                        CurrentID++;
+                        agent.Processed();
+                    }
                 }
             }
                 );
         }
 
-        private UInt16 Write(Agent prod)
+        private int Write(Agent prod)
         {
-            UInt16 size;
+            int size;
             var bytes = prod.Serialize(out size);
             _writeBuffer.Push(bytes, 0, size);
             return size;
@@ -51,7 +54,7 @@ namespace EvernestBack
 
         public void Register(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callBackFailure)
         {
-            _pendingEventCollection.Add(new PendingEvent(message, callbackSuccess, callBackFailure));
+            _pendingEventCollection.Enqueue(new PendingEvent(message, callbackSuccess, callBackFailure));
         }
 
         private class PendingEvent

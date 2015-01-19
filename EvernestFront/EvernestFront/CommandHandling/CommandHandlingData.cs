@@ -3,12 +3,12 @@ using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.CommandHandling
 {
-    class ServiceData
+    class CommandHandlingData
     {
         //TODO: initialization on system stream
 
         internal HashSet<string> UserNames { get; set; }
-        internal Dictionary<long, UserDataForService> UserIdToDatas { get; set; }
+        internal Dictionary<long, CommandHandlingUserData> UserIdToData { get; set; }
         internal HashSet<string> EventStreamNames { get; set; }
         internal Dictionary<long, HashSet<string>> EventStreamIdToAdmins { get; set; }
 
@@ -27,10 +27,10 @@ namespace EvernestFront.CommandHandling
         }
 
             
-        internal ServiceData(long numberOfREservedIds)
+        internal CommandHandlingData(long numberOfREservedIds)
         {
             UserNames = new HashSet<string>();
-            UserIdToDatas = new Dictionary<long, UserDataForService>();
+            UserIdToData = new Dictionary<long, CommandHandlingUserData>();
             EventStreamNames = new HashSet<string>();
             EventStreamIdToAdmins = new Dictionary<long, HashSet<string>>();
             // ids from 0 to numberOfREservedIds-1 are reserved for system
@@ -73,8 +73,8 @@ namespace EvernestFront.CommandHandling
 
         private void When(PasswordSetSystemEvent systemEvent)
         {
-            UserDataForService userData;
-            if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
                 return; //TODO: report error
             userData.SaltedPasswordHash = systemEvent.SaltedPasswordHash;
             userData.PasswordSalt = systemEvent.PasswordSalt;
@@ -82,8 +82,8 @@ namespace EvernestFront.CommandHandling
 
         private void When(SourceCreatedSystemEvent systemEvent)
         {
-            UserDataForService userData;
-            if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
                 return; //TODO: report error
             userData.SourceNames.Add(systemEvent.SourceName);
             userData.SourceIdToName.Add(systemEvent.SourceId, systemEvent.SourceName);
@@ -92,39 +92,44 @@ namespace EvernestFront.CommandHandling
 
         private void When(SourceDeletedSystemEvent systemEvent)
         {
-            UserDataForService userData;
-            if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
                 return; //TODO: report error
             userData.SourceNames.Remove(systemEvent.SourceName);
             userData.SourceIdToName.Remove(systemEvent.SourceId);
         }
 
+        private void When(SourceRightSetSystemEvent systemEvent)
+        {
+            //nothing to do
+        }
+
         private void When(UserCreatedSystemEvent systemEvent)
         {
             UserNames.Add(systemEvent.UserName);
-            var userData = new UserDataForService(systemEvent.UserName, systemEvent.SaltedPasswordHash,
+            var userData = new CommandHandlingUserData(systemEvent.UserName, systemEvent.SaltedPasswordHash,
                 systemEvent.PasswordSalt);
-            UserIdToDatas.Add(systemEvent.UserId, userData);
+            UserIdToData.Add(systemEvent.UserId, userData);
         }
 
         private void When(UserDeletedSystemEvent systemEvent)
         {
             UserNames.Remove(systemEvent.UserName);
-            UserIdToDatas.Remove(systemEvent.UserId);
+            UserIdToData.Remove(systemEvent.UserId);
         }
 
         private void When(UserKeyCreatedSystemEvent systemEvent)
         {
-            UserDataForService userData;
-            if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
                 return; //TODO: report error
             userData.KeyNames.Add(systemEvent.KeyName);
         }
 
         private void When(UserKeyDeletedSystemEvent systemEvent)
         {
-            UserDataForService userData;
-            if (!UserIdToDatas.TryGetValue(systemEvent.UserId, out userData))
+            CommandHandlingUserData userData;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
                 return; //this can happen since existence is not checked in CommandToSystemEvent for key deletion
             userData.KeyNames.Remove(systemEvent.KeyName);
         }

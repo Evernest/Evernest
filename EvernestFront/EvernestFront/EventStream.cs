@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
 using EvernestFront.CommandHandling;
 using EvernestFront.CommandHandling.Commands;
@@ -19,9 +18,7 @@ namespace EvernestFront
         
         private readonly User _user;
 
-        private readonly bool _getBySource;
-
-        private readonly Source _source;
+        public AccessRight UserRight { get; private set; }
 
         private readonly HashSet<AccessAction> _possibleActions;
 
@@ -39,8 +36,8 @@ namespace EvernestFront
         private IEventStream BackStream { get; set; }
 
 
-        internal EventStream(CommandHandler commandHandler, User user, bool getBySource, Source source, 
-            HashSet<AccessAction> authorizedActions, long streamId, string name, 
+        internal EventStream(CommandHandler commandHandler, User user, AccessRight userRight, 
+            HashSet<AccessAction> possibleActions, long streamId, string name, 
             ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
         {
             _commandHandler = commandHandler;
@@ -48,27 +45,26 @@ namespace EvernestFront
             Name = name;
             RelatedUsers = users;
             BackStream = backStream;
-            _possibleActions = authorizedActions;
-            _source = source;
-            _getBySource = getBySource;
+            _possibleActions = possibleActions;
             _user = user;
+            UserRight = userRight;
         }
 
 
-        public Response<List<KeyValuePair<string,AccessRight>>> GetRelatedUsers()
+        public Response<IDictionary<string,AccessRight>> GetRelatedUsers()
         {
             if (!ValidateAccessAction(AccessAction.Admin))
-                return new Response<List<KeyValuePair<string,AccessRight>>>(FrontError.AdminAccessDenied);
-            return new Response<List<KeyValuePair<string,AccessRight>>>(RelatedUsers.ToList());
+                return new Response<IDictionary<string, AccessRight>>(FrontError.AdminAccessDenied);
+            return new Response<IDictionary<string, AccessRight>>(RelatedUsers);
         }
 
-        public Response<Guid> SetRight(string targetName, AccessRight right)
+        public Response<Guid> SetUserRight(string targetName, AccessRight right)
         {
             if (!ValidateAccessAction(AccessAction.Admin))
                 return new Response<Guid>(FrontError.AdminAccessDenied);
             if (TargetUserIsAdmin(targetName))
                 return new Response<Guid>(FrontError.CannotDestituteAdmin);
-            var command = new UserRightSettingByUser(_commandHandler,
+            var command = new UserRightSettingCommand(_commandHandler,
                 targetName, Id, _user.Name, right);
             command.Send();
             return new Response<Guid>(command.Guid);

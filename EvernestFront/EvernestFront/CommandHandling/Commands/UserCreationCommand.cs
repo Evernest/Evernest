@@ -3,20 +3,20 @@ using EvernestFront.Utilities;
 
 namespace EvernestFront.CommandHandling.Commands
 {
-    class UserCreation : CommandBase
+    class UserCreationCommand : CommandBase
     {
         internal string UserName { get; private set; }
 
         internal string Password { get; private set; }
 
-        internal UserCreation(CommandHandler commandHandler, string userName, string password)
+        internal UserCreationCommand(CommandHandler commandHandler, string userName, string password)
             :base(commandHandler)
         {
             UserName = userName;
             Password = password;
         }
 
-        public override bool TryToSystemEvent(ServiceData serviceData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(CommandHandlingData serviceData, out ISystemEvent systemEvent, out FrontError? error)
         {
             if (serviceData.UserNameExists(UserName))
             {

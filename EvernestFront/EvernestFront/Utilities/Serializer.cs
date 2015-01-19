@@ -30,17 +30,17 @@ namespace EvernestFront.Utilities
             return JsonConvert.DeserializeObject<T>(serializedContract);
         }
 
-        internal ISystemEvent ReadDiffEnvelope(string serializedEnvelope)
+        internal ISystemEvent ReadSystemEventEnvelope(string serializedEnvelope)
         {
             SystemEventEnvelope envelope = ReadContract<SystemEventEnvelope>(serializedEnvelope);
             string typeName = envelope.SystemEventType;
             var map = AllContracts.GetTypeMapForEvents();
             var type = map[typeName];
-            return
-                (ISystemEvent)
-                    typeof (string).GetMethod("JsonConvert.DeserializeObject")
-                        .MakeGenericMethod(type)
-                        .Invoke(null, new object[] {envelope.SerializedSystemEvent});
+            var methodInfo =
+                typeof (Newtonsoft.Json.JsonConvert).GetMethods().First(method => method.Name == "DeserializeObject" && method.IsGenericMethod &&
+                                                                                  method.GetParameters().Length == 1);
+            var generic = methodInfo.MakeGenericMethod(type);
+            return (ISystemEvent) generic.Invoke(null, new object[] {envelope.SerializedSystemEvent});
 
 
 

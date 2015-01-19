@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using EvernestBack;
 using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.CommandHandling
@@ -69,6 +71,7 @@ namespace EvernestFront.CommandHandling
         {
             EventStreamNames.Remove(systemEvent.StreamName);
             EventStreamIdToAdmins.Remove(systemEvent.StreamId);
+            AzureStorageClient.Instance.DeleteStreamIfExists(Convert.ToString(systemEvent.StreamId)); //TODO : maybe move this ?
         }
 
         private void When(PasswordSetSystemEvent systemEvent)

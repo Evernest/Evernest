@@ -185,7 +185,14 @@ namespace EvernestFront
             return new Response<long>(FrontError.BackendError);
         }
 
-
+        public Response<Guid> Delete(string password)
+        {
+            if (!ValidateAccessAction(AccessAction.Admin))
+                return new Response<Guid>(FrontError.AdminAccessDenied);
+            var command = new EventStreamDeletionCommand(_commandHandler, Id, Name, _user.Id, password);
+            command.Send();
+            return new Response<Guid>(command.Guid);
+        }
         
     }
 }

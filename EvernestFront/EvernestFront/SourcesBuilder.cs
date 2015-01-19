@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using EvernestFront.CommandHandling;
+using EvernestFront.Contract;
 using EvernestFront.Projections;
 
 namespace EvernestFront

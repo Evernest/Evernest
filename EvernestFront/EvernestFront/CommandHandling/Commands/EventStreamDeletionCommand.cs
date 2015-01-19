@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.Projections

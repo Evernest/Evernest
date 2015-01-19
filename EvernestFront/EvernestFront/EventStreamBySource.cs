@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EvernestBack;
 using EvernestFront.CommandHandling;
+using EvernestFront.Contract;
 
 namespace EvernestFront
 {

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using EvernestFront.CommandHandling;
 using EvernestFront.CommandHandling.Commands;
+using EvernestFront.Contract;
 using EvernestFront.Utilities;
 
 namespace EvernestFront

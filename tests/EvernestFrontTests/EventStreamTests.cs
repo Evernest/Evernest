@@ -2,6 +2,7 @@
 using System.Threading;
 using EvernestFront;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
+using EvernestFront.Contract;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EvernestBack;
+using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.CommandHandling

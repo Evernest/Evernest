@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using EvernestFront.Contract;
 
 namespace EvernestFront
 {

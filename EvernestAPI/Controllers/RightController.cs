@@ -4,6 +4,8 @@ using System.Net;
 using System.Net.Http;
 using EvernestAPI.Models;
 using EvernestFront;
+using EvernestFront.Contract;
+
 namespace EvernestAPI.Controllers
 {
     public class RightController : ApiController
@@ -16,7 +18,7 @@ namespace EvernestAPI.Controllers
         {
             var ans = new Hashtable();
             var failed = false;
-            EvernestFront.FrontError? error = null;
+            FrontError? error = null;
             var errorMessage = "";
             var accessRight = new AccessRight();
             Hashtable nvc;
@@ -80,7 +82,7 @@ namespace EvernestAPI.Controllers
             Hashtable nvc;
             var failed = false;
 
-            EvernestFront.FrontError? error = null;
+            FrontError? error = null;
             string errorMessage = null;
             var accessRight = AccessRight.NoRight;
 

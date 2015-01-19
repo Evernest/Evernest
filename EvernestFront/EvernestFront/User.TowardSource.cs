@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using EvernestFront.CommandHandling.Commands;
+using EvernestFront.Contract;
 using EvernestFront.Utilities;
 
 namespace EvernestFront

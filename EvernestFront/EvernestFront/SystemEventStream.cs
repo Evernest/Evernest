@@ -33,7 +33,7 @@ namespace EvernestFront
         internal void Push(ISystemEvent systemEvent)
         {
             var serializer = new Serializer();
-            var contract = new SystemEventEnvelope(systemEvent);
+            var contract = new SystemEventEnvelope(systemEvent.GetType().ToString(),serializer.WriteContract(systemEvent));
             var contractString = serializer.WriteContract(contract);
             _backEventStream.Push(contractString, CallbackSuccess, CallbackFailure);
         }

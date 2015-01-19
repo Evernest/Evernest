@@ -24,14 +24,5 @@ namespace EvernestFront.Contract
             Date = date;
             Message = message;
         }
-        internal EventContract(User author, DateTime date, string message)
-            :this(author.Name, author.Id, date, message)
-        {
-        }
-
-        internal EventContract(Source authorSource, DateTime date, string message)
-            : this(authorSource.User, date, message)
-        {
-        }
     }
 }

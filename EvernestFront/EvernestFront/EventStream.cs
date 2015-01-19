@@ -171,7 +171,7 @@ namespace EvernestFront
             long eventId = LastEventId + 1;
             var stopWaitHandle = new AutoResetEvent(false);
             bool success = false;
-            var contract = new EventContract(_user, DateTime.UtcNow, message);
+            var contract = new EventContract(_user.Name, _user.Id, DateTime.UtcNow, message);
             var serializer = new Serializer();
             BackStream.Push(serializer.WriteContract(contract), (a =>
             {

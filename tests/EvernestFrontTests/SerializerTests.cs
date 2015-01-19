@@ -28,7 +28,7 @@ namespace EvernestFrontTests
             var userId = UserTests.AddUser_GetId_AssertSuccess(AssertAuxiliaries.NewName);
             var user = UserTests.GetUser_AssertSuccess(userId);
             var date = DateTime.UtcNow;
-            var contract = new EventContract(user, date, Message);
+            var contract = new EventContract(user.Name, user.Id, date, Message);
             var serializedContract = serializer.WriteContract<EventContract>(contract);
             var deserializedContract = serializer.ReadContract<EventContract>(serializedContract);
             Assert.AreEqual(contract.AuthorId, deserializedContract.AuthorId);
@@ -45,7 +45,7 @@ namespace EvernestFrontTests
             const string streamName = "stream";
             const int streamId = 42;
             var systemEvent = new EventStreamCreatedSystemEvent(streamId, streamName, userName);
-            var envelope = new SystemEventEnvelope(systemEvent);
+            var envelope = new SystemEventEnvelope(systemEvent.GetType().ToString(), serializer.WriteContract(systemEvent));
             var serializedContract = serializer.WriteContract(envelope);
             var deserializedContract = serializer.ReadSystemEventEnvelope(serializedContract);
             Assert.IsAssignableFrom<EventStreamCreatedSystemEvent>(deserializedContract);

@@ -23,11 +23,15 @@ namespace EvernestFront
 
         private IDictionary<string, string> UserKeys { get; set; }
 
-        public IDictionary<string, long> Sources { get; private set; }
+        private IDictionary<string, long> SourceNameToId { get; set; }
 
         private IDictionary<long, string> SourceKeys { get; set; }
 
-        public IDictionary<long, AccessRight> RelatedEventStreams { get; private set; }
+        public IEnumerable<long> Sources { get { return SourceKeys.Keys; } } 
+
+        private IDictionary<long, AccessRight> InternalRelatedEventStreams { get; set; }
+
+        public IEnumerable<long> RelatedEventStreams { get { return InternalRelatedEventStreams.Keys; } } 
 
         internal User(CommandHandler commandHandler, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, long> sources, 
@@ -39,9 +43,9 @@ namespace EvernestFront
             SaltedPasswordHash = sph;
             PasswordSalt = ps;
             UserKeys = keys;
-            Sources = sources;
+            SourceNameToId = sources;
             SourceKeys = sourceKeys;
-            RelatedEventStreams = streams;
+            InternalRelatedEventStreams = streams;
         }
 
         public Response<Guid> SetPassword(string passwordForVerification, string newPassword)

@@ -78,7 +78,7 @@ namespace EvernestFrontTests
             Assert.IsTrue(ans.Success);
             Thread.Sleep(100);
             user = UserTests.GetUser_AssertSuccess(userId);
-            Assert.IsFalse(user.Sources.ContainsKey(sourceName));
+            Assert.IsFalse(user.SourceNameToId.ContainsKey(sourceName));
 
         }
 
@@ -93,7 +93,7 @@ namespace EvernestFrontTests
             var source1 = sb.GetSource(key).Result;
             var source2 = sb.GetSource(key2).Result;
             User user = UserTests.GetUser_AssertSuccess(userId);
-            var sources = user.Sources;
+            var sources = user.SourceNameToId;
             Assert.AreEqual(2, sources.Count);
             Assert.IsTrue(sources.Contains(new KeyValuePair<string, long>(SourceName, source1.Id)));
             Assert.IsTrue(sources.Contains(new KeyValuePair<string, long>(SourceName2, source2.Id)));

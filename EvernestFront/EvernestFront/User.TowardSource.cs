@@ -11,7 +11,7 @@ namespace EvernestFront
         public Response<Source> GetSource(string sourceName)
         {
             long sourceId;
-            if (!Sources.TryGetValue(sourceName, out sourceId))
+            if (!SourceNameToId.TryGetValue(sourceName, out sourceId))
                 return new Response<Source>(FrontError.SourceNameDoesNotExist);
             return GetSource(sourceId);
         }
@@ -36,7 +36,7 @@ namespace EvernestFront
 
         public Response<Tuple<string, Guid>> CreateSource(string sourceName)
         {
-            if (Sources.ContainsKey(sourceName))
+            if (SourceNameToId.ContainsKey(sourceName))
                 return new Response<Tuple<string, Guid>>(FrontError.SourceNameTaken);
             var keyGenerator = new KeyGenerator();
             var key = keyGenerator.NewKey();

@@ -83,7 +83,7 @@ namespace EvernestBack
         }
 
         /// <summary>
-        ///     Get an already created event stream
+        ///     Get an already created EventStream
         /// </summary>
         /// <param name="streamID"> The name of the stream you want.</param>
         /// <returns> The EventStream</returns>
@@ -91,6 +91,16 @@ namespace EvernestBack
         {
             var stream = OpenStream(streamID);
             return stream;
+        }
+
+        /// <summary>
+        /// Get an already created EventStream
+        /// </summary>
+        /// <param name="streamID">The ID of the stream you want</param>
+        /// <returns>The EventStream</returns>
+        public IEventStream GetEventStream(Int64 streamID)
+        {
+            return GetEventStream("" + streamID);
         }
 
         /// <summary>
@@ -103,6 +113,16 @@ namespace EvernestBack
             CreateEventStream(streamID);
             var stream = OpenStream(streamID);
             return stream;
+        }
+
+        /// <summary>
+        ///     Create and open an EventStream
+        /// </summary>
+        /// <param name="streamID"> The ID of the new stream. </param>
+        /// <returns>The new EventStream</returns>
+        public IEventStream GetNewEventStream(Int64 streamID)
+        {
+            return GetNewEventStream("" + streamID);
         }
 
         /// <summary>
@@ -174,6 +194,11 @@ namespace EvernestBack
             }
         }
 
+        public void DeleteStreamIfExists(Int64 streamID)
+        {
+            DeleteStreamIfExists("" + streamID);
+        }
+
         public bool StreamExists(string streamID)
         {
             if (_dummy)
@@ -186,6 +211,11 @@ namespace EvernestBack
             }
         }
 
+        public bool StreamExists(Int64 streamID)
+        {
+            return StreamExists("" + streamID);
+        }
+
         public bool TryGetFreshEventStream(string streamStringID, out IEventStream stream)
         {
             stream = null;
@@ -195,6 +225,11 @@ namespace EvernestBack
             }
             stream = GetNewEventStream(streamStringID);
             return true;
+        }
+
+        public bool TryGetFreshEventStream(Int64 streamID, out IEventStream stream)
+        {
+            return TryGetFreshEventStream("" + streamID, out stream);
         }
     }
 }

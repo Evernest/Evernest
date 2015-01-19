@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Text;
 using Microsoft.WindowsAzure.Storage.Blob;
 
@@ -18,18 +17,31 @@ namespace EvernestBack
         private uint _indexUpdateMinimumDelay;
         private DateTime _lastIndexUpdateTime;
 
-        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="streamIndexBlob">The block blob where is the additional stream index information.</param>
+        /// <param name="buffer">A lower-level interface with the page blob.</param>
+        /// <param name="updateMinimumEntryCount">The minimum number of registered indexes (also referred as milestones) to be added before the indexer attempts to re-update the additional stream index information.</param>
+        /// <param name="updateMinimumDelay">The minimum delay before before the indexer attempts to re-update the additional stream index information.</param>
+        /// <param name="minimumChunkSize">The minimum number of bytes to be read before the indexer registers a new index (also referred as milestone).</param>
+        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, uint updateMinimumEntryCount, uint updateMinimumDelay, uint minimumChunkSize)
         {
-            _indexUpdateMinimumEntryCount = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumEntryCount"]);
-            _indexUpdateMinimumDelay = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumDelay"]);
+            _indexUpdateMinimumEntryCount = updateMinimumEntryCount;
+            _indexUpdateMinimumDelay = updateMinimumDelay;
+            _eventChunkSizeInBytes = minimumChunkSize;
             _bufferedStreamIO = buffer;
-            _eventChunkSizeInBytes = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
             _streamIndexBlob = streamIndexBlob;
             _milestones = new History();
             _lastIndexUpdateTime = DateTime.UtcNow;
             _newEntryCount = 0;
         }
 
+        /// <summary>
+        /// Notify the indexer a new event had been pushed.
+        /// </summary>
+        /// <param name="id">The id of the event.</param>
+        /// <param name="wroteBytes">The size of the event in bytes.</param>
         public void NotifyNewEntry(long id, ulong wroteBytes)
         {
             if( wroteBytes + _currentChunkBytes > _eventChunkSizeInBytes)
@@ -44,10 +56,17 @@ namespace EvernestBack
                 _currentChunkBytes += wroteBytes;
         }
 
+        /// <summary>
+        /// Try to retrieve an event.
+        /// </summary>
+        /// <param name="id">The id of the requested event.</param>
+        /// <param name="message">The string to which the event's message should be written.</param>
+        /// <returns>True if the event was successfully retrieved, false otherwise.</returns>
         public bool FetchEvent(long id, out string message)
         {
             return PullFromLocalCache(id, out message) || PullFromCloud(id, out message);
         }
+
 
         private bool PullFromLocalCache(long id, out string message)
         {
@@ -64,6 +83,9 @@ namespace EvernestBack
             }
         }
 
+        /// <summary>
+        /// Update the additional stream index information.
+        /// </summary>
         public void UploadIndex()
         {
             _newEntryCount = 0;
@@ -72,6 +94,10 @@ namespace EvernestBack
             _streamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
         }
 
+        /// <summary>
+        /// Re-build the indexer from the server data.
+        /// </summary>
+        /// <returns>The last known event id pushed on the server.</returns>
         public long ReadIndexInfo()
         {
             long lastKnownId = 0;

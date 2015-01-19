@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using System.Configuration;
 using System.IO;
 
 //TODO: what should we do when an exception occurs? Notifying the user? how?
@@ -23,14 +22,13 @@ namespace EvernestBack
         private const Int16 PageSize = 512;
         public ulong TotalWrittenBytes {get; private set;}
 
-        public BufferedBlobIO( CloudPageBlob blob)
+        public BufferedBlobIO( CloudPageBlob blob, int minimumBufferSize)
         {
             _blob = blob;
             byte[] buffer = new byte[sizeof(ulong)+sizeof(long)];
             _blob.DownloadRangeToByteArray(buffer, 0, 0, sizeof(ulong)+sizeof(long));
             TotalWrittenBytes = BitConverter.ToUInt64(buffer, 0);
             _currentPage = BitConverter.ToInt64(buffer, sizeof(ulong))+1;
-            int minimumBufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
             _maximumBufferSize = BufferSize(minimumBufferSize);
             //_writeBuffer allocation and coherence
             _writeBuffer = new byte[_maximumBufferSize];

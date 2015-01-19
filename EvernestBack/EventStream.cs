@@ -15,13 +15,19 @@ namespace EvernestBack
         /// <summary>
         ///     Construct a new EventStream.
         /// </summary>
-        public EventStream(AzureStorageClient storage, string streamID)
+        /// <param name="storage">The stream factory.</param>
+        /// <param name="streamID">The name of the stream.</param>
+        /// <param name="minimumBufferSize">The minimum size of the buffer.</param>
+        /// <param name="updateMinimumEntryCount">The minimum number of indexes (also referred as milestones) to be registered before re-updating the aditional stream index inforamtion.</param>
+        /// <param name="updateMinimumDelay">The minimum delay before re-updating the aditional stream index inforamtion.</param>
+        /// <param name="minimumChunkSize">The minimum number of bytes to be read before a new index (also referred as milestone) is registered.</param>
+        public EventStream(AzureStorageClient storage, string streamID, int minimumBufferSize, uint updateMinimumEntryCount, uint updateMinimumDelay, uint minimumChunkSize)
         {
             _blob = storage.StreamContainer.GetPageBlobReference(streamID);
             var streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
 
-            _bufferedIO = new BufferedBlobIO(_blob);
-            _indexer = new EventIndexer(streamIndexBlob, _bufferedIO);
+            _bufferedIO = new BufferedBlobIO(_blob, minimumBufferSize);
+            _indexer = new EventIndexer(streamIndexBlob, _bufferedIO, updateMinimumEntryCount, updateMinimumDelay, minimumChunkSize);
             _writeLock = new WriteLocker(_bufferedIO, _indexer, _indexer.ReadIndexInfo());
         }
 

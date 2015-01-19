@@ -15,6 +15,10 @@ namespace EvernestBack
         private readonly CloudBlobClient _blobClient;
         private readonly bool _dummy;
         private readonly Dictionary<String, IEventStream> _openedStreams;
+        private readonly Int32 MinimumBufferSize;
+        private readonly UInt32 EventChunkSize;
+        private readonly UInt32 IndexUpdateMinimumEntryCount;
+        private readonly UInt32 IndexUpdateMinimumDelay;
 
         internal readonly long PageBlobSize;
         internal readonly string DummyDataPath;
@@ -38,9 +42,12 @@ namespace EvernestBack
                 CloudStorageAccount storageAccount;
                 try
                 {
-                    // TODO
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
                     PageBlobSize = UInt32.Parse(ConfigurationManager.AppSettings["PageBlobSize"]);
+                    MinimumBufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
+                    EventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
+                    IndexUpdateMinimumEntryCount = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumentryCount"]);
+                    IndexUpdateMinimumDelay = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumDelay"]);
                     storageAccount = CloudStorageAccount.Parse(connectionString);
                 }
                 catch (NullReferenceException e)
@@ -49,7 +56,7 @@ namespace EvernestBack
                     Console.Error.WriteLine("Method : {0}", e.TargetSite);
                     Console.Error.WriteLine("Message : {0}", e.Message);
                     Console.Error.WriteLine("Source : {0}", e.Source);
-                    return;
+                    throw e;
                 }
                 _blobClient = storageAccount.CreateCloudBlobClient();
                 StreamContainer = _blobClient.GetContainerReference("stream");
@@ -129,7 +136,8 @@ namespace EvernestBack
             }
             else
             {
-                stream = new EventStream(this, streamID);
+                stream = new EventStream(this, streamID, MinimumBufferSize, 
+                    IndexUpdateMinimumEntryCount, IndexUpdateMinimumDelay, EventChunkSize);
             }
 
             _openedStreams.Add(streamID, stream);

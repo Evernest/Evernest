@@ -73,7 +73,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AssertAuxiliaries.cs" />
-    <Compile Include="SerializerTests.cs" />
+    <Compile Include="UtilitiesTests\PasswordManagerTests.cs" />
+    <Compile Include="UtilitiesTests\SerializerTests.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="SourceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

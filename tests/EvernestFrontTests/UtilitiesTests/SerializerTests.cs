@@ -1,12 +1,10 @@
 ﻿using System;
+using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
-using EvernestFront.Contract;
 using NUnit.Framework;
-using Assert = NUnit.Framework.Assert;
 
-
-namespace EvernestFrontTests
+namespace EvernestFrontTests.UtilitiesTests
 {
     [TestFixture]
     class SerializerTests

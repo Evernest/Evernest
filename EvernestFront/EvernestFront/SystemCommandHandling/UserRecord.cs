@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace EvernestFront.CommandHandling
+namespace EvernestFront.SystemCommandHandling
 {
-    class CommandHandlingUserData
+    class UserRecord
     {
         internal string UserName;
 
@@ -18,7 +18,7 @@ namespace EvernestFront.CommandHandling
 
         internal long NextSourceId;
 
-        internal CommandHandlingUserData(string name, string hash, byte[] salt)
+        internal UserRecord(string name, string hash, byte[] salt)
         {
             UserName = name;
             SaltedPasswordHash = hash;

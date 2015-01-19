@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using EvernestFront.CommandHandling;
+using EvernestFront.SystemCommandHandling;
 using EvernestFront.Contract;
 using EvernestFront.Projections;
 
 namespace EvernestFront
 {
-    public class SourcesBuilder
+    public class SourcesProvider
     {
         private readonly SourcesProjection _sourcesProjection;
 
-        private readonly CommandHandler _commandHandler;
+        private readonly SystemCommandHandler _systemCommandHandler;
 
-        public SourcesBuilder()
+        public SourcesProvider()
         {
             _sourcesProjection = Injector.Instance.SourcesProjection;
-            _commandHandler = Injector.Instance.CommandHandler;
+            _systemCommandHandler = Injector.Instance.SystemCommandHandler;
         }
 
         public Response<Source> GetSource(string sourceKey)
@@ -34,7 +34,7 @@ namespace EvernestFront
 
         internal bool TryGetSource(string sourceKey, out Source source, out FrontError? error)
         {
-            SourceDataForProjection sourceData;
+            SourceRecord sourceData;
             if (!_sourcesProjection.TryGetSourceData(sourceKey, out sourceData))
             {
                 source = null;
@@ -42,7 +42,7 @@ namespace EvernestFront
                 return false;
             }
 
-            var usersBuilder = new UsersBuilder();
+            var usersBuilder = new UsersProvider();
             User user;
             if (!usersBuilder.TryGetUser(sourceData.UserId, out user))
             {

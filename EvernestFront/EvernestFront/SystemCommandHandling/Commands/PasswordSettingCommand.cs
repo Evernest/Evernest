@@ -2,7 +2,7 @@
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
-namespace EvernestFront.CommandHandling.Commands
+namespace EvernestFront.SystemCommandHandling.Commands
 {
     class PasswordSettingCommand : CommandBase
     {
@@ -12,8 +12,8 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal string NewPassword { get; private set; }
 
-        internal PasswordSettingCommand(CommandHandler commandHandler, long userId,string currentPassword, string newPassword)
-            : base(commandHandler)
+        internal PasswordSettingCommand(SystemCommandHandler systemCommandHandler, long userId,string currentPassword, string newPassword)
+            : base(systemCommandHandler)
         {
             UserId = userId;
             CurrentPassword = currentPassword;
@@ -21,17 +21,17 @@ namespace EvernestFront.CommandHandling.Commands
         }
 
 
-        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
         {
-            CommandHandlingUserData userData;
-            if (!commandHandlingData.UserIdToData.TryGetValue(UserId, out userData))
+            UserRecord userRecord;
+            if (!systemCommandHandlerState.UserIdToData.TryGetValue(UserId, out userRecord))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent =null;
                 return false;
             }
             var passwordManager = new PasswordManager();
-            if (!passwordManager.Verify(CurrentPassword, userData.SaltedPasswordHash, userData.PasswordSalt))
+            if (!passwordManager.Verify(CurrentPassword, userRecord.SaltedPasswordHash, userRecord.PasswordSalt))
             {
                 error=FrontError.WrongPassword;
                 systemEvent = null;

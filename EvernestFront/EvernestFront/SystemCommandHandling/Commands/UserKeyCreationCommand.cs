@@ -1,7 +1,7 @@
 ﻿using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.CommandHandling.Commands
+namespace EvernestFront.SystemCommandHandling.Commands
 {
     class UserKeyCreationCommand : CommandBase
     {
@@ -11,24 +11,24 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal readonly string Key;
 
-        internal UserKeyCreationCommand(CommandHandler commandHandler, long userId, string keyName, string key)
-            :base(commandHandler)
+        internal UserKeyCreationCommand(SystemCommandHandler systemCommandHandler, long userId, string keyName, string key)
+            :base(systemCommandHandler)
         {
             UserId = userId;
             KeyName = keyName;
             Key = key;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
         {
-            CommandHandlingUserData userData;
-            if (!commandHandlingData.UserIdToData.TryGetValue(UserId, out userData))
+            UserRecord userRecord;
+            if (!systemCommandHandlerState.UserIdToData.TryGetValue(UserId, out userRecord))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;
                 return false;
             }
-            if (userData.KeyNames.Contains(KeyName))
+            if (userRecord.KeyNames.Contains(KeyName))
             {
                 error = FrontError.UserKeyNameTaken;
                 systemEvent = null;

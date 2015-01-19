@@ -14,11 +14,11 @@ namespace EvernestFrontTests
 
         internal static long AddUser_GetId_AssertSuccess(string userName)
         {
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             Response<Guid> add = usb.AddUser(userName, Password);
             Assert.IsTrue(add.Success);
             Assert.IsNull(add.Error);
-            var viewer = new CommandResultViewer();
+            var viewer = new SystemCommandResultViewer();
             Response<Guid> response;
             while (!viewer.TryGetResult(add.Result, out response))
             {
@@ -32,7 +32,7 @@ namespace EvernestFrontTests
 
         internal static User GetUser_AssertSuccess(long userId)
         {
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             var ans = usb.GetUser(userId);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
@@ -62,7 +62,7 @@ namespace EvernestFrontTests
         {
             var userName = AssertAuxiliaries.NewName;
             long userId = AddUser_GetId_AssertSuccess(userName);
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             Response<Guid> ans = usb.AddUser(userName, Password);
             AssertAuxiliaries.ErrorAssert(FrontError.UserNameTaken,ans);
         }
@@ -71,7 +71,7 @@ namespace EvernestFrontTests
         public void IdentifyUser_UserNameDoesNotExist()
         {
             const string inexistentUserName = "InexistentUserName";
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             var ans = usb.IdentifyUser(inexistentUserName, Password);
             AssertAuxiliaries.ErrorAssert(FrontError.UserNameDoesNotExist,ans);
         }
@@ -81,7 +81,7 @@ namespace EvernestFrontTests
         {
             var userName = AssertAuxiliaries.NewName;
             long userId = AddUser_GetId_AssertSuccess(userName);
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             Response<User> ans = usb.IdentifyUser(userName, "WrongPassword");
             AssertAuxiliaries.ErrorAssert(FrontError.WrongPassword,ans);
         }
@@ -91,7 +91,7 @@ namespace EvernestFrontTests
         {
             var userName = AssertAuxiliaries.NewName;
             long userId = AddUser_GetId_AssertSuccess(userName);
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             var ans = usb.GetUser(userId);
             Assert.IsTrue(ans.Success);
             Assert.IsNotNull(ans.Result);
@@ -101,7 +101,7 @@ namespace EvernestFrontTests
         [Test]
         public void GetUser_IdDoesNotExist()
         {
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             var ans = usb.GetUser(4265468);
             AssertAuxiliaries.ErrorAssert(FrontError.UserIdDoesNotExist,ans);
         }
@@ -119,7 +119,7 @@ namespace EvernestFrontTests
             Response<Guid> setPassword = user.SetPassword(Password, newPassword);
             Assert.IsTrue(setPassword.Success);
             System.Threading.Thread.Sleep(100);
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             Response<User> ans = usb.IdentifyUser(userName, newPassword);
             Assert.IsTrue(ans.Success);
         }

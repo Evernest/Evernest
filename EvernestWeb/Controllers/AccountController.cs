@@ -28,7 +28,7 @@ namespace EvernestWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                var front = new UsersBuilder();
+                var front = new UsersProvider();
                 Models.User user = (Models.User) Session["User"];
                 var userReq = front.GetUser(user.Id);
                 if (!userReq.Success)
@@ -63,7 +63,7 @@ namespace EvernestWeb.Controllers
             if (ModelState.IsValid)
             {
                 // Ask front for identification
-                var front = new UsersBuilder();
+                var front = new UsersProvider();
                 var userReq = front.IdentifyUser(user.Username, user.Password);
                 if (!userReq.Success)
                 {
@@ -106,7 +106,7 @@ namespace EvernestWeb.Controllers
             }
 
             // Add user in front
-            var front = new UsersBuilder();
+            var front = new UsersProvider();
             var addUserReq = front.AddUser(model.Username, model.Password);
             if (!addUserReq.Success)
             {

@@ -5,22 +5,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
-using EvernestFront.CommandHandling.Commands;
+using EvernestFront.SystemCommandHandling.Commands;
 
-namespace EvernestFront.CommandHandling
+namespace EvernestFront.SystemCommandHandling
 {
-    class CommandHandler
+    class SystemCommandHandler
     {
         
-        private readonly CommandHandlingData _serviceData;
+        private readonly SystemCommandHandlerState _serviceData;
         private readonly Dispatcher _dispatcher;
-        private readonly CommandResultManager _manager;
+        private readonly SystemCommandResultManager _manager;
 
         private readonly ConcurrentQueue<CommandBase> _pendingCommandQueue;
         private readonly CancellationTokenSource _tokenSource;
        
 
-        public CommandHandler(CommandHandlingData serviceData, Dispatcher dispatcher, CommandResultManager manager)
+        public SystemCommandHandler(SystemCommandHandlerState serviceData, Dispatcher dispatcher, SystemCommandResultManager manager)
         {
             _serviceData = serviceData;
             _dispatcher = dispatcher;

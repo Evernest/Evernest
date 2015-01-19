@@ -3,7 +3,7 @@ using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
-namespace EvernestFront.CommandHandling.Commands
+namespace EvernestFront.SystemCommandHandling.Commands
 {
     class EventStreamDeletionCommand : CommandBase
     {
@@ -12,9 +12,9 @@ namespace EvernestFront.CommandHandling.Commands
         internal long AdminId { get; private set; }
         internal string AdminPassword { get; private set; }
 
-        internal EventStreamDeletionCommand(CommandHandler commandHandler, 
+        internal EventStreamDeletionCommand(SystemCommandHandler systemCommandHandler, 
             long streamId, string streamName, long adminId, string adminPassword)
-            : base(commandHandler)
+            : base(systemCommandHandler)
         {
             EventStreamId = streamId;
             EventStreamName = streamName;
@@ -22,30 +22,30 @@ namespace EvernestFront.CommandHandling.Commands
             AdminPassword = adminPassword;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
         {
             HashSet<string> eventStreamAdmins;
-            if (!commandHandlingData.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
+            if (!systemCommandHandlerState.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
             {
                 error = FrontError.EventStreamIdDoesNotExist;
                 systemEvent = null;
                 return false;
             }
-            CommandHandlingUserData userData;
-            if (!commandHandlingData.UserIdToData.TryGetValue(AdminId, out userData))
+            UserRecord userRecord;
+            if (!systemCommandHandlerState.UserIdToData.TryGetValue(AdminId, out userRecord))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;
                 return false;
             }
-            if (!eventStreamAdmins.Contains(userData.UserName))
+            if (!eventStreamAdmins.Contains(userRecord.UserName))
             {
                 error = FrontError.AdminAccessDenied;
                 systemEvent = null;
                 return false;
             }
             var passwordManager = new PasswordManager();
-            if (!passwordManager.Verify(AdminPassword, userData.SaltedPasswordHash, userData.PasswordSalt))
+            if (!passwordManager.Verify(AdminPassword, userRecord.SaltedPasswordHash, userRecord.PasswordSalt))
             {
                 error = FrontError.WrongPassword;
                 systemEvent = null;

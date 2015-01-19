@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
-using EvernestFront.CommandHandling;
-using EvernestFront.CommandHandling.Commands;
+using EvernestFront.SystemCommandHandling;
+using EvernestFront.SystemCommandHandling.Commands;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
 using EvernestBack;
@@ -14,7 +14,7 @@ namespace EvernestFront
 {
     public class EventStream
     {
-        private readonly CommandHandler _commandHandler;
+        private readonly SystemCommandHandler _systemCommandHandler;
         
         private readonly User _user;
 
@@ -36,11 +36,11 @@ namespace EvernestFront
         private IEventStream BackStream { get; set; }
 
 
-        internal EventStream(CommandHandler commandHandler, User user, AccessRight userRight, 
+        internal EventStream(SystemCommandHandler systemCommandHandler, User user, AccessRight userRight, 
             HashSet<AccessAction> possibleActions, long streamId, string name, 
             ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
         {
-            _commandHandler = commandHandler;
+            _systemCommandHandler = systemCommandHandler;
             Id = streamId;
             Name = name;
             RelatedUsers = users;
@@ -60,7 +60,7 @@ namespace EvernestFront
 
         public Response<Guid> SetUserRight(long targetId, AccessRight right)
         {
-            var usersBuilder = new UsersBuilder();
+            var usersBuilder = new UsersProvider();
             User targetUser;
             if (!usersBuilder.TryGetUser(targetId, out targetUser))
                 return new Response<Guid>(FrontError.UserIdDoesNotExist);
@@ -73,7 +73,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.AdminAccessDenied);
             if (TargetUserIsAdmin(targetName))
                 return new Response<Guid>(FrontError.CannotDestituteAdmin);
-            var command = new UserRightSettingCommand(_commandHandler,
+            var command = new UserRightSettingCommand(_systemCommandHandler,
                 targetName, Id, _user.Name, right);
             command.Send();
             return new Response<Guid>(command.Guid);
@@ -189,7 +189,7 @@ namespace EvernestFront
         {
             if (!ValidateAccessAction(AccessAction.Admin))
                 return new Response<Guid>(FrontError.AdminAccessDenied);
-            var command = new EventStreamDeletionCommand(_commandHandler, Id, Name, _user.Id, password);
+            var command = new EventStreamDeletionCommand(_systemCommandHandler, Id, Name, _user.Id, password);
             command.Send();
             return new Response<Guid>(command.Guid);
         }

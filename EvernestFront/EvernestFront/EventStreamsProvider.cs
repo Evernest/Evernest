@@ -2,21 +2,21 @@ using System;
 using System.Collections.Generic;
 using EvernestFront.Contract;
 using EvernestFront.Projections;
-using EvernestFront.CommandHandling;
-using EvernestFront.CommandHandling.Commands;
+using EvernestFront.SystemCommandHandling;
+using EvernestFront.SystemCommandHandling.Commands;
 
 namespace EvernestFront
 {
-    class EventStreamsBuilder
+    class EventStreamsProvider
     {
         private readonly EventStreamsProjection _eventStreamsProjection;
 
-        private readonly CommandHandler _commandReceiver;
+        private readonly SystemCommandHandler _systemCommandReceiver;
 
-        public EventStreamsBuilder()
+        public EventStreamsProvider()
         {
             _eventStreamsProjection = Injector.Instance.EventStreamsProjection;
-            _commandReceiver = Injector.Instance.CommandHandler;
+            _systemCommandReceiver = Injector.Instance.SystemCommandHandler;
         }
 
 
@@ -30,14 +30,14 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.EventStreamNameTaken);
             // this is supposed to be called by a user object, so creator should always exist
 
-            var command = new EventStreamCreationCommand(_commandReceiver, streamName, user.Name);
+            var command = new EventStreamCreationCommand(_systemCommandReceiver, streamName, user.Name);
             command.Send();
             return new Response<Guid>(command.Guid);
         }
 
         internal bool TryGetEventStream(User user, long eventStreamId, out EventStream eventStream)
         {
-            EventStreamDataForProjection eventStreamData;
+            EventStreamRecord eventStreamData;
             if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
             {
                 eventStream = ConstructEventStream(user, eventStreamId, eventStreamData);
@@ -53,7 +53,7 @@ namespace EvernestFront
         internal bool TryGetEventStream(User user, string eventStreamName, out EventStream eventStream)
         {
             long eventStreamId;
-            EventStreamDataForProjection eventStreamData;
+            EventStreamRecord eventStreamData;
             if (_eventStreamsProjection.TryGetEventStreamIdAndData(eventStreamName, out eventStreamId, out eventStreamData))
             {
                 eventStream = ConstructEventStream(user, eventStreamId, eventStreamData);
@@ -68,14 +68,14 @@ namespace EvernestFront
 
         internal bool TryGetEventStreamBySource(Source source, AccessRight sourceRight, long eventStreamId, out EventStream eventStream)
         {
-            EventStreamDataForProjection eventStreamData;
+            EventStreamRecord eventStreamData;
             if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
             {
                 var accessManager = new AccessVerifier();
                 var userRight = GetUserRight(source.User.Name, eventStreamData);
                 var possibleActions = accessManager.ComputePossibleAccessActions(userRight);
                 possibleActions.IntersectWith(accessManager.ComputePossibleAccessActions(sourceRight));
-                eventStream = new EventStreamBySource(_commandReceiver, source.User, userRight, source, sourceRight,
+                eventStream = new EventStreamBySource(_systemCommandReceiver, source.User, userRight, source, sourceRight,
                     possibleActions, eventStreamId, eventStreamData.StreamName,
                     eventStreamData.RelatedUsers, eventStreamData.BackStream);
                 return true;
@@ -87,7 +87,7 @@ namespace EvernestFront
             }
         }
 
-        private AccessRight GetUserRight(string userName, EventStreamDataForProjection eventStreamData)
+        private AccessRight GetUserRight(string userName, EventStreamRecord eventStreamData)
         {
             AccessRight right;
             if (!eventStreamData.RelatedUsers.TryGetValue(userName, out right))
@@ -95,12 +95,12 @@ namespace EvernestFront
             return right;
         }
 
-        private EventStream ConstructEventStream(User user, long eventStreamId, EventStreamDataForProjection eventStreamData)
+        private EventStream ConstructEventStream(User user, long eventStreamId, EventStreamRecord eventStreamData)
         {
             var accessManager = new AccessVerifier();
             var userRight = GetUserRight(user.Name, eventStreamData);
             var possibleActions = accessManager.ComputePossibleAccessActions(userRight);
-            return new EventStream(_commandReceiver, user, userRight, possibleActions, eventStreamId, eventStreamData.StreamName,
+            return new EventStream(_systemCommandReceiver, user, userRight, possibleActions, eventStreamId, eventStreamData.StreamName,
                 eventStreamData.RelatedUsers, eventStreamData.BackStream);
         }
     }

@@ -1,7 +1,7 @@
 ﻿using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.CommandHandling.Commands
+namespace EvernestFront.SystemCommandHandling.Commands
 {
     class SourceDeletionCommand : CommandBase
     {
@@ -11,25 +11,25 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal readonly string SourceKey;
 
-        internal SourceDeletionCommand(CommandHandler commandHandler, long userId, long sourceId, string sourceKey)
-            :base(commandHandler)
+        internal SourceDeletionCommand(SystemCommandHandler systemCommandHandler, long userId, long sourceId, string sourceKey)
+            :base(systemCommandHandler)
         {
             UserId = userId;
             SourceId = sourceId;
             SourceKey = sourceKey;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
         {
-            CommandHandlingUserData userData;
-            if (!commandHandlingData.UserIdToData.TryGetValue(UserId, out userData))
+            UserRecord userRecord;
+            if (!systemCommandHandlerState.UserIdToData.TryGetValue(UserId, out userRecord))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;
                 return false;
             }
             string sourceName;
-            if (!userData.SourceIdToName.TryGetValue(SourceId, out sourceName))
+            if (!userRecord.SourceIdToName.TryGetValue(SourceId, out sourceName))
             {
                 error = FrontError.SourceIdDoesNotExist;
                 systemEvent = null;

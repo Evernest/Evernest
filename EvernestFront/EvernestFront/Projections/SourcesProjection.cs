@@ -6,11 +6,11 @@ namespace EvernestFront.Projections
 {
     class SourcesProjection : IProjection
     {
-        private ImmutableDictionary<string, SourceDataForProjection> KeyToData { get; set; }
+        private ImmutableDictionary<string, SourceRecord> KeyToData { get; set; }
 
         public SourcesProjection()
         {
-            KeyToData = ImmutableDictionary<string, SourceDataForProjection>.Empty;
+            KeyToData = ImmutableDictionary<string, SourceRecord>.Empty;
         }
 
         public void OnSystemEvent(ISystemEvent systemEvent)
@@ -27,14 +27,14 @@ namespace EvernestFront.Projections
             }
         }
 
-        public bool TryGetSourceData(string key, out SourceDataForProjection data)
+        public bool TryGetSourceData(string key, out SourceRecord data)
         {
             return KeyToData.TryGetValue(key, out data);
         }
 
         private void When(SourceCreatedSystemEvent systemEvent)
         {
-            var data = new SourceDataForProjection(systemEvent.SourceName, systemEvent.SourceId, systemEvent.UserId);
+            var data = new SourceRecord(systemEvent.SourceName, systemEvent.SourceId, systemEvent.UserId);
             KeyToData = KeyToData.SetItem(systemEvent.SourceKey, data);
         }
 
@@ -45,7 +45,7 @@ namespace EvernestFront.Projections
 
         private void When(SourceRightSetSystemEvent systemEvent)
         {
-            SourceDataForProjection sourceData;
+            SourceRecord sourceData;
             if (!KeyToData.TryGetValue(systemEvent.SourceKey, out sourceData))
             {
                 //TODO: register error

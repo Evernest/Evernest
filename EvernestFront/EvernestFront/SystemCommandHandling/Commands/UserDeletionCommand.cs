@@ -2,7 +2,7 @@
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
-namespace EvernestFront.CommandHandling.Commands
+namespace EvernestFront.SystemCommandHandling.Commands
 {
     class UserDeletionCommand : CommandBase
     {
@@ -12,25 +12,25 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal string Password { get; private set; }
 
-        internal UserDeletionCommand(CommandHandler commandHandler, long userId, string userName, string password)
-            : base(commandHandler)
+        internal UserDeletionCommand(SystemCommandHandler systemCommandHandler, long userId, string userName, string password)
+            : base(systemCommandHandler)
         {
             UserId = userId;
             UserName = userName;
             Password = password;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
         {
-            CommandHandlingUserData userData;
-            if (!commandHandlingData.UserIdToData.TryGetValue(UserId, out userData))
+            UserRecord userRecord;
+            if (!systemCommandHandlerState.UserIdToData.TryGetValue(UserId, out userRecord))
             {
                 error=FrontError.UserIdDoesNotExist;
                 systemEvent = null;
                 return false;
             }
             var passwordManager = new PasswordManager();
-            if (!passwordManager.Verify(Password, userData.SaltedPasswordHash, userData.PasswordSalt))
+            if (!passwordManager.Verify(Password, userRecord.SaltedPasswordHash, userRecord.PasswordSalt))
             {
                 error=FrontError.WrongPassword;
                 systemEvent = null;

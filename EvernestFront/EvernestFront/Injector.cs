@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using EvernestFront.CommandHandling;
+using EvernestFront.SystemCommandHandling;
 using EvernestFront.Projections;
 
 namespace EvernestFront
@@ -14,9 +14,9 @@ namespace EvernestFront
         public EventStreamsProjection EventStreamsProjection;
         public SourcesProjection SourcesProjection;
 
-        public CommandHandler CommandHandler;
+        public SystemCommandHandler SystemCommandHandler;
         public Dispatcher Dispatcher;
-        public CommandResultManager CommandResultManager;
+        public SystemCommandResultManager SystemCommandResultManager;
 
         private Injector() { }
 
@@ -25,12 +25,12 @@ namespace EvernestFront
             UsersProjection = new UsersProjection();
             EventStreamsProjection = new EventStreamsProjection();
             SourcesProjection = new SourcesProjection();
-            CommandResultManager = new CommandResultManager();
+            SystemCommandResultManager = new SystemCommandResultManager();
             var systemEventStream = new SystemEventStream(0); //id for systemEventStream
             Dispatcher = new Dispatcher(new List<IProjection>
-                {UsersProjection, EventStreamsProjection, SourcesProjection}, systemEventStream, CommandResultManager);
-            var commandHandlingData = new CommandHandlingData(8); //8 eventStream ids and 8 user ids are reserved for system
-            CommandHandler = new CommandHandler(commandHandlingData, Dispatcher, CommandResultManager);
+                {UsersProjection, EventStreamsProjection, SourcesProjection}, systemEventStream, SystemCommandResultManager);
+            var commandHandlingData = new SystemCommandHandlerState(8); //8 eventStream ids and 8 user ids are reserved for system
+            SystemCommandHandler = new SystemCommandHandler(commandHandlingData, Dispatcher, SystemCommandResultManager);
             //TODO: read id for systemEventStream and number of reserved ids in app.config
         }
     }

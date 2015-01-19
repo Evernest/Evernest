@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.CommandHandling.Commands
+namespace EvernestFront.SystemCommandHandling.Commands
 {
     class SourceRightSettingCommand : CommandBase
     {
@@ -20,9 +20,9 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal readonly AccessRight SourceRight;
 
-        internal SourceRightSettingCommand(CommandHandler commandHandler, long userId, long sourceId, 
+        internal SourceRightSettingCommand(SystemCommandHandler systemCommandHandler, long userId, long sourceId, 
             string sourceKey, long eventStreamId, AccessRight sourceRight)
-            :base(commandHandler)
+            :base(systemCommandHandler)
         {
             UserId = userId;
             SourceId = sourceId;
@@ -31,16 +31,16 @@ namespace EvernestFront.CommandHandling.Commands
             SourceRight = sourceRight;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
         {
-            CommandHandlingUserData userData;
-            if (!commandHandlingData.UserIdToData.TryGetValue(UserId, out userData))
+            UserRecord userRecord;
+            if (!systemCommandHandlerState.UserIdToData.TryGetValue(UserId, out userRecord))
             {
                 error = FrontError.UserIdDoesNotExist;
                 systemEvent = null;
                 return false;
             }
-            if (!userData.SourceIdToName.ContainsKey(SourceId))
+            if (!userRecord.SourceIdToName.ContainsKey(SourceId))
             {
                 error = FrontError.SourceIdDoesNotExist;
                 systemEvent = null;

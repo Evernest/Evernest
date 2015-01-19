@@ -2,7 +2,7 @@
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Utilities;
 
-namespace EvernestFront.CommandHandling.Commands
+namespace EvernestFront.SystemCommandHandling.Commands
 {
     class UserCreationCommand : CommandBase
     {
@@ -10,16 +10,16 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal string Password { get; private set; }
 
-        internal UserCreationCommand(CommandHandler commandHandler, string userName, string password)
-            :base(commandHandler)
+        internal UserCreationCommand(SystemCommandHandler systemCommandHandler, string userName, string password)
+            :base(systemCommandHandler)
         {
             UserName = userName;
             Password = password;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
         {
-            if (commandHandlingData.UserNames.Contains(UserName))
+            if (systemCommandHandlerState.UserNames.Contains(UserName))
             {
                 error=FrontError.UserNameTaken;
                 systemEvent = null;
@@ -27,7 +27,7 @@ namespace EvernestFront.CommandHandling.Commands
             }
             var passwordManager = new PasswordManager();
             var hashSalt = passwordManager.SaltAndHash(Password);
-            systemEvent= new UserCreatedSystemEvent(UserName, commandHandlingData.NextUserId, hashSalt.Key, hashSalt.Value);
+            systemEvent= new UserCreatedSystemEvent(UserName, systemCommandHandlerState.NextUserId, hashSalt.Key, hashSalt.Value);
             error = null;
             return true;
         }

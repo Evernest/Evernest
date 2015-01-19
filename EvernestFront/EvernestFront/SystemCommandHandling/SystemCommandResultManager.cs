@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Immutable;
 
-namespace EvernestFront.CommandHandling
+namespace EvernestFront.SystemCommandHandling
 {
-    class CommandResultManager
+    class SystemCommandResultManager
     {
         private ImmutableDictionary<Guid, Response<Guid>> _resultDictionary;
 
@@ -17,7 +17,7 @@ namespace EvernestFront.CommandHandling
             _resultDictionary = _resultDictionary.Add(commandGuid, response);
         }
 
-        public CommandResultManager()
+        public SystemCommandResultManager()
         {
             _resultDictionary= ImmutableDictionary<Guid, Response<Guid>>.Empty;
         }

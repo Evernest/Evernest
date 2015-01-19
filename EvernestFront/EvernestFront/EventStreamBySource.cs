@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EvernestBack;
-using EvernestFront.CommandHandling;
+using EvernestFront.SystemCommandHandling;
 using EvernestFront.Contract;
 
 namespace EvernestFront
@@ -16,11 +16,11 @@ namespace EvernestFront
 
         public AccessRight SourceRight { get; private set; }
 
-        internal EventStreamBySource(CommandHandler commandHandler, User user, AccessRight userRight,
+        internal EventStreamBySource(SystemCommandHandler systemCommandHandler, User user, AccessRight userRight,
             Source source, AccessRight sourceRight,
             HashSet<AccessAction> possibleActions, long streamId, string name, 
             ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
-            : base(commandHandler,user,userRight,possibleActions,streamId,name,users,backStream)
+            : base(systemCommandHandler,user,userRight,possibleActions,streamId,name,users,backStream)
         {
             _source = source;
             SourceRight = sourceRight;

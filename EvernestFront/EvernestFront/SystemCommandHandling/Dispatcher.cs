@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Projections;
 
-namespace EvernestFront.CommandHandling
+namespace EvernestFront.SystemCommandHandling
 {
     class Dispatcher
     {
@@ -19,9 +19,9 @@ namespace EvernestFront.CommandHandling
 
         private readonly CancellationTokenSource _tokenSource;
 
-        private CommandResultManager Manager { set; get; }
+        private SystemCommandResultManager Manager { set; get; }
 
-        public Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream, CommandResultManager manager)
+        public Dispatcher(ICollection<IProjection> projections, SystemEventStream systemEventStream, SystemCommandResultManager manager)
         {
             Projections = projections;
             SystemEventStream = systemEventStream;

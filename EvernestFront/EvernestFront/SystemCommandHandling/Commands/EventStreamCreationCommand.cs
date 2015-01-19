@@ -3,35 +3,35 @@ using EvernestBack;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.CommandHandling.Commands
+namespace EvernestFront.SystemCommandHandling.Commands
 {
     class EventStreamCreationCommand : CommandBase
     {
         internal string EventStreamName { get; private set; }
         internal string CreatorName { get; private set; }
          
-        internal EventStreamCreationCommand(CommandHandler commandHandler, string streamName, string creatorName)
-            : base(commandHandler)
+        internal EventStreamCreationCommand(SystemCommandHandler systemCommandHandler, string streamName, string creatorName)
+            : base(systemCommandHandler)
         {
             EventStreamName = streamName;
             CreatorName = creatorName;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
         {
-            if (!commandHandlingData.UserNames.Contains(CreatorName))
+            if (!systemCommandHandlerState.UserNames.Contains(CreatorName))
             {
                 systemEvent = null;
                 error = FrontError.UserNameDoesNotExist;
                 return false;
             }
-            if (commandHandlingData.EventStreamNames.Contains(EventStreamName))
+            if (systemCommandHandlerState.EventStreamNames.Contains(EventStreamName))
             {
                 systemEvent = null;
                 error = FrontError.EventStreamNameTaken;
                 return false;
             }
-            var id = commandHandlingData.NextEventStreamId;
+            var id = systemCommandHandlerState.NextEventStreamId;
             AzureStorageClient.Instance.GetNewEventStream(Convert.ToString(id));
             systemEvent = new EventStreamCreatedSystemEvent(id, EventStreamName, CreatorName);
             error = null;

@@ -7,7 +7,7 @@ namespace EvernestFront.Projections
     /// <summary>
     /// Data stored in EventStreamProjection for each eventstream. Immutable to allow concurrent access (unique writer, multiple readers).
     /// </summary>
-    class EventStreamDataForProjection
+    class EventStreamRecord
     {
         
         internal string StreamName { get; private set; }
@@ -17,26 +17,26 @@ namespace EvernestFront.Projections
         internal IEventStream BackStream { get; private set; }
         
 
-        private EventStreamDataForProjection(string name, ImmutableDictionary<string, AccessRight> users, IEventStream backStream)
+        private EventStreamRecord(string name, ImmutableDictionary<string, AccessRight> users, IEventStream backStream)
         {
             StreamName = name;
             RelatedUsers = users;
             BackStream = backStream;
         }
 
-        internal EventStreamDataForProjection(string name, string creatorName, IEventStream backStream)
+        internal EventStreamRecord(string name, string creatorName, IEventStream backStream)
         {
             StreamName = name;
             RelatedUsers = ImmutableDictionary<string, AccessRight>.Empty.SetItem(creatorName, AccessRight.Admin);
             BackStream = backStream;
         }
 
-        internal EventStreamDataForProjection SetRight(string user, AccessRight right)
+        internal EventStreamRecord SetRight(string user, AccessRight right)
         {
             var users = RelatedUsers.SetItem(user, right);
             if (right == AccessRight.NoRight)
                 users = users.Remove(user);
-            return new EventStreamDataForProjection(StreamName, users, BackStream);
+            return new EventStreamRecord(StreamName, users, BackStream);
         }
     }
 }

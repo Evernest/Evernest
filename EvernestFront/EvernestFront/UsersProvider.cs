@@ -2,22 +2,23 @@
 using System.Diagnostics;
 using EvernestFront.Contract;
 using EvernestFront.Projections;
-using EvernestFront.CommandHandling;
-using EvernestFront.CommandHandling.Commands;
+using EvernestFront.SystemCommandHandling;
+using EvernestFront.SystemCommandHandling.Commands;
 using EvernestFront.Utilities;
+using UserRecord = EvernestFront.Projections.UserRecord;
 
 namespace EvernestFront
 {
-    public class UsersBuilder
+    public class UsersProvider
     {
         private readonly UsersProjection _usersProjection;
 
-        private readonly CommandHandler _commandHandler;
+        private readonly SystemCommandHandler _systemCommandHandler;
 
-        public UsersBuilder()
+        public UsersProvider()
         {
             _usersProjection = Injector.Instance.UsersProjection;
-            _commandHandler = Injector.Instance.CommandHandler;
+            _systemCommandHandler = Injector.Instance.SystemCommandHandler;
         }
 
 
@@ -84,7 +85,7 @@ namespace EvernestFront
         {
             if (!_usersProjection.UserNameExists(userName))
             {
-                var command = new UserCreationCommand(_commandHandler, userName, password);
+                var command = new UserCreationCommand(_systemCommandHandler, userName, password);
                 command.Send();
                 return new Response<Guid>(command.Guid);
             }
@@ -94,7 +95,7 @@ namespace EvernestFront
 
         internal bool TryGetUser(long userId, out User user)
         {
-            UserDataForProjection userData;
+            UserRecord userData;
             if (_usersProjection.TryGetUserData(userId, out userData))
             {
                 user = ConstructUser(userId, userData);
@@ -110,7 +111,7 @@ namespace EvernestFront
         internal bool TryGetUserByName(string userName, out User user)
         {
             long userId;
-            UserDataForProjection userData;
+            UserRecord userData;
             if (_usersProjection.TryGetUserIdAndData(userName, out userId, out userData))
             {
                 user = ConstructUser(userId, userData);
@@ -126,7 +127,7 @@ namespace EvernestFront
         internal bool TryGetUserByKey(string userKey, out User user)
         {
             long userId;
-            UserDataForProjection userData;
+            UserRecord userData;
             if (_usersProjection.TryGetUserIdAndDataByKey(userKey, out userId, out userData))
             {
                 user = ConstructUser(userId, userData);
@@ -139,9 +140,9 @@ namespace EvernestFront
             }
         }
 
-        private User ConstructUser(long userId, UserDataForProjection userData)
+        private User ConstructUser(long userId, UserRecord userData)
         {
-            return new User(_commandHandler, userId, userData.UserName,
+            return new User(_systemCommandHandler, userId, userData.UserName,
                     userData.SaltedPasswordHash, userData.PasswordSalt,
                     userData.Keys, userData.Sources, userData.SourceKeys,
                     userData.RelatedEventStreams);

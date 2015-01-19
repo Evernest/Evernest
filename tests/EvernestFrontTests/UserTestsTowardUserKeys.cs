@@ -56,7 +56,7 @@ namespace EvernestFrontTests
             var userId = UserTests.AddUser_GetId_AssertSuccess(_userName);
             var user = UserTests.GetUser_AssertSuccess(userId);
             var key = CreateUserKey_ReturnKey_AssertSuccess(user, _keyName);
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             var ans = usb.GetUser(key);
             Assert.IsTrue(ans.Success);
             var actualUser = ans.Result;
@@ -69,7 +69,7 @@ namespace EvernestFrontTests
         public void GetUser_FromUserKey_UserKeyDoesNotExist()
         {
             const string inexistantKey = "InexistantKey";
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             var ans = usb.GetUser(inexistantKey);
             AssertAuxiliaries.ErrorAssert(FrontError.UserKeyDoesNotExist,ans);
         }
@@ -80,7 +80,7 @@ namespace EvernestFrontTests
             var userId = UserTests.AddUser_GetId_AssertSuccess(_userName);
             var user = UserTests.GetUser_AssertSuccess(userId);
             var key = CreateUserKey_ReturnKey_AssertSuccess(user, _keyName);
-            var usb = new UsersBuilder();
+            var usp = new UsersProvider();
             var ans = usb.IdentifyUser(key);
             Assert.IsTrue(ans.Success);
             var user2 = ans.Result;

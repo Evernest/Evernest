@@ -4,14 +4,14 @@ using EvernestBack;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.CommandHandling
+namespace EvernestFront.SystemCommandHandling
 {
-    class CommandHandlingData
+    class SystemCommandHandlerState
     {
         //TODO: initialization on system stream
 
         internal HashSet<string> UserNames { get; set; }
-        internal Dictionary<long, CommandHandlingUserData> UserIdToData { get; set; }
+        internal Dictionary<long, UserRecord> UserIdToData { get; set; }
         internal HashSet<string> EventStreamNames { get; set; }
         internal Dictionary<long, HashSet<string>> EventStreamIdToAdmins { get; set; }
 
@@ -20,10 +20,10 @@ namespace EvernestFront.CommandHandling
         internal long NextEventStreamId;
 
             
-        internal CommandHandlingData(long numberOfREservedIds)
+        internal SystemCommandHandlerState(long numberOfREservedIds)
         {
             UserNames = new HashSet<string>();
-            UserIdToData = new Dictionary<long, CommandHandlingUserData>();
+            UserIdToData = new Dictionary<long, UserRecord>();
             EventStreamNames = new HashSet<string>();
             EventStreamIdToAdmins = new Dictionary<long, HashSet<string>>();
             // ids from 0 to numberOfREservedIds-1 are reserved for system
@@ -56,30 +56,30 @@ namespace EvernestFront.CommandHandling
 
         private void When(PasswordSetSystemEvent systemEvent)
         {
-            CommandHandlingUserData userData;
-            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
+            UserRecord userRecord;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userRecord))
                 return; //TODO: report error
-            userData.SaltedPasswordHash = systemEvent.SaltedPasswordHash;
-            userData.PasswordSalt = systemEvent.PasswordSalt;
+            userRecord.SaltedPasswordHash = systemEvent.SaltedPasswordHash;
+            userRecord.PasswordSalt = systemEvent.PasswordSalt;
         }
 
         private void When(SourceCreatedSystemEvent systemEvent)
         {
-            CommandHandlingUserData userData;
-            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
+            UserRecord userRecord;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userRecord))
                 return; //TODO: report error
-            userData.SourceNames.Add(systemEvent.SourceName);
-            userData.SourceIdToName.Add(systemEvent.SourceId, systemEvent.SourceName);
-            userData.NextSourceId++;
+            userRecord.SourceNames.Add(systemEvent.SourceName);
+            userRecord.SourceIdToName.Add(systemEvent.SourceId, systemEvent.SourceName);
+            userRecord.NextSourceId++;
         }
 
         private void When(SourceDeletedSystemEvent systemEvent)
         {
-            CommandHandlingUserData userData;
-            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
+            UserRecord userRecord;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userRecord))
                 return; //TODO: report error
-            userData.SourceNames.Remove(systemEvent.SourceName);
-            userData.SourceIdToName.Remove(systemEvent.SourceId);
+            userRecord.SourceNames.Remove(systemEvent.SourceName);
+            userRecord.SourceIdToName.Remove(systemEvent.SourceId);
         }
 
         private void When(SourceRightSetSystemEvent systemEvent)
@@ -90,7 +90,7 @@ namespace EvernestFront.CommandHandling
         private void When(UserCreatedSystemEvent systemEvent)
         {
             UserNames.Add(systemEvent.UserName);
-            var userData = new CommandHandlingUserData(systemEvent.UserName, systemEvent.SaltedPasswordHash,
+            var userData = new UserRecord(systemEvent.UserName, systemEvent.SaltedPasswordHash,
                 systemEvent.PasswordSalt);
             UserIdToData.Add(systemEvent.UserId, userData);
             NextUserId++;
@@ -104,18 +104,18 @@ namespace EvernestFront.CommandHandling
 
         private void When(UserKeyCreatedSystemEvent systemEvent)
         {
-            CommandHandlingUserData userData;
-            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
+            UserRecord userRecord;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userRecord))
                 return; //TODO: report error
-            userData.KeyNames.Add(systemEvent.KeyName);
+            userRecord.KeyNames.Add(systemEvent.KeyName);
         }
 
         private void When(UserKeyDeletedSystemEvent systemEvent)
         {
-            CommandHandlingUserData userData;
-            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userData))
+            UserRecord userRecord;
+            if (!UserIdToData.TryGetValue(systemEvent.UserId, out userRecord))
                 return; //this can happen since existence is not checked in CommandToSystemEvent for key deletion
-            userData.KeyNames.Remove(systemEvent.KeyName);
+            userRecord.KeyNames.Remove(systemEvent.KeyName);
         }
 
         private void When(UserRightSetSystemEvent systemEvent)

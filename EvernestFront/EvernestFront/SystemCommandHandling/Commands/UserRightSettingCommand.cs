@@ -2,7 +2,7 @@
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
-namespace EvernestFront.CommandHandling.Commands
+namespace EvernestFront.SystemCommandHandling.Commands
 {
     class UserRightSettingCommand : CommandBase
     {
@@ -14,9 +14,9 @@ namespace EvernestFront.CommandHandling.Commands
 
         internal AccessRight Right { get; private set; }
 
-        internal UserRightSettingCommand(CommandHandler commandHandler, string targetName, long eventStreamId,
+        internal UserRightSettingCommand(SystemCommandHandler systemCommandHandler, string targetName, long eventStreamId,
             string adminName, AccessRight right)
-            : base(commandHandler)
+            : base(systemCommandHandler)
         {
             TargetName = targetName;
             EventStreamId = eventStreamId;
@@ -24,10 +24,10 @@ namespace EvernestFront.CommandHandling.Commands
             Right = right;
         }
 
-        public override bool TryToSystemEvent(CommandHandlingData commandHandlingData, out ISystemEvent systemEvent, out FrontError? error)
+        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
         {
             HashSet<string> eventStreamAdmins;
-            if (!commandHandlingData.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
+            if (!systemCommandHandlerState.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
             {
                 error=FrontError.EventStreamIdDoesNotExist;
                 systemEvent = null;

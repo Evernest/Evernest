@@ -27,7 +27,7 @@ namespace EvernestFront.SystemCommandHandling.Commands
             }
             var passwordManager = new PasswordManager();
             var hashSalt = passwordManager.SaltAndHash(Password);
-            systemEvent= new UserCreatedSystemEvent(UserName, systemCommandHandlerState.NextUserId, hashSalt.Key, hashSalt.Value);
+            systemEvent= new UserCreatedSystemEvent(UserName, systemCommandHandlerState.NextUserId, hashSalt.Item1, hashSalt.Item2);
             error = null;
             return true;
         }

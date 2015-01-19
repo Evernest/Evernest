@@ -15,10 +15,32 @@ namespace EvernestFrontTests.UtilitiesTests
         {
             var manager = new PasswordManager();
             var keyGenerator = new KeyGenerator();
-            var password = keyGenerator.NewKey();
-            var tuple = manager.SaltAndHash(password);
-            var verify = manager.Verify(password, tuple.Key, tuple.Value);
+            var password = keyGenerator.NewPassword();
+            var hashSalt = manager.SaltAndHash(password);
+            var verify = manager.Verify(password, hashSalt.Item1, hashSalt.Item2);
             Assert.IsTrue(verify);
+        }
+
+        [Test]
+        public static void HashSaltVerify_ShortString_Success()
+        {
+            var manager = new PasswordManager();
+            string password = "a";
+            var hashSalt = manager.SaltAndHash(password);
+            var verify = manager.Verify(password, hashSalt.Item1, hashSalt.Item2);
+            Assert.IsTrue(verify);
+        }
+
+        [Test]
+        public static void HashSaltVerify_WrongPassword()
+        {
+            var manager = new PasswordManager();
+            var keyGenerator = new KeyGenerator();
+            var password = keyGenerator.NewPassword();
+            var notPassword = keyGenerator.NewPassword();
+            var hashSalt = manager.SaltAndHash(password);
+            var verify = manager.Verify(notPassword, hashSalt.Item1, hashSalt.Item2);
+            Assert.IsFalse(verify);
         }
 
         [Test]
@@ -26,7 +48,7 @@ namespace EvernestFrontTests.UtilitiesTests
         {
             var manager = new PasswordManager();
             var keyGenerator = new KeyGenerator();
-            var password = keyGenerator.NewKey();
+            var password = keyGenerator.NewPassword();
             var isASCII = manager.StringIsASCII(password);
             Assert.IsTrue(isASCII);
         }

@@ -39,7 +39,7 @@ namespace EvernestFront.SystemCommandHandling.Commands
             }
 
             var hashSalt = passwordManager.SaltAndHash(NewPassword);
-            systemEvent = new PasswordSetSystemEvent(UserId, hashSalt.Key, hashSalt.Value);
+            systemEvent = new PasswordSetSystemEvent(UserId, hashSalt.Item1, hashSalt.Item2);
             error = null;
             return true;
         }        

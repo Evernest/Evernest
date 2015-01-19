@@ -153,7 +153,7 @@ namespace EvernestWeb.Controllers
             if (!newUserReq.Success)
                 return RedirectToAction("Stream", "Manager");
 
-            streamReq.Result.SetRight(newUserReq.Result.Name, model.AddUserModelObject.Right);
+            streamReq.Result.SetUserRight(newUserReq.Result.Name, model.AddUserModelObject.Right);
             return RedirectToAction("Stream", "Manager");
         }
 

@@ -12,38 +12,39 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage GetUser(long id)
+        public HttpResponseMessage GetUser()
         {
             try
             {
                 var body = Tools.ParseRequest(Request);
                 var ans = new Hashtable();
 
-                var user = EvernestFront.User.GetUser(id);
+                var front = new EvernestFront.UsersBuilder();
+
+                var userReq = front.GetUser((string)body["key"]);
 
                 // BEGIN DEBUG //
                 var debug = new Hashtable();
                 debug["Controller"] = "User";
                 debug["Method"] = "Response<User>";
-                debug["id"] = id;
+                debug["key"] = body["key"];
                 debug["body"] = body;
                 ans["Debug"] = debug;
                 // END DEBUG //
 
-                if (user.Success)
+                if (userReq.Success)
                 {
+                    var user = userReq.Result;
                     ans["Status"] = "Success";
-                    //ans["key"] = user.User.Key;
-                    //TODO: handle removal of this field
-                    ans["id"] = id;
-                    ans["name"] = user.User.Name;
-                    ans["OwnedSources"] = user.User.Sources;
-                    ans["RelatedStreams"] = user.User.RelatedEventStreams;
+                    ans["id"] = user.Id;
+                    ans["name"] = user.Name;
+                    ans["OwnedSources"] = user.Sources;
+                    ans["RelatedStreams"] = user.RelatedEventStreams;
                 }
                 else
                 {
                     ans["Status"] = "Error";
-                    ans["FieldError"] = user.Error;
+                    ans["FieldError"] = userReq.Error;
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, ans);
@@ -66,29 +67,32 @@ namespace EvernestAPI.Controllers
                 var body = Tools.ParseRequest(Request);
                 var ans = new Hashtable();
 
-                var user = EvernestFront.User.AddUser(username, password);
+                var front =  new EvernestFront.UsersBuilder();
+
+
+                var GuidReq = front.AddUser(username, password);
+
+                
 
                 // BEGIN DEBUG //
                 var debug = new Hashtable();
                 debug["Controller"] = "User";
                 debug["Method"] = "Default";
-                debug["name"] = username;
+                debug["key"] = body["key"];
                 debug["body"] = body;
                 ans["Debug"] = debug;
                 // END DEBUG //
 
-                if (user.Success)
+                if (GuidReq.Success)
                 {
+                    var Guid = GuidReq.Result;
                     ans["Status"] = "Success";
-                    ans["id"] = user.UserId;
-                    ans["name"] = username;
-                    ans["password"] = password;
-                    ans["key"] = user.UserKey;
+                    ans["Guid"] = Guid;
                 }
                 else
                 {
                     ans["Status"] = "Error";
-                    ans["FieldErrors"] = user.Error;
+                    ans["FieldErrors"] = GuidReq.Error;
 
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, ans);

@@ -23,32 +23,6 @@ namespace EvernestFront.SystemCommandHandling.Commands
             AdminName = adminName;
             Right = right;
         }
-
-        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
-        {
-            HashSet<string> eventStreamAdmins;
-            if (!systemCommandHandlerState.EventStreamIdToAdmins.TryGetValue(EventStreamId, out eventStreamAdmins))
-            {
-                error=FrontError.EventStreamIdDoesNotExist;
-                systemEvent = null;
-                return false;
-            }
-            if (!eventStreamAdmins.Contains(AdminName))
-            {
-                error=FrontError.AdminAccessDenied;
-                systemEvent = null;
-                return false;
-            }
-            if (eventStreamAdmins.Contains(TargetName))
-            {
-                error=FrontError.CannotDestituteAdmin;
-                systemEvent = null;
-                return false;
-            }
-            systemEvent= new UserRightSetSystemEvent(EventStreamId, TargetName, Right);
-            error = null;
-            return true;
-        }
     }
 }
 

@@ -6,6 +6,12 @@ using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.SystemCommandHandling
 {
+    /// <summary>
+    /// This is the state of the SystemCommandHandler, which uses it to validate commands. 
+    /// It updates itself on SystemEvents through public method Update, 
+    /// which is called both by the SystemCommandHandler when it issues a SystemEvent,
+    /// and at startup when reading the SystemEventStream.
+    /// </summary>
     class SystemCommandHandlerState
     {
         //TODO: initialization on system stream
@@ -51,7 +57,6 @@ namespace EvernestFront.SystemCommandHandling
         {
             EventStreamNames.Remove(systemEvent.StreamName);
             EventStreamIdToAdmins.Remove(systemEvent.StreamId);
-            AzureStorageClient.Instance.DeleteStreamIfExists(Convert.ToString(systemEvent.StreamId)); //TODO : maybe move this ?
         }
 
         private void When(PasswordSetSystemEvent systemEvent)

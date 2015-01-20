@@ -3,7 +3,7 @@ using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.SystemCommandHandling.Commands
-{   //TODO: name of commands should end with Command
+{
     abstract class CommandBase
     {
         private readonly SystemCommandHandler _systemCommandHandler;
@@ -20,7 +20,5 @@ namespace EvernestFront.SystemCommandHandling.Commands
         {
             _systemCommandHandler.ReceiveCommand(this);
         }
-
-        public abstract bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error);
     }
 }

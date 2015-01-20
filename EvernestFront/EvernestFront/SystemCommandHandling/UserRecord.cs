@@ -2,6 +2,9 @@
 
 namespace EvernestFront.SystemCommandHandling
 {
+    /// <summary>
+    /// Regoup information SystemCommandHandlerState should remember about each user.
+    /// </summary>
     class UserRecord
     {
         internal string UserName;

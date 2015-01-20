@@ -18,28 +18,5 @@ namespace EvernestFront.SystemCommandHandling.Commands
             UserId = userId;
             KeyName = keyName;
         }
-
-
-
-
-        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
-        {
-            UserRecord userRecord;
-            if (!systemCommandHandlerState.UserIdToData.TryGetValue(UserId, out userRecord))
-            {
-                error = FrontError.UserIdDoesNotExist;
-                systemEvent = null;
-                return false;
-            }
-            if (!userRecord.KeyNames.Contains(KeyName))
-            {
-                error = FrontError.UserKeyDoesNotExist;
-                systemEvent = null;
-                return false;
-            }
-            systemEvent= new UserKeyDeletedSystemEvent(Key, UserId, KeyName);
-            error = null;
-            return true;
-        }
     }
 }

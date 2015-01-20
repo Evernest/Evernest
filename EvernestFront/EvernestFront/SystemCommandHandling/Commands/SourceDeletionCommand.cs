@@ -18,26 +18,5 @@ namespace EvernestFront.SystemCommandHandling.Commands
             SourceId = sourceId;
             SourceKey = sourceKey;
         }
-
-        public override bool TryToSystemEvent(SystemCommandHandlerState systemCommandHandlerState, out ISystemEvent systemEvent, out FrontError? error)
-        {
-            UserRecord userRecord;
-            if (!systemCommandHandlerState.UserIdToData.TryGetValue(UserId, out userRecord))
-            {
-                error = FrontError.UserIdDoesNotExist;
-                systemEvent = null;
-                return false;
-            }
-            string sourceName;
-            if (!userRecord.SourceIdToName.TryGetValue(SourceId, out sourceName))
-            {
-                error = FrontError.SourceIdDoesNotExist;
-                systemEvent = null;
-                return false;
-            }
-            systemEvent = new SourceDeletedSystemEvent(SourceKey, sourceName, SourceId, UserId);
-            error = null;
-            return true;
-        }
     }
 }

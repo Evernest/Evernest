@@ -8,38 +8,32 @@ namespace EvernestBackTests
     [TestFixture]
     public class StreamTest
     {
+        static void Fail(LowLevelEvent e, string errorMessage)
+        {
+            Assert.Fail();
+        }
+
+        static void Fail(LowLevelEvent e)
+        {
+            Assert.Fail();
+        }
+
+        static void AssertCorrect(LowLevelEvent e, string expected)
+        {
+            Assert.AreEqual(e.Message, expected);
+        }
+
         public void MultiplePushAndPull(IEventStream stream, int count)
         {
-            var tbl = new bool[count];
-            for (var i = 0; i < count; i++)
-                tbl[i] = false;
             for (var i = 0; i < count; i++)
             {
                 stream.Push(i.ToString(),
                     pushAgent =>
                     {
-                        stream.Pull(pushAgent.RequestID, pullAgent =>
-                        {
-                            Console.WriteLine(pullAgent.RequestID);
-                            tbl[int.Parse(pullAgent.Message)] = true;
-                        },
-                            (pullAgent, message) =>
-                            {
-                                throw new Exception("PullAgent : " + pullAgent.RequestID + "failed with message :\n" +
-                                                  message);
-                            }
-                            );
-                    },
-                    (pushAgent, message) =>
-                    {
-                        throw new Exception("Push Agent : " + pushAgent.RequestID + "failed with message :\n" + message);
-                    });
-            }
-            var ok = false;
-            while (!ok)
-            {
-                ok = true;
-                for (var i = 0; i < count && ok; ok = (ok && tbl[i]), i++) ;
+                        stream.Pull(pushAgent.RequestID, 
+                            pullAgent=>{Assert.AreEqual(pushAgent.Message, pullAgent.Message);},
+                            Fail);
+                    }, Fail );
             }
         }
 
@@ -49,6 +43,7 @@ namespace EvernestBackTests
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
             MultiplePushAndPull(stream, 500);
+            AzureStorageClient.Instance.CloseStream("TEST");
         }
 
         [Test]
@@ -62,18 +57,11 @@ namespace EvernestBackTests
                 pushAgent =>
                 {
                     stream.Pull(pushAgent.RequestID,
-                        pullAgent =>
-                        {
-                            success = pullAgent.Message == str;
-                            done = true;
-                        },
-                        (pullAgent, message) => { done = true; }
-                        );
+                        pullAgent => { Assert.AreEqual(pullAgent.Message, str); },
+                        Fail );
                 },
-                (pushAgent, message) => { done = true; }
-                );
-            while (!done) ;
-            Assert.IsTrue(success);
+                Fail );
+            AzureStorageClient.Instance.CloseStream("TEST");
         }
 
         [Test]
@@ -84,6 +72,7 @@ namespace EvernestBackTests
             MultiplePushAndPull(stream, 100);
             Thread.Sleep(3000);
             MultiplePushAndPull(stream, 100);
+            AzureStorageClient.Instance.CloseStream("TEST");
         }
 
         [Test]
@@ -103,9 +92,10 @@ namespace EvernestBackTests
                         Console.WriteLine(i);
                         Assert.AreEqual(i, int.Parse(pullAgent.Message));
                     },
-                    (pullAgent, message) => { Assert.Fail(); }
+                    Fail
                     );
             }
+            AzureStorageClient.Instance.CloseStream("TEST");
         }
     }
 }

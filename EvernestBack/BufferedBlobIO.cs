@@ -125,7 +125,7 @@ namespace EvernestBack
         /// <summary>
         /// Update both the size of written data and the current page written at the beginning of the PageBlob.
         /// </summary>
-        private void UpdateSizeInfo()
+        private void UpdateSizeInfo() //endianness-dependant
         {
             byte[] sizeInfoBytes = new byte[PageSize];
             Buffer.BlockCopy(BitConverter.GetBytes(TotalWrittenBytes), 0, sizeInfoBytes, 0, sizeof(ulong));
@@ -226,7 +226,7 @@ namespace EvernestBack
         /// true if the data was successfully sent or if the buffer was already empty
         /// false otherwise
         /// </returns>
-        public bool FlushBuffer() //not thread safe, "endianness-dependant"
+        public bool FlushBuffer()
         {
             if (_currentBufferPosition != 0)
             {

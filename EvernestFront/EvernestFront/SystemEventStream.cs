@@ -37,8 +37,8 @@ namespace EvernestFront
             var contractString = serializer.WriteContract(contract);
             _backEventStream.Push(contractString, CallbackSuccess, CallbackFailure);
         }
-        private void CallbackSuccess(IAgent agent) { }
-        private void CallbackFailure(IAgent agent, string s) { }
+        private void CallbackSuccess(LowLevelEvent acceptedEvent) { }
+        private void CallbackFailure(LowLevelEvent deniedEvent, string errorMessage) { }
 
         //TODO: reading in system event stream
     }

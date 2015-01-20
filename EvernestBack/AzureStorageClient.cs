@@ -15,10 +15,10 @@ namespace EvernestBack
         private readonly CloudBlobClient _blobClient;
         private readonly bool _dummy;
         private readonly Dictionary<String, IEventStream> _openedStreams;
-        private readonly Int32 MinimumBufferSize;
-        private readonly UInt32 EventChunkSize;
-        private readonly UInt32 IndexUpdateMinimumEntryCount;
-        private readonly UInt32 IndexUpdateMinimumDelay;
+        private readonly Int32 _minimumBufferSize;
+        private readonly UInt32 _eventChunkSize;
+        private readonly UInt32 _indexUpdateMinimumEntryCount;
+        private readonly UInt32 _indexUpdateMinimumDelay;
 
         internal readonly long PageBlobSize;
         internal readonly string DummyDataPath;
@@ -44,10 +44,10 @@ namespace EvernestBack
                 {
                     var connectionString = ConfigurationManager.AppSettings["StorageAccountConnectionString"];
                     PageBlobSize = UInt32.Parse(ConfigurationManager.AppSettings["PageBlobSize"]);
-                    MinimumBufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
-                    EventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
-                    IndexUpdateMinimumEntryCount = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumentryCount"]);
-                    IndexUpdateMinimumDelay = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumDelay"]);
+                    _minimumBufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
+                    _eventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
+                    _indexUpdateMinimumEntryCount = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumentryCount"]);
+                    _indexUpdateMinimumDelay = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumDelay"]);
                     storageAccount = CloudStorageAccount.Parse(connectionString);
                 }
                 catch (NullReferenceException e)
@@ -56,7 +56,7 @@ namespace EvernestBack
                     Console.Error.WriteLine("Method : {0}", e.TargetSite);
                     Console.Error.WriteLine("Message : {0}", e.Message);
                     Console.Error.WriteLine("Source : {0}", e.Source);
-                    throw e;
+                    throw;
                 }
                 _blobClient = storageAccount.CreateCloudBlobClient();
                 StreamContainer = _blobClient.GetContainerReference("stream");
@@ -101,7 +101,7 @@ namespace EvernestBack
         }
 
         /// <summary>
-        ///     Create and open an EventStream
+        ///     Create and open an EventStream, throws if the EventStream already exists.
         /// </summary>
         /// <param name="streamID"> The name of the new stream. </param>
         /// <returns>The new EventStream</returns>
@@ -113,17 +113,14 @@ namespace EvernestBack
         }
 
         /// <summary>
-        ///     Open a Stream.
+        ///     Open an already existing EventStream.
         /// </summary>
-        /// <param name="streamID">The name of the Stream to open.</param>
+        /// <param name="streamID">The name of theEvent Stream to open.</param>
         /// <returns>The EventStream.</returns>
         private IEventStream OpenStream(String streamID)
         {
             if (!StreamExists(streamID))
-            {
                 throw new ArgumentException("The stream " + streamID + " does not exist.");
-            }
-
             IEventStream stream;
             if (_openedStreams.TryGetValue(streamID, out stream))
             {
@@ -136,8 +133,8 @@ namespace EvernestBack
             }
             else
             {
-                stream = new EventStream(this, streamID, MinimumBufferSize, 
-                    IndexUpdateMinimumEntryCount, IndexUpdateMinimumDelay, EventChunkSize);
+                stream = new EventStream(this, streamID, _minimumBufferSize, 
+                    _indexUpdateMinimumEntryCount, _indexUpdateMinimumDelay, _eventChunkSize);
             }
 
             _openedStreams.Add(streamID, stream);
@@ -145,7 +142,7 @@ namespace EvernestBack
         }
 
         /// <summary>
-        ///     Create an EventStream
+        ///     Create an EventStream, throws if the EventStream already exists.
         /// </summary>
         /// <param name="streamID">The name of the stream to create.</param>
         private void CreateEventStream(String streamID)
@@ -158,21 +155,15 @@ namespace EvernestBack
                 EventStream.CreateStream(this, streamID);
         }
 
-        //missing something to close streams
-
         public void DeleteStreamIfExists(string streamID)
         {
             if (StreamExists(streamID))
             {
                 CloseStream(streamID);
                 if (_dummy)
-                {
                     MemoryEventStream.DeleteStream(this, streamID);
-                }
                 else
-                {
                     EventStream.DeleteStream(this, streamID);
-                }   
             }
         }
 
@@ -189,24 +180,31 @@ namespace EvernestBack
         public bool StreamExists(string streamID)
         {
             if (_dummy)
-            {
                 return MemoryEventStream.StreamExists(this, streamID);
-            }
-            else
-            {
-                return EventStream.StreamExists(this, streamID);
-            }
+            return EventStream.StreamExists(this, streamID);
         }
 
         public bool TryGetFreshEventStream(string streamStringID, out IEventStream stream)
         {
             stream = null;
             if (StreamExists(streamStringID))
-            {
                 return false;
-            }
             stream = GetNewEventStream(streamStringID);
             return true;
+        }
+
+        public void ClearAll()
+        {
+            if (_dummy)
+                throw new NotImplementedException("ClearAll not implemented for MemoryEventStream");
+            else
+            {
+                StreamIndexContainer.DeleteIfExists();
+                StreamContainer.DeleteIfExists();
+                _openedStreams.Clear();
+                StreamIndexContainer.CreateIfNotExists();
+                StreamContainer.CreateIfNotExists();
+            }
         }
     }
 }

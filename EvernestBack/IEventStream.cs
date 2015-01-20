@@ -9,13 +9,15 @@ namespace EvernestBack
         /// <param name="message">The message to store</param>
         /// <param name="callback">The method to call when stored</param>
         /// <param name="callbackFailure">The method to call if the message failed to be pushed</param>
-        void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackFailure);
+        void Push(string message, Action<LowLevelEvent> callback, Action<LowLevelEvent, String> callbackFailure);
 
         /// <summary>Get a message from the stream, and call the Callback when pulled</summary>
         /// <param name="id">The index of the message you want</param>
         /// <param name="callback">The method to call when the message is pulled</param>
         /// <param name="callbackFailure">The method to call if the message failed to be pulled</param>
-        void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure);
+        void Pull(long id, Action<LowLevelEvent> callback, Action<LowLevelEvent, String> callbackFailure);
+
+        //void Pull(long startId, long endId, Action<EventRange> callback, Action<EventRange, String> callbackFailure);
 
         /// <summary>
         ///     Get a lower bound of the number of messages stored

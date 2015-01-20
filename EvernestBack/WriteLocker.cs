@@ -65,7 +65,7 @@ namespace EvernestBack
             return size;
         }
 
-        public void Register(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callBackFailure)
+        public void Register(string message, Action<LowLevelEvent> callbackSuccess, Action<LowLevelEvent, String> callBackFailure)
         {
             _pendingEventCollection.Enqueue(new PendingEvent(message, callbackSuccess, callBackFailure));
             _pushWaitHandle.Set();
@@ -73,7 +73,7 @@ namespace EvernestBack
 
         private class PendingEvent
         {
-            public PendingEvent(string message, Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
+            public PendingEvent(string message, Action<LowLevelEvent> callbackSuccess, Action<LowLevelEvent, String> callbackFailure)
             {
                 Message = message;
                 CallbackSuccess = callbackSuccess;
@@ -81,8 +81,8 @@ namespace EvernestBack
             }
 
             public string Message { get; private set; }
-            public Action<IAgent> CallbackSuccess { get; private set; }
-            public Action<IAgent, String> CallbackFailure { get; private set; }
+            public Action<LowLevelEvent> CallbackSuccess { get; private set; }
+            public Action<LowLevelEvent, String> CallbackFailure { get; private set; }
         }
     }
 }

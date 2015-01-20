@@ -78,10 +78,11 @@
   <ItemGroup>
     <Compile Include="Agent.cs" />
     <Compile Include="AzureStorageClient.cs" />
+    <Compile Include="EventRange.cs" />
     <Compile Include="History.cs" />
     <Compile Include="EventIndexer.cs" />
     <Compile Include="MemoryEventStream.cs" />
-    <Compile Include="IAgent.cs" />
+    <Compile Include="LowLevelEvent.cs" />
     <Compile Include="IEventStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventStream.cs" />

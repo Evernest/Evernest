@@ -100,34 +100,33 @@ namespace EvernestBack
         /// <returns>The last known event id pushed on the server.</returns>
         public long ReadIndexInfo()
         {
-            long lastKnownId = 0;
+            long lastKnownID = 0;
             if(_streamIndexBlob.Exists())
             {
                 _milestones.ReadFromBlob(_streamIndexBlob);
                 if(_milestones.GreatestElement(ref _lastPosition))
                 {
                     ulong lastByte = _bufferedStreamIO.TotalWrittenBytes;
-                    byte[] buffer = new byte[lastByte-_lastPosition];
-                    int byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) _lastPosition, (int) (lastByte - _lastPosition));
-                    //should apply DRY principle, i'll make a policy-pattern-like if i have the time
-                    int currentPosition = 0;
-                    ulong bufferPosition = _lastPosition;
-                    do
+                    if (lastByte - _lastPosition <= 0)
                     {
-                        if (!BitConverter.IsLittleEndian)
-                        {
-                            Util.Reverse(buffer, currentPosition, sizeof(long));
-                            Util.Reverse(buffer, currentPosition + sizeof(ulong), sizeof(int));
-                        }
-                        lastKnownId = BitConverter.ToInt64(buffer, currentPosition);
-                        NotifyNewEntry(lastKnownId, bufferPosition+(ulong) currentPosition);
-                        currentPosition += sizeof(ulong) + sizeof(int) + 
-                            BitConverter.ToInt32(buffer, currentPosition + sizeof(ulong));
+                        _lastPosition = 0;
+                        _milestones.Clear();
                     }
-                    while (currentPosition + sizeof(ulong) + sizeof(int) < byteCount);
+                    if (lastByte > 0)
+                    {
+                        byte[] buffer = new byte[lastByte - _lastPosition];
+                        int byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int)_lastPosition, (int)(lastByte - _lastPosition));
+                        EventRange unreadRange = new EventRange(buffer, 0, byteCount);
+                        EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
+                        while (enumerator.MoveNext())
+                        {
+                            lastKnownID = enumerator.CurrentID;
+                            NotifyNewEntry(lastKnownID, (ulong)enumerator.CurrentSize);
+                        }
+                    }
                 }
             }
-            return lastKnownId;
+            return lastKnownID;
         }
 
         private bool PullFromCloud(long id, out string message)
@@ -140,29 +139,19 @@ namespace EvernestBack
                 message = "";
                 return false; //there's nothing written!
             }
-
             var byteCount = (int) (lastByte - firstByte);
             var buffer = new Byte[byteCount];
             byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
-            int currentPosition = 0, messageLength;
-            long currentId;
-            do
+            EventRange unreadRange = new EventRange(buffer, 0, byteCount);
+            EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
+            while (enumerator.MoveNext() && enumerator.CurrentID != id) ;
+            if (enumerator.CurrentID == id)
             {
-                if (!BitConverter.IsLittleEndian)
-                {
-                    Util.Reverse(buffer, currentPosition, sizeof(long));
-                    Util.Reverse(buffer, currentPosition + sizeof(ulong), sizeof(int));
-                }
-                currentId = BitConverter.ToInt64(buffer, currentPosition);
-                messageLength = BitConverter.ToInt32(buffer, currentPosition + sizeof(ulong));
-                currentPosition += sizeof(ulong) + sizeof(int) + messageLength;
+                message = enumerator.Current.Message;
+                return true;
             }
-            while (currentId != id && currentPosition+sizeof(ulong)+sizeof(int) < byteCount);
-            currentPosition -= messageLength;
             message = "";
-            if (currentId == id)
-                message = Encoding.Unicode.GetString(buffer, currentPosition, messageLength);
-            return currentId == id;
+            return false;
         }
 
         public void Dispose()

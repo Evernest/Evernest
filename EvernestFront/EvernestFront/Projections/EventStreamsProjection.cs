@@ -7,10 +7,13 @@ namespace EvernestFront.Projections
 {
     class EventStreamsProjection : IProjection
     {
+        private readonly AzureStorageClient _azureStorageClient;
+
         private DictionariesClass Dictionaries { get; set; }
 
-        public EventStreamsProjection()
+        public EventStreamsProjection(AzureStorageClient azureStorageClient)
         {
+            _azureStorageClient = azureStorageClient;
             Dictionaries = new DictionariesClass();
         }
 
@@ -89,7 +92,7 @@ namespace EvernestFront.Projections
 
         private void When(EventStreamCreatedSystemEvent systemEvent)
         {
-            var backStream = AzureStorageClient.Instance.GetEventStream(Convert.ToString(systemEvent.StreamId));
+            var backStream = _azureStorageClient.GetEventStream(Convert.ToString(systemEvent.StreamId));
             var eventStreamData = new EventStreamRecord(systemEvent.StreamName, systemEvent.CreatorName,
                 backStream);
             var nti = Dictionaries.NameToId.SetItem(systemEvent.StreamName, systemEvent.StreamId);

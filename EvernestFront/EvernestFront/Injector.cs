@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using EvernestBack;
 using EvernestFront.SystemCommandHandling;
 using EvernestFront.Projections;
 
@@ -22,15 +23,16 @@ namespace EvernestFront
 
         public void Build()
         {
+            var azureStorageClient = AzureStorageClient.Instance;
             UsersProjection = new UsersProjection();
-            EventStreamsProjection = new EventStreamsProjection();
+            EventStreamsProjection = new EventStreamsProjection(azureStorageClient);
             SourcesProjection = new SourcesProjection();
             SystemCommandResultManager = new SystemCommandResultManager();
-            var systemEventStream = new SystemEventStream(0); //id for systemEventStream
+            var systemEventStream = new SystemEventStream(azureStorageClient, 0); //id for systemEventStream
             Dispatcher = new Dispatcher(new List<IProjection>
                 {UsersProjection, EventStreamsProjection, SourcesProjection}, systemEventStream, SystemCommandResultManager);
-            var commandHandlingData = new SystemCommandHandlerState(8); //8 eventStream ids and 8 user ids are reserved for system
-            SystemCommandHandler = new SystemCommandHandler(commandHandlingData, Dispatcher, SystemCommandResultManager);
+            var systemCommandHandlerState = new SystemCommandHandlerState(8); //8 eventStream ids and 8 user ids are reserved for system
+            SystemCommandHandler = new SystemCommandHandler(azureStorageClient, systemCommandHandlerState, Dispatcher, SystemCommandResultManager);
             //TODO: read id for systemEventStream and number of reserved ids in app.config
         }
     }

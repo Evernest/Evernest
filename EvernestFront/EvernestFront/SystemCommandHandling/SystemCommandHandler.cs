@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using EvernestBack;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.SystemCommandHandling.Commands;
@@ -11,8 +12,8 @@ namespace EvernestFront.SystemCommandHandling
 {
     class SystemCommandHandler
     {
-        
-        private readonly SystemCommandHandlerState _serviceData;
+        private readonly AzureStorageClient _azureStorageClient;
+        private readonly SystemCommandHandlerState _systemCommandHandlerState;
         private readonly Dispatcher _dispatcher;
         private readonly SystemCommandResultManager _manager;
 
@@ -20,9 +21,10 @@ namespace EvernestFront.SystemCommandHandling
         private readonly CancellationTokenSource _tokenSource;
        
 
-        public SystemCommandHandler(SystemCommandHandlerState serviceData, Dispatcher dispatcher, SystemCommandResultManager manager)
+        public SystemCommandHandler(AzureStorageClient azureStorageClient, SystemCommandHandlerState systemCommandHandlerState, Dispatcher dispatcher, SystemCommandResultManager manager)
         {
-            _serviceData = serviceData;
+            _azureStorageClient = azureStorageClient;
+            _systemCommandHandlerState = systemCommandHandlerState;
             _dispatcher = dispatcher;
             _manager = manager;
             _pendingCommandQueue=new ConcurrentQueue<CommandBase>();
@@ -58,9 +60,9 @@ namespace EvernestFront.SystemCommandHandling
         {
             ISystemEvent systemEvent;
             FrontError? error;
-            if (command.TryToSystemEvent(_serviceData, out systemEvent, out error))
+            if (command.TryToSystemEvent(_systemCommandHandlerState, out systemEvent, out error))
             {
-                _serviceData.Update(systemEvent);
+                _systemCommandHandlerState.Update(systemEvent);
                 _dispatcher.ReceiveEvent(systemEvent, command.Guid);
             }
             else

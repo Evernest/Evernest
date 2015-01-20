@@ -10,11 +10,10 @@ namespace EvernestFront
     {
         private readonly IEventStream _backEventStream;
 
-        public SystemEventStream(long systemEventStreamId)
+        public SystemEventStream(AzureStorageClient azureStorageClient, long systemEventStreamId)
         {
             //TODO: update when method TryGet... is implemented in AzureStorageClient
             var stringId = Convert.ToString(systemEventStreamId);
-            var azureStorageClient = AzureStorageClient.Instance;
             try
             {
                 _backEventStream = azureStorageClient.GetNewEventStream(stringId);

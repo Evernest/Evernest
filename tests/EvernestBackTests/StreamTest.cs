@@ -52,7 +52,6 @@ namespace EvernestBackTests
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
             string str = new string(' ', UInt16.MaxValue);
-            bool success = false, done = false;
             stream.Push(str,
                 pushAgent =>
                 {

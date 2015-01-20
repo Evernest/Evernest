@@ -70,13 +70,12 @@ namespace EvernestBack
             {
                 Console.WriteLine("Pull from cache.");
                 return true;
-            } else { 
-                if (PullFromCloud(id, out message)) 
-                {
-                    Console.WriteLine("Encache.");
-                    _cache.Add(id, message); 
-                    return true;
-                } 
+            }
+            if (PullFromCloud(id, out message)) 
+            {
+                Console.WriteLine("Encache.");
+                _cache.Add(id, message); 
+                return true;
             }
             return false;
         }
@@ -84,8 +83,7 @@ namespace EvernestBack
 
         private bool PullFromLocalCache(long id, out string message)
         {
-            message = _cache.Get(id); 
-            return !message.Equals("", StringComparison.InvariantCulture);
+            return _cache.Get(id, out message);
         }
 
         public void UploadIndexIfMeetConditions()

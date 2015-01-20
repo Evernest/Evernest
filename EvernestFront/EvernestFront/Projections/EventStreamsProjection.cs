@@ -7,10 +7,13 @@ namespace EvernestFront.Projections
 {
     class EventStreamsProjection : IProjection
     {
+        private readonly AzureStorageClient _azureStorageClient;
+
         private DictionariesClass Dictionaries { get; set; }
 
-        public EventStreamsProjection()
+        public EventStreamsProjection(AzureStorageClient azureStorageClient)
         {
+            _azureStorageClient = azureStorageClient;
             Dictionaries = new DictionariesClass();
         }
 
@@ -33,13 +36,13 @@ namespace EvernestFront.Projections
             return Dictionaries.NameToId.TryGetValue(name, out id);
         }
 
-        public bool TryGetEventStreamData(long id, out EventStreamDataForProjection data)
+        public bool TryGetEventStreamData(long id, out EventStreamRecord data)
         {
             return Dictionaries.IdToData.TryGetValue(id, out data);
         }
 
         //better than TryGetEventStreamId followed by TryGetEventStreamData because Dictionaries may change between the two calls
-        public bool TryGetEventStreamIdAndData(string name, out long id, out EventStreamDataForProjection data)
+        public bool TryGetEventStreamIdAndData(string name, out long id, out EventStreamRecord data)
         {
             var dictionaries = Dictionaries;
             if (dictionaries.NameToId.TryGetValue(name, out id))
@@ -61,10 +64,10 @@ namespace EvernestFront.Projections
         private class DictionariesClass
         {
             internal ImmutableDictionary<string, long> NameToId { get; private set; }
-            internal ImmutableDictionary<long, EventStreamDataForProjection> IdToData { get; private set; }
+            internal ImmutableDictionary<long, EventStreamRecord> IdToData { get; private set; }
 
             private DictionariesClass(ImmutableDictionary<string, long> nti,
-                ImmutableDictionary<long, EventStreamDataForProjection> itd)
+                ImmutableDictionary<long, EventStreamRecord> itd)
             {
                 NameToId = nti;
                 IdToData = itd;
@@ -72,14 +75,14 @@ namespace EvernestFront.Projections
 
             internal DictionariesClass() 
                 : this(ImmutableDictionary<string, long>.Empty,
-                ImmutableDictionary<long, EventStreamDataForProjection>.Empty) { }
+                ImmutableDictionary<long, EventStreamRecord>.Empty) { }
 
             internal DictionariesClass SetNameToId(ImmutableDictionary<string, long> nti)
             {
                 return new DictionariesClass(nti, IdToData);
             }
 
-            internal DictionariesClass SetIdToData(ImmutableDictionary<long, EventStreamDataForProjection> itd)
+            internal DictionariesClass SetIdToData(ImmutableDictionary<long, EventStreamRecord> itd)
             {
                 return new DictionariesClass(NameToId, itd);
             }
@@ -89,8 +92,8 @@ namespace EvernestFront.Projections
 
         private void When(EventStreamCreatedSystemEvent systemEvent)
         {
-            var backStream = AzureStorageClient.Instance.GetEventStream(Convert.ToString(systemEvent.StreamId));
-            var eventStreamData = new EventStreamDataForProjection(systemEvent.StreamName, systemEvent.CreatorName,
+            var backStream = _azureStorageClient.GetEventStream(Convert.ToString(systemEvent.StreamId));
+            var eventStreamData = new EventStreamRecord(systemEvent.StreamName, systemEvent.CreatorName,
                 backStream);
             var nti = Dictionaries.NameToId.SetItem(systemEvent.StreamName, systemEvent.StreamId);
             var itd = Dictionaries.IdToData.SetItem(systemEvent.StreamId, eventStreamData);
@@ -106,7 +109,7 @@ namespace EvernestFront.Projections
 
         private void When(UserRightSetSystemEvent systemEvent)
         {
-            EventStreamDataForProjection data;
+            EventStreamRecord data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.StreamId, out data))
             {
                 //TODO: register error

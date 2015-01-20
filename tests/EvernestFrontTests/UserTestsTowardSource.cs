@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using EvernestFront;
+using EvernestFront.Contract;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
@@ -29,7 +31,7 @@ namespace EvernestFrontTests
         {
             var userName = AssertAuxiliaries.NewName;
             var userId = UserTests.AddUser_GetId_AssertSuccess(userName);
-            var user = new UsersBuilder().GetUser(userId).Result;
+            var user = new UsersProvider().GetUser(userId).Result;
             Assert.IsNotNull(user);
             var create1 = user.CreateSource("source1");
             var create2 = user.CreateSource("source2");
@@ -71,13 +73,13 @@ namespace EvernestFrontTests
             var sourceName = AssertAuxiliaries.NewName;
             var userId = UserTests.AddUser_GetId_AssertSuccess(userName);
             var sourceKey = SourceTests.CreateSource_GetKey_AssertSuccess(userId, sourceName);
-            var sourceId = new SourcesBuilder().GetSource(sourceKey).Result.Id;
+            var sourceId = new SourcesProvider().GetSource(sourceKey).Result.Id;
             var user = UserTests.GetUser_AssertSuccess(userId);
             var ans = user.DeleteSource(sourceId);
             Assert.IsTrue(ans.Success);
             Thread.Sleep(100);
             user = UserTests.GetUser_AssertSuccess(userId);
-            Assert.IsFalse(user.Sources.ContainsKey(sourceName));
+            Assert.IsFalse(user.Sources.Contains(sourceId));
 
         }
 
@@ -88,14 +90,14 @@ namespace EvernestFrontTests
             long streamId = EventStreamTests.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             string key = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, SourceName, SomeRight);
             string key2 = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, SourceName2, SomeRight);
-            var sb = new SourcesBuilder();
+            var sb = new SourcesProvider();
             var source1 = sb.GetSource(key).Result;
             var source2 = sb.GetSource(key2).Result;
             User user = UserTests.GetUser_AssertSuccess(userId);
-            var sources = user.Sources;
-            Assert.AreEqual(2, sources.Count);
-            Assert.IsTrue(sources.Contains(new KeyValuePair<string, long>(SourceName, source1.Id)));
-            Assert.IsTrue(sources.Contains(new KeyValuePair<string, long>(SourceName2, source2.Id)));
+            var sources = user.Sources.ToList();
+            Assert.AreEqual(2, sources.Count());
+            Assert.IsTrue(sources.Contains(source1.Id));
+            Assert.IsTrue(sources.Contains(source2.Id));
         }
 
     }

@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using EvernestFront;
-using EvernestFront.CommandHandling;
+using EvernestFront.SystemCommandHandling;
 
 [assembly: PreApplicationStartMethod(typeof(StartUp), "Start")]
 
@@ -13,7 +13,7 @@ namespace EvernestFront
             var injector = Injector.Instance;
             injector.Build();
             //TODO: read system event stream
-            injector.CommandHandler.HandleCommands();
+            injector.SystemCommandHandler.HandleCommands();
             injector.Dispatcher.DispatchSystemEvents();
         }
     }

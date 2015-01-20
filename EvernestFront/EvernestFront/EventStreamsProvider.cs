@@ -1,0 +1,107 @@
+using System;
+using System.Collections.Generic;
+using EvernestFront.Contract;
+using EvernestFront.Projections;
+using EvernestFront.SystemCommandHandling;
+using EvernestFront.SystemCommandHandling.Commands;
+
+namespace EvernestFront
+{
+    class EventStreamsProvider
+    {
+        private readonly EventStreamsProjection _eventStreamsProjection;
+
+        private readonly SystemCommandHandler _systemCommandReceiver;
+
+        public EventStreamsProvider()
+        {
+            _eventStreamsProjection = Injector.Instance.EventStreamsProjection;
+            _systemCommandReceiver = Injector.Instance.SystemCommandHandler;
+        }
+
+
+
+        
+
+        //public corresponding method is a User instance method
+        internal Response<Guid> CreateEventStream(User user, string streamName)
+        {
+            if (_eventStreamsProjection.EventStreamNameExists(streamName))
+                return new Response<Guid>(FrontError.EventStreamNameTaken);
+            // this is supposed to be called by a user object, so creator should always exist
+
+            var command = new EventStreamCreationCommand(_systemCommandReceiver, streamName, user.Name);
+            command.Send();
+            return new Response<Guid>(command.Guid);
+        }
+
+        internal bool TryGetEventStream(User user, long eventStreamId, out EventStream eventStream)
+        {
+            EventStreamRecord eventStreamData;
+            if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
+            {
+                eventStream = ConstructEventStream(user, eventStreamId, eventStreamData);
+                return true;
+            }
+            else
+            {
+                eventStream = null;
+                return false;
+            }
+        }
+
+        internal bool TryGetEventStream(User user, string eventStreamName, out EventStream eventStream)
+        {
+            long eventStreamId;
+            EventStreamRecord eventStreamData;
+            if (_eventStreamsProjection.TryGetEventStreamIdAndData(eventStreamName, out eventStreamId, out eventStreamData))
+            {
+                eventStream = ConstructEventStream(user, eventStreamId, eventStreamData);
+                return true;
+            }
+            else
+            {
+                eventStream = null;
+                return false;
+            }
+        }
+
+        internal bool TryGetEventStreamBySource(Source source, AccessRight sourceRight, long eventStreamId, out EventStream eventStream)
+        {
+            EventStreamRecord eventStreamData;
+            if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))
+            {
+                var accessManager = new AccessVerifier();
+                var userRight = GetUserRight(source.User.Name, eventStreamData);
+                var possibleActions = accessManager.ComputePossibleAccessActions(userRight);
+                possibleActions.IntersectWith(accessManager.ComputePossibleAccessActions(sourceRight));
+                eventStream = new EventStreamBySource(_systemCommandReceiver, source.User, userRight, source, sourceRight,
+                    possibleActions, eventStreamId, eventStreamData.StreamName,
+                    eventStreamData.RelatedUsers, eventStreamData.BackStream);
+                return true;
+            }
+            else
+            {
+                eventStream = null;
+                return false;
+            }
+        }
+
+        private AccessRight GetUserRight(string userName, EventStreamRecord eventStreamData)
+        {
+            AccessRight right;
+            if (!eventStreamData.RelatedUsers.TryGetValue(userName, out right))
+                right = AccessRight.NoRight;
+            return right;
+        }
+
+        private EventStream ConstructEventStream(User user, long eventStreamId, EventStreamRecord eventStreamData)
+        {
+            var accessManager = new AccessVerifier();
+            var userRight = GetUserRight(user.Name, eventStreamData);
+            var possibleActions = accessManager.ComputePossibleAccessActions(userRight);
+            return new EventStream(_systemCommandReceiver, user, userRight, possibleActions, eventStreamId, eventStreamData.StreamName,
+                eventStreamData.RelatedUsers, eventStreamData.BackStream);
+        }
+    }
+}

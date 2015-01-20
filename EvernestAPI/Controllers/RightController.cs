@@ -4,6 +4,8 @@ using System.Net;
 using System.Net.Http;
 using EvernestAPI.Models;
 using EvernestFront;
+using EvernestFront.Contract;
+
 namespace EvernestAPI.Controllers
 {
     public class RightController : ApiController
@@ -15,14 +17,10 @@ namespace EvernestAPI.Controllers
         public HttpResponseMessage Get(string sourceId, int streamId)
         {
             var ans = new Hashtable();
-            var failed = false;
-            EvernestFront.FrontError? error = null;
-            var errorMessage = "";
-            var accessRight = new AccessRight();
-            Hashtable nvc;
+
             try
             {
-                nvc = Tools.ParseRequest(Request);
+                body = Tools.ParseRequest(Request);
             }
             catch
             {
@@ -30,27 +28,42 @@ namespace EvernestAPI.Controllers
             }
 
             // Get the Stream
-            var getSource = Source.GetSource(sourceId);
-            if (!getSource.Success)
+            var front = new EvernestFront.UsersBuilder();
+            var userReq = front.GetUser((string)body["key"]);
+
+            if (!userReq.Success)
             {
-                failed = true;
-                errorMessage = "Can't access the user";
-                error = getSource.Error;
+                ans["Status"] = "Error";
+                ans["Error"] = userReq.Error;
+                return Request.CreateResponse(HttpStatusCode.OK, ans);
             }
-            else
+
+            var user = userReq.Result;
+
+
+            var sourceReq = user.GetSource(sourceId);
+            if (!sourceReq.Success)
             {
-                var source = getSource.Source;
-                // The source haven't access to stream
-                if (source.EventStream.Id != streamId)
-                {
-                    accessRight = AccessRight.NoRight;
-                }
-                else
-                {
-                    accessRight = source.Right;
-                }
+                ans["Status"]="Error";
+                ans["Error"]=sourceReq.Error;
+                return Request.CreateResponse(HttpStatusCode.OK, ans);
             }
-            
+            var source = sourceReq.Result;
+
+            var eventStreamReq = source.GetEventStream(streamId);
+
+                if (!eventStreamReq.Success)
+                {
+                    ans["Status"] = "Error";
+                    ans["Error"] = eventStreamReq.Error;
+                    return Request.CreateResponse(HttpStatusCode.OK, ans);
+                }
+
+                var stream = eventStreamReq.Result;
+      
+               var accessRight = stream.UserRight;
+
+               ans["AccessRight"] = accessRight;
             // BEGIN DEBUG //
             var debug = new Hashtable();
             debug["Controller"] = "Right";
@@ -58,14 +71,9 @@ namespace EvernestAPI.Controllers
             debug["sourceId"] = sourceId;
             debug["streamId"] = streamId;
             debug["right"] = accessRight;
-            debug["nvc"] = nvc;
+            debug["body"] = body;
             ans["Debug"] = debug;
             // END DEBUG //
-
-            if (!failed) return Request.CreateResponse(HttpStatusCode.OK, ans);
-
-            ans["error"] = error;
-            ans["errorMessage"] = errorMessage;
 
             return Request.CreateResponse(HttpStatusCode.OK, ans);
         }
@@ -77,37 +85,63 @@ namespace EvernestAPI.Controllers
         public HttpResponseMessage Set(string sourceId, int streamId, string right)
         {
             var ans = new Hashtable();
+<<<<<<< HEAD
+            Hashtable body;
+=======
             Hashtable nvc;
             var failed = false;
 
-            EvernestFront.FrontError? error = null;
+            FrontError? error = null;
             string errorMessage = null;
             var accessRight = AccessRight.NoRight;
 
+>>>>>>> origin/master
             try
             {
-                nvc = Tools.ParseRequest(Request);
+                body = Tools.ParseRequest(Request);
             }
             catch
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
-            
-            // Get the user
-            if (nvc.ContainsKey("key")) {
-                var getUser = EvernestFront.User.GetUser((int) nvc["key"]);
-                if (!getUser.Success)
-                {
-                    failed = true;
-                    errorMessage = "Can't access the source.";
-                    error = getUser.Error;
-                }
-                else
-                {
-                    var user = getUser.User;
 
-                    // Convert the string to an AccessRights enum
-                    switch (right.ToLower())
+            // Get the Stream
+            var front = new EvernestFront.UsersBuilder();
+            var userReq = front.GetUser((string)body["key"]);
+
+            if (!userReq.Success)
+            {
+                ans["Status"] = "Error";
+                ans["Error"] = userReq.Error;
+                return Request.CreateResponse(HttpStatusCode.OK, ans);
+            }
+
+            var user = userReq.Result;
+
+
+            var sourceReq = user.GetSource(sourceId);
+            if (!sourceReq.Success)
+            {
+                ans["Status"] = "Error";
+                ans["Error"] = sourceReq.Error;
+                return Request.CreateResponse(HttpStatusCode.OK, ans);
+            }
+            var source = sourceReq.Result;
+
+            var eventStreamReq = source.GetEventStream(streamId);
+
+            if (!eventStreamReq.Success)
+            {
+                ans["Status"] = "Error";
+                ans["Error"] = eventStreamReq.Error;
+                return Request.CreateResponse(HttpStatusCode.OK, ans);
+            }
+
+            var stream = eventStreamReq.Result;
+
+            AccessRight accessRight;
+
+            switch (right.ToLower())
                     {
                         case "none":
                             accessRight = AccessRight.NoRight;
@@ -132,52 +166,36 @@ namespace EvernestAPI.Controllers
                             // Should never happen
                             return Request.CreateResponse(HttpStatusCode.InternalServerError);
                     }
+            
+                    // Convert the string to an AccessRights enum
 
-                    // Get the Source
-                    var getSource = Source.GetSource(sourceId);
-                    if (!getSource.Success)
-                    {
-                        failed = true;
-                        errorMessage = "Can't access the source.";
-                        error = getSource.Error;
-                    }
-                    else
-                    {
-                        // Modifies the accessRights
-                        var answer = user.SetRights(streamId, user.Id, accessRight);
-                        if (!answer.Success)
-                        {
-                            failed = true;
-                            errorMessage = "Can't modify rights.";
-                            error = answer.Error;
-                        }
-                    }
-                }
-            }
-            else 
+            var GuidReq = stream.SetUserRight(sourceId, accessRight);
+
+            //TODO: Check if it is really sourceId
+            if (!GuidReq.Success)
             {
-                failed = true;
-                errorMessage = "Missing user id.";
-                error = null;
+                ans["Status"]="Error";
+                ans["Error"]=GuidReq.Error;
+                return Request.CreateResponse(HttpStatusCode.OK, ans);
             }
-                       
+
+            var Guid = GuidReq.Result;
+
+            ans["Guid"]=Guid;
             // BEGIN DEBUG //
             var debug = new Hashtable();
             debug["Controller"] = "Right";
             debug["Method"] = "Set";
-            debug["id"] = sourceId;
+            debug["sourceId"] = sourceId;
             debug["streamId"] = streamId;
             debug["right"] = accessRight;
-            debug["nvc"] = nvc;
+            debug["body"] = body;
             ans["Debug"] = debug;
             // END DEBUG //
 
-            if (!failed) return Request.CreateResponse(HttpStatusCode.OK, ans);
-
-            ans["error"] = error;
-            ans["errorMessage"] = errorMessage;
-
             return Request.CreateResponse(HttpStatusCode.OK, ans);
+            
+            
         }
     }
 }

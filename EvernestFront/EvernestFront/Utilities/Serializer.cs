@@ -37,7 +37,7 @@ namespace EvernestFront.Utilities
             var map = AllContracts.GetTypeMapForEvents();
             var type = map[typeName];
             var methodInfo =
-                typeof (Newtonsoft.Json.JsonConvert).GetMethods().First(method => method.Name == "DeserializeObject" && method.IsGenericMethod &&
+                typeof (JsonConvert).GetMethods().First(method => method.Name == "DeserializeObject" && method.IsGenericMethod &&
                                                                                   method.GetParameters().Length == 1);
             var generic = methodInfo.MakeGenericMethod(type);
             return (ISystemEvent) generic.Invoke(null, new object[] {envelope.SerializedSystemEvent});

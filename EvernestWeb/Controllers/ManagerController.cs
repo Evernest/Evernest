@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 
 using EvernestFront;
-
+using EvernestFront.Contract;
 using EvernestWeb.ViewModels;
 using EvernestWeb.Helpers;
 
@@ -26,7 +26,7 @@ namespace EvernestWeb.Controllers
         // GET: /Manager
         public ActionResult Index()
         {
-            var front = new UsersBuilder();
+            var front = new UsersProvider();
             Models.User user = (Models.User)Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
@@ -61,7 +61,7 @@ namespace EvernestWeb.Controllers
                 return RedirectToAction("Index", "Manager");
 
             // Get user
-            var front = new UsersBuilder();
+            var front = new UsersProvider();
             Models.User user = (Models.User)Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
@@ -99,7 +99,7 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult NewSource(NewSourceModel model)
         {
-            var front = new UsersBuilder();
+            var front = new UsersProvider();
 
             // Check user input
             if (!ModelState.IsValid)
@@ -135,7 +135,7 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddUser(StreamAndEvents model, int sid)
         {
-            var front = new UsersBuilder();
+            var front = new UsersProvider();
 
             Models.User user = (Models.User)Session["User"];
             if (model.AddUserModelObject.NewUser == null)
@@ -162,7 +162,7 @@ namespace EvernestWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult PushEvent(string item, int sid)
         {
-            var front = new UsersBuilder();
+            var front = new UsersProvider();
 
             var user = (Models.User)Session["User"];
             var userReq = front.GetUser(user.Id);

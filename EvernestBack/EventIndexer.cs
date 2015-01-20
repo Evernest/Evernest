@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Configuration;
 using System.Text;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
 {
-    internal class EventIndexer
+    internal class EventIndexer:IDisposable
     {
         private History _milestones;
         private ulong _currentChunkBytes;
@@ -19,19 +18,32 @@ namespace EvernestBack
         private DateTime _lastIndexUpdateTime;
         private HashCache _cache;
 
-        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="streamIndexBlob">The block blob where is the additional stream index information.</param>
+        /// <param name="buffer">A lower-level interface with the page blob.</param>
+        /// <param name="updateMinimumEntryCount">The minimum number of registered indexes (also referred as milestones) to be added before the indexer attempts to re-update the additional stream index information.</param>
+        /// <param name="updateMinimumDelay">The minimum delay before before the indexer attempts to re-update the additional stream index information.</param>
+        /// <param name="minimumChunkSize">The minimum number of bytes to be read before the indexer registers a new index (also referred as milestone).</param>
+        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, uint updateMinimumEntryCount, uint updateMinimumDelay, uint minimumChunkSize, Int32 cacheSize)
         {
-            _indexUpdateMinimumEntryCount = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumEntryCount"]);
-            _indexUpdateMinimumDelay = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumDelay"]);
+            _indexUpdateMinimumEntryCount = updateMinimumEntryCount;
+            _indexUpdateMinimumDelay = updateMinimumDelay;
+            _eventChunkSizeInBytes = minimumChunkSize;
             _bufferedStreamIO = buffer;
-            _eventChunkSizeInBytes = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
             _streamIndexBlob = streamIndexBlob;
             _milestones = new History();
             _lastIndexUpdateTime = DateTime.UtcNow;
             _newEntryCount = 0;
-            _cache = new HashCache(Int32.Parse(ConfigurationManager.AppSettings["CacheSize"]));
+            _cache = new HashCache(cacheSize);
         }
 
+        /// <summary>
+        /// Notify the indexer a new event had been pushed.
+        /// </summary>
+        /// <param name="id">The id of the event.</param>
+        /// <param name="wroteBytes">The size of the event in bytes.</param>
         public void NotifyNewEntry(long id, ulong wroteBytes)
         {
             if( wroteBytes + _currentChunkBytes > _eventChunkSizeInBytes)
@@ -46,6 +58,12 @@ namespace EvernestBack
                 _currentChunkBytes += wroteBytes;
         }
 
+        /// <summary>
+        /// Try to retrieve an event.
+        /// </summary>
+        /// <param name="id">The id of the requested event.</param>
+        /// <param name="message">The string to which the event's message should be written.</param>
+        /// <returns>True if the event was successfully retrieved, false otherwise.</returns>
         public bool FetchEvent(long id, out string message)
         {
             if (PullFromLocalCache(id, out message))
@@ -63,6 +81,7 @@ namespace EvernestBack
             return false;
         }
 
+
         private bool PullFromLocalCache(long id, out string message)
         {
             message = _cache.Get(id); 
@@ -78,6 +97,9 @@ namespace EvernestBack
             }
         }
 
+        /// <summary>
+        /// Update the additional stream index information.
+        /// </summary>
         public void UploadIndex()
         {
             _newEntryCount = 0;
@@ -86,36 +108,39 @@ namespace EvernestBack
             _streamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
         }
 
+        /// <summary>
+        /// Re-build the indexer from the server data.
+        /// </summary>
+        /// <returns>The last known event id pushed on the server.</returns>
         public long ReadIndexInfo()
         {
-            long lastKnownId = 0;
+            long lastKnownID = 0;
             if(_streamIndexBlob.Exists())
             {
                 _milestones.ReadFromBlob(_streamIndexBlob);
                 if(_milestones.GreatestElement(ref _lastPosition))
                 {
                     ulong lastByte = _bufferedStreamIO.TotalWrittenBytes;
-                    byte[] buffer = new byte[lastByte-_lastPosition];
-                    int byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) _lastPosition, (int) (lastByte - _lastPosition));
-                    //should apply DRY principle, i'll make a policy-pattern-like if i have the time
-                    int currentPosition = 0;
-                    ulong bufferPosition = _lastPosition;
-                    do
+                    if (lastByte - _lastPosition <= 0)
                     {
-                        if (!BitConverter.IsLittleEndian)
-                        {
-                            Util.Reverse(buffer, currentPosition, sizeof(long));
-                            Util.Reverse(buffer, currentPosition + sizeof(ulong), sizeof(int));
-                        }
-                        lastKnownId = BitConverter.ToInt64(buffer, currentPosition);
-                        NotifyNewEntry(lastKnownId, bufferPosition+(ulong) currentPosition);
-                        currentPosition += sizeof(ulong) + sizeof(int) + 
-                            BitConverter.ToInt32(buffer, currentPosition + sizeof(ulong));
+                        _lastPosition = 0;
+                        _milestones.Clear();
                     }
-                    while (currentPosition + sizeof(ulong) + sizeof(int) < byteCount);
+                    if (lastByte > 0)
+                    {
+                        byte[] buffer = new byte[lastByte - _lastPosition];
+                        int byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int)_lastPosition, (int)(lastByte - _lastPosition));
+                        EventRange unreadRange = new EventRange(buffer, 0, byteCount);
+                        EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
+                        while (enumerator.MoveNext())
+                        {
+                            lastKnownID = enumerator.CurrentID;
+                            NotifyNewEntry(lastKnownID, (ulong)enumerator.CurrentSize);
+                        }
+                    }
                 }
             }
-            return lastKnownId;
+            return lastKnownID;
         }
 
         private bool PullFromCloud(long id, out string message)
@@ -128,29 +153,24 @@ namespace EvernestBack
                 message = "";
                 return false; //there's nothing written!
             }
-
             var byteCount = (int) (lastByte - firstByte);
             var buffer = new Byte[byteCount];
             byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
-            int currentPosition = 0, messageLength;
-            long currentId;
-            do
+            EventRange unreadRange = new EventRange(buffer, 0, byteCount);
+            EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
+            while (enumerator.MoveNext() && enumerator.CurrentID != id) ;
+            if (enumerator.CurrentID == id)
             {
-                if (!BitConverter.IsLittleEndian)
-                {
-                    Util.Reverse(buffer, currentPosition, sizeof(long));
-                    Util.Reverse(buffer, currentPosition + sizeof(ulong), sizeof(int));
-                }
-                currentId = BitConverter.ToInt64(buffer, currentPosition);
-                messageLength = BitConverter.ToInt32(buffer, currentPosition + sizeof(ulong));
-                currentPosition += sizeof(ulong) + sizeof(int) + messageLength;
+                message = enumerator.Current.Message;
+                return true;
             }
-            while (currentId != id && currentPosition+sizeof(ulong)+sizeof(int) < byteCount);
-            currentPosition -= messageLength;
             message = "";
-            if (currentId == id)
-                message = Encoding.Unicode.GetString(buffer, currentPosition, messageLength);
-            return currentId == id;
+            return false;
+        }
+
+        public void Dispose()
+        {
+            UploadIndex();
         }
     }
 }

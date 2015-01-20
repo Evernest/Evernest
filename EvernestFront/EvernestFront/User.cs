@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using EvernestFront.CommandHandling;
-using EvernestFront.CommandHandling.Commands;
+using EvernestFront.SystemCommandHandling;
+using EvernestFront.SystemCommandHandling.Commands;
+using EvernestFront.Contract;
 using EvernestFront.Utilities;
 
 namespace EvernestFront
 {
     public partial class User
     {
-        private readonly CommandHandler _commandHandler;
+        private readonly SystemCommandHandler _systemCommandHandler;
 
         public long Id { get; private set; }
 
@@ -22,25 +23,29 @@ namespace EvernestFront
 
         private IDictionary<string, string> UserKeys { get; set; }
 
-        public IDictionary<string, long> Sources { get; private set; }
+        private IDictionary<string, long> SourceNameToId { get; set; }
 
         private IDictionary<long, string> SourceKeys { get; set; }
 
-        public IDictionary<long, AccessRight> RelatedEventStreams { get; private set; }
+        public IEnumerable<long> Sources { get { return SourceKeys.Keys; } } 
 
-        internal User(CommandHandler commandHandler, long id, string name, string sph, byte[] ps,
+        private IDictionary<long, AccessRight> InternalRelatedEventStreams { get; set; }
+
+        public IEnumerable<long> RelatedEventStreams { get { return InternalRelatedEventStreams.Keys; } } 
+
+        internal User(SystemCommandHandler systemCommandHandler, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, long> sources, 
             ImmutableDictionary<long, string> sourceKeys, ImmutableDictionary<long, AccessRight> streams)
         {
-            _commandHandler = commandHandler;
+            _systemCommandHandler = systemCommandHandler;
             Id = id;
             Name = name;
             SaltedPasswordHash = sph;
             PasswordSalt = ps;
             UserKeys = keys;
-            Sources = sources;
+            SourceNameToId = sources;
             SourceKeys = sourceKeys;
-            RelatedEventStreams = streams;
+            InternalRelatedEventStreams = streams;
         }
 
         public Response<Guid> SetPassword(string passwordForVerification, string newPassword)
@@ -50,7 +55,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.InvalidString);
             if (!VerifyPassword(passwordForVerification))
                 return new Response<Guid>(FrontError.WrongPassword);
-            var command = new PasswordSettingCommand(_commandHandler, Id, passwordForVerification, newPassword);
+            var command = new PasswordSettingCommand(_systemCommandHandler, Id, passwordForVerification, newPassword);
             command.Send();
             return new Response<Guid>(command.Guid);
         }
@@ -61,7 +66,7 @@ namespace EvernestFront
                 return new Response<Tuple<string, Guid>>(FrontError.UserKeyNameTaken);
             var keyGenerator = new KeyGenerator();
             var key = keyGenerator.NewKey();
-            var command = new UserKeyCreationCommand(_commandHandler, Id, keyName, key);
+            var command = new UserKeyCreationCommand(_systemCommandHandler, Id, keyName, key);
             command.Send();
             return new Response<Tuple<string, Guid>>(new Tuple<string, Guid>(key, command.Guid));
         }

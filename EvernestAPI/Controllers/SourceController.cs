@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using EvernestFront;
 using System.Collections.Generic;
+using EvernestFront.Contract;
 
 namespace EvernestAPI.Controllers
 {
@@ -14,7 +15,7 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage Default(int id)
+        public HttpResponseMessage Default(long id)
         {
             try
             {
@@ -31,18 +32,32 @@ namespace EvernestAPI.Controllers
                 ans["Status"] = "Error";
                 // END DEBUG //
 
+                var front = new EvernestFront.UsersBuilder();
+                var userReq = front.GetUser((string)body["key"]);
+
+                if (!userReq.Success)
+                {
+                    ans["Status"] = "Error";
+                    ans["Error"] = userReq.Error;
+                    return Request.CreateResponse(HttpStatusCode.OK, ans);
+                }
+
+                var user = userReq.Result;
+
                 try
                 {
                     var key = (string) body["Key"];
-                    var gsource = Source.GetSource(key);
-                    if (!gsource.Success)
+                    var sourceReq = user.GetSource(id);
+                    if (!sourceReq.Success)
                     {
                         var nosource = ans;
-                        ans["FieldErrors"] = gsource.Source;
+                        ans["FieldErrors"] = sourceReq.Error;
                         return Request.CreateResponse(HttpStatusCode.OK, nosource);
                     }
+                    var source = sourceReq.Result;
+
                     ans["Status"] = "Success";
-                    ans["Sources"] = new List<Source> {gsource.Source};
+                    ans["Sources"] = source;
 
                 }
                 catch
@@ -81,9 +96,22 @@ namespace EvernestAPI.Controllers
 
                 ans["Status"] = "Error";
 
+                var front = new EvernestFront.UsersBuilder();
+                var userReq = front.GetUser((string)body["key"]);
+
+                if (!userReq.Success)
+                {
+                    ans["Status"] = "Error";
+                    ans["Error"] = userReq.Error;
+                    return Request.CreateResponse(HttpStatusCode.OK, ans);
+                }
+
+                var user = userReq.Result;
+
                 try
                 {
-                    var key = (string) body["Key"];
+                    var sourceReq = user.CreateSource();
+                    
                     var iduser = EvernestFront.User.IdentifyUser(key);
                     if (!iduser.Success)
                     {

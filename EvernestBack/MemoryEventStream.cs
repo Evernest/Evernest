@@ -27,17 +27,17 @@ namespace EvernestBack
             }
         }
 
-        public void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
+        public void Push(string message, Action<LowLevelEvent> callback, Action<LowLevelEvent, String> callbackFailure)
         {
-            IAgent a = new MyAgent(message, Index);
+            LowLevelEvent a = new LowLevelEvent(message, Index);
             Index++;
             _messages.Add(a.Message);
             callback(a);
         }
 
-        public void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
+        public void Pull(long id, Action<LowLevelEvent> callback, Action<LowLevelEvent, String> callbackFailure)
         {
-            IAgent a = new MyAgent(_messages.ElementAt((int)id), id);
+            LowLevelEvent a = new LowLevelEvent(_messages.ElementAt((int)id), id);
             callback(a);
         }
 
@@ -52,17 +52,6 @@ namespace EvernestBack
             foreach (var message in _messages)
                 file.WriteLine(message);
             file.Close();
-        }
-
-        private class MyAgent : IAgent
-        {
-            public MyAgent(string message, long index)
-            {
-                Message = message;
-                RequestID = index;
-            }
-            public string Message { get; protected set; }
-            public long RequestID { get; private set; }
         }
 
         private static string StreamFileName(AzureStorageClient store, string streamID)

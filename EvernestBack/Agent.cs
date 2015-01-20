@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 
 namespace EvernestBack
 {
@@ -9,62 +7,16 @@ namespace EvernestBack
     ///  both Reader and Producer. That is for instance : the Callback procedure 
     ///  when processed, the RequestID and Message logic, etc...
     /// </summary>
-    internal class Agent : IAgent
+    internal class Agent : LowLevelEvent
     {
-        private readonly Action<IAgent, String> _callbackFailure;
-        private readonly Action<IAgent> _callbackSuccess;
+        private readonly Action<LowLevelEvent, String> _callbackFailure;
+        private readonly Action<LowLevelEvent> _callbackSuccess;
         internal Agent(string message, long requestId,
-            Action<IAgent> callbackSuccess, Action<IAgent, String> callbackFailure)
+            Action<LowLevelEvent> callbackSuccess, Action<LowLevelEvent, String> callbackFailure):
+            base(message, requestId)
         {
-            Message = message;
-            RequestID = requestId;
             _callbackSuccess = callbackSuccess;
             _callbackFailure = callbackFailure;
-        }
-
-        public long RequestID { get; private set; }
-        public string Message { get; protected set; }
-
-        public Byte[] Serialize(out int buffSize)
-        {
-            buffSize = Encoding.Unicode.GetByteCount(Message);
-
-            var finalBytes =
-                new Byte[buffSize + sizeof (long) + sizeof (int)];
-
-            var reqIdBytes = BitConverter.GetBytes(RequestID);
-            var msgLengthBytes = BitConverter.GetBytes(buffSize);
-            Encoding.Unicode.GetBytes(Message, 0, Message.Length,
-                finalBytes, sizeof (long) + sizeof (int));
-            // ensure we use little-endianness
-            if (!BitConverter.IsLittleEndian)
-            {
-                Util.Reverse(reqIdBytes, 0, sizeof (long));
-                Util.Reverse(msgLengthBytes, 0, sizeof (int));
-            }
-            Buffer.BlockCopy(reqIdBytes, 0, finalBytes, 0,
-                sizeof (long));
-            Buffer.BlockCopy(msgLengthBytes, 0, finalBytes,
-                sizeof (long), sizeof (int));
-            buffSize += sizeof (long) + sizeof (int);
-            return finalBytes;
-        }
-
-        public void ReadFromStream(Stream input)
-            //should check whether an error happen when reading
-        {
-            var buffer = new Byte[sizeof (long)];
-            input.Read(buffer, 0, sizeof (long));
-            if (!BitConverter.IsLittleEndian)
-                Util.Reverse(buffer, 0, sizeof (long));
-            RequestID = BitConverter.ToInt64(buffer, 0);
-            input.Read(buffer, 0, sizeof (int));
-            if (!BitConverter.IsLittleEndian)
-                Util.Reverse(buffer, 0, sizeof (int));
-            var msgLength = BitConverter.ToInt32(buffer, 0);
-            var msgBuffer = new Byte[msgLength];
-            input.Read(msgBuffer, 0, msgLength);
-            Message = Encoding.Unicode.GetString(msgBuffer);
         }
 
         internal void Processed()
@@ -77,4 +29,28 @@ namespace EvernestBack
             _callbackFailure(this, feedbackMessage);
         }
     }
+
+    /*internal class Processable<T>
+    {
+        private readonly Action<T, String> _callbackFailure;
+        private readonly Action<T> _callbackSuccess;
+        private readonly T _content;
+
+        internal Processable(T data, Action<T> callbackSuccess, Action<T, String> callbackFailure)
+        {
+            _content = data;
+            _callbackSuccess = callbackSuccess;
+            _callbackFailure = callbackFailure;
+        }
+
+        internal void Processed()
+        {
+            _callbackSuccess(_content);
+        }
+
+        internal void ProcessFailed(string feedbackMessage)
+        {
+            _callbackFailure(_content, feedbackMessage);
+        }
+    }*/
 }

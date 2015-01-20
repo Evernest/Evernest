@@ -2,6 +2,7 @@
 using System.Threading;
 using EvernestFront;
 //using Microsoft.VisualStudio.TestTools.UnitTesting;
+using EvernestFront.Contract;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
@@ -10,6 +11,10 @@ namespace EvernestFrontTests
     [TestFixture]
     class EventStreamTests
     {
+        private const int WaitAtEventStreamCreation = 500;
+        //the creation of a pageblob is a bit long (syn+alloc+ack at least), so we need this
+        //otherwise the test don't pass since the stream isn't created yet when we request it
+
         private const string Message = "Message";
 
         [SetUp]
@@ -25,7 +30,7 @@ namespace EvernestFrontTests
             var ans = user.CreateEventStream(streamName);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
-            System.Threading.Thread.Sleep(100);
+            Thread.Sleep(WaitAtEventStreamCreation);
             var get = user.GetEventStream(streamName);
             Assert.IsTrue(get.Success);
             return get.Result.Id;
@@ -37,7 +42,6 @@ namespace EvernestFrontTests
             var user = UserTests.GetUser_AssertSuccess(userId);
             var getStream = user.GetEventStream(streamId);
             var stream = getStream.Result;
-            var usb = new UsersBuilder();
             var ans = stream.SetUserRight(targetUserName, rights);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
@@ -111,7 +115,7 @@ namespace EvernestFrontTests
 
 
         [Test]
-        public void SetRights_Success()
+        public void SetUserRights_Success()
         {
             var creatorName = AssertAuxiliaries.NewName;
             var readerName = AssertAuxiliaries.NewName;
@@ -127,7 +131,35 @@ namespace EvernestFrontTests
         }
 
         [Test]
-        public void SetRights_AdminAccessDenied()
+        public void SetUserRightsById_Success()
+        {
+            var creatorName = AssertAuxiliaries.NewName;
+            var adminName = AssertAuxiliaries.NewName;
+            var readerName = AssertAuxiliaries.NewName;
+            long creatorId = UserTests.AddUser_GetId_AssertSuccess(creatorName);
+            long adminId = UserTests.AddUser_GetId_AssertSuccess(adminName);
+            long readerId = UserTests.AddUser_GetId_AssertSuccess(readerName);
+            var streamName = AssertAuxiliaries.NewName;
+            long streamId = CreateEventStream_GetId_AssertSuccess(creatorId, streamName);
+            
+            var creatorUser = UserTests.GetUser_AssertSuccess(creatorId);
+            var getStream = creatorUser.GetEventStream(streamId);
+            var stream = getStream.Result;
+            var ans = stream.SetUserRight(adminId, AccessRight.Admin);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+            Thread.Sleep(100);
+
+            var adminUser = UserTests.GetUser_AssertSuccess(adminId);
+            getStream = adminUser.GetEventStream(streamId);
+            stream = getStream.Result;
+            ans = stream.SetUserRight(readerId, AccessRight.ReadOnly);
+            Assert.IsTrue(ans.Success);
+            Assert.IsNull(ans.Error);
+        }
+
+        [Test]
+        public void SetUserRights_AdminAccessDenied()
         {
             var streamName = AssertAuxiliaries.NewName;
             var creatorName = AssertAuxiliaries.NewName;
@@ -146,7 +178,7 @@ namespace EvernestFrontTests
         }
 
         [Test]
-        public void SetRights_CannotDestituteAdmin()
+        public void SetUserRights_CannotDestituteAdmin()
         {
             var streamName = AssertAuxiliaries.NewName;
             var creatorName = AssertAuxiliaries.NewName;
@@ -161,6 +193,23 @@ namespace EvernestFrontTests
             var evilAdminStream = getEvilAdminStream.Result;
             var ans = evilAdminStream.SetUserRight(creatorName, AccessRight.NoRight);
             AssertAuxiliaries.ErrorAssert(FrontError.CannotDestituteAdmin, ans);
+        }
+
+        [Test]
+        public void SetUserRightsById_UserIdDoesNotExist()
+        {
+            var creatorName = AssertAuxiliaries.NewName;
+            long creatorId = UserTests.AddUser_GetId_AssertSuccess(creatorName);
+            long inexistantId = long.MaxValue;
+            var streamName = AssertAuxiliaries.NewName;
+            long streamId = CreateEventStream_GetId_AssertSuccess(creatorId, streamName);
+
+            var creatorUser = UserTests.GetUser_AssertSuccess(creatorId);
+            var getStream = creatorUser.GetEventStream(streamId);
+            var stream = getStream.Result;
+            var ans = stream.SetUserRight(inexistantId, AccessRight.Admin);
+            Assert.IsFalse(ans.Success);
+            Assert.AreEqual(FrontError.UserIdDoesNotExist, ans.Error);
         }
 
         [Test]

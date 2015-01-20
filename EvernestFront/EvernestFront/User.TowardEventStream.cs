@@ -1,4 +1,6 @@
 ﻿using System;
+using EvernestBack;
+using EvernestFront.Contract;
 
 namespace EvernestFront
 {
@@ -6,7 +8,7 @@ namespace EvernestFront
     {
         public Response<EventStream> GetEventStream(long streamId)
         {
-            var builder = new EventStreamsBuilder();
+            var builder = new EventStreamsProvider();
             EventStream eventStream;
             if (builder.TryGetEventStream(this, streamId, out eventStream))
                 return new Response<EventStream>(eventStream);
@@ -16,7 +18,7 @@ namespace EvernestFront
 
         public Response<EventStream> GetEventStream(string streamName)
         {
-            var builder = new EventStreamsBuilder();
+            var builder = new EventStreamsProvider();
             EventStream eventStream;
             if (builder.TryGetEventStream(this, streamName, out eventStream))
                 return new Response<EventStream>(eventStream);
@@ -26,14 +28,20 @@ namespace EvernestFront
 
         public Response<Guid> CreateEventStream(string streamName)
         {
-            var builder = new EventStreamsBuilder();
-            return builder.CreateEventStream(Name, streamName);
+            var builder = new EventStreamsProvider();
+            return builder.CreateEventStream(this, streamName);
         }
 
         //password is asked again because event stream deletion is a major operation
         public Response<Guid> DeleteEventStream(long eventStreamId, string password)
         {
-            throw new NotImplementedException();
+            var builder = new EventStreamsProvider();
+            EventStream eventStream;
+            if (!builder.TryGetEventStream(this, eventStreamId, out eventStream))
+                return new Response<Guid>(FrontError.EventStreamIdDoesNotExist);
+            if (!VerifyPassword(password))
+                return new Response<Guid>(FrontError.WrongPassword);
+            return eventStream.Delete(password);
         } 
     }
 }

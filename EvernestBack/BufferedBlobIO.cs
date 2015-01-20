@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using System.Configuration;
 using System.IO;
 
 //TODO: what should we do when an exception occurs? Notifying the user? how?
@@ -14,29 +13,28 @@ namespace EvernestBack
     /// Speeds up network transactions with buffered output.
     /// Minimizes latency between a push and the availability of corresponding data.
     /// </summary>
-    internal class BufferedBlobIO
+    internal class BufferedBlobIO:IDisposable
     {
-        public byte[] WriteBuffer {get; private set;}
-        public CloudPageBlob Blob {get; private set;} //wait, why did i make this accessible already?!
+        private byte[] _writeBuffer;
+        private CloudPageBlob _blob;
         private int _currentBufferPosition, _maximumBufferSize;
         private long _currentPage;
         private const Int16 PageSize = 512;
         public ulong TotalWrittenBytes {get; private set;}
 
-        public BufferedBlobIO( CloudPageBlob blob)
+        public BufferedBlobIO( CloudPageBlob blob, int minimumBufferSize)
         {
-            Blob = blob;
+            _blob = blob;
             byte[] buffer = new byte[sizeof(ulong)+sizeof(long)];
-            Blob.DownloadRangeToByteArray(buffer, 0, 0, sizeof(ulong)+sizeof(long));
+            _blob.DownloadRangeToByteArray(buffer, 0, 0, sizeof(ulong)+sizeof(long));
             TotalWrittenBytes = BitConverter.ToUInt64(buffer, 0);
             _currentPage = BitConverter.ToInt64(buffer, sizeof(ulong))+1;
-            int minimumBufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
             _maximumBufferSize = BufferSize(minimumBufferSize);
-            //WriteBuffer allocation and coherence
-            WriteBuffer = new byte[_maximumBufferSize];
+            //_writeBuffer allocation and coherence
+            _writeBuffer = new byte[_maximumBufferSize];
             _currentBufferPosition = (int) (TotalWrittenBytes % (ulong) PageSize);
             if(_currentBufferPosition != 0)
-                Blob.DownloadRangeToByteArray(WriteBuffer, 0, (int)TotalWrittenBytes - _currentBufferPosition, _currentBufferPosition);
+                _blob.DownloadRangeToByteArray(_writeBuffer, 0, (int)TotalWrittenBytes - _currentBufferPosition + PageSize, _currentBufferPosition);
         }
 
         private static int BufferSize(int minimumBufferSize)
@@ -111,10 +109,10 @@ namespace EvernestBack
             MemoryStream stream = MakePaddedMemoryStream(src, offset, count);
             try
             {
-                Blob.WritePages(stream, PageSize * _currentPage); //should ensure no error happens
+                _blob.WritePages(stream, PageSize * _currentPage); //should ensure no error happens
                 _currentPage += pageNumber;
                 _currentBufferPosition = count % PageSize;
-                Buffer.BlockCopy(src, pageNumber * PageSize, WriteBuffer, 0, _currentBufferPosition);
+                Buffer.BlockCopy(src, pageNumber * PageSize, _writeBuffer, 0, _currentBufferPosition);
             }
             catch (StorageException e)
             {
@@ -127,13 +125,13 @@ namespace EvernestBack
         /// <summary>
         /// Update both the size of written data and the current page written at the beginning of the PageBlob.
         /// </summary>
-        private void UpdateSizeInfo()
+        private void UpdateSizeInfo() //endianness-dependant
         {
             byte[] sizeInfoBytes = new byte[PageSize];
             Buffer.BlockCopy(BitConverter.GetBytes(TotalWrittenBytes), 0, sizeInfoBytes, 0, sizeof(ulong));
             Buffer.BlockCopy(BitConverter.GetBytes(_currentPage-1), 0, sizeInfoBytes, sizeof(ulong), sizeof(long));
             Stream sizeInfoStream = new MemoryStream(sizeInfoBytes, 0, PageSize);
-            Blob.WritePages(sizeInfoStream, 0);
+            _blob.WritePages(sizeInfoStream, 0);
         }
 
         /// <summary>
@@ -157,7 +155,7 @@ namespace EvernestBack
             if(_currentBufferPosition + count > _maximumBufferSize)
             {
                 /*int firstBatchBytes = _maximumBufferSize-_currentBufferPosition;
-                Buffer.BlockCopy(src, offset, WriteBuffer, _currentBufferPosition, firstBatchBytes);
+                Buffer.BlockCopy(src, offset, _writeBuffer, _currentBufferPosition, firstBatchBytes);
                 _currentBufferPosition = _maximumBufferSize;
                 TotalWrittenBytes += (ulong) firstBatchBytes;*/
                 if (FlushBuffer())
@@ -182,7 +180,7 @@ namespace EvernestBack
                     return false;
                 }
             }
-            Buffer.BlockCopy(src, offset, WriteBuffer, _currentBufferPosition, count);
+            Buffer.BlockCopy(src, offset, _writeBuffer, _currentBufferPosition, count);
             _currentBufferPosition += count;
             TotalWrittenBytes += (ulong) count;
             return true;
@@ -212,11 +210,11 @@ namespace EvernestBack
             srcOffset += PageSize; //the first Page is dedicated to blob size info
             int uploadedBytes = Math.Min((int) _currentPage*PageSize - srcOffset, count);
             if( uploadedBytes > 0 )
-                Blob.DownloadRangeToByteArray(buffer, offset, srcOffset, uploadedBytes);
+                _blob.DownloadRangeToByteArray(buffer, offset, srcOffset, uploadedBytes);
             int bufferOffset = Math.Max(-uploadedBytes, 0);
             int maxReadableBytes = Math.Max(_currentBufferPosition - bufferOffset, 0);
             int bufferReadBytes = Math.Min(count - Math.Max(uploadedBytes, 0), maxReadableBytes);
-            Buffer.BlockCopy(WriteBuffer, bufferOffset, buffer, offset + Math.Max(uploadedBytes, 0),
+            Buffer.BlockCopy(_writeBuffer, bufferOffset, buffer, offset + Math.Max(uploadedBytes, 0),
                 bufferReadBytes);
             return Math.Max(0, uploadedBytes) + bufferReadBytes;
         }
@@ -228,20 +226,18 @@ namespace EvernestBack
         /// true if the data was successfully sent or if the buffer was already empty
         /// false otherwise
         /// </returns>
-        public bool FlushBuffer() //not thread safe, "endianness-dependant"
+        public bool FlushBuffer()
         {
             if (_currentBufferPosition != 0)
             {
-                if (!DirectUpload(WriteBuffer, 0, _currentBufferPosition))
+                if (!DirectUpload(_writeBuffer, 0, _currentBufferPosition))
                     return false;
                 UpdateSizeInfo();
             }
             return true;
         }
 
-        //mmmh destructors are never called at the good time in this language (sigh), so not sure it's that usefull
-        //IDisposable?
-        ~BufferedBlobIO()
+        public void Dispose()
         {
             FlushBuffer();
         }

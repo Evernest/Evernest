@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestFront", "EvernestFront\EvernestFront\EvernestFront.csproj", "{955F313D-19ED-4F17-904B-4D95A4EE7E74}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -24,11 +24,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvernestBackTests", "tests\
 		{98FB2D5C-0689-4F34-9B04-DE94992EB906} = {98FB2D5C-0689-4F34-9B04-DE94992EB906}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{82707659-FFB8-4BEF-A316-7615B1D0BDD1}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,7 +35,7 @@ Global
 		{955F313D-19ED-4F17-904B-4D95A4EE7E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{955F313D-19ED-4F17-904B-4D95A4EE7E74}.Release|Any CPU.Build.0 = Release|Any CPU
 		{227A8633-C1CE-443C-A447-6241DF8EF155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{227A8633-C1CE-443C-A447-6241DF8EF155}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		//{227A8633-C1CE-443C-A447-6241DF8EF155}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{227A8633-C1CE-443C-A447-6241DF8EF155}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{227A8633-C1CE-443C-A447-6241DF8EF155}.Release|Any CPU.Build.0 = Release|Any CPU
 		{98FB2D5C-0689-4F34-9B04-DE94992EB906}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

@@ -10,24 +10,32 @@ namespace EvernestBack
         private CloudPageBlob _blob;
         private readonly EventIndexer _indexer;
         private readonly WriteLocker _writeLock;
+        private BufferedBlobIO _bufferedIO;
 
         /// <summary>
         ///     Construct a new EventStream.
         /// </summary>
-        public EventStream(AzureStorageClient storage, string streamID)
+        /// <param name="storage">The stream factory.</param>
+        /// <param name="streamID">The name of the stream.</param>
+        /// <param name="minimumBufferSize">The minimum size of the buffer.</param>
+        /// <param name="updateMinimumEntryCount">The minimum number of indexes (also referred as milestones) to be registered before re-updating the aditional stream index inforamtion.</param>
+        /// <param name="updateMinimumDelay">The minimum delay before re-updating the aditional stream index inforamtion.</param>
+        /// <param name="minimumChunkSize">The minimum number of bytes to be read before a new index (also referred as milestone) is registered.</param>
+        public EventStream(AzureStorageClient storage, string streamID, int minimumBufferSize, uint updateMinimumEntryCount, uint updateMinimumDelay, uint minimumChunkSize, Int32 cacheSize)
         {
             _blob = storage.StreamContainer.GetPageBlobReference(streamID);
             var streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
 
-            var buffer = new BufferedBlobIO(_blob);
-            _indexer = new EventIndexer(streamIndexBlob, buffer);
-            _writeLock = new WriteLocker(buffer, _indexer, _indexer.ReadIndexInfo());
-            _writeLock.Store();
+            _bufferedIO = new BufferedBlobIO(_blob, minimumBufferSize);
+            _indexer = new EventIndexer(streamIndexBlob, _bufferedIO, updateMinimumEntryCount, updateMinimumDelay, minimumChunkSize, cacheSize);
+            _writeLock = new WriteLocker(_bufferedIO, _indexer, _indexer.ReadIndexInfo());
         }
 
         public void Dispose()
         {
-            // TODO: close blob
+            _writeLock.Dispose();
+            _indexer.Dispose();
+            _bufferedIO.Dispose();
         }
 
         /// <summary>
@@ -36,7 +44,7 @@ namespace EvernestBack
         /// <param name="message">The message to push. </param>
         /// <param name="callback">The action to do in case of success. </param>
         /// <param name="callbackFailure">The action to do in case of failure. </param>
-        public void Push(string message, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
+        public void Push(string message, Action<LowLevelEvent> callback, Action<LowLevelEvent, String> callbackFailure)
         {
             _writeLock.Register(message, callback, callbackFailure);
         }
@@ -47,7 +55,7 @@ namespace EvernestBack
         /// <param name="id">The index of the message to pull. </param>
         /// <param name="callback"> The action to do in case of success. </param>
         /// <param name="callbackFailure"> The action to do in case of failure. </param>
-        public void Pull(long id, Action<IAgent> callback, Action<IAgent, String> callbackFailure)
+        public void Pull(long id, Action<LowLevelEvent> callback, Action<LowLevelEvent, String> callbackFailure)
         {
             string message;
             var success = _indexer.FetchEvent(id, out message);
@@ -87,8 +95,8 @@ namespace EvernestBack
         {
             CloudPageBlob streamBlob = storage.StreamContainer.GetPageBlobReference(streamID);
             CloudBlockBlob streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamID);
-            streamBlob.DeleteIfExists();
             streamIndexBlob.DeleteIfExists();
+            streamBlob.DeleteIfExists();
         }
     }
 }

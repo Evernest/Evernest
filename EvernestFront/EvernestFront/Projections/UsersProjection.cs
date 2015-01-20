@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront.Projections
@@ -32,7 +33,7 @@ namespace EvernestFront.Projections
             return Dictionaries.NameToId.TryGetValue(name, out id);
         }
 
-        public bool TryGetUserData(long id, out UserDataForProjection data)
+        public bool TryGetUserData(long id, out UserRecord data)
         {
             return Dictionaries.IdToData.TryGetValue(id, out data);
         }
@@ -43,7 +44,7 @@ namespace EvernestFront.Projections
         }
 
         //better than TryGetUserId followed by TryGetUserData because Dictionaries may change between the two calls
-        public bool TryGetUserIdAndData(string name, out long id, out UserDataForProjection data)
+        public bool TryGetUserIdAndData(string name, out long id, out UserRecord data)
         {
             var dictionaries = Dictionaries;
             if (dictionaries.NameToId.TryGetValue(name, out id))
@@ -65,7 +66,7 @@ namespace EvernestFront.Projections
         }
 
         //better than TryGetUserId followed by TryGetUserData because Dictionaries may change between the two calls
-        public bool TryGetUserIdAndDataByKey(string key, out long id, out UserDataForProjection data)
+        public bool TryGetUserIdAndDataByKey(string key, out long id, out UserRecord data)
         {
             var dictionaries = Dictionaries;
             if (dictionaries.KeyToId.TryGetValue(key, out id))
@@ -87,11 +88,11 @@ namespace EvernestFront.Projections
         private class DictionariesClass
         {
             internal ImmutableDictionary<string, long> NameToId { get; private set; }
-            internal ImmutableDictionary<long, UserDataForProjection> IdToData { get; private set; }
+            internal ImmutableDictionary<long, UserRecord> IdToData { get; private set; }
             internal ImmutableDictionary<string, long> KeyToId { get; private set; } 
 
             private DictionariesClass(ImmutableDictionary<string, long> nti,
-                ImmutableDictionary<long, UserDataForProjection> itd,
+                ImmutableDictionary<long, UserRecord> itd,
                 ImmutableDictionary<string, long> kti)
             {
                 NameToId = nti;
@@ -101,7 +102,7 @@ namespace EvernestFront.Projections
 
             internal DictionariesClass()
                 : this(ImmutableDictionary<string, long>.Empty,
-                ImmutableDictionary<long, UserDataForProjection>.Empty,
+                ImmutableDictionary<long, UserRecord>.Empty,
                 ImmutableDictionary<string,long>.Empty) { }
 
             internal DictionariesClass SetNameToId(ImmutableDictionary<string, long> nti)
@@ -109,7 +110,7 @@ namespace EvernestFront.Projections
                 return new DictionariesClass(nti, IdToData, KeyToId);
             }
 
-            internal DictionariesClass SetIdToData(ImmutableDictionary<long, UserDataForProjection> itd)
+            internal DictionariesClass SetIdToData(ImmutableDictionary<long, UserRecord> itd)
             {
                 return new DictionariesClass(NameToId, itd, KeyToId);
             }
@@ -124,7 +125,7 @@ namespace EvernestFront.Projections
 
         private void SetRight(long userId, long eventStreamId, AccessRight right)
         {
-            UserDataForProjection data;
+            UserRecord data;
             if (!Dictionaries.IdToData.TryGetValue(userId, out data))
             {
                 //TODO: report error
@@ -152,12 +153,12 @@ namespace EvernestFront.Projections
 
         private void When(EventStreamDeletedSystemEvent systemEvent)
         {
-            //delete in each user concerned?
+            //TODO : delete in each user concerned?
         }
 
         private void When(PasswordSetSystemEvent systemEvent)
         {
-            UserDataForProjection data;
+            UserRecord data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
             {
                 //TODO: report error
@@ -170,7 +171,7 @@ namespace EvernestFront.Projections
 
         private void When(SourceCreatedSystemEvent systemEvent)
         {
-            UserDataForProjection data;
+            UserRecord data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
             {
                 //TODO: report error
@@ -183,7 +184,7 @@ namespace EvernestFront.Projections
 
         private void When(SourceDeletedSystemEvent systemEvent)
         {
-            UserDataForProjection data;
+            UserRecord data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
             {
                 //TODO: report error
@@ -201,7 +202,7 @@ namespace EvernestFront.Projections
 
         private void When(UserCreatedSystemEvent systemEvent)
         {
-            var data = new UserDataForProjection(systemEvent.UserName,
+            var data = new UserRecord(systemEvent.UserName,
                 systemEvent.SaltedPasswordHash, systemEvent.PasswordSalt);
             var nti = Dictionaries.NameToId.SetItem(systemEvent.UserName, systemEvent.UserId);
             var itd = Dictionaries.IdToData.SetItem(systemEvent.UserId, data);
@@ -217,7 +218,7 @@ namespace EvernestFront.Projections
 
         private void When(UserKeyCreatedSystemEvent systemEvent)
         {
-            UserDataForProjection data;
+            UserRecord data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
             {
                 //TODO: report error
@@ -231,7 +232,7 @@ namespace EvernestFront.Projections
 
         private void When(UserKeyDeletedSystemEvent systemEvent)
         {
-            UserDataForProjection data;
+            UserRecord data;
             if (!Dictionaries.IdToData.TryGetValue(systemEvent.UserId, out data))
             {
                 //TODO: report error

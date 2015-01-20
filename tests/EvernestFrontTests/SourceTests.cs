@@ -1,5 +1,6 @@
 ﻿using System;
 using EvernestFront;
+using EvernestFront.Contract;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
@@ -18,7 +19,7 @@ namespace EvernestFrontTests
         {
             UserTests.GetUser_AssertSuccess(userId);
             var key = CreateSource_GetKey_AssertSuccess(userId, sourceName);
-            var sb = new SourcesBuilder();
+            var sb = new SourcesProvider();
             var getSource = sb.GetSource(key);
             Assert.IsTrue(getSource.Success);
             Assert.IsNull(getSource.Error);
@@ -45,7 +46,7 @@ namespace EvernestFrontTests
 
         internal static Source GetSource_AssertSuccess(string sourceKey)
         {
-            var sb = new SourcesBuilder();
+            var sb = new SourcesProvider();
             Response<Source> ans = sb.GetSource(sourceKey);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
@@ -103,7 +104,7 @@ namespace EvernestFrontTests
         public void GetSource_SourceKeyDoesNotExist()
         {
             const string inexistantKey = "InexistantKey";
-            var ans = new SourcesBuilder().GetSource(inexistantKey);
+            var ans = new SourcesProvider().GetSource(inexistantKey);
             AssertAuxiliaries.ErrorAssert(FrontError.SourceKeyDoesNotExist,ans);
         }
 

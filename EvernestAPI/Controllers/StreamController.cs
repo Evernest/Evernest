@@ -69,6 +69,19 @@ namespace EvernestAPI.Controllers
                     ans["Status"] = "Error";
                     ans["FieldErrors"] = new List<string> {"Key"};
                 }
+
+                var front = new EvernestFront.UsersBuilder();
+                var userReq = front.GetUser(key);
+
+                if (!userReq.Success)
+                {
+                    ans["Status"] = "Error";
+                    ans["Error"] = userReq.Error;
+                    return Request.CreateResponse(HttpStatusCode.OK, ans);
+                }
+
+                var user = userReq.Result;
+
                 else
                 {
                     var getSource = Source.GetSource(key);

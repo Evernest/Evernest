@@ -9,6 +9,7 @@ namespace EvernestFrontTests
     [SetUpFixture]
     class Setup
     {
+
         public static void ClearAsc()
         {
             try
@@ -29,8 +30,8 @@ namespace EvernestFrontTests
         [SetUp]
         public static void RunBeforeAnyTests()
         {
-            StartUp.Start();
+            var startUp = new StartUp();
+            startUp.Start();
         }
-            
     }
 }

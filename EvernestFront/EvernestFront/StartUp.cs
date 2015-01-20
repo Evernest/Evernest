@@ -1,17 +1,29 @@
-﻿using System.Web;
-using EvernestFront;
-using EvernestFront.SystemCommandHandling;
-
-[assembly: PreApplicationStartMethod(typeof(StartUp), "Start")]
+﻿using System;
+using System.Diagnostics;
+using EvernestBack;
 
 namespace EvernestFront
 {
-    public static class StartUp
+    public class StartUp
     {
-        public static void Start()
+        public const string AzureStorageClientErrorMessage =
+            "Error while getting AzureStorageClient.Instance in EvernestFront.StartUp.Start";
+
+        public void Start()
         {
+            object azureStorageClient;
+            try
+            {
+                azureStorageClient = AzureStorageClient.Instance;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(AzureStorageClientErrorMessage);
+                throw new Exception(AzureStorageClientErrorMessage, ex);
+            }
+            Debug.Assert(azureStorageClient is AzureStorageClient, "azureStorageClient is AzureStorageClient");
             var injector = Injector.Instance;
-            injector.Build();
+            injector.BuildFront((AzureStorageClient) azureStorageClient);
             //TODO: read system event stream
             injector.SystemCommandHandler.HandleCommands();
             injector.Dispatcher.DispatchSystemEvents();

@@ -94,7 +94,7 @@ namespace EvernestFront.SystemCommandHandling
                 return false;
             }
             var id = _state.NextEventStreamId;
-            _azureStorageClient.GetNewEventStream(Convert.ToString(id));
+            _azureStorageClient.GetNewEventStream(id);
             systemEvent = new EventStreamCreatedSystemEvent(id, command.EventStreamName, command.CreatorName);
             error = null;
             return true;

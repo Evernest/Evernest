@@ -21,9 +21,8 @@ namespace EvernestFront
 
         private Injector() { }
 
-        public void Build()
+        public void BuildFront(AzureStorageClient azureStorageClient)
         {
-            var azureStorageClient = AzureStorageClient.Instance;
             UsersProjection = new UsersProjection();
             EventStreamsProjection = new EventStreamsProjection(azureStorageClient);
             SourcesProjection = new SourcesProjection();

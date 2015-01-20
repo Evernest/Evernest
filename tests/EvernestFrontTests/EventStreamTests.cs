@@ -11,6 +11,10 @@ namespace EvernestFrontTests
     [TestFixture]
     class EventStreamTests
     {
+        private const int WaitAtEventStreamCreation = 500;
+        //the creation of a pageblob is a bit long (syn+alloc+ack at least), so we need this
+        //otherwise the test don't pass since the stream isn't created yet when we request it
+
         private const string Message = "Message";
 
         [SetUp]
@@ -26,10 +30,7 @@ namespace EvernestFrontTests
             var ans = user.CreateEventStream(streamName);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
-            //the creation of a pageblob is a bit long (syn+alloc+ack at least), so i extended the delay
-            //otherwise the test don't pass since the stream isn't created yet when you request it
-            //ok, it's AWFULLY long, but hey, you're not supposed to create pageblobs everyday!
-            Thread.Sleep(5000);
+            Thread.Sleep(WaitAtEventStreamCreation);
             var get = user.GetEventStream(streamName);
             Assert.IsTrue(get.Success);
             return get.Result.Id;

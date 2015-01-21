@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
@@ -58,6 +59,7 @@ namespace EvernestBack
                 _currentChunkBytes += wroteBytes;
         }
 
+        /*
         /// <summary>
         /// Try to retrieve an event.
         /// </summary>
@@ -67,24 +69,42 @@ namespace EvernestBack
         public bool FetchEvent(long id, out string message)
         {
             if (PullFromLocalCache(id, out message))
-            {
-                Console.WriteLine("Pull from cache.");
                 return true;
-            }
             if (PullFromCloud(id, out message)) 
             {
-                Console.WriteLine("Encache.");
                 _cache.Add(id, message); 
                 return true;
             }
             return false;
+        }*/
+
+        public bool FetchEventRange(long firstId, long lastId, out EventRange range)
+        {
+            return PullRangeFromCloud(firstId, lastId, out range);
         }
 
+        private bool PullRangeFromCloud(long firstId, long lastId, out EventRange range) //DRY!!
+        {
+            ulong firstByte = 0;
+            ulong lastByte = 0;
+            _milestones.LowerBound(firstId, ref firstByte);
+            if (!_milestones.UpperBound(lastId+1, ref lastByte) && (lastByte = _bufferedStreamIO.TotalWrittenBytes) == 0)
+            {
+                range = null;
+                return false; //there's nothing written!
+            }
+            var byteCount = (int)(lastByte - firstByte);
+            var buffer = new Byte[byteCount];
+            byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int)firstByte, byteCount);
 
+            return (new EventRange(buffer, 0, byteCount)).MakeSubRange(firstId, lastId, out range);
+        }
+
+        /*
         private bool PullFromLocalCache(long id, out string message)
         {
             return _cache.Get(id, out message);
-        }
+        }*/
 
         public void UploadIndexIfMeetConditions()
         {
@@ -103,7 +123,14 @@ namespace EvernestBack
             _newEntryCount = 0;
             _lastIndexUpdateTime = DateTime.UtcNow;
             var serializedMilestones = _milestones.Serialize();
-            _streamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
+            try
+            {
+                _streamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
+            }
+            catch (StorageException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
 
         /// <summary>
@@ -141,6 +168,7 @@ namespace EvernestBack
             return lastKnownID;
         }
 
+        /*
         private bool PullFromCloud(long id, out string message)
         {
             ulong firstByte = 0;
@@ -164,7 +192,7 @@ namespace EvernestBack
             }
             message = "";
             return false;
-        }
+        }*/
 
         public void Dispose()
         {

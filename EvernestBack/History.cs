@@ -159,9 +159,12 @@ namespace EvernestBack
             //infix traversal (writes nodes in their key's order)
             var currentlyVisitedNodes = new Stack<Node>();
             Node currentNode;
-            currentlyVisitedNodes.Push(_root);
-            while ((currentNode = currentlyVisitedNodes.Last().Left) != null)
-                currentlyVisitedNodes.Push(currentNode);
+            if (_root != null)
+            {
+                currentlyVisitedNodes.Push(_root);
+                while ((currentNode = currentlyVisitedNodes.Last().Left) != null)
+                    currentlyVisitedNodes.Push(currentNode);
+            }
             while (currentlyVisitedNodes.Count > 0)
             {
                 currentNode = currentlyVisitedNodes.First();

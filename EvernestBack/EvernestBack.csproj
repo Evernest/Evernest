@@ -76,7 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Agent.cs" />
+    <Compile Include="CallbackDecorator.cs" />
     <Compile Include="AzureStorageClient.cs" />
     <Compile Include="EventRange.cs" />
     <Compile Include="History.cs" />
@@ -89,7 +89,7 @@
     <Compile Include="EventStream.cs" />
     <Compile Include="BufferedBlobIO.cs" />
     <Compile Include="Util.cs" />
-    <Compile Include="WriteLocker.cs" />
+    <Compile Include="WorkerThread.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -27,18 +27,32 @@ namespace EvernestBack
             }
         }
 
-        public void Push(string message, Action<LowLevelEvent> callback, Action<LowLevelEvent, String> callbackFailure)
+        public void Push(string message, Action<LowLevelEvent> success, Action<string, string> failure)
         {
             LowLevelEvent a = new LowLevelEvent(message, Index);
             Index++;
             _messages.Add(a.Message);
-            callback(a);
+            success(a);
         }
 
-        public void Pull(long id, Action<LowLevelEvent> callback, Action<LowLevelEvent, String> callbackFailure)
+        public void Pull(long id, Action<LowLevelEvent> callback, Action<long, string> callbackFailure)
         {
-            LowLevelEvent a = new LowLevelEvent(_messages.ElementAt((int)id), id);
-            callback(a);
+            if (Index > id)
+                callback(new LowLevelEvent(_messages.ElementAt((int) id), id));
+            else
+                callbackFailure(id, "Can not fetch event.");
+        }
+
+        public void PullRange(long firstId, long lastId, Action<IEnumerable<LowLevelEvent>> success, Action<long, long, string> failure)
+        {
+            //TODO
+            throw new NotImplementedException("MemoryEventStream.PullRange");
+            /*
+            if (Index > lastId)
+                success(_messages.GetRange((int) firstId, (int) (lastId - firstId + 1)));
+            else
+                failure(firstId, lastId, "Can not fetch range.");
+             */
         }
 
         public long Size()

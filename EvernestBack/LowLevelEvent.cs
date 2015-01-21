@@ -38,24 +38,6 @@ namespace EvernestBack
             return finalBytes;
         }
 
-        /*
-        public void ReadFromStream(Stream input)
-            //should check whether an error happen when reading
-        {
-            var buffer = new Byte[sizeof (long)];
-            input.Read(buffer, 0, sizeof (long));
-            if (!BitConverter.IsLittleEndian)
-                Util.Reverse(buffer, 0, sizeof (long));
-            RequestID = BitConverter.ToInt64(buffer, 0);
-            input.Read(buffer, 0, sizeof (int));
-            if (!BitConverter.IsLittleEndian)
-                Util.Reverse(buffer, 0, sizeof (int));
-            var msgLength = BitConverter.ToInt32(buffer, 0);
-            var msgBuffer = new Byte[msgLength];
-            input.Read(msgBuffer, 0, msgLength);
-            Message = Encoding.Unicode.GetString(msgBuffer);
-        }*/
-
         public long RequestID { get; protected set; }
         public string Message { get; protected set; }
     }

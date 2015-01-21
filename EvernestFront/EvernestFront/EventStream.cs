@@ -112,10 +112,21 @@ namespace EvernestFront
                 return new Response<Event>(FrontError.ReadAccessDenied);
 
             var random = new Random();
-            long eventId = (long)random.Next((int)LastEventId+1);
+            long eventId = random.Next((int)LastEventId+1);
             EventContract pulledContract=null;
             var serializer = new Serializer();
-            BackStream.Pull(eventId, ( a => pulledContract = serializer.ReadContract<EventContract>(a.Message)), ((a,s)=> {}));  
+            var stopWaitHandle = new AutoResetEvent(false);
+            BackStream.Pull
+            (
+                eventId,
+                ev =>
+                {
+                    pulledContract = serializer.ReadContract<EventContract>(ev.Message);
+                    stopWaitHandle.Set();
+                },
+                (requestedId, errorMessage) => { stopWaitHandle.Set(); }
+            );
+            stopWaitHandle.WaitOne();
             if (pulledContract==null)
                 return new Response<Event>(FrontError.BackendError);
             return new Response<Event>(new Event(pulledContract, eventId, Name, Id));
@@ -131,7 +142,9 @@ namespace EvernestFront
                 return new Response<Event>(FrontError.InvalidEventId);
             EventContract pulledContract = null;
             var serializer = new Serializer();
-            BackStream.Pull(eventId, (a => pulledContract = serializer.ReadContract<EventContract>(a.Message)), ((a, s) => { }));
+            var stopWaitHandle = new AutoResetEvent(false);
+            BackStream.Pull(eventId, (a => {pulledContract = serializer.ReadContract<EventContract>(a.Message); stopWaitHandle.Set(); }), ((a, s) => { stopWaitHandle.Set(); }));
+            stopWaitHandle.WaitOne();
             if (pulledContract == null)
                 return new Response<Event>(FrontError.BackendError);
             return new Response<Event>(new Event(pulledContract, eventId, Name, Id));
@@ -150,6 +163,25 @@ namespace EvernestFront
             if (!IsEventIdValid(toEventId))
                 return new Response<List<Event>>(FrontError.InvalidEventId);
             var eventList = new List<Event>();
+            /*
+            var stopWaitHandle = new AutoResetEvent(false);
+            BackStream.PullRange
+            (
+                fromEventId,
+                toEventId,
+                range =>
+                { 
+                    //TODO
+                    foreach(LowLevelEvent ev in range)
+                    {
+                      //TODO
+                    }
+                    stopWaitHandle.Set();
+                },
+                (firstId, lastId, errorMessage) => { stopWaitHandle.Set(); }
+            );
+            stopWaitHandle.WaitOne();
+             */
             for (long id = fromEventId; id <= toEventId; id++)
             {
                 Response<Event> ans = Pull(id);

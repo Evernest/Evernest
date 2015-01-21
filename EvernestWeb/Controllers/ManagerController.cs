@@ -43,7 +43,7 @@ namespace EvernestWeb.Controllers
         // GET: /Manager/Stream/{Id}
         public ActionResult Stream(long id)
         {
-            var front = new UsersProvider();
+            var front = new UserProvider();
             Models.User user = (Models.User)Session["User"];
             var userReq = front.GetUser(user.Id);
 

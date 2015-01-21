@@ -31,7 +31,7 @@ namespace EvernestFrontTests
         {
             var userName = AssertAuxiliaries.NewName;
             var userId = UserTests.AddUser_GetId_AssertSuccess(userName);
-            var user = new UsersProvider().GetUser(userId).Result;
+            var user = new UserProvider().GetUser(userId).Result;
             Assert.IsNotNull(user);
             var create1 = user.CreateSource("source1");
             var create2 = user.CreateSource("source2");
@@ -73,7 +73,7 @@ namespace EvernestFrontTests
             var sourceName = AssertAuxiliaries.NewName;
             var userId = UserTests.AddUser_GetId_AssertSuccess(userName);
             var sourceKey = SourceTests.CreateSource_GetKey_AssertSuccess(userId, sourceName);
-            var sourceId = new SourcesProvider().GetSource(sourceKey).Result.Id;
+            var sourceId = new SourceProvider().GetSource(sourceKey).Result.Id;
             var user = UserTests.GetUser_AssertSuccess(userId);
             var ans = user.DeleteSource(sourceId);
             Assert.IsTrue(ans.Success);
@@ -90,7 +90,7 @@ namespace EvernestFrontTests
             long streamId = EventStreamTests.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
             string key = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, SourceName, SomeRight);
             string key2 = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, SourceName2, SomeRight);
-            var sb = new SourcesProvider();
+            var sb = new SourceProvider();
             var source1 = sb.GetSource(key).Result;
             var source2 = sb.GetSource(key2).Result;
             User user = UserTests.GetUser_AssertSuccess(userId);

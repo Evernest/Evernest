@@ -75,11 +75,11 @@
     <Compile Include="Contract\SystemEvents\UserCreatedSystemEvent.cs" />
     <Compile Include="SystemCommandHandling\Dispatcher.cs" />
     <Compile Include="Event.cs" />
-    <Compile Include="EventStreamsProvider.cs" />
+    <Compile Include="EventStreamProvider.cs" />
     <Compile Include="Injector.cs" />
     <Compile Include="SystemCommandHandling\Commands\SourceCreationCommand.cs" />
     <Compile Include="SystemCommandHandling\Commands\SourceDeletionCommand.cs" />
-    <Compile Include="SourcesProvider.cs" />
+    <Compile Include="SourceProvider.cs" />
     <Compile Include="Utilities\KeyGenerator.cs" />
     <Compile Include="Utilities\PasswordManager.cs" />
     <Compile Include="Projections\EventStreamRecord.cs" />
@@ -112,7 +112,7 @@
     <Compile Include="Contract\AccessRight.cs" />
     <Compile Include="User.TowardSource.cs" />
     <Compile Include="User.TowardEventStream.cs" />
-    <Compile Include="UsersProvider.cs" />
+    <Compile Include="UserProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\EvernestBack\EvernestBack.csproj">

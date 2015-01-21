@@ -32,7 +32,7 @@ namespace EvernestFront
             AccessRight right;
             if (!RelatedEventStreams.TryGetValue(eventStreamId, out right))
                 right = AccessRight.NoRight;
-            var builder = new EventStreamsProvider();
+            var builder = new EventStreamProvider();
             EventStream eventStream;
             if (builder.TryGetEventStreamBySource(this, right, eventStreamId, out eventStream))
                 return new Response<EventStream>(eventStream);

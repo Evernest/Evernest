@@ -19,7 +19,7 @@ namespace EvernestFrontTests
         {
             UserTests.GetUser_AssertSuccess(userId);
             var key = CreateSource_GetKey_AssertSuccess(userId, sourceName);
-            var sb = new SourcesProvider();
+            var sb = new SourceProvider();
             var getSource = sb.GetSource(key);
             Assert.IsTrue(getSource.Success);
             Assert.IsNull(getSource.Error);
@@ -46,7 +46,7 @@ namespace EvernestFrontTests
 
         internal static Source GetSource_AssertSuccess(string sourceKey)
         {
-            var sb = new SourcesProvider();
+            var sb = new SourceProvider();
             Response<Source> ans = sb.GetSource(sourceKey);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
@@ -104,7 +104,7 @@ namespace EvernestFrontTests
         public void GetSource_SourceKeyDoesNotExist()
         {
             const string inexistantKey = "InexistantKey";
-            var ans = new SourcesProvider().GetSource(inexistantKey);
+            var ans = new SourceProvider().GetSource(inexistantKey);
             AssertAuxiliaries.ErrorAssert(FrontError.SourceKeyDoesNotExist,ans);
         }
 

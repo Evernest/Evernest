@@ -8,7 +8,7 @@ namespace EvernestFront
     {
         public Response<EventStream> GetEventStream(long streamId)
         {
-            var builder = new EventStreamsProvider();
+            var builder = new EventStreamProvider();
             EventStream eventStream;
             if (builder.TryGetEventStream(this, streamId, out eventStream))
                 return new Response<EventStream>(eventStream);
@@ -18,7 +18,7 @@ namespace EvernestFront
 
         public Response<EventStream> GetEventStream(string streamName)
         {
-            var builder = new EventStreamsProvider();
+            var builder = new EventStreamProvider();
             EventStream eventStream;
             if (builder.TryGetEventStream(this, streamName, out eventStream))
                 return new Response<EventStream>(eventStream);
@@ -28,14 +28,14 @@ namespace EvernestFront
 
         public Response<Guid> CreateEventStream(string streamName)
         {
-            var builder = new EventStreamsProvider();
+            var builder = new EventStreamProvider();
             return builder.CreateEventStream(this, streamName);
         }
 
         //password is asked again because event stream deletion is a major operation
         public Response<Guid> DeleteEventStream(long eventStreamId, string password)
         {
-            var builder = new EventStreamsProvider();
+            var builder = new EventStreamProvider();
             EventStream eventStream;
             if (!builder.TryGetEventStream(this, eventStreamId, out eventStream))
                 return new Response<Guid>(FrontError.EventStreamIdDoesNotExist);

@@ -60,7 +60,7 @@ namespace EvernestFront
 
         public Response<Guid> SetUserRight(long targetId, AccessRight right)
         {
-            var usersBuilder = new UsersProvider();
+            var usersBuilder = new UserProvider();
             User targetUser;
             if (!usersBuilder.TryGetUser(targetId, out targetUser))
                 return new Response<Guid>(FrontError.UserIdDoesNotExist);
@@ -74,7 +74,7 @@ namespace EvernestFront
             if (TargetUserIsAdmin(targetName))
                 return new Response<Guid>(FrontError.CannotDestituteAdmin);
             var command = new UserRightSettingCommand(_systemCommandHandler,
-                targetName, Id, _user.Name, right);
+                targetName, Id, _user.Name, _user.Id, right);
             command.Send();
             return new Response<Guid>(command.Guid);
         }
@@ -189,7 +189,8 @@ namespace EvernestFront
         {
             if (!ValidateAccessAction(AccessAction.Admin))
                 return new Response<Guid>(FrontError.AdminAccessDenied);
-            var command = new EventStreamDeletionCommand(_systemCommandHandler, Id, Name, _user.Id, password);
+            var command = new EventStreamDeletionCommand(_systemCommandHandler, Id, Name, 
+                _user.Name, _user.Id, password);
             command.Send();
             return new Response<Guid>(command.Guid);
         }

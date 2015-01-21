@@ -7,13 +7,13 @@ using EvernestFront.SystemCommandHandling.Commands;
 
 namespace EvernestFront
 {
-    class EventStreamsProvider
+    class EventStreamProvider
     {
         private readonly EventStreamsProjection _eventStreamsProjection;
 
         private readonly SystemCommandHandler _systemCommandReceiver;
 
-        public EventStreamsProvider()
+        public EventStreamProvider()
         {
             _eventStreamsProjection = Injector.Instance.EventStreamsProjection;
             _systemCommandReceiver = Injector.Instance.SystemCommandHandler;
@@ -30,7 +30,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.EventStreamNameTaken);
             // this is supposed to be called by a user object, so creator should always exist
 
-            var command = new EventStreamCreationCommand(_systemCommandReceiver, streamName, user.Name);
+            var command = new EventStreamCreationCommand(_systemCommandReceiver, streamName, user.Name, user.Id);
             command.Send();
             return new Response<Guid>(command.Guid);
         }

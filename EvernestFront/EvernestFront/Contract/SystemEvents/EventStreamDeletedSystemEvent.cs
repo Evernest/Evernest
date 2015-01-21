@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace EvernestFront.Contract.SystemEvents
@@ -7,15 +8,25 @@ namespace EvernestFront.Contract.SystemEvents
     class EventStreamDeletedSystemEvent : ISystemEvent
     {
         [DataMember]
-        internal long StreamId;
+        internal long StreamId { get; private set; }
         [DataMember]
-        internal string StreamName;
+        internal string StreamName { get; private set; }
+        [DataMember]
+        internal long AdminId { get; private set; }
+        [DataMember]
+        internal string AdminName { get; private set; }
+        [DataMember]
+        internal HashSet<long> RelatedUsers { get; private set; }
 
         [JsonConstructor]
-        internal EventStreamDeletedSystemEvent(long streamId, string streamName)
+        internal EventStreamDeletedSystemEvent(long streamId, string streamName, 
+            string adminName, long adminId, HashSet<long> relatedUsers)
         {
             StreamId = streamId;
             StreamName = streamName;
+            AdminName = adminName;
+            AdminId = adminId;
+            RelatedUsers = relatedUsers;
         }
     }
 }

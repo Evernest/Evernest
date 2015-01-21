@@ -9,13 +9,13 @@ using UserRecord = EvernestFront.Projections.UserRecord;
 
 namespace EvernestFront
 {
-    public class UsersProvider
+    public class UserProvider
     {
         private readonly UsersProjection _usersProjection;
 
         private readonly SystemCommandHandler _systemCommandHandler;
 
-        public UsersProvider()
+        public UserProvider()
         {
             _usersProjection = Injector.Instance.UsersProjection;
             _systemCommandHandler = Injector.Instance.SystemCommandHandler;
@@ -144,7 +144,7 @@ namespace EvernestFront
         {
             return new User(_systemCommandHandler, userId, userData.UserName,
                     userData.SaltedPasswordHash, userData.PasswordSalt,
-                    userData.Keys, userData.Sources, userData.SourceKeys,
+                    userData.Keys, userData.SourceNameToId, userData.SourceIdToKey,
                     userData.RelatedEventStreams);
         }
     }

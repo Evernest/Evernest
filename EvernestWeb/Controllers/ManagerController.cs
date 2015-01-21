@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 
 using EvernestFront;
 using EvernestFront.Contract;
 using EvernestWeb.ViewModels;
+using EvernestWeb.Models;
 using EvernestWeb.Helpers;
 
 namespace EvernestWeb.Controllers
@@ -32,9 +34,7 @@ namespace EvernestWeb.Controllers
             if (!userReq.Success)
                 return View();
 
-            var model = new ManagerModel();
-            model.Streams = new List<EventStream>();
-            model.Sources = new List<Source>();
+            var model = new ManagerModel(userReq.Result);
             return View(model);
         }
 
@@ -43,12 +43,12 @@ namespace EvernestWeb.Controllers
         // GET: /Manager/Stream/{Id}
         public ActionResult Stream(long id)
         {
+            var front = new UsersProvider();
             Models.User user = (Models.User)Session["User"];
-            StreamAndEvents streamAndEvents = Utils.getStreamsAndEvents(id, user.Id);
+            var userReq = front.GetUser(user.Id);
 
-            ViewBag.StreamId = id;
-
-            return View(streamAndEvents);
+            var streamEventsModel = new StreamEventsModel(userReq.Result, id);
+            return View(streamEventsModel);
         }
 
         // POST: /Manager/NewStream
@@ -131,6 +131,7 @@ namespace EvernestWeb.Controllers
         // ----- To refactor -----
 
         // POST: /Manager/AddUser
+        /*
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddUser(StreamAndEvents model, int sid)
@@ -156,7 +157,7 @@ namespace EvernestWeb.Controllers
             streamReq.Result.SetUserRight(newUserReq.Result.Name, model.AddUserModelObject.Right);
             return RedirectToAction("Stream", "Manager");
         }
-
+        */
         // POST: /Manager/PushEvent
         [HttpPost]
         [ValidateAntiForgeryToken]

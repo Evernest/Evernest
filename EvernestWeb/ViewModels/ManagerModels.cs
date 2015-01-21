@@ -36,17 +36,7 @@ namespace EvernestWeb.ViewModels
         [StringLength(100, ErrorMessage = "The source name length must be between 4 and 100 characters.", MinimumLength = 4)]
         public string Content { get; set; }
     }
-
-    /// <summary>
-    /// Data displayed in main manager page
-    /// </summary>
-    public class ManagerModel
-    {
-        public List<EvernestFront.EventStream> Streams { get; set; }
-        public List<EvernestFront.Source> Sources { get; set; }
-    }
-
-
+    
     // Beyond this point, a refactoring might be required
 
     public class AddUserModel
@@ -62,19 +52,5 @@ namespace EvernestWeb.ViewModels
         public long StreamId { get; set; }
     }
 
-    public class StreamAndEvents
-    {
-        // Stream
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public long Count { get; set; }
-        public long LastEventId { get; set;}
-        public List<KeyValuePair<string, AccessRight>> RelatedUsers { get; set; }
 
-        // Events
-        public List<EvernestFront.Event> Events;
-
-        // AddUser
-        public AddUserModel AddUserModelObject { get; set; }
-    }
 }

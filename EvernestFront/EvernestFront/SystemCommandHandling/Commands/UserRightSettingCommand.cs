@@ -12,12 +12,15 @@ namespace EvernestFront.SystemCommandHandling.Commands
 
         internal string AdminName { get; private set; }
 
+        internal long AdminId { get; private set; }
+
         internal AccessRight Right { get; private set; }
 
-        internal UserRightSettingCommand(SystemCommandHandler systemCommandHandler, string targetName, long eventStreamId,
-            string adminName, AccessRight right)
+        internal UserRightSettingCommand(SystemCommandHandler systemCommandHandler, string targetName,
+            long eventStreamId, string adminName, long adminId, AccessRight right)
             : base(systemCommandHandler)
         {
+            AdminId = adminId;
             TargetName = targetName;
             EventStreamId = eventStreamId;
             AdminName = adminName;

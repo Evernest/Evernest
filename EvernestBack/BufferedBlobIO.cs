@@ -21,6 +21,7 @@ namespace EvernestBack
         private long _currentPage;
         private const Int16 PageSize = 512;
         public ulong TotalWrittenBytes {get; private set;}
+        private object _bufferLock = new object();
 
         public BufferedBlobIO( CloudPageBlob blob, int minimumBufferSize)
         {
@@ -154,15 +155,9 @@ namespace EvernestBack
         {
             if(_currentBufferPosition + count > _maximumBufferSize)
             {
-                /*int firstBatchBytes = _maximumBufferSize-_currentBufferPosition;
-                Buffer.BlockCopy(src, offset, _writeBuffer, _currentBufferPosition, firstBatchBytes);
-                _currentBufferPosition = _maximumBufferSize;
-                TotalWrittenBytes += (ulong) firstBatchBytes;*/
                 if (FlushBuffer())
                 {
-                    /*count -= firstBatchBytes;
-                    offset += firstBatchBytes;*/
-                    if (count+_currentBufferPosition > _maximumBufferSize)
+                    if (_currentBufferPosition + count > _maximumBufferSize)
                     {
                         if (DirectUpload(src, offset, count))
                         {
@@ -174,11 +169,7 @@ namespace EvernestBack
                     }
                 }
                 else
-                {
-                    /*_currentBufferPosition -= firstBatchBytes;
-                    TotalWrittenBytes -= (ulong) firstBatchBytes;*/
                     return false;
-                }
             }
             Buffer.BlockCopy(src, offset, _writeBuffer, _currentBufferPosition, count);
             _currentBufferPosition += count;
@@ -207,16 +198,19 @@ namespace EvernestBack
         /// <returns>The number of successfully read bytes</returns>
         public int DownloadRangeToByteArray(byte[] buffer, int offset, int srcOffset, int count)
         {
-            srcOffset += PageSize; //the first Page is dedicated to blob size info
-            int uploadedBytes = Math.Min((int) _currentPage*PageSize - srcOffset, count);
-            if( uploadedBytes > 0 )
-                _blob.DownloadRangeToByteArray(buffer, offset, srcOffset, uploadedBytes);
-            int bufferOffset = Math.Max(-uploadedBytes, 0);
-            int maxReadableBytes = Math.Max(_currentBufferPosition - bufferOffset, 0);
-            int bufferReadBytes = Math.Min(count - Math.Max(uploadedBytes, 0), maxReadableBytes);
-            Buffer.BlockCopy(_writeBuffer, bufferOffset, buffer, offset + Math.Max(uploadedBytes, 0),
-                bufferReadBytes);
-            return Math.Max(0, uploadedBytes) + bufferReadBytes;
+            lock (_bufferLock)
+            {
+                srcOffset += PageSize; //the first Page is dedicated to blob size info
+                int uploadedBytes = Math.Min((int) _currentPage*PageSize - srcOffset, count);
+                if (uploadedBytes > 0)
+                    _blob.DownloadRangeToByteArray(buffer, offset, srcOffset, uploadedBytes);
+                int bufferOffset = Math.Max(-uploadedBytes, 0);
+                int maxReadableBytes = Math.Max(_currentBufferPosition - bufferOffset, 0);
+                int bufferReadBytes = Math.Min(count - Math.Max(uploadedBytes, 0), maxReadableBytes);
+                Buffer.BlockCopy(_writeBuffer, bufferOffset, buffer, offset + Math.Max(uploadedBytes, 0),
+                    bufferReadBytes);
+                return Math.Max(0, uploadedBytes) + bufferReadBytes;
+            }
         }
 
         /// <summary>
@@ -230,8 +224,11 @@ namespace EvernestBack
         {
             if (_currentBufferPosition != 0)
             {
-                if (!DirectUpload(_writeBuffer, 0, _currentBufferPosition))
-                    return false;
+                lock (_bufferLock)
+                {
+                    if (!DirectUpload(_writeBuffer, 0, _currentBufferPosition))
+                        return false;
+                }
                 UpdateSizeInfo();
             }
             return true;

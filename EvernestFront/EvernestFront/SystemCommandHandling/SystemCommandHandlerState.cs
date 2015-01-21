@@ -16,11 +16,12 @@ namespace EvernestFront.SystemCommandHandling
     {
         //TODO: initialization on system stream
 
-        internal HashSet<string> UserNames { get; set; }
+        internal Dictionary<string, long> UserNameToId { get; set; }
         internal Dictionary<long, UserRecord> UserIdToData { get; set; }
         internal HashSet<string> EventStreamNames { get; set; }
         internal Dictionary<long, HashSet<string>> EventStreamIdToAdmins { get; set; }
-
+        internal Dictionary<long, HashSet<long>> EventStreamIdToUsers { get; set; } //used during eventstream deletion, to remove it from each user
+        
         internal long NextUserId;
 
         internal long NextEventStreamId;
@@ -28,10 +29,11 @@ namespace EvernestFront.SystemCommandHandling
             
         internal SystemCommandHandlerState(long numberOfREservedIds)
         {
-            UserNames = new HashSet<string>();
+            UserNameToId = new Dictionary<string, long>();
             UserIdToData = new Dictionary<long, UserRecord>();
             EventStreamNames = new HashSet<string>();
             EventStreamIdToAdmins = new Dictionary<long, HashSet<string>>();
+            EventStreamIdToUsers = new Dictionary<long, HashSet<long>>();
             // ids from 0 to numberOfREservedIds-1 are reserved for system
             NextUserId = numberOfREservedIds;
             NextEventStreamId = numberOfREservedIds;
@@ -50,6 +52,7 @@ namespace EvernestFront.SystemCommandHandling
         {
             EventStreamNames.Add(systemEvent.StreamName);
             EventStreamIdToAdmins.Add(systemEvent.StreamId, new HashSet<string> { systemEvent.CreatorName });
+            EventStreamIdToUsers.Add(systemEvent.StreamId, new HashSet<long> { systemEvent.CreatorId });
             NextEventStreamId++;
         }
 
@@ -57,6 +60,7 @@ namespace EvernestFront.SystemCommandHandling
         {
             EventStreamNames.Remove(systemEvent.StreamName);
             EventStreamIdToAdmins.Remove(systemEvent.StreamId);
+            EventStreamIdToUsers.Remove(systemEvent.StreamId);
         }
 
         private void When(PasswordSetSystemEvent systemEvent)
@@ -94,7 +98,7 @@ namespace EvernestFront.SystemCommandHandling
 
         private void When(UserCreatedSystemEvent systemEvent)
         {
-            UserNames.Add(systemEvent.UserName);
+            UserNameToId.Add(systemEvent.UserName, systemEvent.UserId);
             var userData = new UserRecord(systemEvent.UserName, systemEvent.SaltedPasswordHash,
                 systemEvent.PasswordSalt);
             UserIdToData.Add(systemEvent.UserId, userData);
@@ -103,7 +107,7 @@ namespace EvernestFront.SystemCommandHandling
 
         private void When(UserDeletedSystemEvent systemEvent)
         {
-            UserNames.Remove(systemEvent.UserName);
+            UserNameToId.Remove(systemEvent.UserName);
             UserIdToData.Remove(systemEvent.UserId);
         }
 
@@ -128,9 +132,16 @@ namespace EvernestFront.SystemCommandHandling
             if (systemEvent.Right == AccessRight.Admin)
             {
                 HashSet<string> admins;
-                if (!EventStreamIdToAdmins.TryGetValue(systemEvent.StreamId, out admins))
-                    return; //TODO: report error
-                admins.Add(systemEvent.TargetName);
+                if (EventStreamIdToAdmins.TryGetValue(systemEvent.StreamId, out admins))
+                    admins.Add(systemEvent.TargetName);
+            }
+            HashSet<long> users;
+            if (EventStreamIdToUsers.TryGetValue(systemEvent.StreamId, out users))
+            {
+                if (systemEvent.Right == AccessRight.NoRight)
+                    users.Remove(systemEvent.TargetId);
+                else
+                    users.Add(systemEvent.TargetId);
             }
         }
     }

@@ -38,7 +38,7 @@ namespace EvernestFront
             _backEventStream.Push(contractString, CallbackSuccess, CallbackFailure);
         }
         private void CallbackSuccess(LowLevelEvent acceptedEvent) { }
-        private void CallbackFailure(LowLevelEvent deniedEvent, string errorMessage) { }
+        private void CallbackFailure(string deniedQuery, string errorMessage) { }
 
         //TODO: reading in system event stream
     }

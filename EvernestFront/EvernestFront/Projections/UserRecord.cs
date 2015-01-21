@@ -13,14 +13,14 @@ namespace EvernestFront.Projections
 
         internal ImmutableDictionary<string, string> Keys { get; set; }
 
-        internal ImmutableDictionary<long, AccessRight> RelatedEventStreams { get; set; }
+        internal ImmutableHashSet<long> RelatedEventStreams { get; set; }
     
-        internal ImmutableDictionary<string, long> Sources { get; set; } //name->id
+        internal ImmutableDictionary<string, long> SourceNameToId { get; set; }
 
-        internal ImmutableDictionary<long, string> SourceKeys { get; set; } //id->key
+        internal ImmutableDictionary<long, string> SourceIdToKey { get; set; }
 
         private UserRecord(string name, string hash, byte[] salt,
-            ImmutableDictionary<string, string> keys, ImmutableDictionary<long, AccessRight> eventStreams,
+            ImmutableDictionary<string, string> keys, ImmutableHashSet<long> eventStreams,
             ImmutableDictionary<string, long> sources, ImmutableDictionary<long, string> sourceKeys)
         {
             UserName = name;
@@ -28,41 +28,50 @@ namespace EvernestFront.Projections
             PasswordSalt = salt;
             Keys = keys;
             RelatedEventStreams = eventStreams;
-            Sources = sources;
-            SourceKeys = sourceKeys;
+            SourceNameToId = sources;
+            SourceIdToKey = sourceKeys;
         }
 
         internal UserRecord(string name, string hash, byte[] salt)
             : this(name, hash, salt, ImmutableDictionary<string, string>.Empty,
-                ImmutableDictionary<long, AccessRight>.Empty, ImmutableDictionary<string, long>.Empty,
+                ImmutableHashSet<long>.Empty, ImmutableDictionary<string, long>.Empty,
                 ImmutableDictionary<long, string>.Empty) { }
 
         internal UserRecord SetPassword(string hash, byte[] salt)
         {
-            return new UserRecord(UserName, hash, salt, Keys, RelatedEventStreams, Sources, SourceKeys);
+            return new UserRecord(UserName, hash, salt, Keys, RelatedEventStreams, SourceNameToId, SourceIdToKey);
         }
 
         internal UserRecord SetUserRight(long eventStream, AccessRight right)
         {
-            var eventStreams = RelatedEventStreams.SetItem(eventStream, right);
+            ImmutableHashSet<long> eventStreams;
             if (right == AccessRight.NoRight)
-                eventStreams = eventStreams.Remove(eventStream);
+                eventStreams = RelatedEventStreams.Remove(eventStream);
+            else
+                eventStreams = RelatedEventStreams.Add(eventStream);
             return new UserRecord(UserName, SaltedPasswordHash, PasswordSalt, Keys, eventStreams,
-                Sources, SourceKeys);
+                SourceNameToId, SourceIdToKey);
+        }
+
+        internal UserRecord RemoveEventStream(long id)
+        {
+            var eventStreams = RelatedEventStreams.Remove(id);
+            return new UserRecord(UserName, SaltedPasswordHash, PasswordSalt, Keys, eventStreams,
+                SourceNameToId, SourceIdToKey);
         }
 
         internal UserRecord AddSource(string name, long id, string key)
         {
-            var sources = Sources.SetItem(name, id);
-            var sourceKeys = SourceKeys.SetItem(id, key);
+            var sources = SourceNameToId.SetItem(name, id);
+            var sourceKeys = SourceIdToKey.SetItem(id, key);
             return new UserRecord(UserName, SaltedPasswordHash, PasswordSalt, Keys, RelatedEventStreams,
                 sources, sourceKeys);
         }
 
         internal UserRecord RemoveSource(string name, long id)
         {
-            var sources = Sources.Remove(name);
-            var sourceKeys = SourceKeys.Remove(id);
+            var sources = SourceNameToId.Remove(name);
+            var sourceKeys = SourceIdToKey.Remove(id);
             return new UserRecord(UserName, SaltedPasswordHash, PasswordSalt, Keys, RelatedEventStreams,
                 sources, sourceKeys);
         }
@@ -71,14 +80,14 @@ namespace EvernestFront.Projections
         {
             var keys = Keys.SetItem(name, key);
             return new UserRecord(UserName, SaltedPasswordHash, PasswordSalt, keys, RelatedEventStreams,
-                Sources, SourceKeys);
+                SourceNameToId, SourceIdToKey);
         }
 
         internal UserRecord RemoveUserKey(string name)
         {
             var keys = Keys.Remove(name);
             return new UserRecord(UserName, SaltedPasswordHash, PasswordSalt, keys, RelatedEventStreams,
-                Sources, SourceKeys);
+                SourceNameToId, SourceIdToKey);
         }
     }
 }

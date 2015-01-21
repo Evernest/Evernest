@@ -19,10 +19,10 @@ namespace EvernestFront
         public Response<Source> GetSource(long sourceId)
         {
             string sourceKey;
-            if (!SourceKeys.TryGetValue(sourceId, out sourceKey))
+            if (!SourceIdToKey.TryGetValue(sourceId, out sourceKey))
                 return new Response<Source>(FrontError.SourceIdDoesNotExist);
 
-            var builder = new SourcesProvider();
+            var builder = new SourceProvider();
             Source source;
             FrontError? error;
             if (builder.TryGetSource(sourceKey, out source, out error))
@@ -49,7 +49,7 @@ namespace EvernestFront
         public Response<Guid> SetSourceRight(long sourceId, long eventStreamId, AccessRight right)
         {
             string sourceKey;
-            if (!SourceKeys.TryGetValue(sourceId, out sourceKey))
+            if (!SourceIdToKey.TryGetValue(sourceId, out sourceKey))
                 return new Response<Guid>(FrontError.SourceIdDoesNotExist);
 
             var command = new SourceRightSettingCommand(_systemCommandHandler, Id, sourceId, sourceKey,
@@ -61,7 +61,7 @@ namespace EvernestFront
         public Response<Guid> DeleteSource(long sourceId)
         {
             string sourceKey;
-            if (!SourceKeys.TryGetValue(sourceId, out sourceKey))
+            if (!SourceIdToKey.TryGetValue(sourceId, out sourceKey))
                 return new Response<Guid>(FrontError.SourceIdDoesNotExist);
 
             var command = new SourceDeletionCommand(_systemCommandHandler, Id, sourceId, sourceKey);

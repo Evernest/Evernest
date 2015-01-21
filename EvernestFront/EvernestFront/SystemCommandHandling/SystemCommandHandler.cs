@@ -81,10 +81,16 @@ namespace EvernestFront.SystemCommandHandling
 
         private bool TryExecuteCase(EventStreamCreationCommand command, out ISystemEvent systemEvent, out FrontError? error)
         {
-            if (!_state.UserNames.Contains(command.CreatorName))
+            if (!_state.UserNameToId.ContainsKey(command.CreatorName))
             {
                 systemEvent = null;
                 error = FrontError.UserNameDoesNotExist;
+                return false;
+            }
+            if (!_state.UserIdToData.ContainsKey(command.CreatorId))
+            {
+                systemEvent = null;
+                error = FrontError.UserIdDoesNotExist;
                 return false;
             }
             if (_state.EventStreamNames.Contains(command.EventStreamName))
@@ -95,7 +101,8 @@ namespace EvernestFront.SystemCommandHandling
             }
             var id = _state.NextEventStreamId;
             _azureStorageClient.GetNewEventStream(id);
-            systemEvent = new EventStreamCreatedSystemEvent(id, command.EventStreamName, command.CreatorName);
+            systemEvent = new EventStreamCreatedSystemEvent(id, command.EventStreamName, 
+                command.CreatorName, command.CreatorId);
             error = null;
             return true;
         }
@@ -104,6 +111,13 @@ namespace EvernestFront.SystemCommandHandling
         {
             HashSet<string> eventStreamAdmins;
             if (!_state.EventStreamIdToAdmins.TryGetValue(command.EventStreamId, out eventStreamAdmins))
+            {
+                error = FrontError.EventStreamIdDoesNotExist;
+                systemEvent = null;
+                return false;
+            }
+            HashSet<long> relatedUsers;
+            if (!_state.EventStreamIdToUsers.TryGetValue(command.EventStreamId, out relatedUsers))
             {
                 error = FrontError.EventStreamIdDoesNotExist;
                 systemEvent = null;
@@ -130,7 +144,9 @@ namespace EvernestFront.SystemCommandHandling
                 return false;
             }
             _azureStorageClient.DeleteStreamIfExists(Convert.ToString(command.EventStreamId));
-            systemEvent = new EventStreamDeletedSystemEvent(command.EventStreamId, command.EventStreamName);
+            relatedUsers = new HashSet<long>(relatedUsers);
+            systemEvent = new EventStreamDeletedSystemEvent(command.EventStreamId, command.EventStreamName,
+                command.AdminName, command.AdminId, relatedUsers);
             error = null;
             return true;
         }
@@ -221,7 +237,7 @@ namespace EvernestFront.SystemCommandHandling
 
         private bool TryExecuteCase(UserCreationCommand command, out ISystemEvent systemEvent, out FrontError? error)
         {
-            if (_state.UserNames.Contains(command.UserName))
+            if (_state.UserNameToId.ContainsKey(command.UserName))
             {
                 error = FrontError.UserNameTaken;
                 systemEvent = null;
@@ -316,7 +332,11 @@ namespace EvernestFront.SystemCommandHandling
                 systemEvent = null;
                 return false;
             }
-            systemEvent = new UserRightSetSystemEvent(command.EventStreamId, command.TargetName, command.Right);
+            long targetId;
+            if (!_state.UserNameToId.TryGetValue(command.TargetName, out targetId))
+                targetId = 0; //TODO
+            systemEvent = new UserRightSetSystemEvent(command.EventStreamId, command.TargetName,
+                targetId, command.Right, command.AdminName, command.AdminId);
             error = null;
             return true;
         }

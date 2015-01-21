@@ -7,13 +7,13 @@ using EvernestFront.Projections;
 
 namespace EvernestFront
 {
-    public class SourcesProvider
+    public class SourceProvider
     {
         private readonly SourcesProjection _sourcesProjection;
 
         private readonly SystemCommandHandler _systemCommandHandler;
 
-        public SourcesProvider()
+        public SourceProvider()
         {
             _sourcesProjection = Injector.Instance.SourcesProjection;
             _systemCommandHandler = Injector.Instance.SystemCommandHandler;
@@ -42,7 +42,7 @@ namespace EvernestFront
                 return false;
             }
 
-            var usersBuilder = new UsersProvider();
+            var usersBuilder = new UserProvider();
             User user;
             if (!usersBuilder.TryGetUser(sourceData.UserId, out user))
             {

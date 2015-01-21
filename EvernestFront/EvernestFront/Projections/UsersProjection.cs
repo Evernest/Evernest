@@ -153,7 +153,18 @@ namespace EvernestFront.Projections
 
         private void When(EventStreamDeletedSystemEvent systemEvent)
         {
-            //TODO : delete in each user concerned?
+            var dictionaries = Dictionaries;
+            foreach (var userId in systemEvent.RelatedUsers)
+            {
+                UserRecord data;
+                if (dictionaries.IdToData.TryGetValue(userId, out data))
+                {
+                    var itd = dictionaries.IdToData.SetItem(userId, 
+                        data.RemoveEventStream(systemEvent.StreamId));
+                    dictionaries = dictionaries.SetIdToData(itd);
+                }
+            }
+            Dictionaries = dictionaries;
         }
 
         private void When(PasswordSetSystemEvent systemEvent)

@@ -42,7 +42,8 @@ namespace EvernestFrontTests.UtilitiesTests
             const string userName = "user";
             const string streamName = "stream";
             const int streamId = 42;
-            var systemEvent = new EventStreamCreatedSystemEvent(streamId, streamName, userName);
+            const int userId = 32;
+            var systemEvent = new EventStreamCreatedSystemEvent(streamId, streamName, userName, userId);
             var envelope = new SystemEventEnvelope(systemEvent.GetType().Name, serializer.WriteContract(systemEvent));
             var serializedContract = serializer.WriteContract(envelope);
             var deserializedContract = serializer.ReadSystemEventEnvelope(serializedContract);

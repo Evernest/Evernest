@@ -7,18 +7,28 @@ namespace EvernestFront.Contract.SystemEvents
     class UserRightSetSystemEvent : ISystemEvent
     {
         [DataMember]
-        internal long StreamId;
+        internal long StreamId { get; private set; }
         [DataMember]
-        internal string TargetName;
+        internal string TargetName { get; private set; }
         [DataMember]
-        internal AccessRight Right;
+        internal long TargetId { get; private set; }
+        [DataMember]
+        internal AccessRight Right { get; private set; }
+        [DataMember]
+        internal string AdminName { get; private set; }
+        [DataMember]
+        internal long AdminId { get; private set; }
 
         [JsonConstructor]
-        internal UserRightSetSystemEvent(long streamId, string targetName, AccessRight right)
+        internal UserRightSetSystemEvent(long streamId, string targetName, long targetId, AccessRight right,
+            string adminName, long adminId)
         {
             StreamId = streamId;
             TargetName = targetName;
+            TargetId = targetId;
             Right = right;
+            AdminName = adminName;
+            AdminId = adminId;
         }
     }
 }

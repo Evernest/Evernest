@@ -24,7 +24,7 @@
                         {
                             foreach (KeyValuePair<string, AccessRight> usr in Model.RelatedUsers)
                             {
-                                <li>@usr.Value (@usr.Key)</li>
+                                <li>@usr.Key (@usr.Value)</li>
                             }
                         }
                     }
@@ -34,9 +34,9 @@
     </div>
 
     <div>
-        @Html.Partial("addUserFormPartial")
+        @{ Html.RenderPartial("_AddUserFormPartial", new EvernestWeb.ViewModels.NewStreamUserModel());}
 
-        @Html.Partial("addEventFormPartial")
+        @{ Html.RenderPartial("_AddEventFormPartial", new EvernestWeb.ViewModels.NewEventModel()); }
 
     </div>
 

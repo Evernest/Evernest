@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using EvernestFront.Contract;
+using EvernestWeb.Helpers;
 
 namespace EvernestWeb.ViewModels
 {
@@ -11,7 +12,7 @@ namespace EvernestWeb.ViewModels
     {
         [Required]
         [Display(Name = "Stream name")]
-        [StringLength(100, ErrorMessage = "The source name length must be between 4 and 100 characters.", MinimumLength = 4)]
+        [StringLength(100, ErrorMessage = "The stream name length must be between 4 and 100 characters.", MinimumLength = 4)]
         public string Name { get; set; }
     }
 
@@ -33,16 +34,20 @@ namespace EvernestWeb.ViewModels
     {
         [Required]
         [Display(Name = "Event content")]
-        [StringLength(100, ErrorMessage = "The source name length must be between 4 and 100 characters.", MinimumLength = 4)]
+        [StringLength(100, ErrorMessage = "The event name length must be between 4 and 100 characters.", MinimumLength = 4)]
         public string Content { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
     }
     
     // Beyond this point, a refactoring might be required
 
-    public class AddUserModel
+    public class NewStreamUserModel
     {
         [Required]
-        [Display(Name = "Add User")]
+        [Display(Name = "New Stream User")]
+        [StringLength(100, ErrorMessage = "The user name length must be between 4 and 100 characters.", MinimumLength = 4)]
         public string NewUser { get; set; }
 
         [Required]
@@ -50,6 +55,8 @@ namespace EvernestWeb.ViewModels
 
         [Required]
         public long StreamId { get; set; }
+
+        public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
     }
 
 

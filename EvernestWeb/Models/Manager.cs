@@ -75,7 +75,8 @@ namespace EvernestWeb.Models
             long begin = es.LastEventId - 10 < 0 ? 0 : es.LastEventId - 10;
             long end = es.LastEventId;
             List<Event> le = es.PullRange(begin, end).Result;
-            Events = le.Select(x => Utils.EventModelFromEvent(x));
+            if (le != null && le.Count() > 0)
+                Events = le.Select(x => Utils.EventModelFromEvent(x));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model EvernestWeb.ViewModels.StreamAndEvents
+﻿@model EvernestWeb.ViewModels.NewEventModel
 
 @using (Html.BeginForm("PushEvent", "Manager", FormMethod.Post))
 {
@@ -6,9 +6,9 @@
     @Html.ValidationSummary()
     <fieldset>
         <legend>Add event</legend>
-                @Html.Label("item", "Add an event : ")
-                @Html.TextBox("item", "")
-                <input type="hidden" name="sid" value="@{ Write(Model.Id);}" />
+                @Html.LabelFor(m => m.Content)
+                @Html.TextBoxFor(m => m.Content)
+                <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId);}" />
                 <input type="submit" value="Push an Event" />
     </fieldset>
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EvernestFront;
+using EvernestFront.Contract;
 using EvernestWeb.Models;
 using EvernestWeb.ViewModels;
 
@@ -12,6 +13,19 @@ namespace EvernestWeb.Helpers
     /// </summary>
     public class Utils
     {
+        /// <summary>
+        /// Associate strings right names to corresponding Front objets
+        /// </summary>
+        public static readonly Dictionary<string, AccessRight> AccessRightsDictionary = new Dictionary<string, AccessRight>
+        {
+            {"ReadOnly",  AccessRight.ReadOnly },
+            {"WriteOnly", AccessRight.WriteOnly},
+            {"ReadWrite", AccessRight.ReadWrite},
+            {"Admin",     AccessRight.Admin    },
+            {"Root",      AccessRight.Root     },
+
+        };
+
         public static ModelStream ModelStreamFromStream(EventStream e)
         {
             return new ModelStream

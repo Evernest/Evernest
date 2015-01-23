@@ -168,8 +168,8 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Manager\Index.cshtml" />
     <Content Include="Views\Manager\Stream.cshtml" />
-    <Content Include="Views\Shared\addEventFormPartial.cshtml" />
-    <Content Include="Views\Shared\addUserFormPartial.cshtml" />
+    <Content Include="Views\Manager\_AddEventFormPartial.cshtml" />
+    <Content Include="Views\Manager\_AddUserFormPartial.cshtml" />
     <Content Include="Views\Account\ChangePwd.cshtml" />
     <Content Include="Views\Manager\_StreamTablePartial.cshtml" />
     <Content Include="Views\Manager\_NewStreamPartial.cshtml" />

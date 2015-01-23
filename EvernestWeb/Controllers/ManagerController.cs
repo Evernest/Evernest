@@ -12,19 +12,6 @@ namespace EvernestWeb.Controllers
 {
     public class ManagerController : Controller
     {
-        /// <summary>
-        /// Associate strings right names to corresponding Front objets
-        /// </summary>
-        private static readonly Dictionary<string, AccessRight> AccessRightsDictionary = new Dictionary<string, AccessRight>
-        {
-            {"ReadOnly",  AccessRight.ReadOnly },
-            {"WriteOnly", AccessRight.WriteOnly},
-            {"ReadWrite", AccessRight.ReadWrite},
-            {"Admin",     AccessRight.Admin    },
-            {"Root",      AccessRight.Root     },
-
-        };
-
         // GET: /Manager
         public ActionResult Index()
         {
@@ -46,6 +33,8 @@ namespace EvernestWeb.Controllers
             var front = new UserProvider();
             Models.User user = (Models.User)Session["User"];
             var userReq = front.GetUser(user.Id);
+
+            ViewBag.StreamId = id;
 
             var streamEventsModel = new StreamEventsModel(userReq.Result, id);
             return View(streamEventsModel);
@@ -131,52 +120,51 @@ namespace EvernestWeb.Controllers
         // ----- To refactor -----
 
         // POST: /Manager/AddUser
-        /*
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddUser(StreamAndEvents model, int sid)
+        public ActionResult NewStreamUser(NewStreamUserModel model)
         {
             var front = new UserProvider();
 
             Models.User user = (Models.User)Session["User"];
-            if (model.AddUserModelObject.NewUser == null)
+            if (model.NewUser == null)
                 return RedirectToAction("Stream", "Manager");
             
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
                 return RedirectToAction("Stream", "Manager");
 
-            var streamReq = userReq.Result.GetEventStream(model.AddUserModelObject.StreamId);
+            var streamReq = userReq.Result.GetEventStream(model.StreamId);
             if (!streamReq.Success)
                 return RedirectToAction("Stream", "Manager");
 
-            var newUserReq = front.GetUser(model.AddUserModelObject.NewUser);
+            var newUserReq = front.GetUser(model.NewUser);
             if (!newUserReq.Success)
                 return RedirectToAction("Stream", "Manager");
 
-            streamReq.Result.SetUserRight(newUserReq.Result.Name, model.AddUserModelObject.Right);
+            streamReq.Result.SetUserRight(newUserReq.Result.Name, model.Right);
             return RedirectToAction("Stream", "Manager");
         }
-        */
+        
         // POST: /Manager/PushEvent
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult PushEvent(string item, int sid)
+        public ActionResult PushEvent(NewEventModel model)
         {
             var front = new UserProvider();
 
             var user = (Models.User)Session["User"];
             var userReq = front.GetUser(user.Id);
-            if (!userReq.Success || item == null)
+            if (!userReq.Success)
                 return RedirectToAction("Stream", "Manager");
 
-            var streamReq = userReq.Result.GetEventStream(sid);
+            var streamReq = userReq.Result.GetEventStream(model.StreamId);
             if (!streamReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = sid });
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
             
-            streamReq.Result.Push(item);
+            streamReq.Result.Push(model.Content);
 
-            return RedirectToAction("Stream", "Manager", new { id = sid });
+            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
         }
 
 

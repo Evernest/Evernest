@@ -2,8 +2,8 @@
 using System.Web.Security;
 
 ﻿using EvernestFront;
-
-﻿using EvernestWeb.ViewModels;
+using EvernestWeb.Models;
+using EvernestWeb.ViewModels;
 ﻿
 namespace EvernestWeb.Controllers
 {

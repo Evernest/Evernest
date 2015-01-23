@@ -92,5 +92,14 @@ namespace EvernestBack
         {
             File.Delete(StreamFileName(store, streamID));
         }
+
+        public static void ClearAll(AzureStorageClient store)
+        {
+            var list = new DirectoryInfo(store.DummyDataPath);
+            foreach (FileInfo file in list.GetFiles())
+            {
+                file.Delete();
+            }
+        }
     }
 }

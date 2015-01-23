@@ -241,13 +241,16 @@ namespace EvernestBack
 
         public void ClearAll()
         {
+            foreach (KeyValuePair<string, IEventStream> pair in _openedStreams)
+                pair.Value.Dispose();
+            _openedStreams.Clear();
+
             if (_dummy)
-                throw new NotImplementedException("ClearAll not implemented for MemoryEventStream");
+            {
+                MemoryEventStream.ClearAll(this);
+            }
             else
             {
-                foreach (KeyValuePair<string, IEventStream> pair in _openedStreams)
-                    pair.Value.Dispose();
-                _openedStreams.Clear();
                 StreamIndexContainer.DeleteIfExists();
                 StreamContainer.DeleteIfExists();
                 StreamIndexContainer.CreateIfNotExists();

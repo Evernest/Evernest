@@ -11,12 +11,7 @@ namespace EvernestFrontTests
 
     [TestFixture]
     public class UserTestsTowardSources
-    {
-        private const string UserName = "userName";
-        private const string UserName2 = "userName2";
-        private const string StreamName = "streamName";
-        private const string SourceName = "sourceName";
-        private const string SourceName2 = "sourceName2";
+    {        
         private const AccessRight SomeRight = AccessRight.ReadOnly; //constant to use when the right is not decisive
 
         [SetUp]
@@ -46,11 +41,14 @@ namespace EvernestFrontTests
             var userName = AssertAuxiliaries.NewName;
             var userName2 = AssertAuxiliaries.NewName;
             var streamName = AssertAuxiliaries.NewName;
+
             var userId = UserTests.AddUser_GetId_AssertSuccess(userName);
             var streamId = EventStreamTests.CreateEventStream_GetId_AssertSuccess(userId, streamName);
             var sourceKey = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, "SourceName", SomeRight);
+
             var user2Id = UserTests.AddUser_GetId_AssertSuccess(userName2);
             var source2Key = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(user2Id, streamId, "SourceName", SomeRight);
+
             Assert.AreNotEqual(sourceKey, source2Key);
         }
 
@@ -86,10 +84,15 @@ namespace EvernestFrontTests
         [Test]
         public void Sources_Property()
         {
-            long userId = UserTests.AddUser_GetId_AssertSuccess(UserName);
-            long streamId = EventStreamTests.CreateEventStream_GetId_AssertSuccess(userId, StreamName);
-            string key = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, SourceName, SomeRight);
-            string key2 = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, SourceName2, SomeRight);
+            string streamName = AssertAuxiliaries.NewName;
+            string sourceName = AssertAuxiliaries.NewName;
+            string sourceName2 = AssertAuxiliaries.NewName;
+            string userName = AssertAuxiliaries.NewName;
+
+            long userId = UserTests.AddUser_GetId_AssertSuccess(userName);
+            long streamId = EventStreamTests.CreateEventStream_GetId_AssertSuccess(userId, streamName);
+            string key = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, sourceName, SomeRight);
+            string key2 = SourceTests.CreateSource_GetKey_AssignStream_AssertSuccess(userId, streamId, sourceName2, SomeRight);
             var sb = new SourceProvider();
             var source1 = sb.GetSource(key).Result;
             var source2 = sb.GetSource(key2).Result;

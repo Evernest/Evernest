@@ -150,7 +150,6 @@ namespace EvernestFront
             return new Response<Event>(new Event(pulledContract, eventId, Name, Id));
         }
 
-        //TODO : change this when PullRange gets implemented in back-end
         public Response<List<Event>> PullRange(long fromEventId, long toEventId)
         {
             if (!ValidateAccessAction(AccessAction.Read))

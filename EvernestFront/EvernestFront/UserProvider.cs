@@ -22,7 +22,23 @@ namespace EvernestFront
         }
 
 
+        public Response<UserPublicInfo> GetUserPublicInfo(long userId)
+        {
+            User user;
+            if (TryGetUser(userId, out user))
+                return new Response<UserPublicInfo>(new UserPublicInfo(user));
+            else
+                return new Response<UserPublicInfo>(FrontError.UserIdDoesNotExist);
+        }
 
+        public Response<UserPublicInfo> GetUserPublicInfo(string userName)
+        {
+            User user;
+            if (TryGetUserByName(userName, out user))
+                return new Response<UserPublicInfo>(new UserPublicInfo(user));
+            else
+                return new Response<UserPublicInfo>(FrontError.UserIdDoesNotExist);
+        } 
 
         public Response<User> GetUser(long userId)
         {

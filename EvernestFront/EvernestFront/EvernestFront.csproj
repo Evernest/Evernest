@@ -80,6 +80,7 @@
     <Compile Include="SystemCommandHandling\Commands\SourceCreationCommand.cs" />
     <Compile Include="SystemCommandHandling\Commands\SourceDeletionCommand.cs" />
     <Compile Include="SourceProvider.cs" />
+    <Compile Include="UserPublicInfo.cs" />
     <Compile Include="Utilities\KeyGenerator.cs" />
     <Compile Include="Utilities\PasswordManager.cs" />
     <Compile Include="Projections\EventStreamRecord.cs" />

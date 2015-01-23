@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using EvernestBack;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
+using EvernestFront.Projections;
 
 namespace EvernestFront.SystemCommandHandling
 {
     /// <summary>
     /// This is the state of the SystemCommandHandler, which uses it to validate commands. 
-    /// It updates itself on SystemEvents through public method Update, 
+    /// It updates itself on SystemEvents through public method OnSystemEvent, 
     /// which is called both by the SystemCommandHandler when it issues a SystemEvent,
     /// and at startup when reading the SystemEventStream.
     /// </summary>
-    class SystemCommandHandlerState
+    class SystemCommandHandlerState : IProjection
     {
         //TODO: initialization on system stream
 
@@ -43,7 +44,7 @@ namespace EvernestFront.SystemCommandHandling
 
 
 
-        public void Update(ISystemEvent systemEvent)
+        public void OnSystemEvent(ISystemEvent systemEvent)
         {
             When((dynamic)systemEvent);
         }

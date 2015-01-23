@@ -16,7 +16,7 @@ namespace EvernestFront.SystemCommandHandling
     {
         private readonly AzureStorageClient _azureStorageClient;
         private readonly SystemCommandHandlerState _state;
-        private readonly Dispatcher _dispatcher;
+        private readonly SystemEventQueue _systemEventQueue;
         private readonly SystemCommandResultManager _manager;
 
         private readonly ConcurrentQueue<CommandBase> _pendingCommandQueue;
@@ -24,11 +24,11 @@ namespace EvernestFront.SystemCommandHandling
         private readonly EventWaitHandle _newTicket;
        
 
-        public SystemCommandHandler(AzureStorageClient azureStorageClient, SystemCommandHandlerState systemCommandHandlerState, Dispatcher dispatcher, SystemCommandResultManager manager)
+        public SystemCommandHandler(AzureStorageClient azureStorageClient, SystemCommandHandlerState systemCommandHandlerState, SystemEventQueue systemEventQueue, SystemCommandResultManager manager)
         {
             _azureStorageClient = azureStorageClient;
             _state = systemCommandHandlerState;
-            _dispatcher = dispatcher;
+            _systemEventQueue = systemEventQueue;
             _manager = manager;
             _pendingCommandQueue=new ConcurrentQueue<CommandBase>();
             _newTicket = new AutoResetEvent(false);
@@ -69,8 +69,8 @@ namespace EvernestFront.SystemCommandHandling
             FrontError? error;
             if (TryExecute(command, out systemEvent, out error))
             {
-                _state.Update(systemEvent);
-                _dispatcher.ReceiveEvent(systemEvent, command.Guid);
+                _state.OnSystemEvent(systemEvent);
+                _systemEventQueue.ReceiveEvent(systemEvent, command.Guid);
             }
             else
             {

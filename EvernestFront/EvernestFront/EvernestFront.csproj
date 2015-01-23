@@ -55,6 +55,8 @@
     <Compile Include="AccessAction.cs" />
     <Compile Include="AccessVerifier.cs" />
     <Compile Include="SystemCommandHandling\Commands\SourceRightSettingCommand.cs" />
+    <Compile Include="SystemCommandHandling\Dispatcher.cs" />
+    <Compile Include="SystemCommandHandling\SystemEventRecuperator.cs" />
     <Compile Include="SystemCommandResultViewer.cs" />
     <Compile Include="Contract\SystemEvents\SourceRightSetSystemEvent.cs" />
     <Compile Include="EventStreamBySource.cs" />
@@ -73,7 +75,7 @@
     <Compile Include="Contract\SystemEvents\EventStreamCreatedSystemEvent.cs" />
     <Compile Include="Contract\EventContract.cs" />
     <Compile Include="Contract\SystemEvents\UserCreatedSystemEvent.cs" />
-    <Compile Include="SystemCommandHandling\Dispatcher.cs" />
+    <Compile Include="SystemCommandHandling\SystemEventQueue.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="EventStreamProvider.cs" />
     <Compile Include="Injector.cs" />

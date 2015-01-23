@@ -10,192 +10,139 @@ namespace EvernestAPI.Controllers
 {
     public class RightController : ApiController
     {
-        // /Right/{id}/{streamId}
+        // Default controller. Return the right of the source on the stream.
+        //     /Right/{id}/{streamId}
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage Get(string sourceId, int streamId)
+        public HttpResponseMessage Get(long sourceId, long streamId)
         {
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
+
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
+
+            var userProvider = new UserProvider();
+            var userRequest = userProvider.GetUser((string)body["key"]);
+
+            if (!userRequest.Success)
+                return Response.BadArgument(Request, "Key");
+
+            var user = userRequest.Result;
+
+            var sourceRequest = user.GetSource(sourceId);
+
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "SourceId");
+
+            var source = sourceRequest.Result;
+
+            var eventStreamRequest = source.GetEventStream(streamId);
+
+            if (!eventStreamRequest.Success)
+                return Response.BadArgument(Request, "StreamId");
+
+            var eventStream = eventStreamRequest.Result;
+
+            var right = eventStream.SourceRight;
+
             var ans = new Hashtable();
-
-            try
+            switch (right)
             {
-                body = Tools.ParseRequest(Request);
+                case AccessRight.NoRight:
+                    ans["Right"] = "NoRight";
+                    break;
+
+                case AccessRight.ReadOnly:
+                    ans["Right"] = "ReadOnly";
+                    break;
+
+                case AccessRight.WriteOnly:
+                    ans["Right"] = "WriteOnly";
+                    break;
+
+                case AccessRight.ReadWrite:
+                    ans["Right"] = "ReadWrite";
+                    break;
+
+                case AccessRight.Admin:
+                    ans["Right"] = "Admin";
+                    break;
+
+                case AccessRight.Root:
+                    ans["Right"] = "Root";
+                    break;
             }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
 
-            // Get the Stream
-            var front = new EvernestFront.UsersBuilder();
-            var userReq = front.GetUser((string)body["key"]);
-
-            if (!userReq.Success)
-            {
-                ans["Status"] = "Error";
-                ans["Error"] = userReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-
-            var user = userReq.Result;
-
-
-            var sourceReq = user.GetSource(sourceId);
-            if (!sourceReq.Success)
-            {
-                ans["Status"]="Error";
-                ans["Error"]=sourceReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            var source = sourceReq.Result;
-
-            var eventStreamReq = source.GetEventStream(streamId);
-
-                if (!eventStreamReq.Success)
-                {
-                    ans["Status"] = "Error";
-                    ans["Error"] = eventStreamReq.Error;
-                    return Request.CreateResponse(HttpStatusCode.OK, ans);
-                }
-
-                var stream = eventStreamReq.Result;
-      
-               var accessRight = stream.UserRight;
-
-               ans["AccessRight"] = accessRight;
-            // BEGIN DEBUG //
-            var debug = new Hashtable();
-            debug["Controller"] = "Right";
-            debug["Method"] = "Set";
-            debug["sourceId"] = sourceId;
-            debug["streamId"] = streamId;
-            debug["right"] = accessRight;
-            debug["body"] = body;
-            ans["Debug"] = debug;
-            // END DEBUG //
-
-            return Request.CreateResponse(HttpStatusCode.OK, ans);
+            return Response.Success(Request, ans);
         }
 
-        // /Right/{sourceId}/{streamId}/Set/{right}
+
+        // Controller to set a right.
+        //     /Right/{sourceId}/{streamId}/Set/{right}
+        // >>>>> userKey <<<<<
         [HttpGet]
         [HttpPost]
         [ActionName("Set")]
-        public HttpResponseMessage Set(string sourceId, int streamId, string right)
+        public HttpResponseMessage Set(long sourceId, long streamId, string right)
         {
-            var ans = new Hashtable();
-<<<<<<< HEAD
             Hashtable body;
-=======
-            Hashtable nvc;
-            var failed = false;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
 
-            FrontError? error = null;
-            string errorMessage = null;
-            var accessRight = AccessRight.NoRight;
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
 
->>>>>>> origin/master
-            try
-            {
-                body = Tools.ParseRequest(Request);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            var userProvider = new UserProvider();
+            var userRequest = userProvider.GetUser((string)body["key"]);
 
-            // Get the Stream
-            var front = new EvernestFront.UsersBuilder();
-            var userReq = front.GetUser((string)body["key"]);
+            if (!userRequest.Success)
+                return Response.BadArgument(Request, "Key");
 
-            if (!userReq.Success)
-            {
-                ans["Status"] = "Error";
-                ans["Error"] = userReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-
-            var user = userReq.Result;
-
-
-            var sourceReq = user.GetSource(sourceId);
-            if (!sourceReq.Success)
-            {
-                ans["Status"] = "Error";
-                ans["Error"] = sourceReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            var source = sourceReq.Result;
-
-            var eventStreamReq = source.GetEventStream(streamId);
-
-            if (!eventStreamReq.Success)
-            {
-                ans["Status"] = "Error";
-                ans["Error"] = eventStreamReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-
-            var stream = eventStreamReq.Result;
+            var user = userRequest.Result;
 
             AccessRight accessRight;
-
             switch (right.ToLower())
-                    {
-                        case "none":
-                            accessRight = AccessRight.NoRight;
-                            break;
-                        case "readonly":
-                            accessRight = AccessRight.ReadOnly;
-                            break;
-                        case "writeonly":
-                            accessRight = AccessRight.WriteOnly;
-                            break;
-                        case "readwrite":
-                            accessRight = AccessRight.ReadWrite;
-                            break;
-                        case "admin":
-                            accessRight = AccessRight.Admin;
-                            break;
-                        case "root":
-                            accessRight = AccessRight.Root;
-                            break;
-
-                        default:
-                            // Should never happen
-                            return Request.CreateResponse(HttpStatusCode.InternalServerError);
-                    }
-            
-                    // Convert the string to an AccessRights enum
-
-            var GuidReq = stream.SetUserRight(sourceId, accessRight);
-
-            //TODO: Check if it is really sourceId
-            if (!GuidReq.Success)
             {
-                ans["Status"]="Error";
-                ans["Error"]=GuidReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
+                case "noright":
+                    accessRight = AccessRight.NoRight;
+                    break;
+
+                case "readonly":
+                    accessRight = AccessRight.ReadOnly;
+                    break;
+
+                case "writeonly":
+                    accessRight = AccessRight.WriteOnly;
+                    break;
+
+                case "readwrite":
+                    accessRight = AccessRight.ReadWrite;
+                    break;
+
+                case "admin":
+                    accessRight = AccessRight.Admin;
+                    break;
+
+                case "root":
+                    accessRight = AccessRight.Root;
+                    break;
+
+                default:
+                    return Response.BadArgument(Request, "Right");
+                    break;
             }
 
-            var Guid = GuidReq.Result;
+            var guidRequest = user.SetSourceRight(sourceId, streamId, accessRight);
 
-            ans["Guid"]=Guid;
-            // BEGIN DEBUG //
-            var debug = new Hashtable();
-            debug["Controller"] = "Right";
-            debug["Method"] = "Set";
-            debug["sourceId"] = sourceId;
-            debug["streamId"] = streamId;
-            debug["right"] = accessRight;
-            debug["body"] = body;
-            ans["Debug"] = debug;
-            // END DEBUG //
+            if (!guidRequest.Success)
+                return Response.Error(Request, "Error while setting source right.");
 
-            return Request.CreateResponse(HttpStatusCode.OK, ans);
-            
-            
+            var ans = new Hashtable();
+            ans["Guid"] = guidRequest.Result;
+            return Response.Success(Request, ans);
         }
     }
 }

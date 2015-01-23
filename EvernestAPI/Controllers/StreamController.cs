@@ -11,10 +11,7 @@ namespace EvernestAPI.Controllers
     public class StreamController : ApiController
     {
 
-        // Default controller.
-        //     /Stream/{id}
-        // Return informations about the Stream.
-        // Requires Read right.
+        //     GET /Stream/{StreamId}
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
@@ -48,9 +45,7 @@ namespace EvernestAPI.Controllers
         }
 
 
-        // Controller for pull of one event.
-        //     /Stream/{id}/Pull/{arg0}
-        // Requires the good rights on the stream.
+        //     GET /Stream/{StreamId}/Pull/{EventId}
         [HttpGet]
         [HttpPost]
         [ActionName("Pull")]
@@ -64,7 +59,7 @@ namespace EvernestAPI.Controllers
                 return Response.MissingArgument(Request, "Key");
 
             var sourceProvider = new SourceProvider();
-            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
+            var sourceRequest = sourceProvider.GetSource((string) body["key"]);
 
             if (!sourceRequest.Success)
                 return Response.BadArgument(Request, "Key");
@@ -91,9 +86,7 @@ namespace EvernestAPI.Controllers
         }
 
 
-        // Controller for pull of a range.
-        //     /Stream/{id}/Pull/{arg0}/{arg1}
-        // Requires the good rights on the stream.
+        //     GET /Stream/{StreamId}/Pull/{FromEventId}/{ToEventId}
         [HttpGet]
         [HttpPost]
         [ActionName("Pull")]
@@ -135,9 +128,7 @@ namespace EvernestAPI.Controllers
         }
 
 
-        // Controller for random pull.
-        //     /Stream/{id}/Pull/Random
-        // Requires good rights.
+        //     GET /Stream/{StreamId}/Pull/Random
         [HttpGet]
         [HttpPost]
         [ActionName("Pull")]
@@ -151,7 +142,7 @@ namespace EvernestAPI.Controllers
                 return Response.MissingArgument(Request, "Key");
 
             var sourceProvider = new SourceProvider();
-            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
+            var sourceRequest = sourceProvider.GetSource((string) body["key"]);
 
             if (!sourceRequest.Success)
                 return Response.BadArgument(Request, "Key");
@@ -178,9 +169,7 @@ namespace EvernestAPI.Controllers
         }
 
 
-        // Controller for pushing.
-        //     /Stream/{id}/Push
-        // Requires good right.
+        //     POST /Stream/{StreamId}/Push
         [HttpGet]
         [HttpPost]
         [ActionName("Push")]
@@ -194,7 +183,7 @@ namespace EvernestAPI.Controllers
                 return Response.MissingArgument(Request, "Key");
 
             var sourceProvider = new SourceProvider();
-            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
+            var sourceRequest = sourceProvider.GetSource((string) body["key"]);
 
             if (!sourceRequest.Success)
                 return Response.BadArgument(Request, "Key");
@@ -208,7 +197,10 @@ namespace EvernestAPI.Controllers
 
             var eventStream = eventStreamRequest.Result;
 
-            var pushRequest = eventStream.Push((string) body["Message"]);
+            if (!body.ContainsKey("message"))
+                return Response.MissingArgument(Request, "Message");
+
+            var pushRequest = eventStream.Push((string) body["message"]);
 
             if (!pushRequest.Success)
                 return Response.Error(Request, "Error while pushing"); // TODO: Change this

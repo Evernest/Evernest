@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Web.Http;
 using EvernestAPI.Models;
-using EvernestFront;
 
 namespace EvernestAPI.Controllers
 {
     public class UserRightController : ApiController
     {
-        // /UserRight/{id}/{streamId}
+        //     GET /UserRight/{UserId}/{StreamId}
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
@@ -19,7 +17,7 @@ namespace EvernestAPI.Controllers
 
 
         
-        // /UserRight/{id}/{streamId}/Set/{right}
+        // /UserRight/{UserId}/{StreamId}/Set/{Right}
         [HttpGet]
         [HttpPost]
         [ActionName("Set")]

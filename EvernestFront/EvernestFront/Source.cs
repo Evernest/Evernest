@@ -11,12 +11,12 @@ namespace EvernestFront
 
         public long Id { get; private set; }
 
-        public User User { get; private set; }
+        public long UserId { get { return User.Id; } }
 
         public IDictionary<long, AccessRight> RelatedEventStreams { get; private set; }
 
 
-
+        internal User User { get; private set; }
 
         internal Source(string sourceKey, string name, long id, User user, IDictionary<long, AccessRight> eventStreams)
         {

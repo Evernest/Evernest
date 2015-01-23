@@ -11,9 +11,9 @@ namespace EvernestFront
             var azureStorageClient = AzureStorageClient.Instance;
             var injector = Injector.Instance;
             injector.BuildFront(azureStorageClient);
-            //TODO: read system event stream
+            injector.SystemEventRecuperator.FetchAndDispatch();
             injector.SystemCommandHandler.HandleCommands();
-            injector.Dispatcher.DispatchSystemEvents();
+            injector.SystemEventQueue.DispatchSystemEvents();
         }
     }
 }

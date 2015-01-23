@@ -73,8 +73,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.AdminAccessDenied);
             if (TargetUserIsAdmin(targetName))
                 return new Response<Guid>(FrontError.CannotDestituteAdmin);
-            var command = new UserRightSettingCommand(_systemCommandHandler,
-                targetName, Id, _user.Name, _user.Id, right);
+            var command = new UserRightSettingCommand(_systemCommandHandler, targetName, Id, _user.Name, _user.Id, right);
             command.Send();
             return new Response<Guid>(command.Guid);
         }
@@ -150,7 +149,6 @@ namespace EvernestFront
             return new Response<Event>(new Event(pulledContract, eventId, Name, Id));
         }
 
-        //TODO : change this when PullRange gets implemented in back-end
         public Response<List<Event>> PullRange(long fromEventId, long toEventId)
         {
             if (!ValidateAccessAction(AccessAction.Read))
@@ -216,8 +214,7 @@ namespace EvernestFront
         {
             if (!ValidateAccessAction(AccessAction.Admin))
                 return new Response<Guid>(FrontError.AdminAccessDenied);
-            var command = new EventStreamDeletionCommand(_systemCommandHandler, Id, Name, 
-                _user.Name, _user.Id, password);
+            var command = new EventStreamDeletionCommand(_systemCommandHandler, Id, Name, _user.Name, _user.Id, password);
             command.Send();
             return new Response<Guid>(command.Guid);
         }

@@ -1,16 +1,12 @@
-﻿using System.Collections;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Web.Http;
 using EvernestAPI.Models;
-using EvernestFront;
-using EvernestFront.Contract;
 
 namespace EvernestAPI.Controllers
 {
     public class UserController : ApiController
     {
-        // /User/{id}
+        //     GET /User/{UserId}
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
@@ -18,15 +14,7 @@ namespace EvernestAPI.Controllers
         {
             return Response.NotImplemented(Request);
         }
-        
 
-        // User/Add/{username}/{password}
-        [HttpGet]
-        [HttpPost]
-        [ActionName("Add")]
-        public HttpResponseMessage AddUser(string username, string password)
-        {
-            return Response.NotImplemented(Request);
-        }
+        // API can't create a User.
     }
 }

@@ -45,14 +45,19 @@ namespace EvernestBack
 
         public void PullRange(long firstId, long lastId, Action<IEnumerable<LowLevelEvent>> success, Action<long, long, string> failure)
         {
-            //TODO
-            throw new NotImplementedException("MemoryEventStream.PullRange");
-            /*
-            if (Index > lastId)
-                success(_messages.GetRange((int) firstId, (int) (lastId - firstId + 1)));
+            if (firstId >= 0 && firstId <= lastId && Index > lastId)
+            {
+                List<LowLevelEvent> answer = new List<LowLevelEvent>();
+                for (var id = firstId; id <= lastId; id++)
+                {
+                    answer.Add(new LowLevelEvent(_messages.ElementAt((int)id), id));
+                }
+                success(answer);
+            }
             else
-                failure(firstId, lastId, "Can not fetch range.");
-             */
+            {
+                failure(firstId, lastId, "Invalid range.");
+            }
         }
 
         public long Size()
@@ -91,6 +96,15 @@ namespace EvernestBack
         internal static void DeleteStream(AzureStorageClient store, string streamID)
         {
             File.Delete(StreamFileName(store, streamID));
+        }
+
+        public static void ClearAll(AzureStorageClient store)
+        {
+            var list = new DirectoryInfo(store.DummyDataPath);
+            foreach (FileInfo file in list.GetFiles())
+            {
+                file.Delete();
+            }
         }
     }
 }

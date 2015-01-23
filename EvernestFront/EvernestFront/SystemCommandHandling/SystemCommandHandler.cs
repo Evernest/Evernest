@@ -16,20 +16,22 @@ namespace EvernestFront.SystemCommandHandling
     {
         private readonly AzureStorageClient _azureStorageClient;
         private readonly SystemCommandHandlerState _state;
-        private readonly Dispatcher _dispatcher;
+        private readonly SystemEventQueue _systemEventQueue;
         private readonly SystemCommandResultManager _manager;
 
         private readonly ConcurrentQueue<CommandBase> _pendingCommandQueue;
         private readonly CancellationTokenSource _tokenSource;
+        private readonly EventWaitHandle _newTicket;
        
 
-        public SystemCommandHandler(AzureStorageClient azureStorageClient, SystemCommandHandlerState systemCommandHandlerState, Dispatcher dispatcher, SystemCommandResultManager manager)
+        public SystemCommandHandler(AzureStorageClient azureStorageClient, SystemCommandHandlerState systemCommandHandlerState, SystemEventQueue systemEventQueue, SystemCommandResultManager manager)
         {
             _azureStorageClient = azureStorageClient;
             _state = systemCommandHandlerState;
-            _dispatcher = dispatcher;
+            _systemEventQueue = systemEventQueue;
             _manager = manager;
             _pendingCommandQueue=new ConcurrentQueue<CommandBase>();
+            _newTicket = new AutoResetEvent(false);
             _tokenSource=new CancellationTokenSource();
         }
         
@@ -37,6 +39,7 @@ namespace EvernestFront.SystemCommandHandling
         public void ReceiveCommand(CommandBase command)
         {
             _pendingCommandQueue.Enqueue(command);
+            _newTicket.Set();
         }
 
         public void StopHandlingCommands()
@@ -52,8 +55,10 @@ namespace EvernestFront.SystemCommandHandling
                 while (!token.IsCancellationRequested)
                 {
                     CommandBase command;
-                    if (_pendingCommandQueue.TryDequeue(out command))
+                    while (_pendingCommandQueue.TryDequeue(out command))
                         HandleCommand(command);
+
+                    _newTicket.WaitOne();
                 }
             }), token);
         }
@@ -64,8 +69,8 @@ namespace EvernestFront.SystemCommandHandling
             FrontError? error;
             if (TryExecute(command, out systemEvent, out error))
             {
-                _state.Update(systemEvent);
-                _dispatcher.ReceiveEvent(systemEvent, command.Guid);
+                _state.OnSystemEvent(systemEvent);
+                _systemEventQueue.ReceiveEvent(systemEvent, command.Guid);
             }
             else
             {

@@ -9,12 +9,13 @@ namespace EvernestAPI.Controllers
 {
     public class RightController : ApiController
     {
-        // Default controller. Return the right of the source on the stream.
-        //     /Right/{id}/{streamId}
+
+        //     GET /Right/{streamId}
+        // Get the rights that the Key has on the given stream.
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage Get(long sourceId, long streamId)
+        public HttpResponseMessage GetRight(long streamId)
         {
             Hashtable body;
             try { body = Tools.ParseRequest(Request); }
@@ -23,11 +24,49 @@ namespace EvernestAPI.Controllers
             if (!body.ContainsKey("key"))
                 return Response.MissingArgument(Request, "Key");
 
+            var sourceProvider = new SourceProvider();
+            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
+
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "Key");
+
+            var source = sourceRequest.Result;
+
+            var eventStreamRequest = source.GetEventStream(streamId);
+
+            if (!eventStreamRequest.Success)
+                return Response.BadArgument(Request, "StreamId");
+
+            var eventStream = eventStreamRequest.Result;
+
+            var right = eventStream.SourceRight;
+
+            var ans = new Hashtable();
+            ans["Right"] = AccessRightTools.AccessRightToString(right);
+
+            return Response.Success(Request, ans);
+        }
+
+
+        //     * GET /Right/{SourceId}/{StreamId}
+        // Get the rights the the source has on the stream. You must provide a user key.
+        [HttpGet]
+        [HttpPost]
+        [ActionName("Default")]
+        public HttpResponseMessage GetRight(long sourceId, long streamId)
+        {
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
+
+            if (!body.ContainsKey("userkey"))
+                return Response.MissingArgument(Request, "UserKey");
+
             var userProvider = new UserProvider();
-            var userRequest = userProvider.GetUser((string)body["key"]);
+            var userRequest = userProvider.GetUser((string) body["userkey"]);
 
             if (!userRequest.Success)
-                return Response.BadArgument(Request, "Key");
+                return Response.BadArgument(Request, "UserKey");
 
             var user = userRequest.Result;
 
@@ -54,9 +93,8 @@ namespace EvernestAPI.Controllers
         }
 
 
-        // Controller to set a right.
-        //     /Right/{sourceId}/{streamId}/Set/{right}
-        // >>>>> userKey <<<<<
+        //     * POST /Right/{sourceId}/{streamId}/Set/{right}
+        // Set the right of the given source on the given stream. You must provide a user key.
         [HttpGet]
         [HttpPost]
         [ActionName("Set")]
@@ -66,14 +104,14 @@ namespace EvernestAPI.Controllers
             try { body = Tools.ParseRequest(Request); }
             catch { return Response.BadRequest(Request); }
 
-            if (!body.ContainsKey("key"))
-                return Response.MissingArgument(Request, "Key");
+            if (!body.ContainsKey("userkey"))
+                return Response.MissingArgument(Request, "UserKey");
 
             var userProvider = new UserProvider();
-            var userRequest = userProvider.GetUser((string)body["key"]);
+            var userRequest = userProvider.GetUser((string) body["userkey"]);
 
             if (!userRequest.Success)
-                return Response.BadArgument(Request, "Key");
+                return Response.BadArgument(Request, "UserKey");
 
             var user = userRequest.Result;
 

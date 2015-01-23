@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using EvernestBack;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
@@ -40,8 +43,27 @@ namespace EvernestFront
         private void CallbackSuccess(LowLevelEvent acceptedEvent) { }
         private void CallbackFailure(string deniedQuery, string errorMessage) { }
 
-        //TODO: reading in system event stream
+        internal List<ISystemEvent> PullAll()
+        {
+            var eventList = new List<ISystemEvent>();
+            var stopWaitHandle = new AutoResetEvent(false);
+            var serializer = new Serializer();
+            _backEventStream.PullRange
+            (
+                0,
+                _backEventStream.Size(),
+                range =>
+                {
+                    eventList.AddRange(range.Select(ev => serializer.ReadSystemEventEnvelope(ev.Message)));
+                    stopWaitHandle.Set();
+                },
+                (firstId, lastId, errorMessage) => stopWaitHandle.Set());
+            stopWaitHandle.WaitOne();
+            return eventList;
+        }
+
     }
+
 
 
 }

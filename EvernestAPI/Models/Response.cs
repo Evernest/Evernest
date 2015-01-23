@@ -78,7 +78,16 @@ namespace EvernestAPI.Models
 
         public static HttpResponseMessage NotImplemented(HttpRequestMessage request)
         {
-            return request.CreateResponse(HttpStatusCode.NotImplemented);
+            var ans = new Hashtable();
+            
+            ans["Success"] = false;
+            
+            var error = new Hashtable();
+            error["Message"] = "NotImplemented";
+            error["HelpMessage"] = "";
+            ans["Error"] = error;
+
+            return request.CreateResponse(HttpStatusCode.NotImplemented, ans);
         }
     }
 }

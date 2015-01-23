@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Web.Http;
-using System.Net;
 using System.Net.Http;
 using EvernestAPI.Models;
 using EvernestFront;
@@ -49,32 +48,7 @@ namespace EvernestAPI.Controllers
             var right = eventStream.SourceRight;
 
             var ans = new Hashtable();
-            switch (right)
-            {
-                case AccessRight.NoRight:
-                    ans["Right"] = "NoRight";
-                    break;
-
-                case AccessRight.ReadOnly:
-                    ans["Right"] = "ReadOnly";
-                    break;
-
-                case AccessRight.WriteOnly:
-                    ans["Right"] = "WriteOnly";
-                    break;
-
-                case AccessRight.ReadWrite:
-                    ans["Right"] = "ReadWrite";
-                    break;
-
-                case AccessRight.Admin:
-                    ans["Right"] = "Admin";
-                    break;
-
-                case AccessRight.Root:
-                    ans["Right"] = "Root";
-                    break;
-            }
+            ans["Right"] = AccessRightTools.AccessRightToString(right);
 
             return Response.Success(Request, ans);
         }
@@ -103,37 +77,7 @@ namespace EvernestAPI.Controllers
 
             var user = userRequest.Result;
 
-            AccessRight accessRight;
-            switch (right.ToLower())
-            {
-                case "noright":
-                    accessRight = AccessRight.NoRight;
-                    break;
-
-                case "readonly":
-                    accessRight = AccessRight.ReadOnly;
-                    break;
-
-                case "writeonly":
-                    accessRight = AccessRight.WriteOnly;
-                    break;
-
-                case "readwrite":
-                    accessRight = AccessRight.ReadWrite;
-                    break;
-
-                case "admin":
-                    accessRight = AccessRight.Admin;
-                    break;
-
-                case "root":
-                    accessRight = AccessRight.Root;
-                    break;
-
-                default:
-                    return Response.BadArgument(Request, "Right");
-                    break;
-            }
+            var accessRight = AccessRightTools.StringToAccessRight(right);
 
             var guidRequest = user.SetSourceRight(sourceId, streamId, accessRight);
 

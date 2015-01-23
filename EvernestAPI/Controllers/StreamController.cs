@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
+using System.Linq;
 using System.Web.Http;
 using EvernestFront;
 using EvernestAPI.Models;
@@ -12,225 +11,209 @@ namespace EvernestAPI.Controllers
     public class StreamController : ApiController
     {
 
-        // /Stream/{id}
+        // Default controller.
+        //     /Stream/{id}
+        // Return informations about the Stream.
+        // Requires Read right.
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage Default(int id)
+        public HttpResponseMessage Default(long id)
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
 
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "Stream";
-                debug["Method"] = "Default";
-                debug["id"] = id;
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
 
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);                
-            }
+            var sourceProvider = new SourceProvider();
+            var sourceRequest = sourceProvider.GetSource((string) body["key"]);
+
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "Key");
+
+            var source = sourceRequest.Result;
+
+            var eventStreamRequest = source.GetEventStream(id);
+
+            if (!eventStreamRequest.Success)
+                return Response.BadArgument(Request, "StreamId");
+
+            var eventStream = eventStreamRequest.Result;
+
+            var ans = new Hashtable();
+            ans["Stream"] = eventStream; // TODO: Change this.
+            return Response.Success(Request, ans);
         }
 
 
-        
-        // /Stream/{id}/Pull/{arg0}
+        // Controller for pull of one event.
+        //     /Stream/{id}/Pull/{arg0}
+        // Requires the good rights on the stream.
         [HttpGet]
         [HttpPost]
         [ActionName("Pull")]
-        public HttpResponseMessage PullOne(int id, int arg0)
+        public HttpResponseMessage PullOne(long id, long arg0)
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
 
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "Stream";
-                debug["Method"] = "PullOne";
-                debug["id"] = id;
-                debug["arg0"] = arg0;
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
 
-                var key = (string) body["key"];
-                if (key == null)
-                {
-                    ans["Status"] = "Error";
-                    ans["FieldErrors"] = new List<string> {"Key"};
-                }
+            var sourceProvider = new SourceProvider();
+            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
 
-                var front = new EvernestFront.UsersBuilder();
-                var userReq = front.GetUser(key);
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "Key");
 
-                if (!userReq.Success)
-                {
-                    ans["Status"] = "Error";
-                    ans["Error"] = userReq.Error;
-                    return Request.CreateResponse(HttpStatusCode.OK, ans);
-                }
+            var source = sourceRequest.Result;
 
-                var user = userReq.Result;
+            var eventStreamRequest = source.GetEventStream(id);
 
-                else
-                {
-                    var getSource = Source.GetSource(key);
-                    if (!getSource.Success)
-                        throw new NotImplementedException();
-                    var pullAnswer = getSource.Source.Pull(arg0);
-                    if (!pullAnswer.Success)
-                        throw new NotImplementedException();
-                    var eve = pullAnswer.EventPulled; //eve is not null at this point
-                    ans["Status"] = "Success";
-                    ans["Events"] = new List<Event> {eve};
-                }
+            if (!eventStreamRequest.Success)
+                return Response.BadArgument(Request, "StreamId");
 
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            var eventStream = eventStreamRequest.Result;
+
+            var eventRequest = eventStream.Pull(arg0);
+
+            if (!eventRequest.Success)
+                return Response.BadArgument(Request, "EventId");
+
+            var evnt = eventRequest.Result; // Note the missing e in evnt.
+
+            var ans = new Hashtable();
+            ans["Event"] = evnt.Message;
+            return Response.Success(Request, ans);
         }
 
 
-
-        // /Stream/{id}/Pull/{arg0}/{arg1}
+        // Controller for pull of a range.
+        //     /Stream/{id}/Pull/{arg0}/{arg1}
+        // Requires the good rights on the stream.
         [HttpGet]
         [HttpPost]
         [ActionName("Pull")]
-        public HttpResponseMessage PullRange(int id, int arg0, int arg1)
+        public HttpResponseMessage PullRange(long id, long arg0, long arg1)
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
 
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "Stream";
-                debug["Method"] = "PullRange";
-                debug["id"] = id;
-                debug["arg0"] = arg0;
-                debug["arg1"] = arg1;
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
 
-                var key = (string) body["key"];
-                if (key == null)
-                {
-                    ans["Status"] = "Error";
-                    ans["FieldErrors"] = new List<string> {"Key"};
-                }
-                else
-                {
-                    var getSource = Source.GetSource(key);
-                    if (!getSource.Success)
-                        throw new NotImplementedException();
-                    var pullRange = getSource.Source.PullRange(arg0, arg1);
-                    if (!pullRange.Success)
-                        throw new NotImplementedException();
-                    ans["Status"] = "Success";
-                    ans["Events"] = pullRange.Events;
-                }
+            var sourceProvider = new SourceProvider();
+            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
 
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "Key");
+
+            var source = sourceRequest.Result;
+
+            var eventStreamRequest = source.GetEventStream(id);
+
+            if (!eventStreamRequest.Success)
+                return Response.BadArgument(Request, "StreamId");
+
+            var eventStream = eventStreamRequest.Result;
+
+            var eventRequest = eventStream.PullRange(arg0, arg1);
+
+            if (!eventRequest.Success)
+                return Response.BadArgument(Request, new string[] {"FromEventId", "ToEventId"});
+
+            var evntList = eventRequest.Result; // Note the missing e in evnt.
+            var evntMessageList = evntList.Select(evnt => evnt.Message).ToList();
+
+            var ans = new Hashtable();
+            ans["EventList"] = evntMessageList;
+            return Response.Success(Request, ans);
         }
 
 
-
-        // /Stream/{id}/Pull/Random
+        // Controller for random pull.
+        //     /Stream/{id}/Pull/Random
+        // Requires good rights.
         [HttpGet]
         [HttpPost]
         [ActionName("Pull")]
         public HttpResponseMessage PullRandom(int id)
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
 
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "Stream";
-                debug["Method"] = "PullRandom";
-                debug["id"] = id;
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
 
-                var key = (string) body["key"];
-                if (key == null)
-                {
-                    ans["Status"] = "Error";
-                    ans["FieldErrors"] = new List<string> {"Key"};
-                }
-                else
-                {
-                    var getSource = Source.GetSource(key);
-                    if (!getSource.Success)
-                        throw new NotImplementedException();
-                    var pullRandomAnswer = getSource.Source.PullRandom();
-                    if (!pullRandomAnswer.Success)
-                        throw new NotImplementedException();
-                    var eve = pullRandomAnswer.EventPulled; //not null
-                    ans["Status"] = "Success";
-                    ans["Events"] = new List<Event> {eve};
-                }
+            var sourceProvider = new SourceProvider();
+            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
 
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "Key");
+
+            var source = sourceRequest.Result;
+
+            var eventStreamRequest = source.GetEventStream(id);
+
+            if (!eventStreamRequest.Success)
+                return Response.BadArgument(Request, "StreamId");
+
+            var eventStream = eventStreamRequest.Result;
+
+            var eventRequest = eventStream.PullRandom();
+
+            if (!eventRequest.Success)
+                return Response.Error(Request, "Empty stream");
+
+            var evnt = eventRequest.Result; // Note the missing e in evnt.
+
+            var ans = new Hashtable();
+            ans["Event"] = evnt.Message;
+            return Response.Success(Request, ans);
         }
 
 
-
-        // /Stream/{id}/Push
+        // Controller for pushing.
+        //     /Stream/{id}/Push
+        // Requires good right.
         [HttpGet]
         [HttpPost]
         [ActionName("Push")]
         public HttpResponseMessage Push(int id)
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
 
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "Stream";
-                debug["Method"] = "Push";
-                debug["id"] = id;
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
 
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            var sourceProvider = new SourceProvider();
+            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
+
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "Key");
+
+            var source = sourceRequest.Result;
+
+            var eventStreamRequest = source.GetEventStream(id);
+
+            if (!eventStreamRequest.Success)
+                return Response.BadArgument(Request, "StreamId");
+
+            var eventStream = eventStreamRequest.Result;
+
+            var pushRequest = eventStream.Push((string) body["Message"]);
+
+            if (!pushRequest.Success)
+                return Response.Error(Request, "Error while pushing"); // TODO: Change this
+
+            return Response.Success(Request, null); // TODO: Change this
         }
-
     }
 }

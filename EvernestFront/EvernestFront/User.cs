@@ -17,19 +17,24 @@ namespace EvernestFront
 
         public string Name { get; private set; }
 
+        public IEnumerable<string> UserKeys { get { return UserKeyNameToKey.Keys; } } 
+
+        public IEnumerable<long> Sources { get { return SourceIdToKey.Keys; } } 
+
+        public IEnumerable<long> RelatedEventStreams { get; private set; }
+
+
+
+
         private string SaltedPasswordHash { get; set; }
 
         private byte[] PasswordSalt { get; set; }
 
-        private IDictionary<string, string> UserKeys { get; set; }
+        private IDictionary<string, string> UserKeyNameToKey { get; set; }
 
         private IDictionary<string, long> SourceNameToId { get; set; }
 
         private IDictionary<long, string> SourceIdToKey { get; set; }
-
-        public IEnumerable<long> Sources { get { return SourceIdToKey.Keys; } } 
-
-        public IEnumerable<long> RelatedEventStreams { get; private set; } 
 
         internal User(SystemCommandHandler systemCommandHandler, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, long> sources, 
@@ -40,7 +45,7 @@ namespace EvernestFront
             Name = name;
             SaltedPasswordHash = sph;
             PasswordSalt = ps;
-            UserKeys = keys;
+            UserKeyNameToKey = keys;
             SourceNameToId = sources;
             SourceIdToKey = sourceKeys;
             RelatedEventStreams = eventStreams;
@@ -60,7 +65,7 @@ namespace EvernestFront
 
         public Response<Tuple<string, Guid>> CreateUserKey(string keyName)
         {
-            if (UserKeys.ContainsKey(keyName))
+            if (UserKeyNameToKey.ContainsKey(keyName))
                 return new Response<Tuple<string, Guid>>(FrontError.UserKeyNameTaken);
             var keyGenerator = new KeyGenerator();
             var key = keyGenerator.NewKey();
@@ -69,16 +74,20 @@ namespace EvernestFront
             return new Response<Tuple<string, Guid>>(new Tuple<string, Guid>(key, command.Guid));
         }
 
+        public Response<Guid> DeleteUserKey(string keyName)
+        {
+            string key;
+            if (!UserKeyNameToKey.TryGetValue(keyName, out key))
+                return new Response<Guid>(FrontError.UserKeyNameDoesNotExist);
+            var command = new UserKeyDeletionCommand(_systemCommandHandler, key, Id, keyName);
+            command.Send();
+            return new Response<Guid>(command.Guid);
+        } 
 
         internal bool VerifyPassword(string password)
         {
             var passwordManager = new PasswordManager();
             return passwordManager.Verify(password, SaltedPasswordHash, PasswordSalt);
-        }
-
-        public bool TryGetUserKey(string keyName, out string key)
-        {
-            return UserKeys.TryGetValue(keyName, out key);
         }
     }
 }

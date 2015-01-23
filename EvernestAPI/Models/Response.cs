@@ -75,5 +75,10 @@ namespace EvernestAPI.Models
             ans["Response"] = o;
             return request.CreateResponse(HttpStatusCode.OK, ans);
         }
+
+        public static HttpResponseMessage NotImplemented(HttpRequestMessage request)
+        {
+            return request.CreateResponse(HttpStatusCode.NotImplemented);
+        }
     }
 }

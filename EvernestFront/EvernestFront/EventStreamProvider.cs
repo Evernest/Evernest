@@ -66,7 +66,7 @@ namespace EvernestFront
             }
         }
 
-        internal bool TryGetEventStreamBySource(Source source, AccessRight sourceRight, long eventStreamId, out EventStream eventStream)
+        internal bool TryGetEventStreamBySource(Source source, AccessRight sourceRight, long eventStreamId, out EventStreamBySource eventStream)
         {
             EventStreamRecord eventStreamData;
             if (_eventStreamsProjection.TryGetEventStreamData(eventStreamId, out eventStreamData))

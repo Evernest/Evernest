@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Net;
+﻿using System.Collections;
 using System.Net.Http;
 using System.Web.Http;
 using EvernestAPI.Models;
+using EvernestFront;
 
 namespace EvernestAPI.Controllers
 {
@@ -13,29 +12,9 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage Get(int id, int streamId)
+        public HttpResponseMessage Get(long id, long streamId)
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
-
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "Source";
-                debug["Method"] = "Get";
-                debug["id"] = id;
-                debug["streamId"] = streamId;
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
-
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            return Response.NotImplemented(Request);
         }
 
 
@@ -44,30 +23,9 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Set")]
-        public HttpResponseMessage Set(int id, int streamId, string right)
+        public HttpResponseMessage Set(long id, long streamId, string right)
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
-
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "Source";
-                debug["Method"] = "Set";
-                debug["id"] = id;
-                debug["streamId"] = streamId;
-                debug["right"] = right;
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
-
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch (Exception)
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            return Response.NotImplemented(Request);
         }
     }
 }

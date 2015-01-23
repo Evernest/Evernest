@@ -27,17 +27,17 @@ namespace EvernestFront
             RelatedEventStreams = eventStreams;
         }
 
-        public Response<EventStream> GetEventStream(long eventStreamId)
+        public Response<EventStreamBySource> GetEventStream(long eventStreamId)
         {
             AccessRight right;
             if (!RelatedEventStreams.TryGetValue(eventStreamId, out right))
                 right = AccessRight.NoRight;
             var builder = new EventStreamProvider();
-            EventStream eventStream;
+            EventStreamBySource eventStream;
             if (builder.TryGetEventStreamBySource(this, right, eventStreamId, out eventStream))
-                return new Response<EventStream>(eventStream);
+                return new Response<EventStreamBySource>(eventStream);
             else
-                return new Response<EventStream>(FrontError.EventStreamIdDoesNotExist);
+                return new Response<EventStreamBySource>(FrontError.EventStreamIdDoesNotExist);
         } 
         
 

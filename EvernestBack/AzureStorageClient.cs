@@ -75,6 +75,14 @@ namespace EvernestBack
             }
         }
 
+        ~AzureStorageClient()
+        {
+            // Properly dispose of each event stream so that the data is saved.
+            foreach (KeyValuePair<string, IEventStream> pair in _openedStreams)
+                pair.Value.Dispose();
+        }
+
+
         /// <summary>
         ///     The unique instance of AzureStorageClient.
         /// </summary>

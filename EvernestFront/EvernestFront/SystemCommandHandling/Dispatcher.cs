@@ -16,6 +16,7 @@ namespace EvernestFront.SystemCommandHandling
         private SystemEventStream SystemEventStream { set; get; }
 
         private readonly ConcurrentQueue<Tuple<Guid,ISystemEvent>> _pendingEventQueue;
+        private readonly EventWaitHandle _newTicket;
 
         private readonly CancellationTokenSource _tokenSource;
 
@@ -27,6 +28,7 @@ namespace EvernestFront.SystemCommandHandling
             SystemEventStream = systemEventStream;
             _pendingEventQueue = new ConcurrentQueue<Tuple<Guid, ISystemEvent>>();
             _tokenSource = new CancellationTokenSource();
+            _newTicket = new AutoResetEvent(false);
             Manager = manager;
         }
 
@@ -38,6 +40,7 @@ namespace EvernestFront.SystemCommandHandling
         public void ReceiveEvent(ISystemEvent systemEvent, Guid guid)
         {
             _pendingEventQueue.Enqueue(new Tuple<Guid, ISystemEvent>(guid, systemEvent));
+            _newTicket.Set();
         }
 
         public void DispatchSystemEvents()
@@ -48,8 +51,10 @@ namespace EvernestFront.SystemCommandHandling
                 while (!token.IsCancellationRequested)
                 {
                     Tuple<Guid, ISystemEvent> tuple;
-                    if (_pendingEventQueue.TryDequeue(out tuple))
+                    while (_pendingEventQueue.TryDequeue(out tuple))
                         ConsumeSystemEvent(tuple.Item2, tuple.Item1);
+
+                    _newTicket.WaitOne();
                 }
             }), token);
         }

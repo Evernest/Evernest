@@ -21,6 +21,7 @@ namespace EvernestFront.SystemCommandHandling
 
         private readonly ConcurrentQueue<CommandBase> _pendingCommandQueue;
         private readonly CancellationTokenSource _tokenSource;
+        private readonly EventWaitHandle _newTicket;
        
 
         public SystemCommandHandler(AzureStorageClient azureStorageClient, SystemCommandHandlerState systemCommandHandlerState, Dispatcher dispatcher, SystemCommandResultManager manager)
@@ -30,6 +31,7 @@ namespace EvernestFront.SystemCommandHandling
             _dispatcher = dispatcher;
             _manager = manager;
             _pendingCommandQueue=new ConcurrentQueue<CommandBase>();
+            _newTicket = new AutoResetEvent(false);
             _tokenSource=new CancellationTokenSource();
         }
         
@@ -37,6 +39,7 @@ namespace EvernestFront.SystemCommandHandling
         public void ReceiveCommand(CommandBase command)
         {
             _pendingCommandQueue.Enqueue(command);
+            _newTicket.Set();
         }
 
         public void StopHandlingCommands()
@@ -52,8 +55,10 @@ namespace EvernestFront.SystemCommandHandling
                 while (!token.IsCancellationRequested)
                 {
                     CommandBase command;
-                    if (_pendingCommandQueue.TryDequeue(out command))
+                    while (_pendingCommandQueue.TryDequeue(out command))
                         HandleCommand(command);
+
+                    _newTicket.WaitOne();
                 }
             }), token);
         }

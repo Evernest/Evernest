@@ -28,6 +28,16 @@ namespace EvernestBack
         void PullRange(long firstId, long lastId, Action<IEnumerable<LowLevelEvent>> callback, Action<long, long, String> callbackFailure);
 
         /// <summary>
+        /// Blocks until all pull requests are handled (includes events pushed during the execution of FlushPushes).
+        /// </summary>
+        void FlushPullRequests();
+
+        /// <summary>
+        /// Blocks until all pull requests are handled (includes events pushed during the execution of FlushPushes).
+        /// </summary>
+        void FlushPushRequests();
+
+        /// <summary>
         ///     Get a lower bound of the number of messages stored
         ///     It is possible that there are more stored messages, and that the Size is not updated yet.
         ///     In particular, Size() - 1 is always valid as index, as soon as it is positive or 0.

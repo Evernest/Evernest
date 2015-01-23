@@ -100,6 +100,22 @@ namespace EvernestBack
         }
 
         /// <summary>
+        /// Blocks until all push requests are handled (includes events pushed during the execution of FlushPushes).
+        /// </summary>
+        public void FlushPushRequests()
+        {
+            _writer.Flush();
+        }
+
+        /// <summary>
+        /// Blocks until all pull requests are handled (includes events pushed during the execution of FlushPushes).
+        /// </summary>
+        public void FlushPullRequests()
+        {
+            _reader.Flush();
+        }
+
+        /// <summary>
         ///     Get the total number of element in the blob.
         /// </summary>
         /// <returns>Size of the blob.</returns>

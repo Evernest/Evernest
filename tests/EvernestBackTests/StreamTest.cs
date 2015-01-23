@@ -126,8 +126,11 @@ namespace EvernestBackTests
                 pushedStrings.Add(str);
                 SinglePushPull(stream, str);
             }
+            stream.FlushPushRequests();
+            Assert.AreEqual((int)stream.Size(), count);
             AzureStorageClient.Instance.CloseStream("TEST");
             stream = AzureStorageClient.Instance.GetEventStream("TEST");
+            Assert.AreEqual((int) stream.Size(), count);
             for (int i = 0; i < count; i++)
             {
                 stream.Pull(i,

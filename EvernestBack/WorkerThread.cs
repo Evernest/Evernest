@@ -111,6 +111,17 @@ namespace EvernestBack
         }
 
         /// <summary>
+        /// Blocks until all the pending queries are handled.
+        /// </summary>
+        public void Flush()
+        {
+            StopWorker();
+            _keepOnWorking = true;
+            _worker = new Thread(WorkLoop);
+            _worker.Start();
+        }
+
+        /// <summary>
         /// Make the worker thread terminate and wait until does.
         /// </summary>
         private void StopWorker()

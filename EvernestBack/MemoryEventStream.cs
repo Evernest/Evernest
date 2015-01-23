@@ -60,6 +60,12 @@ namespace EvernestBack
             }
         }
 
+        public void FlushPullRequests()
+        {}
+
+        public void FlushPushRequests()
+        {}
+
         public long Size()
         {
             return _messages.Count();

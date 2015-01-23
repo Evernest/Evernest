@@ -139,7 +139,7 @@ namespace EvernestBack
         /// <returns>The last known event id pushed on the server.</returns>
         public long ReadIndexInfo()
         {
-            long lastKnownID = 0;
+            long nextId = 0;
             if(_streamIndexBlob.Exists())
             {
                 _milestones.ReadFromBlob(_streamIndexBlob);
@@ -159,13 +159,14 @@ namespace EvernestBack
                         EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            lastKnownID = enumerator.CurrentID;
-                            NotifyNewEntry(lastKnownID, (ulong)enumerator.CurrentSize);
+                            nextId = enumerator.CurrentID;
+                            NotifyNewEntry(nextId, (ulong)enumerator.CurrentSize);
+                            nextId++;
                         }
                     }
                 }
             }
-            return lastKnownID;
+            return nextId;
         }
 
         /*

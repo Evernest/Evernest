@@ -1,8 +1,39 @@
-﻿@model EvernestFront.Source
+﻿@using EvernestFront.Contract
+@model EvernestWeb.Models.SourceModel
 
 @{
     ViewBag.Title = "Source";
 }
 
-<h2>Source</h2>
+<h2><a href="/Manager">Manager</a> &gt; Source</h2>
 
+<div>
+    <div>
+        <h4>Source</h4>
+        @{
+            if (Model != null)
+            {
+                <ul>
+                    <li>Id : @Model.Id</li>
+                    <li>Name : @Model.Name</li>
+                    <li>Total Events : @Model.Key</li>
+                </ul>
+                <ul>
+                    <li>Related Streams</li>
+                    @{
+                if (Model.RelatedEventStreams != null)
+                {
+                    foreach (KeyValuePair<string, AccessRight> stream in Model.RelatedEventStreams)
+                    {
+                        <li>@stream.Key (@stream.Value)</li>
+                    }
+                }
+                    }
+                </ul>
+            }
+        }
+    </div>
+
+
+
+</div>

@@ -176,6 +176,8 @@
     <Content Include="Views\Manager\_NewSourcePartial.cshtml" />
     <Content Include="Views\Manager\_SourceTablePartial.cshtml" />
     <Content Include="Views\Manager\Source.cshtml" />
+    <Content Include="Views\Manager\_GetEventByIdFormPartial.cshtml" />
+    <Content Include="Views\Manager\DeleteStream.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

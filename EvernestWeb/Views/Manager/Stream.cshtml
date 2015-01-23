@@ -1,8 +1,6 @@
 ﻿@using EvernestFront.Contract
 @using EvernestWeb.Models
 @model EvernestWeb.Models.StreamEventsModel
-    ViewBag.Title = "Stream";
-}
 
 <h2><a href="/Manager">Manager</a> &gt; Stream</h2>
 
@@ -36,19 +34,32 @@
     <div>
         @{ Html.RenderPartial("_AddUserFormPartial", new EvernestWeb.ViewModels.NewStreamUserModel());}
 
+        @{ Html.RenderPartial("_GetEventByIdFormPartial", new EvernestWeb.ViewModels.GetEventById());}
+
         @{ Html.RenderPartial("_AddEventFormPartial", new EvernestWeb.ViewModels.NewEventModel()); }
 
     </div>
 
     <!-- requested event -->
-    @{
+
         
+    @if (Model != null && Model.PulledEvent != null)
+    {
+        <div>
+            <h4>Pulled Event</h4>
+            <ul>
+                <li>Id - Message</li>
+                <li>@Model.PulledEvent.Id -- @Model.PulledEvent.Message</li>
+            </ul>
+        </div>
     }
+                
+
 
     <div>
         <h4>Last Events</h4>
         @{
-            if (Model != null && Model.Events != null)
+    if (Model != null && Model.Events != null)
             {
                 <ul>
                     <li>Id - Message etc...</li>

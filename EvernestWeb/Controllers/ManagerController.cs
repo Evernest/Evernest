@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-
+using System.Web.Routing;
 using EvernestFront;
 using EvernestFront.Contract;
 using EvernestWeb.ViewModels;
@@ -40,6 +40,27 @@ namespace EvernestWeb.Controllers
             return View(streamEventsModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Stream(GetEventById model)
+        {
+            var front = new UserProvider();
+
+            // Check user input
+            if (!ModelState.IsValid)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            Models.User user = (Models.User)Session["User"];
+            var userReq = front.GetUser(user.Id);
+
+            ViewBag.StreamId = model.StreamId;
+
+            var streamEventsModel = new StreamEventsModel(userReq.Result, model.StreamId, model.EventId);
+
+            return View(streamEventsModel);
+
+        }
+
         // POST: /Manager/NewStream
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -64,12 +85,39 @@ namespace EvernestWeb.Controllers
             return RedirectToAction("Index", "Manager");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteStream(DeleteStreamModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.StreamId = model.StreamId;
+                return View(model);
+            }
+
+            var front = new UserProvider();
+            Models.User user = (Models.User)Session["User"];
+            var userReq = front.GetUser(user.Id);
+            if (!userReq.Success)
+                return RedirectToAction("Index", "Manager");
+
+            var delStreamReq = userReq.Result.DeleteEventStream(model.StreamId, model.DeleteConfirmPassword);
+            if (!delStreamReq.Success)
+            {
+                ViewBag.StreamId = model.StreamId;
+                ModelState.AddModelError("DeleteConfirmPassword", "Wrong Password.");
+                return View(model);
+            }
+
+            return RedirectToAction("Index", "Manager");
+
+        }
+
         // GET: /Manager/DeleteStream/{Id}
         public ActionResult DeleteStream(long id)
         {
-            Models.User user = (Models.User)Session["User"];
-            // Todo
-            return RedirectToAction("Stream", "Manager");
+            ViewBag.StreamId = id;
+            return View();
         }
 
 
@@ -78,9 +126,15 @@ namespace EvernestWeb.Controllers
         // GET: /Manager/Source/{Id}
         public ActionResult Source(long id)
         {
+            var front = new UserProvider();
             Models.User user = (Models.User)Session["User"];
-            // Todo
-            return View();
+            var userReq = front.GetUser(user.Id);
+            if (!userReq.Success)
+                return RedirectToAction("Index", "Manager");
+
+            var sourceModel = new SourceModel(userReq.Result, id);
+
+            return View(sourceModel);
         }
 
         // POST: /Manager/NewSource
@@ -111,9 +165,15 @@ namespace EvernestWeb.Controllers
         // GET: /Manager/DeleteSource/{Id}
         public ActionResult DeleteSource(long id)
         {
+            var front = new UserProvider(); 
             Models.User user = (Models.User)Session["User"];
-            // Todo
-            return RedirectToAction("Source", "Manager");
+            var userReq = front.GetUser(user.Id);
+            if (!userReq.Success)
+                return RedirectToAction("Index", "Manager");
+
+            userReq.Result.DeleteSource(id);
+
+            return RedirectToAction("Index", "Manager");
         }
 
 
@@ -126,24 +186,22 @@ namespace EvernestWeb.Controllers
         {
             var front = new UserProvider();
 
+            // Check user input
+            if (!ModelState.IsValid)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
             Models.User user = (Models.User)Session["User"];
-            if (model.NewUser == null)
-                return RedirectToAction("Stream", "Manager");
             
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
-                return RedirectToAction("Stream", "Manager");
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
             var streamReq = userReq.Result.GetEventStream(model.StreamId);
             if (!streamReq.Success)
-                return RedirectToAction("Stream", "Manager");
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
-            var newUserReq = front.GetUser(model.NewUser);
-            if (!newUserReq.Success)
-                return RedirectToAction("Stream", "Manager");
-
-            streamReq.Result.SetUserRight(newUserReq.Result.Name, model.Right);
-            return RedirectToAction("Stream", "Manager");
+            streamReq.Result.SetUserRight(model.NewUser, model.Right);
+            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
         }
         
         // POST: /Manager/PushEvent
@@ -153,10 +211,14 @@ namespace EvernestWeb.Controllers
         {
             var front = new UserProvider();
 
+            // Check user input
+            if (!ModelState.IsValid)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
             var user = (Models.User)Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
-                return RedirectToAction("Stream", "Manager");
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
             var streamReq = userReq.Result.GetEventStream(model.StreamId);
             if (!streamReq.Success)
@@ -166,7 +228,5 @@ namespace EvernestWeb.Controllers
 
             return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
         }
-
-
     }
 }

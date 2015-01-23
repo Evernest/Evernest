@@ -1,0 +1,14 @@
+﻿@model EvernestWeb.ViewModels.GetEventById
+
+@using (Html.BeginForm("Stream", "Manager", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <fieldset>
+        <legend>Get Event</legend>
+        @Html.LabelFor(m => m.EventId)
+        @Html.TextBoxFor(m => m.EventId)
+        <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId);}" />
+        <input type="submit" value="Valider" />
+    </fieldset>
+}

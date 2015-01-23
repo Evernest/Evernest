@@ -7,9 +7,7 @@
 
 @if (ViewBag.Status != null)
 {
-    <p class="text-success">
-        @ViewBag.Status
-    </p>
+    <p class="text-success">@ViewBag.Status</p>
 }
 
 @using (Html.BeginForm("ChangePwd", "Account", FormMethod.Post))

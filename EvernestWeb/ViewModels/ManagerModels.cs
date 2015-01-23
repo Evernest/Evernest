@@ -41,14 +41,12 @@ namespace EvernestWeb.ViewModels
         public long StreamId { get; set; }
     }
     
-    // Beyond this point, a refactoring might be required
-
     public class NewStreamUserModel
     {
         [Required]
         [Display(Name = "New Stream User")]
-        [StringLength(100, ErrorMessage = "The user name length must be between 4 and 100 characters.", MinimumLength = 4)]
-        public string NewUser { get; set; }
+        //[StringLength(100, ErrorMessage = "The user name length must be between 4 and 100 characters.", MinimumLength = 4)]
+        public long NewUser { get; set; }
 
         [Required]
         public AccessRight Right { get; set; }
@@ -59,5 +57,35 @@ namespace EvernestWeb.ViewModels
         public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
     }
 
+    public class GetEventById
+    {
+        [Required]
+        [Display(Name = "Get event by Id")]
+        public long EventId { get; set; }
 
+        [Required]
+        public long StreamId { get; set; }
+    }
+
+    public class DeleteStreamModel
+    {
+        [Required]
+        [StringLength(100, ErrorMessage = "Password is too short. It requires at least 6 characters.", MinimumLength = 6)]
+        [Display(Name = "To delete a stream, please confirm with your password")]
+        public string DeleteConfirmPassword { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
+    }
+
+    public class DeleteSourceModel
+    {
+        [Required]
+        [StringLength(100, ErrorMessage = "Password is too short. It requires at least 6 characters.", MinimumLength = 6)]
+        [Display(Name = "To delete a source, please confirm with your password")]
+        public string DeleteConfirmPassword { get; set; }
+
+        [Required]
+        public long SourceId { get; set; }
+    }
 }

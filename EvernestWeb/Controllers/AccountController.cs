@@ -12,7 +12,8 @@ namespace EvernestWeb.Controllers
         // GET: /Account
         public ActionResult Index()
         {
-            return View();
+            Models.User user = (Models.User)Session["User"];
+            return View(user);
         }
 
         // GET: /Account/ChangePwd
@@ -42,6 +43,7 @@ namespace EvernestWeb.Controllers
                     ModelState.AddModelError("Password", "Incorrect Password.");
                     return View(model);
                 }
+                ViewBag.Status = "Password modified.";
                 return View(model);
             }
             return View(model);

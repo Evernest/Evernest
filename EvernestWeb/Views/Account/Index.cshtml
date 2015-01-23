@@ -1,9 +1,11 @@
-﻿
+﻿@model EvernestWeb.Models.User
 @{
     ViewBag.Title = "Evernest - Account";
 }
 
 <h2>Edit profile</h2>
+
+<p>User Id : @Model.Id.ToString()</p>
 
 <ul>
     <li>@Html.ActionLink("Change password", "ChangePwd", "Account")</li>

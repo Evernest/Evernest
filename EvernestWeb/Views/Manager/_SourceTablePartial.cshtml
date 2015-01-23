@@ -16,8 +16,8 @@
             <tr>
                 <td>@source.Id</td>
                 <td>@source.Name</td>
-                <td>@Html.ActionLink("Details", "Source", "Manager", new { id = source.Id })</td>
-                <td>@Html.ActionLink("Delete", "DeleteSource", "Manager", new { id = source.Id })</td>
+                <td>@Html.ActionLink("Details", "Source", "Manager", new { id = source.Id }, null)</td>
+                <td>@Html.ActionLink("Delete", "DeleteSource", "Manager", new { id = source.Id }, null)</td>
             </tr>
         }
         @if (!Model.Any())

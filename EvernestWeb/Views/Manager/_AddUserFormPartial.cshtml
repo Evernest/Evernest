@@ -9,6 +9,7 @@
                 @Html.LabelFor(m => m.NewUser)
                 @Html.TextBoxFor(m => m.NewUser)
                 @Html.DropDownListFor(m => m.Right, new SelectList(Model.AccessRightsDictionary, "Key", "Value"))
+                <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId);}" />
                 <input type="submit" value="Valider" />
     </fieldset>
 }

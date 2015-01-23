@@ -11,138 +11,71 @@ namespace EvernestAPI.Controllers
 {
     public class SourceController : ApiController
     {
-        // /Source/{id}
+        // Default controller. Get informations on the source.
+        //     /Source/{id}
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
         public HttpResponseMessage Default(long id)
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
 
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "Stream";
-                debug["Method"] = "Push";
-                debug["id"] = id;
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                ans["Status"] = "Error";
-                // END DEBUG //
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
 
-                var front = new EvernestFront.UsersBuilder();
-                var userReq = front.GetUser((string)body["key"]);
+            var sourceProvider = new SourceProvider();
+            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
 
-                if (!userReq.Success)
-                {
-                    ans["Status"] = "Error";
-                    ans["Error"] = userReq.Error;
-                    return Request.CreateResponse(HttpStatusCode.OK, ans);
-                }
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "Key");
+            
+            var source = sourceRequest.Result;
 
-                var user = userReq.Result;
+            var ans = new Hashtable();
+            ans["Source"] = source;
 
-                try
-                {
-                    var key = (string) body["Key"];
-                    var sourceReq = user.GetSource(id);
-                    if (!sourceReq.Success)
-                    {
-                        var nosource = ans;
-                        ans["FieldErrors"] = sourceReq.Error;
-                        return Request.CreateResponse(HttpStatusCode.OK, nosource);
-                    }
-                    var source = sourceReq.Result;
-
-                    ans["Status"] = "Success";
-                    ans["Sources"] = source;
-
-                }
-                catch
-                {
-                    var nokey = ans;
-                    nokey["Error"] = "KeyNotFound";
-                    return Request.CreateResponse(HttpStatusCode.OK, nokey);
-
-                }
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            return Response.Success(Request, ans);
         }
 
-        // /Source/New/
+        // Controller that creates a new source.
+        //     /Source/New/
+        // >>>>>  userKey needed  <<<<<
         [HttpGet]
         [HttpPost]
         [ActionName("New")]
         public HttpResponseMessage New()
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
 
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "Source";
-                debug["Method"] = "New";
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
 
-                ans["Status"] = "Error";
+            var userProvider = new UserProvider();
+            var userRequest = userProvider.GetUser((string)body["key"]);
 
-                var front = new EvernestFront.UsersBuilder();
-                var userReq = front.GetUser((string)body["key"]);
+            if (!userRequest.Success)
+                return Response.BadArgument(Request, "Key");
 
-                if (!userReq.Success)
-                {
-                    ans["Status"] = "Error";
-                    ans["Error"] = userReq.Error;
-                    return Request.CreateResponse(HttpStatusCode.OK, ans);
-                }
+            var user = userRequest.Result;
 
-                var user = userReq.Result;
+            var createSourceRequest = user.CreateSource((string) body["sourceName"]);
 
-                try
-                {
-                    var sourceReq = user.CreateSource();
-                    
-                    var iduser = EvernestFront.User.IdentifyUser(key);
-                    if (!iduser.Success)
-                    {
-                        ans["Error"] = "UserNotFound";
-                        return Request.CreateResponse(HttpStatusCode.OK, ans);
-                    }
-                    var user = iduser.User;
-                    var sourceName = (string) body["SourceName"];
-                    var streamId = (long) body["StreamId"];
-                    var rights = (AccessRight) body["AccessRights"]; // ?
-                    var creaSource = user.CreateSource(sourceName, streamId, rights);
-                    if (!creaSource.Success)
-                    {
-                        ans["Error"] = "NoSourceCreated";
-                        return Request.CreateResponse(HttpStatusCode.OK, ans);
-                    }
-                    ans["Status"] = "Success";
+            if (!createSourceRequest.Success)
+                return Response.Error(Request, "Error while creating source"); // TODO: change this
 
-                }
-                catch
-                {
-                    ans["Error"] = "KeyNotFound";
-                    return Request.CreateResponse(HttpStatusCode.OK, ans);
-                }
+            var createSource = createSourceRequest.Result;
+            var source = new Hashtable();
+            source["Name"] = createSource.Item1;
+            source["Guid"] = createSource.Item2; // TODO: Cannot cast expression of type 'System.Guid' to type 'long'
 
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            var ans = new Hashtable();
+            ans["Source"] = source;
+
+            return Response.Success(Request, ans);
         }
     }
 }

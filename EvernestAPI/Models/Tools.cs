@@ -9,7 +9,7 @@ namespace EvernestAPI.Models
 {
     public class Tools
     {
-        public static Hashtable ParseRequest(System.Net.Http.HttpRequestMessage request) {
+        public static Hashtable ParseRequest(HttpRequestMessage request) {
             /// Parses the URL and the request and raise an exception when 
             /// it gets invalid data.
             /// This method doesn't catch any exception, it should be done on the 
@@ -50,6 +50,5 @@ namespace EvernestAPI.Models
             }
             return json;    
         }
-
     }
 }

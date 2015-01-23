@@ -288,8 +288,10 @@ namespace EvernestFrontTests
             var streamName = AssertAuxiliaries.NewName;
             long userId = UserTests.AddUser_GetId_AssertSuccess(userName);
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, streamName);
+
             long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             long eventId2 = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
+
             User user = UserTests.GetUser_AssertSuccess(userId);
             var stream = user.GetEventStream(streamName).Result;
             Response<List<Event>> ans = stream.PullRange(eventId, eventId2);

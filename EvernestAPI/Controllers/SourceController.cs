@@ -62,15 +62,18 @@ namespace EvernestAPI.Controllers
 
             var user = userRequest.Result;
 
-            var createSourceRequest = user.CreateSource((string) body["sourceName"]);
+            if (!body.ContainsKey("sourcename"))
+                return Response.MissingArgument(Request, "SourceName");
+
+            var createSourceRequest = user.CreateSource((string) body["sourcename"]);
 
             if (!createSourceRequest.Success)
                 return Response.Error(Request, "Error while creating source"); // TODO: change this
 
             var createSource = createSourceRequest.Result;
             var source = new Hashtable();
-            source["Name"] = createSource.Item1;
-            source["Guid"] = createSource.Item2; // TODO: Cannot cast expression of type 'System.Guid' to type 'long'
+            source["Key"] = createSource.Item1;
+            source["Name"] = (string)body["sourceName"];
 
             var ans = new Hashtable();
             ans["Source"] = source;

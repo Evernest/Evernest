@@ -32,7 +32,7 @@ namespace EvernestAPI.Models
             // Copy the keys from the URL
             for (var i = 0; i < nvc.Count; i ++ )
             {
-                json.Add(nvc.GetKey(i), nvc.Get(i));
+                json.Add(nvc.GetKey(i).ToLower(), nvc.Get(i));
             }
 
             // Copy the keys from the body if any
@@ -41,11 +41,11 @@ namespace EvernestAPI.Models
             {
                 try
                 {
-                    json.Add(de.Key, de.Value);
+                    json.Add(de.Key.ToString().ToLower(), de.Value);
                 }
                 catch (ArgumentException)
                 {
-                    json[de.Key] = de.Value;
+                    json[de.Key.ToString().ToLower()] = de.Value;
                 }
             }
             return json;    

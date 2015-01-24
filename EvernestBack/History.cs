@@ -142,6 +142,25 @@ namespace EvernestBack
         }
 
         /// <summary>
+        /// Retrieves the element whose key is the greatest.
+        /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
+        /// </summary>
+        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <param name="key">The key needed to be set to the requested element's key.</param>
+        /// <returns>
+        /// True if such an element exists, false otherwise.
+        /// </returns>
+        public bool GreatestElement(ref ulong element, ref long key)
+        {
+            if (_lastNode != null)
+            {
+                element = _lastNode.Element;
+                key = _lastNode.Key;
+            }
+            return _lastNode != null;
+        }
+
+        /// <summary>
         /// Encodes the History as a byte array.
         /// </summary>
         /// <returns>

@@ -11,7 +11,7 @@ namespace EvernestFrontTests
     [TestFixture]
     class EventStreamTests
     {
-        private const int WaitAtEventStreamCreation = 500;
+        private const int WaitAtEventStreamCreation = 50;
         //the creation of a pageblob is a bit long (syn+alloc+ack at least), so we need this
         //otherwise the test don't pass since the stream isn't created yet when we request it
 

@@ -14,6 +14,7 @@ namespace EvernestFront
             injector.SystemEventRecuperator.FetchAndDispatch();
             injector.SystemCommandHandler.HandleCommands();
             injector.SystemEventQueue.DispatchSystemEvents();
+            AzureStorageClient.Close();
         }
     }
 }

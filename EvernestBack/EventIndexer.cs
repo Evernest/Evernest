@@ -143,10 +143,11 @@ namespace EvernestBack
             if(_streamIndexBlob.Exists())
             {
                 _milestones.ReadFromBlob(_streamIndexBlob);
-                if(_milestones.GreatestElement(ref _lastPosition))
+                if(_milestones.GreatestElement(ref _lastPosition, ref nextId))
                 {
+                    nextId++;
                     ulong lastByte = _bufferedStreamIO.TotalWrittenBytes;
-                    if (lastByte - _lastPosition <= 0)
+                    if (lastByte < _lastPosition)
                     {
                         _lastPosition = 0;
                         _milestones.Clear();

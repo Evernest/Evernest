@@ -113,7 +113,7 @@ namespace EvernestBackTests
         }
 
         [Test]
-        public void Persistance()
+        public void PersistanceClose()
         {
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");

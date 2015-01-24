@@ -82,9 +82,8 @@ namespace EvernestBack
             var buffer = new Byte[byteCount];
             var realByteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int)firstByte, byteCount);
             EventRange superRange = new EventRange(buffer, 0, realByteCount);
-            if( byteCount == realByteCount ) //shouldn't be necessary, but who knows?
+            if (byteCount == realByteCount) //shouldn't be necessary, but who knows?
                 _cache.InsertRange(superRange, firstId, lastRetrievedKey);
-               //well in fact there's even more than that inside if we rely on the indexer, but that will do for now
             return superRange.MakeSubRange(firstId, lastId, out range);
         }
 

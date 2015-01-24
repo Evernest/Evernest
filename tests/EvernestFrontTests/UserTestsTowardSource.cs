@@ -14,17 +14,10 @@ namespace EvernestFrontTests
     {        
         private const AccessRight SomeRight = AccessRight.ReadOnly; //constant to use when the right is not decisive
 
-        [SetUp]
-        public void ResetTables()
-        {
-            //TODO : clear tables ?
-            Setup.ClearAsc();
-        }
-
         [Test]
         public void CreateSource_Success()
         {
-            var userName = AssertAuxiliaries.NewName;
+            var userName = Helpers.NewName;
             var userId = UserTests.AddUser_GetId_AssertSuccess(userName);
             var user = new UserProvider().GetUser(userId).Result;
             Assert.IsNotNull(user);
@@ -38,9 +31,9 @@ namespace EvernestFrontTests
         [Test]
         public void CreateSource_SameNameDistinctUsers_Success()
         {
-            var userName = AssertAuxiliaries.NewName;
-            var userName2 = AssertAuxiliaries.NewName;
-            var streamName = AssertAuxiliaries.NewName;
+            var userName = Helpers.NewName;
+            var userName2 = Helpers.NewName;
+            var streamName = Helpers.NewName;
 
             var userId = UserTests.AddUser_GetId_AssertSuccess(userName);
             var streamId = EventStreamTests.CreateEventStream_GetId_AssertSuccess(userId, streamName);
@@ -55,20 +48,20 @@ namespace EvernestFrontTests
         [Test]
         public void CreateSource_SourceNameTaken()
         {
-            var userName = AssertAuxiliaries.NewName;
+            var userName = Helpers.NewName;
             var userId = UserTests.AddUser_GetId_AssertSuccess(userName);
-            var sourceName = AssertAuxiliaries.NewName;
+            var sourceName = Helpers.NewName;
             var source = SourceTests.CreateSource_GetKey_AssertSuccess(userId, sourceName);
             User user = UserTests.GetUser_AssertSuccess(userId);
             var ans = user.CreateSource(sourceName);
-            AssertAuxiliaries.ErrorAssert(FrontError.SourceNameTaken, ans);
+            Helpers.ErrorAssert(FrontError.SourceNameTaken, ans);
         }
 
         [Test]
         public void DeleteSource_Success()
         {
-            var userName = AssertAuxiliaries.NewName;
-            var sourceName = AssertAuxiliaries.NewName;
+            var userName = Helpers.NewName;
+            var sourceName = Helpers.NewName;
             var userId = UserTests.AddUser_GetId_AssertSuccess(userName);
             var sourceKey = SourceTests.CreateSource_GetKey_AssertSuccess(userId, sourceName);
             var sourceId = new SourceProvider().GetSource(sourceKey).Result.Id;
@@ -84,10 +77,10 @@ namespace EvernestFrontTests
         [Test]
         public void Sources_Property()
         {
-            string streamName = AssertAuxiliaries.NewName;
-            string sourceName = AssertAuxiliaries.NewName;
-            string sourceName2 = AssertAuxiliaries.NewName;
-            string userName = AssertAuxiliaries.NewName;
+            string streamName = Helpers.NewName;
+            string sourceName = Helpers.NewName;
+            string sourceName2 = Helpers.NewName;
+            string userName = Helpers.NewName;
 
             long userId = UserTests.AddUser_GetId_AssertSuccess(userName);
             long streamId = EventStreamTests.CreateEventStream_GetId_AssertSuccess(userId, streamName);

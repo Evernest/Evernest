@@ -10,20 +10,13 @@ namespace EvernestFrontTests.UtilitiesTests
     class SerializerTests
     {
         private const string Message = "message";
-
-        [SetUp]
-        public void ResetTables()
-        {
-            //TODO : clear tables ?
-            Setup.ClearAsc();
-        }
-
+        
 
         [Test]
         public static void ReadContract_Success()
         {
             var serializer = new Serializer();
-            var userId = UserTests.AddUser_GetId_AssertSuccess(AssertAuxiliaries.NewName);
+            var userId = UserTests.AddUser_GetId_AssertSuccess(Helpers.NewName);
             var user = UserTests.GetUser_AssertSuccess(userId);
             var date = DateTime.UtcNow;
             var contract = new EventContract(user.Name, user.Id, date, Message);

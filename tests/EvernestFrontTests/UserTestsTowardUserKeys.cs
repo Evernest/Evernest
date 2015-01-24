@@ -22,12 +22,11 @@ namespace EvernestFrontTests
         }
 
         [SetUp]
-        public void ResetTables()
+        public void Names()
         {
-            _userName = AssertAuxiliaries.NewName;
-            _userName2 = AssertAuxiliaries.NewName;
-            _keyName = AssertAuxiliaries.NewName;
-            Setup.ClearAsc();
+            _userName = Helpers.NewName;
+            _userName2 = Helpers.NewName;
+            _keyName = Helpers.NewName;
         }
 
         [Test]
@@ -47,7 +46,7 @@ namespace EvernestFrontTests
             var key = CreateUserKey_ReturnKey_AssertSuccess(user, _keyName);
             user = UserTests.GetUser_AssertSuccess(userId);
             var ans = user.CreateUserKey(_keyName);
-            AssertAuxiliaries.ErrorAssert(FrontError.UserKeyNameTaken,ans);
+            Helpers.ErrorAssert(FrontError.UserKeyNameTaken,ans);
         }
 
         [Test]
@@ -71,7 +70,7 @@ namespace EvernestFrontTests
             const string inexistantKey = "InexistantKey";
             var usp = new UserProvider();
             var ans = usp.GetUser(inexistantKey);
-            AssertAuxiliaries.ErrorAssert(FrontError.UserKeyDoesNotExist,ans);
+            Helpers.ErrorAssert(FrontError.UserKeyDoesNotExist,ans);
         }
 
         [Test]

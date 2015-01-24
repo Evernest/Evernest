@@ -55,6 +55,7 @@ namespace EvernestBackTests
                         pushedEvent.RequestID,
                         pulledEvent =>
                         {
+                            Console.WriteLine(pushedEvent.RequestID);
                             Assert.AreEqual(pushedEvent.Message, pulledEvent.Message);
                             Assert.AreEqual(pushedEvent.RequestID, pulledEvent.RequestID);
                         },
@@ -70,7 +71,6 @@ namespace EvernestBackTests
             Random rng = GetRNG();
             for (int i = 0; i < count; i++)
             {
-                Console.WriteLine(i);
                 SinglePushPull(stream, RandomString(rng, 42));
             }
         }
@@ -159,9 +159,8 @@ namespace EvernestBackTests
                 pushedStrings.Add(str);
                 SinglePushPull(stream, str);
             }
-            AzureStorageClient.Instance.CloseStream("TEST");
-            //used to ensure all the push/pull are handled before attempting to pull
-            stream = AzureStorageClient.Instance.GetEventStream("TEST");
+            stream.FlushPushRequests();
+            stream.FlushPullRequests();
             stream.PullRange(5, 10,
                 pulledRange =>
                 {

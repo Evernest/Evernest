@@ -77,11 +77,11 @@ namespace EvernestBack
         /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
         /// </summary>
         /// <param name="key">The key to look for.</param>
-        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <param name="foundNode">The reference needed to be set to the foundNode.</param>
         /// <returns>
         /// True if such an element exists, false otherwise.
         /// </returns>
-        public bool UpperBound(long key, ref ulong element)
+        private bool UpperBound(long key, out Node foundNode)
         {
             Node current = _root, upperBound = null;
             while (current != null)
@@ -94,9 +94,50 @@ namespace EvernestBack
                     current = current.Left;
                 }
             }
-            if (upperBound != null)
-                element = upperBound.Element;
+            foundNode = upperBound;
             return upperBound != null;
+        }
+
+        /// <summary>
+        /// Retrieves the element with the least key which is greater (or equal) than the given key.
+        /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
+        /// </summary>
+        /// <param name="key">The key to look for.</param>
+        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <returns>
+        /// True if such an element exists, false otherwise.
+        /// </returns>
+        public bool UpperBound(long key, ref ulong element)
+        {
+            Node upperBound = null;
+            if (UpperBound(key, out upperBound))
+            {
+                element = upperBound.Element;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Retrieves the element with the least key which is greater (or equal) than the given key.
+        /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
+        /// </summary>
+        /// <param name="key">The key to look for.</param>
+        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <param name="foundKey">The reference needed to be set to the key of the requested element's value.</param>
+        /// <returns>
+        /// True if such an element exists, false otherwise.
+        /// </returns>
+        public bool UpperBound(long key, ref ulong element, ref long foundKey)
+        {
+            Node upperBound;
+            if (UpperBound(key, out upperBound))
+            {
+                element = upperBound.Element;
+                foundKey = upperBound.Key;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

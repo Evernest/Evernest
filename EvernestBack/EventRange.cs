@@ -7,32 +7,32 @@ namespace EvernestBack
 {
     public class EventRange : IEnumerable<LowLevelEvent>
     {
-        internal byte[] _src;
-        internal int _count;
-        internal int _offset;
+        private byte[] _src;
+        private int _offset;
+        public int Size { get; private set; }
 
-        internal EventRange(byte[] src, int offset, int count)
+        internal EventRange(byte[] src, int offset, int size)
         {
             _src = src;
             _offset = offset;
-            _count = count;
+            Size = size;
         }
 
         public EventRange(EventRange range)
         {
             _src = range._src;
             _offset = range._offset;
-            _count = range._count;
+            Size = range.Size;
         }
 
         public EventRangeEnumerator GetEnumerator(int position)
         {
-            return new EventRangeEnumerator(_src, _offset, _count, position);
+            return new EventRangeEnumerator(_src, _offset, Size, position);
         }
 
         public EventRangeEnumerator GetEnumerator()
         {
-            return new EventRangeEnumerator(_src, _offset, _count);
+            return new EventRangeEnumerator(_src, _offset, Size);
         }
 
         IEnumerator<LowLevelEvent> IEnumerable<LowLevelEvent>.GetEnumerator()

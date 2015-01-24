@@ -1,49 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using EvernestBack;
 
-/// <summary>
-/// Caching previously pulled messages.
-/// </summary>
-public class HashCache
+public class RangeCache
 {
+    private Queue<Tuple<EventRange, long, long>> _cachedRanges;
+    private long _totalCachedRangesSize;
+    private readonly long _maximumCacheSize;
 
-        private int Size;
-        private Tuple<long, string>[] messages;
+    public RangeCache( long maximumCachesize)
+    {
+        _cachedRanges = new Queue<Tuple<EventRange, long, long>>();
+        _maximumCacheSize = maximumCachesize;
+    }
 
-    /// <summary>
-    /// Construct a cache of given Size
-    /// </summary>
-    /// <param name="size">Size of the cache.</param>
-        public HashCache(int size)
-        {
-            Size = size;
-            messages = new Tuple<long, string>[size];
-        }
+    public void InsertRange(EventRange range, long firstId, long lastId)
+    {
+        _cachedRanges.Enqueue(Tuple.Create(range, firstId, lastId));
+        _totalCachedRangesSize += range.Size;
+        while (_totalCachedRangesSize > _maximumCacheSize)
+            _totalCachedRangesSize -= _cachedRanges.Dequeue().Item1.Size;
+    }
 
-    /// <summary>
-    /// Add the (index, message) in the cache.
-    /// </summary>
-    /// <param name="index">The index of the message.</param>
-    /// <param name="message">The message to store</param>
-        public void Add(long index, string message)
-        {
-            int pos = (int) (index / Size);
-            messages[pos] = new Tuple<long, string>(index, message);
-        }
-
-    /// <summary>
-    /// Get the message index from cache, if it is in.
-    /// </summary>
-    /// <param name="index">The index of the message to get.</param>
-    /// <returns>The message if it is contained in the cache, the empty string otherwise.</returns>
-        public bool Get(long index, out string message)
-        {
-            int pos = (int)(index / Size);
-            if(messages[pos] != null && messages[pos].Item1 == index)
-            {
-                message = messages[pos].Item2;
-                return true;
-            }
-            message = "";
-            return false;
-        }
+    public bool TrySetRange(long firstId, long lastId, out EventRange range)
+    {
+        range = null;
+        Tuple<EventRange, long, long> foundRange =
+            _cachedRanges.FirstOrDefault(r => { return r.Item2 <= firstId && r.Item3 >= lastId; });
+        return foundRange != null && foundRange.Item1.MakeSubRange(firstId, lastId, out range);
+    }
 }

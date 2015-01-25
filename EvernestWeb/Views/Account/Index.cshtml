@@ -3,11 +3,16 @@
     ViewBag.Title = "Evernest - Account";
 }
 
-<h2>Edit profile</h2>
+<h2 class="manager-navbar"><span class="manager-navbar-disabled">User profile</span> &gt; @Html.ActionLink(Model.Username, "Index", "Account") <span class="info">#@Model.Id</span></h2>
 
 
 
-<ul>
-    <li><strong>Your user ID :</strong> @Model.Id.ToString()</li>
-    <li>@Html.ActionLink("Change password", "ChangePwd", "Account")</li>
-</ul>
+<div>
+    <h4>Account actions</h4>
+
+    <ul>
+        <li>@Html.ActionLink("Change password", "ChangePwd", "Account")</li>
+        <li>@Html.ActionLink("Evernest Manager", "Index", "Manager")</li>
+    </ul>
+</div>
+

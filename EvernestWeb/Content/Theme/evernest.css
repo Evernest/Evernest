@@ -274,14 +274,17 @@ footer p {
     margin: 0px;
     padding: 0px;
     font-size: 1.5em;
-    margin-left: 20px;
-    margin-bottom: 42px;
+    margin-left: 2em;
     font-style: italic;
 }
 
-.manager-subtitle .info {
+.manager-subtitle .info, .manager-navbar .info {
     color: #888;
     font-size: 0.8em;
     display: inline-block;
-    padding-left: 20px;
+    padding-left: 2em;
+}
+
+h4 {
+    margin-top: 3em;
 }

@@ -1,0 +1,10 @@
+﻿@model EvernestWeb.ViewModels.DeleteSourceRight
+
+@using (Html.BeginForm("DeleteSourceRight", "Manager", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <input type="hidden" name="SourceId" value="@{Write(ViewBag.SourceId);}" />
+    <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId); }" />
+    <input type="submit" value="Delete" />
+}

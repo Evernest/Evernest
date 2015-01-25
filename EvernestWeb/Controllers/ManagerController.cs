@@ -285,5 +285,39 @@ namespace EvernestWeb.Controllers
 
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateSourceRight(UpdateSourceRight model)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+
+            var front = new UserProvider();
+            Models.User user = (Models.User)Session["User"];
+            var userReq = front.GetUser(user.Id);
+
+            var sourceRightReq = userReq.Result.SetSourceRight(model.SourceId, model.StreamId, model.Right);
+
+            return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteSourceRight(DeleteSourceRight model)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+
+            var front = new UserProvider();
+            Models.User user = (Models.User)Session["User"];
+            var userReq = front.GetUser(user.Id);
+
+            var sourceRightReq = userReq.Result.SetSourceRight(model.SourceId, model.StreamId, AccessRight.NoRight);
+
+            return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+
+        }
+
     }
 }

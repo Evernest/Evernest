@@ -31,6 +31,7 @@
                 <tr>
                     <th>Stream name</th>
                     <th>Access level</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -39,9 +40,22 @@
                 {
                     foreach (var stream in Model.RelatedEventStreams)
                     {
+                        ViewBag.StreamId = stream.Id;
+                        ViewBag.SourceId = Model.Id;
                         <tr>
-                            <td>@stream.Key</td>
-                            <td>@stream.Value</td>
+                            <td>@stream.Name</td>
+                            <td>
+                                @{
+                                    var updateStream = new EvernestWeb.ViewModels.UpdateSourceRight();
+                                    updateStream.Right = stream.Right;
+                                    Html.RenderPartial("_UpdateSourceRightFormPartial", updateStream);
+                                }
+                            </td>
+                            <td>
+                                @{
+                                    Html.RenderPartial("_DeleteSourceRightFormPartial", new EvernestWeb.ViewModels.DeleteSourceRight());
+                                }
+                            </td>
                         </tr>
                     }
                 }
@@ -50,6 +64,7 @@
                     <tr>
                         <td></td>
                         <td><em>No rights given to source.</em></td>
+                        <td></td>
                     </tr>
 
                 }
@@ -59,6 +74,7 @@
                 <tr>
                     <td style="min-width: 15%;"></td>
                     <td>@{ Html.RenderPartial("_NewStreamToSourceFormPartial", new NewStreamToSourceModel()); }</td>
+                    <td></td>
                 </tr>
             </tfoot>
         </table>

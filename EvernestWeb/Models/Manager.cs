@@ -91,12 +91,26 @@ namespace EvernestWeb.Models
         }
     }
 
+    public class RelatedEventStreams
+    {
+        public string Name { get; set; }
+        public AccessRight Right { get; set; }
+        public long Id { get; set; }
+
+        public RelatedEventStreams(string n, AccessRight r, long i)
+        {
+            Name = n;
+            Right = r;
+            Id = i;
+        }
+    }
+
     public class SourceModel
     {
         public string Key { get; set; }
         public string Name { get; set; }
         public long Id { get; set; }
-        public List<KeyValuePair<string, AccessRight>> RelatedEventStreams { get; set; } 
+        public List<RelatedEventStreams> RelatedEventStreams { get; set; } 
 
         public SourceModel(EvernestFront.User u, long sourceId)
         {
@@ -106,13 +120,13 @@ namespace EvernestWeb.Models
                 Key = sourceReq.Result.Key;
                 Name = sourceReq.Result.Name;
                 Id = sourceReq.Result.Id;
-                RelatedEventStreams = new List<KeyValuePair<string, AccessRight>>();
+                RelatedEventStreams = new List<RelatedEventStreams>();
                 foreach (var relStream in sourceReq.Result.RelatedEventStreams)
                 {
                     var streamReq = u.GetEventStream(relStream.Key);
                     if (streamReq.Success)
                     {
-                        RelatedEventStreams.Add(new KeyValuePair<string, AccessRight>(streamReq.Result.Name, relStream.Value));
+                        RelatedEventStreams.Add(new RelatedEventStreams(streamReq.Result.Name, relStream.Value, relStream.Key));
                     }
                 }
             }

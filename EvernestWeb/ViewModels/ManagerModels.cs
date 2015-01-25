@@ -114,14 +114,8 @@ namespace EvernestWeb.ViewModels
         [Required]
         public AccessRight Right { get; set; }
 
-        public AccessRight SelectedRight { get; set; }
-    
         public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
 
-        public UpdateUserRightOnStream(AccessRight r)
-        {
-            SelectedRight = r;
-        }
     }
 
     public class DeleteUserRightOnStream
@@ -131,5 +125,28 @@ namespace EvernestWeb.ViewModels
 
         [Required]
         public string UserId { get; set; }
+    }
+
+    public class UpdateSourceRight
+    {
+        [Required]
+        public long SourceId { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
+
+        [Required]
+        public AccessRight Right { get; set; }
+
+        public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
+    }
+
+    public class DeleteSourceRight
+    {
+        [Required]
+        public long SourceId { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
     }
 }

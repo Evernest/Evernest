@@ -7,7 +7,7 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()
     <fieldset>
-        @Html.DropDownListFor(x => x.SelectedRight, new SelectList(Model.AccessRightsDictionary, "Key", "Value"))
+        @Html.DropDownListFor(x => x.Right, new SelectList(Model.AccessRightsDictionary, "Key", "Value"))
         <input type="hidden" name="UserId" value="@{Write(ViewBag.UserId);}" />
         <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId);}" />
         <input type="submit" value="Update" />

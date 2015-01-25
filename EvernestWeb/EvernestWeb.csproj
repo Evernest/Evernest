@@ -127,6 +127,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Images\evernest.png" />
+    <Content Include="Content\Images\explain_events.png" />
+    <Content Include="Content\Images\explain_rights.png" />
+    <Content Include="Content\Images\explain_sources.png" />
+    <Content Include="Content\Images\explain_streams.png" />
+    <Content Include="Content\Images\explain_user_rights.png" />
+    <Content Include="Content\Images\logo.png" />
+    <Content Include="Content\Images\mountain.png" />
     <Content Include="Content\Theme\bootstrap.css" />
     <Content Include="Content\Theme\EvernestWeb2.css" />
     <Content Include="favicon.ico" />
@@ -137,6 +144,9 @@
     <Content Include="Content\Scripts\bootstrap.min.js" />
     <Content Include="ClassDiagram1.cd" />
     <Content Include="README.md" />
+    <Content Include="Content\Images\more.svg" />
+    <Content Include="Content\Images\more_blue.svg" />
+    <Content Include="Content\Images\profile.svg" />
     <None Include="Content\Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Content\Scripts\jquery-1.10.2.js" />
     <Content Include="Content\Scripts\jquery-1.10.2.min.js" />

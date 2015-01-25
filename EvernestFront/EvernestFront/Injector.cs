@@ -29,7 +29,6 @@ namespace EvernestFront
         public SourceProvider SourceProvider;
         public SystemCommandResultViewer SystemCommandResultViewer;
 
-        private EventStreamProvider _eventStreamProvider;
         private SystemEventRecuperator _systemEventRecuperator;
         private SystemCommandHandler _systemCommandHandler;
         private SystemEventQueue _systemEventQueue;
@@ -64,9 +63,9 @@ namespace EvernestFront
             _systemCommandHandler = new SystemCommandHandler(azureStorageClient, systemCommandHandlerState, _systemEventQueue, systemCommandResultManager);
             _systemEventRecuperator = new SystemEventRecuperator(new List<IProjection>
                 {usersProjection, eventStreamsProjection, sourcesProjection, systemCommandHandlerState}, systemEventStream);
-            UserProvider = new UserProvider(_systemCommandHandler, usersProjection, _eventStreamProvider);
-            _eventStreamProvider=new EventStreamProvider(_systemCommandHandler,eventStreamsProjection);
-            SourceProvider=new SourceProvider(sourcesProjection, _eventStreamProvider);
+            var eventStreamProvider = new EventStreamProvider(_systemCommandHandler, eventStreamsProjection);
+            UserProvider = new UserProvider(_systemCommandHandler, usersProjection, eventStreamProvider);
+            SourceProvider=new SourceProvider(sourcesProjection, eventStreamProvider);
             SystemCommandResultViewer = new SystemCommandResultViewer(systemCommandResultManager);
             //TODO: read id for systemEventStream and number of reserved ids in app.config
         }

@@ -23,6 +23,7 @@ namespace EvernestBack
         private const Int16 PageSize = 512;
         public ulong TotalWrittenBytes {get; private set;}
         private readonly object _bufferLock = new object();
+        private bool _bufferNeedsUpdate;
 
         public BufferedBlobIO( CloudPageBlob blob, int minimumBufferSize)
         {
@@ -37,6 +38,7 @@ namespace EvernestBack
             _currentBufferPosition = (int) (TotalWrittenBytes % (ulong) PageSize);
             if(_currentBufferPosition != 0)
                 _blob.DownloadRangeToByteArray(_writeBuffer, 0, (int)TotalWrittenBytes - _currentBufferPosition + PageSize, _currentBufferPosition);
+            _bufferNeedsUpdate = false;
         }
 
         /// <summary>
@@ -180,6 +182,7 @@ namespace EvernestBack
             Buffer.BlockCopy(src, offset, _writeBuffer, _currentBufferPosition, count);
             _currentBufferPosition += count;
             TotalWrittenBytes += (ulong) count;
+            _bufferNeedsUpdate = true;
             return true;
         }
 
@@ -228,7 +231,7 @@ namespace EvernestBack
         /// </returns>
         public bool FlushBuffer()
         {
-            if (_currentBufferPosition != 0)
+            if (_bufferNeedsUpdate)
             {
                 lock (_bufferLock)
                 {
@@ -237,6 +240,7 @@ namespace EvernestBack
                 }
             }
             UpdateSizeInfo();
+            _bufferNeedsUpdate = false;
             return true;
         }
 

@@ -7,6 +7,7 @@ namespace EvernestBack
     internal class EventIndexer:IDisposable
     {
         private History _milestones;
+        private bool _milestonesNeedUpdate;
         private ulong _currentChunkBytes;
         private ulong _lastPosition;
         private readonly uint _eventChunkSizeInBytes;
@@ -19,12 +20,11 @@ namespace EvernestBack
         /// </summary>
         /// <param name="streamIndexBlob">The block blob where is the additional stream index information.</param>
         /// <param name="buffer">A lower-level interface with the page blob.</param>
-        /// <param name="updateMinimumEntryCount">The minimum number of registered indexes (also referred as milestones) to be added before the indexer attempts to re-update the additional stream index information.</param>
-        /// <param name="updateMinimumDelay">The minimum delay before before the indexer attempts to re-update the additional stream index information.</param>
         /// <param name="minimumChunkSize">The minimum number of bytes to be read before the indexer registers a new index (also referred as milestone).</param>
         /// <param name="cacheSize">The cache size in bytes.</param>
         public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, uint minimumChunkSize, int cacheSize)
         {
+            _milestonesNeedUpdate = false;
             _eventChunkSizeInBytes = minimumChunkSize;
             _bufferedStreamIO = buffer;
             _streamIndexBlob = streamIndexBlob;
@@ -44,6 +44,7 @@ namespace EvernestBack
                 _lastPosition += _currentChunkBytes;
                 _milestones.Insert(id, _lastPosition);
                 _currentChunkBytes = wroteBytes;
+                _milestonesNeedUpdate = true;
             }
             else
                 _currentChunkBytes += wroteBytes;
@@ -97,14 +98,18 @@ namespace EvernestBack
         /// </summary>
         public void UploadIndex()
         {
-            var serializedMilestones = _milestones.Serialize();
-            try
+            if(_milestonesNeedUpdate)
             {
-                _streamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
-            }
-            catch (StorageException e)
-            {
-                Console.WriteLine(e.ToString());
+                var serializedMilestones = _milestones.Serialize();
+                try
+                {
+                    _streamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
+                    _milestonesNeedUpdate = false;
+                }
+                catch (StorageException e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
             }
         }
 

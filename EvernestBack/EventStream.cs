@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
@@ -23,10 +24,8 @@ namespace EvernestBack
         /// <param name="storage">The stream factory.</param>
         /// <param name="streamId">The name of the stream.</param>
         /// <param name="minimumBufferSize">The minimum size of the buffer.</param>
-        /// <param name="updateMinimumEntryCount">The minimum number of indexes (also referred as milestones) to be registered before re-updating the aditional stream index inforamtion.</param>
-        /// <param name="updateMinimumDelay">The minimum delay before re-updating the aditional stream index inforamtion.</param>
         /// <param name="minimumChunkSize">The minimum number of bytes to be read before a new index (also referred as milestone) is registered.</param>
-        /// /// <param name="cacheSize">The maximum cache size (in bytes).</param>
+        /// <param name="cacheSize">The maximum cache size (in bytes).</param>
         public EventStream(AzureStorageClient storage, string streamId, int minimumBufferSize, uint minimumChunkSize, int cacheSize)
         {
             CloudPageBlob blob = storage.StreamContainer.GetPageBlobReference(streamId);
@@ -135,8 +134,16 @@ namespace EvernestBack
         /// </summary>
         public void Update()
         {
+            EventWaitHandle finishedUpdating = new AutoResetEvent(false);
             _writer.AddSynchronizedAction(() => { _bufferedIO.FlushBuffer(); });
-            _reader.AddSynchronizedAction(_indexer.UploadIndex);
+            //the _writer makes the calls to NotifyNewEntry
+            //which determines whether the indexer should be updated or not
+            _writer.AddSynchronizedAction(() =>
+            {
+                _indexer.UploadIndex();
+                finishedUpdating.Set();
+            });
+            finishedUpdating.WaitOne();
         }
 
         /// <summary>

@@ -117,13 +117,18 @@ namespace EvernestWeb.Controllers
             }
 
             return RedirectToAction("Index", "Manager");
-
         }
 
         // GET: /Manager/DeleteStream/{Id}
         public ActionResult DeleteStream(long id)
         {
+            var front = new UserProvider();
+            Models.User user = (Models.User)Session["User"];
+            var userReq = front.GetUser(user.Id);
+
+            ViewBag.StreamName = userReq.Result.GetEventStream(id).Result.Name;
             ViewBag.StreamId = id;
+
             return View();
         }
 

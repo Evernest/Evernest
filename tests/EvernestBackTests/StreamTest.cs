@@ -55,6 +55,7 @@ namespace EvernestBackTests
                         pushedEvent.RequestID,
                         pulledEvent =>
                         {
+                            Console.WriteLine(pushedEvent.RequestID);
                             Assert.AreEqual(pushedEvent.Message, pulledEvent.Message);
                             Assert.AreEqual(pushedEvent.RequestID, pulledEvent.RequestID);
                         },
@@ -65,12 +66,25 @@ namespace EvernestBackTests
             );
         }
 
+        public void SinglePush(IEventStream stream, String str)
+        {
+            stream.Push(str, pushedEvent => {}, Fail);
+        }
+
+        public void SinglePull(IEventStream stream, long id)
+        {
+            stream.Pull(id,
+                pulledEvent =>
+                {
+                    Assert.AreEqual(pulledEvent.RequestID, pulledEvent.RequestID);
+                }, Fail);
+        }
+
         public void MultiplePushAndPull(IEventStream stream, int count)
         {
             Random rng = GetRNG();
             for (int i = 0; i < count; i++)
             {
-                Console.WriteLine(i);
                 SinglePushPull(stream, RandomString(rng, 42));
             }
         }
@@ -113,7 +127,7 @@ namespace EvernestBackTests
         }
 
         [Test]
-        public void PersistanceClose()
+        public void Persistance()
         {
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
@@ -136,7 +150,6 @@ namespace EvernestBackTests
                 stream.Pull(i,
                     pulledEvent =>
                     {
-                        Console.WriteLine(pulledEvent.RequestID);
                         Assert.AreEqual(pushedStrings.ElementAt((int) pulledEvent.RequestID), pulledEvent.Message);
                     },
                     Fail
@@ -159,9 +172,8 @@ namespace EvernestBackTests
                 pushedStrings.Add(str);
                 SinglePushPull(stream, str);
             }
-            AzureStorageClient.Instance.CloseStream("TEST");
-            //used to ensure all the push/pull are handled before attempting to pull
-            stream = AzureStorageClient.Instance.GetEventStream("TEST");
+            stream.FlushPushRequests();
+            stream.FlushPullRequests();
             stream.PullRange(5, 10,
                 pulledRange =>
                 {
@@ -175,6 +187,25 @@ namespace EvernestBackTests
                 Fail
                 );
             AzureStorageClient.Instance.CloseStream("TEST");
+        }
+
+        [Test]
+        public void BasicPerformanceMeasure()
+        {
+            AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
+            var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
+            Random rng = GetRNG();
+            const int count = 100000;
+            DateTime start = DateTime.UtcNow;
+            for(int i = 0 ; i < count ; i++)
+                SinglePush(stream, RandomString(rng, 42));
+            stream.FlushPushRequests();
+            Console.WriteLine("push time ("+count+" elements):"+DateTime.UtcNow.Subtract(start).TotalMilliseconds + "ms");
+            start = DateTime.UtcNow;
+            for(int i = 0 ; i < count ; i++)
+                SinglePull(stream, i);
+            stream.FlushPullRequests();
+            Console.WriteLine("pull time ("+count+" elements):"+DateTime.UtcNow.Subtract(start).TotalMilliseconds + "ms");
         }
     }
 }

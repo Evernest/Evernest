@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
@@ -17,7 +16,7 @@ namespace EvernestBack
         private uint _newEntryCount;
         private uint _indexUpdateMinimumDelay;
         private DateTime _lastIndexUpdateTime;
-        private HashCache _cache;
+        private RangeCache _cache;
 
         /// <summary>
         /// Constructor.
@@ -37,7 +36,7 @@ namespace EvernestBack
             _milestones = new History();
             _lastIndexUpdateTime = DateTime.UtcNow;
             _newEntryCount = 0;
-            _cache = new HashCache(cacheSize);
+            _cache = new RangeCache(cacheSize);
         }
 
         /// <summary>
@@ -59,52 +58,34 @@ namespace EvernestBack
                 _currentChunkBytes += wroteBytes;
         }
 
-        /*
-        /// <summary>
-        /// Try to retrieve an event.
-        /// </summary>
-        /// <param name="id">The id of the requested event.</param>
-        /// <param name="message">The string to which the event's message should be written.</param>
-        /// <returns>True if the event was successfully retrieved, false otherwise.</returns>
-        public bool FetchEvent(long id, out string message)
-        {
-            if (PullFromLocalCache(id, out message))
-                return true;
-            if (PullFromCloud(id, out message)) 
-            {
-                _cache.Add(id, message); 
-                return true;
-            }
-            return false;
-        }*/
-
         public bool FetchEventRange(long firstId, long lastId, out EventRange range)
         {
-            return PullRangeFromCloud(firstId, lastId, out range);
+            return _cache.TrySetRange(firstId, lastId, out range) || PullRangeFromCloud(firstId, lastId, out range);
         }
 
         private bool PullRangeFromCloud(long firstId, long lastId, out EventRange range) //DRY!!
         {
             ulong firstByte = 0;
             ulong lastByte = 0;
+            long lastRetrievedKey = 0;
             _milestones.LowerBound(firstId, ref firstByte);
-            if (!_milestones.UpperBound(lastId+1, ref lastByte) && (lastByte = _bufferedStreamIO.TotalWrittenBytes) == 0)
+            if (!_milestones.UpperBound(lastId+1, ref lastByte, ref lastRetrievedKey) && (lastByte = _bufferedStreamIO.TotalWrittenBytes) == 0)
             {
                 range = null;
                 return false; //there's nothing written!
             }
+            if (lastRetrievedKey == 0)
+                lastRetrievedKey = lastId + 1;
+            else
+                lastRetrievedKey--;
             var byteCount = (int)(lastByte - firstByte);
             var buffer = new Byte[byteCount];
-            byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int)firstByte, byteCount);
-
-            return (new EventRange(buffer, 0, byteCount)).MakeSubRange(firstId, lastId, out range);
+            var realByteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int)firstByte, byteCount);
+            EventRange superRange = new EventRange(buffer, 0, realByteCount);
+            if (byteCount == realByteCount) //shouldn't be necessary, but who knows?
+                _cache.InsertRange(superRange, firstId, lastRetrievedKey);
+            return superRange.MakeSubRange(firstId, lastId, out range);
         }
-
-        /*
-        private bool PullFromLocalCache(long id, out string message)
-        {
-            return _cache.Get(id, out message);
-        }*/
 
         public void UploadIndexIfMeetConditions()
         {
@@ -169,32 +150,6 @@ namespace EvernestBack
             }
             return nextId;
         }
-
-        /*
-        private bool PullFromCloud(long id, out string message)
-        {
-            ulong firstByte = 0;
-            ulong lastByte = 0;
-            _milestones.LowerBound(id, ref firstByte);
-            if (!_milestones.UpperBound(id + 1, ref lastByte) && (lastByte = _bufferedStreamIO.TotalWrittenBytes) == 0)
-            {
-                message = "";
-                return false; //there's nothing written!
-            }
-            var byteCount = (int) (lastByte - firstByte);
-            var buffer = new Byte[byteCount];
-            byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
-            EventRange unreadRange = new EventRange(buffer, 0, byteCount);
-            EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
-            while (enumerator.MoveNext() && enumerator.CurrentID != id) ;
-            if (enumerator.CurrentID == id)
-            {
-                message = enumerator.Current.Message;
-                return true;
-            }
-            message = "";
-            return false;
-        }*/
 
         public void Dispose()
         {

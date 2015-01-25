@@ -9,12 +9,12 @@ namespace EvernestFrontTests
     [SetUpFixture]
     class Setup
     {
-
+        //currently not called
         public static void ClearAsc()
         {
             try
             {
-                AzureStorageClient.Instance.ClearAll();
+                AzureStorageClient.Close();
             }
             catch (Exception e)
             {

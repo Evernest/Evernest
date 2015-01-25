@@ -7,7 +7,7 @@ using Assert = NUnit.Framework.Assert;
 
 namespace EvernestFrontTests
 {
-    class AssertAuxiliaries
+    class Helpers
     {
 
         public static string NewName

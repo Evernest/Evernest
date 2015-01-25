@@ -72,7 +72,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AssertAuxiliaries.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="UtilitiesTests\PasswordManagerTests.cs" />
     <Compile Include="UtilitiesTests\SerializerTests.cs" />
     <Compile Include="Setup.cs" />

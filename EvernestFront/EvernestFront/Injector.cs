@@ -36,5 +36,10 @@ namespace EvernestFront
             SystemEventRecuperator = new SystemEventRecuperator(new List<IProjection>{UsersProjection, EventStreamsProjection, SourcesProjection, systemCommandHandlerState}, systemEventStream);
             //TODO: read id for systemEventStream and number of reserved ids in app.config
         }
+
+        ~Injector()
+        {
+            AzureStorageClient.Close();
+        }
     }
 }

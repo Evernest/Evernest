@@ -148,7 +148,7 @@ namespace EvernestFront.SystemCommandHandling
                 systemEvent = null;
                 return false;
             }
-            _azureStorageClient.DeleteStreamIfExists(Convert.ToString(command.EventStreamId));
+            _azureStorageClient.DeleteStreamIfExists(command.EventStreamId);
             relatedUsers = new HashSet<long>(relatedUsers);
             systemEvent = new EventStreamDeletedSystemEvent(command.EventStreamId, command.EventStreamName,
                 command.AdminName, command.AdminId, relatedUsers);

@@ -36,3 +36,148 @@
 .evernest-callout-danger h4 {
     color: #ff7f50;
 }
+
+/* navbar */
+
+.navbar {
+    background-color: white;
+	border-bottom: 1px solid #c5dbe5;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:active,
+.navbar-inverse .navbar-nav > li > a:focus {
+    color: #c6c6c6;
+}
+
+.navbar-brand {
+    padding: 5px;
+}
+
+
+.nav {
+	float: right;
+	color: white;
+	text-transform: uppercase;
+}
+
+.nav.right {
+    float: right;
+}
+
+.nav.left {
+    float: left;
+}
+
+header {
+	background-color: white;
+	border-bottom: 1px solid #c5dbe5;
+}
+
+
+.navbar .btn {
+    color: #c5dbe5;
+    border: 1px solid #c5dbe5;
+}
+
+/* Slides */
+
+.slide {
+
+}
+
+.slide--wrapper {
+	min-height: 100vh;
+	text-align: center;
+	margin: 0 10%;
+	padding: 10em 0;
+	box-sizing: border-box;
+    position: relative;
+}
+
+.slide h1 {
+    font-size: 1.9em;
+}
+
+
+
+.slide .scheme {
+    margin: 3em 0;
+}
+
+.slide--more {
+    display: inline-block;
+    height: 25px;
+    background-image: url("../Images/more_blue.svg");
+    background-repeat: no-repeat;
+    padding-left: 25px;
+
+    position: absolute;
+    right: 0;
+    bottom: 10em;
+}
+
+.slide:nth-child(2n+1) {
+	background-color: #195977;
+}
+
+.slide:nth-child(2n+1) h1 {
+	color: white;
+}
+
+.slide:nth-child(2n+1) .summary {
+    font-style: italic;
+	color: #c6c6c6;
+    font-size: 1.3em;
+}
+
+.slide:nth-child(2n+1) .slide--more {
+    background-image: url("../Images/more.svg");
+    color: white;
+}
+
+.slide:nth-child(2n) h1 {
+	color: #195977;
+}
+
+
+/* Slide try (last slide) */
+
+.slide-try--or-wrapper {
+    color: #c6c6c6;
+    border-bottom: 1px solid #c6c6c6;
+    height: 0.6em;
+    line-height: 1em;
+    margin: 2em 0;
+    text-transform: uppercase;
+}
+
+.slide-try--or {
+    background-color: white;
+    padding: 0 1em;
+}
+
+
+
+/* buttons */
+
+.btn {
+    border-color: #8eb9cc;
+    border-radius: 2px;
+    text-transform: uppercase;
+}
+
+.btn-primary:hover {
+    border-color: #8eb9cc;
+    background-color: #8eb9cc;
+}
+
+.btn-primary {
+    color: white;
+    background-color: #c5dbe5;
+}
+
+img {
+    max-width: 100%;
+}
+

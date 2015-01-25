@@ -3,11 +3,7 @@
     ViewBag.Title = "Sign Up";
 }
 
-<h2>Register</h2>
-
-<p class="text-success">
-    @ViewBag.message
-</p>
+<h2>Sign Up</h2>
 
 @using (Html.BeginForm())
 {
@@ -34,7 +30,7 @@
             </p>
             @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = "Confirm password" })
         </div>
-        <input type="submit" class="btn btn-primary" value="Register" />
+        <input type="submit" class="btn btn-primary" value="Sign Up" />
     </fieldset>
 }
 

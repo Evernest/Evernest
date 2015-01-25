@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Web.Http;
+
 using EvernestAPI.Models;
-using System.Net;
+
 using System.Net.Http;
+
 using EvernestFront;
-using System.Collections.Generic;
-using EvernestFront.Contract;
 
 namespace EvernestAPI.Controllers
 {

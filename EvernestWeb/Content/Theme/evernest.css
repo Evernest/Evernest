@@ -111,14 +111,9 @@ header {
 
 /* Slides */
 
-.slide {
-
-}
-
 .slide--wrapper {
 	min-height: 100vh;
 	text-align: center;
-	min-margin: 0 10%;
 	padding: 10em 0;
 	box-sizing: border-box;
     position: relative;
@@ -127,8 +122,6 @@ header {
 .slide h1 {
     font-size: 1.9em;
 }
-
-
 
 .slide .scheme {
     margin: 3em 0;
@@ -167,6 +160,14 @@ header {
 
 .slide:nth-child(2n) h1 {
 	color: #195977;
+}
+
+.slide--next {
+    margin: auto;
+    position: absolute;
+    bottom: 7em;
+    left: 0;
+    right: 0;
 }
 
 
@@ -210,3 +211,32 @@ img {
     max-width: 100%;
 }
 
+
+/* Tables */
+
+
+th {
+    color: white;
+    background-color: #195977;
+    font-weight: 200;
+}
+
+.table thead > tr > th,
+.table tbody > tr > th,
+.table tfoot > tr > th,
+.table thead > tr > td,
+.table tbody > tr > td,
+.table tfoot > tr > td {
+    border: none;
+    background-color: none;
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
+    background-color: #edeff0;
+}
+
+.table-striped > tbody > tr:nth-child(even) > td,
+.table-striped > tbody > tr:nth-child(even) > th {
+    background-color: #f9f9f9;
+}

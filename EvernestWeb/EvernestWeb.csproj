@@ -178,6 +178,8 @@
     <Content Include="Views\Manager\Source.cshtml" />
     <Content Include="Views\Manager\_GetEventByIdFormPartial.cshtml" />
     <Content Include="Views\Manager\DeleteStream.cshtml" />
+    <Content Include="Views\Shared\_BaseLayout.cshtml" />
+    <Content Include="Views\Home\Documentation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

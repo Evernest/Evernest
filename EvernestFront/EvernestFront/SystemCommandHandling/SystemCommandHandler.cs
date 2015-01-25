@@ -271,7 +271,7 @@ namespace EvernestFront.SystemCommandHandling
                 systemEvent = null;
                 return false;
             }
-            systemEvent = new UserDeletedSystemEvent(command.UserName, command.UserId);
+            systemEvent = new UserDeletedSystemEvent(command.UserName, command.UserId, userRecord.RelatedEventStreams);
             error = null;
             return true;
         }

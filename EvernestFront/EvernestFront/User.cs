@@ -63,6 +63,15 @@ namespace EvernestFront
             return new Response<Guid>(command.Guid);
         }
 
+        public Response<Guid> Delete(string password)
+        {
+            if (!VerifyPassword(password))
+                return new Response<Guid>(FrontError.WrongPassword);
+            var command = new UserDeletionCommand(_systemCommandHandler, Id, Name, password);
+            command.Send();
+            return new Response<Guid>(command.Guid);
+        } 
+
         public Response<Tuple<string, Guid>> CreateUserKey(string keyName)
         {
             if (UserKeyNameToKey.ContainsKey(keyName))

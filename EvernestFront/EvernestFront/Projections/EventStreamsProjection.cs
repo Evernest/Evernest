@@ -107,6 +107,22 @@ namespace EvernestFront.Projections
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
         }
 
+        private void When(UserDeletedSystemEvent systemEvent)
+        {
+            var dictionaries = Dictionaries;
+            foreach (var eventStreamId in systemEvent.RelatedEventStreams)
+            {
+                EventStreamRecord data;
+                if (dictionaries.IdToData.TryGetValue(eventStreamId, out data))
+                {
+                    var itd = dictionaries.IdToData.SetItem(eventStreamId,
+                        data.RemoveUser(systemEvent.UserName));
+                    dictionaries = dictionaries.SetIdToData(itd);
+                }
+            }
+            Dictionaries = dictionaries;
+        }
+
         private void When(UserRightSetSystemEvent systemEvent)
         {
             EventStreamRecord data;

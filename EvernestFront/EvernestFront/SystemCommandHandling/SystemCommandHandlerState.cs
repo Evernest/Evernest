@@ -55,6 +55,9 @@ namespace EvernestFront.SystemCommandHandling
             EventStreamIdToAdmins.Add(systemEvent.StreamId, new HashSet<string> { systemEvent.CreatorName });
             EventStreamIdToUsers.Add(systemEvent.StreamId, new HashSet<long> { systemEvent.CreatorId });
             NextEventStreamId++;
+            UserRecord userRecord;
+            if (UserIdToData.TryGetValue(systemEvent.CreatorId, out userRecord))
+                userRecord.RelatedEventStreams.Add(systemEvent.StreamId);
         }
 
         private void When(EventStreamDeletedSystemEvent systemEvent)
@@ -143,6 +146,14 @@ namespace EvernestFront.SystemCommandHandling
                     users.Remove(systemEvent.TargetId);
                 else
                     users.Add(systemEvent.TargetId);
+            }
+            UserRecord targetUserRecord;
+            if (UserIdToData.TryGetValue(systemEvent.TargetId, out targetUserRecord))
+            {
+                if (systemEvent.Right == AccessRight.NoRight)
+                    targetUserRecord.RelatedEventStreams.Remove(systemEvent.StreamId);
+                else
+                    targetUserRecord.RelatedEventStreams.Add(systemEvent.StreamId);
             }
         }
     }

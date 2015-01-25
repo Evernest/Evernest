@@ -17,6 +17,7 @@ namespace EvernestFront.Contract.SystemEvents
         internal string AdminName { get; private set; }
         [DataMember]
         internal HashSet<long> RelatedUsers { get; private set; }
+        // this set may contain users which do not exist anymore; it is not a problem because the projections will ignore them
 
         [JsonConstructor]
         internal EventStreamDeletedSystemEvent(long streamId, string streamName, 

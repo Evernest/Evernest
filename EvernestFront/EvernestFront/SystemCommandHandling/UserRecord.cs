@@ -13,6 +13,8 @@ namespace EvernestFront.SystemCommandHandling
 
         internal byte[] PasswordSalt;
 
+        internal HashSet<long> RelatedEventStreams;
+
         internal HashSet<string> KeyNames;
 
         internal HashSet<string> SourceNames;
@@ -26,6 +28,7 @@ namespace EvernestFront.SystemCommandHandling
             UserName = name;
             SaltedPasswordHash = hash;
             PasswordSalt = salt;
+            RelatedEventStreams = new HashSet<long>();
             KeyNames = new HashSet<string>();
             SourceNames = new HashSet<string>();
             SourceIdToName = new Dictionary<long, string>();

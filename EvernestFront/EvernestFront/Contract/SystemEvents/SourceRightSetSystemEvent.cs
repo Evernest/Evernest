@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 
 namespace EvernestFront.Contract.SystemEvents
 {
+    [DataContract]
     class SourceRightSetSystemEvent : ISystemEvent
     {
         [DataMember]

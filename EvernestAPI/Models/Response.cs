@@ -8,16 +8,17 @@ namespace EvernestAPI.Models
 {
     internal static class Response
     {
-        private static Hashtable GetBasiceResponseHashtable(bool success)
+        private static Hashtable GetBasicResponseHashtable(bool success)
         {
             var ans = new Hashtable();
             ans["Success"] = success;
             ans["UtcTime"] = DateTime.UtcNow;
+            return ans;
         }
        
         public static HttpResponseMessage Error(HttpRequestMessage request, string errorMessage)
         {
-            var ans = GetBasiceResponseHashtable(success: false);
+            var ans = GetBasicResponseHashtable(success: false);
 
             var error = new Hashtable();
             error["Message"] = errorMessage;
@@ -28,7 +29,7 @@ namespace EvernestAPI.Models
 
         public static HttpResponseMessage MissingArgument(HttpRequestMessage request, string argument)
         {
-            var ans = GetBasiceResponseHashtable(success: false);
+            var ans = GetBasicResponseHashtable(success: false);
 
             var error = new Hashtable();
             error["Message"] = "MissingArgument";
@@ -41,7 +42,7 @@ namespace EvernestAPI.Models
 
         public static HttpResponseMessage BadArgument(HttpRequestMessage request, string[] arguments)
         {
-            var ans = GetBasiceResponseHashtable(success: false);
+            var ans = GetBasicResponseHashtable(success: false);
 
             var error = new Hashtable();
             error["Message"] = "BadArgument";
@@ -59,7 +60,7 @@ namespace EvernestAPI.Models
 
         public static HttpResponseMessage BadRequest(HttpRequestMessage request)
         {
-            var ans = GetBasiceResponseHashtable(success: false); 
+            var ans = GetBasicResponseHashtable(success: false); 
             
             var error = new Hashtable();
             error["Message"] = "BadRequest";
@@ -71,7 +72,7 @@ namespace EvernestAPI.Models
 
         public static HttpResponseMessage Success(HttpRequestMessage request, object o)
         {
-            var ans = GetBasiceResponseHashtable(success: true); 
+            var ans = GetBasicResponseHashtable(success: true); 
 
             ans["Response"] = o;
 
@@ -80,7 +81,7 @@ namespace EvernestAPI.Models
 
         public static HttpResponseMessage NotImplemented(HttpRequestMessage request)
         {
-            var ans = GetBasiceResponseHashtable(success: false); 
+            var ans = GetBasicResponseHashtable(success: false); 
             
             var error = new Hashtable();
             error["Message"] = "NotImplemented";

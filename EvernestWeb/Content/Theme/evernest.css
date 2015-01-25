@@ -34,11 +34,11 @@ textarea {
 .evernest-callout-danger {
     background-color: #fffaf0;
     border-left: 3px solid #ff7f50;
-    padding: 0.2em 1em;
+    padding: 0.5em 1em;
     margin: 1em 0;
 }
 
-.evernest-callout-danger h4 {
+.evernest-callout-danger h5 {
     color: #ff7f50;
 }
 
@@ -274,14 +274,17 @@ footer p {
     margin: 0px;
     padding: 0px;
     font-size: 1.5em;
-    margin-left: 20px;
-    margin-bottom: 42px;
+    margin-left: 2em;
     font-style: italic;
 }
 
-.manager-subtitle .info {
+.manager-subtitle .info, .manager-navbar .info {
     color: #888;
     font-size: 0.8em;
     display: inline-block;
-    padding-left: 20px;
+    padding-left: 2em;
+}
+
+h4 {
+    margin-top: 3em;
 }

@@ -46,6 +46,24 @@ namespace EvernestFrontTests.UtilitiesTests
             Assert.AreEqual(streamName, deserializedEvent.StreamName);
             Assert.AreEqual(streamId, deserializedEvent.StreamId);
         }
+
+        [Test]
+        public static void ReadSystemEventEnvelope_SourceRightSetSystemEvent_Success()
+        {
+            var serializer = new Serializer();
+            const string sourceKey = "sourceKey";
+            const long eventStreamId = 42;
+            const AccessRight sourceRight = AccessRight.ReadWrite;
+            var systemEvent = new SourceRightSetSystemEvent(sourceKey, eventStreamId, sourceRight);
+            var envelope = new SystemEventEnvelope(systemEvent.GetType().Name, serializer.WriteContract(systemEvent));
+            var serializedContract = serializer.WriteContract(envelope);
+            var deserializedContract = serializer.ReadSystemEventEnvelope(serializedContract);
+            Assert.IsAssignableFrom<SourceRightSetSystemEvent>(deserializedContract);
+            var deserializedEvent = (SourceRightSetSystemEvent)deserializedContract;
+            Assert.AreEqual(sourceKey, deserializedEvent.SourceKey);
+            Assert.AreEqual(eventStreamId, deserializedEvent.EventStreamId);
+            Assert.AreEqual(sourceRight, deserializedEvent.SourceRight);
+        }
     }
 
 }

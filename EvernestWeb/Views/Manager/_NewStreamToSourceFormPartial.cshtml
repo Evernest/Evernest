@@ -10,6 +10,6 @@
         @Html.TextBoxFor(m => m.StreamId)
         @Html.DropDownListFor(m => m.Right, new SelectList(Model.AccessRightsDictionary, "Key", "Value"))
         <input type="hidden" name="SourceId" value="@{ Write(ViewBag.SourceId);}" />
-        <input type="submit" value="Valider" />
+        <input type="submit" value="Add Stream" />
     </fieldset>
 }

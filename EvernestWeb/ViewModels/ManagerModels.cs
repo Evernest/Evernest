@@ -102,4 +102,34 @@ namespace EvernestWeb.ViewModels
 
         public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
     }
+
+    public class UpdateUserRightOnStream
+    {
+        [Required]
+        public long StreamId { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+
+        [Required]
+        public AccessRight Right { get; set; }
+
+        public AccessRight SelectedRight { get; set; }
+    
+        public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
+
+        public UpdateUserRightOnStream(AccessRight r)
+        {
+            SelectedRight = r;
+        }
+    }
+
+    public class DeleteUserRightOnStream
+    {
+        [Required]
+        public long StreamId { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+    }
 }

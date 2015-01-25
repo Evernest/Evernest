@@ -21,8 +21,7 @@ namespace EvernestWeb.Helpers
             {"ReadOnly",  AccessRight.ReadOnly },
             {"WriteOnly", AccessRight.WriteOnly},
             {"ReadWrite", AccessRight.ReadWrite},
-            {"Admin",     AccessRight.Admin    },
-
+            {"Admin",     AccessRight.Admin    }
         };
 
         public static ModelStream ModelStreamFromStream(EventStream e)

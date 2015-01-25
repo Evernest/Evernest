@@ -22,10 +22,19 @@
                         {
                             foreach (KeyValuePair<string, AccessRight> usr in Model.RelatedUsers)
                             {
-                                <li>@usr.Key (@usr.Value)</li>
-                            }
-                        }
+                                <li>
+                                    @{
+                                        Write(usr.Key);
+                                        ViewBag.UserId = usr.Key;
+                                        Html.RenderPartial("_UpdateUserRightOnStreamFormPartial", new EvernestWeb.ViewModels.UpdateUserRightOnStream(usr.Value));
+                                        Html.RenderPartial("_DeleteUserRightOnStreamFormPartial", new EvernestWeb.ViewModels.DeleteUserRightOnStream());
+
+
+                                    }
+                                </li>
                     }
+                        }
+}
                 </ul>
             }
         }

@@ -1,0 +1,11 @@
+﻿
+@model EvernestWeb.ViewModels.DeleteUserRightOnStream
+
+@using (Html.BeginForm("DeleteUserRightOnStream", "Manager", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    <input type="hidden" name="UserId" value="@{Write(ViewBag.UserId);}" />
+    <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId); }"/>
+    <input type="submit" value="Delete"/>
+}

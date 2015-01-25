@@ -192,6 +192,8 @@
     <Content Include="Views\Shared\_BaseLayout.cshtml" />
     <Content Include="Views\Home\Documentation.cshtml" />
     <Content Include="Views\Manager\_NewStreamToSourceFormPartial.cshtml" />
+    <Content Include="Views\Manager\_UpdateUserRightOnStreamFormPartial.cshtml" />
+    <Content Include="Views\Manager\_DeleteUserRightOnStreamFormPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

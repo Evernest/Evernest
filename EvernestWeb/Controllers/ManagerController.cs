@@ -145,6 +145,48 @@ namespace EvernestWeb.Controllers
             return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateUserRightOnStream(UpdateUserRightOnStream model)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            var front = new UserProvider();
+            Models.User user = (Models.User)Session["User"];
+            var userReq = front.GetUser(user.Id);
+            if (!userReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            var streamReq = userReq.Result.GetEventStream(model.StreamId);
+            if (!streamReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            streamReq.Result.SetUserRight(model.UserId, model.Right);
+            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteUserRightOnStream(DeleteUserRightOnStream model)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            var front = new UserProvider();
+            Models.User user = (Models.User)Session["User"];
+            var userReq = front.GetUser(user.Id);
+            if (!userReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            var streamReq = userReq.Result.GetEventStream(model.StreamId);
+            if (!streamReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            streamReq.Result.SetUserRight(model.UserId, EvernestFront.Contract.AccessRight.NoRight);
+            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+        }
+
         // POST: /Manager/PushEvent
         [HttpPost]
         [ValidateAntiForgeryToken]

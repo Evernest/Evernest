@@ -120,6 +120,55 @@ namespace EvernestWeb.Controllers
             return View();
         }
 
+        // POST: /Manager/AddUser
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult NewStreamUser(NewStreamUserModel model)
+        {
+            var front = new UserProvider();
+
+            // Check user input
+            if (!ModelState.IsValid)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            Models.User user = (Models.User)Session["User"];
+
+            var userReq = front.GetUser(user.Id);
+            if (!userReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            var streamReq = userReq.Result.GetEventStream(model.StreamId);
+            if (!streamReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            streamReq.Result.SetUserRight(model.NewUser, model.Right);
+            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+        }
+
+        // POST: /Manager/PushEvent
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PushEvent(NewEventModel model)
+        {
+            var front = new UserProvider();
+
+            // Check user input
+            if (!ModelState.IsValid)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            var user = (Models.User)Session["User"];
+            var userReq = front.GetUser(user.Id);
+            if (!userReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            var streamReq = userReq.Result.GetEventStream(model.StreamId);
+            if (!streamReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            streamReq.Result.Push(model.Content);
+
+            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+        }
 
         // ----- Sources -----
 
@@ -133,6 +182,7 @@ namespace EvernestWeb.Controllers
                 return RedirectToAction("Index", "Manager");
 
             var sourceModel = new SourceModel(userReq.Result, id);
+            ViewBag.SourceId = id;
 
             return View(sourceModel);
         }
@@ -176,57 +226,22 @@ namespace EvernestWeb.Controllers
             return RedirectToAction("Index", "Manager");
         }
 
-
-        // ----- To refactor -----
-
-        // POST: /Manager/AddUser
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult NewStreamUser(NewStreamUserModel model)
+        public ActionResult NewStreamToSource(NewStreamToSourceModel model)
         {
-            var front = new UserProvider();
-
-            // Check user input
             if (!ModelState.IsValid)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Source", "Manager", new {id = model.SourceId});
 
+            var front = new UserProvider();
             Models.User user = (Models.User)Session["User"];
-            
             var userReq = front.GetUser(user.Id);
-            if (!userReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
-            var streamReq = userReq.Result.GetEventStream(model.StreamId);
-            if (!streamReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+            var sourceRightReq = userReq.Result.SetSourceRight(model.SourceId, model.StreamId, model.Right);
 
-            streamReq.Result.SetUserRight(model.NewUser, model.Right);
-            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+            return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+
         }
-        
-        // POST: /Manager/PushEvent
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult PushEvent(NewEventModel model)
-        {
-            var front = new UserProvider();
 
-            // Check user input
-            if (!ModelState.IsValid)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
-
-            var user = (Models.User)Session["User"];
-            var userReq = front.GetUser(user.Id);
-            if (!userReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
-
-            var streamReq = userReq.Result.GetEventStream(model.StreamId);
-            if (!streamReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
-            
-            streamReq.Result.Push(model.Content);
-
-            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
-        }
     }
 }

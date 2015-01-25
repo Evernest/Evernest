@@ -13,12 +13,15 @@
     <tbody>
         @foreach (var stream in Model)
         {
-            <tr>
-                <td>@stream.Id</td>
-                <td>@stream.Name</td>
-                <td>@Html.ActionLink("Details", "Stream", "Manager", new {id = stream.Id}, null)</td>
-                <td>@Html.ActionLink("Delete", "DeleteStream", "Manager", new { id = stream.Id }, null)</td>
-            </tr>
+            if (stream != null)
+            {
+                <tr>
+                    <td>@stream.Id</td>
+                    <td>@stream.Name</td>
+                    <td>@Html.ActionLink("Details", "Stream", "Manager", new {id = stream.Id}, null)</td>
+                    <td>@Html.ActionLink("Delete", "DeleteStream", "Manager", new {id = stream.Id}, null)</td>
+                </tr>
+            }
         }
         @if (!Model.Any())
         {

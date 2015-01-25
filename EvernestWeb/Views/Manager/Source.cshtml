@@ -18,22 +18,33 @@
                     <li>Name : @Model.Name</li>
                     <li>Key : @Model.Key</li>
                 </ul>
+
+            }
+        }
+
+    </div>
+
+    <div>
+        @{ Html.RenderPartial("_NewStreamToSourceFormPartial", new EvernestWeb.ViewModels.NewStreamToSourceModel());}
+    </div>
+
+    <div>
+        @{
+            if (Model != null)
+            {
                 <ul>
                     <li>Related Streams</li>
                     @{
-                if (Model.RelatedEventStreams != null)
-                {
-                    foreach (KeyValuePair<string, AccessRight> stream in Model.RelatedEventStreams)
-                    {
-                        <li>@stream.Key (@stream.Value)</li>
-                    }
-                }
+                        if (Model.RelatedEventStreams != null)
+                        {
+                            foreach (KeyValuePair<string, AccessRight> stream in Model.RelatedEventStreams)
+                            {
+                                <li>@stream.Key (@stream.Value)</li>
+                            }
+                        }
                     }
                 </ul>
             }
         }
     </div>
-
-
-
 </div>

@@ -45,7 +45,6 @@ namespace EvernestWeb.ViewModels
     {
         [Required]
         [Display(Name = "New Stream User")]
-        //[StringLength(100, ErrorMessage = "The user name length must be between 4 and 100 characters.", MinimumLength = 4)]
         public long NewUser { get; set; }
 
         [Required]
@@ -71,7 +70,7 @@ namespace EvernestWeb.ViewModels
     {
         [Required]
         [StringLength(100, ErrorMessage = "Password is too short. It requires at least 6 characters.", MinimumLength = 6)]
-        [Display(Name = "To delete a stream, please confirm with your password")]
+        [Display(Name = "Confirm with your password")]
         public string DeleteConfirmPassword { get; set; }
 
         [Required]
@@ -82,10 +81,25 @@ namespace EvernestWeb.ViewModels
     {
         [Required]
         [StringLength(100, ErrorMessage = "Password is too short. It requires at least 6 characters.", MinimumLength = 6)]
-        [Display(Name = "To delete a source, please confirm with your password")]
+        [Display(Name = "Confirm with your password")]
         public string DeleteConfirmPassword { get; set; }
 
         [Required]
         public long SourceId { get; set; }
+    }
+
+    public class NewStreamToSourceModel
+    {
+        [Required]
+        [Display(Name = "Stream Id")]
+        public long StreamId { get; set; }
+
+        [Required]
+        public AccessRight Right { get; set; }
+
+        [Required]
+        public long SourceId { get; set; }
+
+        public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
     }
 }

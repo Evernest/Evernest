@@ -81,8 +81,13 @@ namespace EvernestWeb.Models
 
         public StreamEventsModel(EvernestFront.User u, long streamId, long eventId) : this(u, streamId)
         {
-            EventStream es = u.GetEventStream(streamId).Result;
-            PulledEvent = Utils.EventModelFromEvent(es.Pull(eventId).Result);
+            PulledEvent = null;
+            var eventReq = u.GetEventStream(streamId);
+            if (eventReq.Success)
+            {
+                EventStream es = u.GetEventStream(streamId).Result;
+                PulledEvent = Utils.EventModelFromEvent(es.Pull(eventId).Result);
+            }
         }
     }
 
@@ -92,7 +97,6 @@ namespace EvernestWeb.Models
         public string Name { get; set; }
         public long Id { get; set; }
         public List<KeyValuePair<string, AccessRight>> RelatedEventStreams { get; set; } 
-        //public IDictionary<long, AccessRight> RelatedEventStreams { get; set; }
 
         public SourceModel(EvernestFront.User u, long sourceId)
         {
@@ -102,6 +106,7 @@ namespace EvernestWeb.Models
                 Key = sourceReq.Result.Key;
                 Name = sourceReq.Result.Name;
                 Id = sourceReq.Result.Id;
+                RelatedEventStreams = new List<KeyValuePair<string, AccessRight>>();
                 foreach (var relStream in sourceReq.Result.RelatedEventStreams)
                 {
                     var streamReq = u.GetEventStream(relStream.Key);

@@ -28,32 +28,38 @@ namespace EvernestWeb.Helpers
 
         public static ModelStream ModelStreamFromStream(EventStream e)
         {
-            return new ModelStream
-            {
-                UserRight = e.UserRight,
-                Id = e.Id,
-                Name = e.Name,
-                Count = e.Count,
-                LastEventId = e.LastEventId
-            };
+            if (e != null)
+                return new ModelStream
+                {
+                    UserRight = e.UserRight,
+                    Id = e.Id,
+                    Name = e.Name,
+                    Count = e.Count,
+                    LastEventId = e.LastEventId
+                };
+            return null;
         }
 
         public static ModelSource ModelSourceFromSource(Source s)
         {
-            return new ModelSource
-            {
-                Name = s.Name,
-                Id = s.Id
-            };
+            if (s != null)
+                return new ModelSource
+                {
+                    Name = s.Name,
+                    Id = s.Id
+                };
+            return null;
         }
 
         public static EventModel EventModelFromEvent(Event e)
         {
-            return new EventModel
-            {
-                Id = e.Id,
-                Message = e.Message
-            };
+            if (e != null)
+                return new EventModel
+                {
+                    Id = e.Id,
+                    Message = e.Message
+                };
+            return null;
         }
     }
 }

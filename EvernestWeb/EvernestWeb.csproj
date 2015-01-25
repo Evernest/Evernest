@@ -191,6 +191,7 @@
     <Content Include="Views\Manager\DeleteStream.cshtml" />
     <Content Include="Views\Shared\_BaseLayout.cshtml" />
     <Content Include="Views\Home\Documentation.cshtml" />
+    <Content Include="Views\Manager\_NewStreamToSourceFormPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

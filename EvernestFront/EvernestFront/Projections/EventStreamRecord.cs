@@ -38,5 +38,11 @@ namespace EvernestFront.Projections
                 users = users.Remove(user);
             return new EventStreamRecord(StreamName, users, BackStream);
         }
+
+        internal EventStreamRecord RemoveUser(string user)
+        {
+            var users = RelatedUsers.Remove(user);
+            return new EventStreamRecord(StreamName, users, BackStream);
+        }
     }
 }

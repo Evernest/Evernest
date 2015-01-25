@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EvernestFront.Source>
+﻿@model IEnumerable<EvernestWeb.Models.ModelSource>
 
 <table class="table table-striped">
     <thead>
@@ -13,12 +13,15 @@
     <tbody>
         @foreach (var source in Model)
         {
-            <tr>
-                <td>@source.Id</td>
-                <td>@source.Name</td>
-                <td>@Html.ActionLink("Details", "Source", "Manager", source)</td>
-                <td>@Html.ActionLink("Delete", "DeleteSource", "Manager", source)</td>
-            </tr>
+            if (source != null)
+            {
+                <tr>
+                    <td>@source.Id</td>
+                    <td>@source.Name</td>
+                    <td>@Html.ActionLink("Details", "Source", "Manager", new {id = source.Id}, null)</td>
+                    <td>@Html.ActionLink("Delete", "DeleteSource", "Manager", new {id = source.Id}, null)</td>
+                </tr>
+            }
         }
         @if (!Model.Any())
         {
@@ -32,7 +35,7 @@
     </tbody>
     <tfoot>
         <tr>
-            <td></td>
+            <td style="min-width: 15%;"></td>
             <td>
                 @{ Html.RenderPartial("_NewSourcePartial", new EvernestWeb.ViewModels.NewSourceModel()); }
             </td>

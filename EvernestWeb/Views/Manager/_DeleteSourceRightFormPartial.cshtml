@@ -1,0 +1,9 @@
+﻿@model EvernestWeb.ViewModels.DeleteSourceRight
+
+@using (Html.BeginForm("DeleteSourceRight", "Manager", FormMethod.Post, FormMethod.Post, new { @class = "form-inline" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="SourceId" value="@{Write(ViewBag.SourceId);}" />
+    <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId); }" />
+    <input type="submit" class="btn btn-default" value="Delete" />
+}

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Web.Http;
-using System.Net;
 using System.Net.Http;
+using System.Web.UI;
 using EvernestAPI.Models;
 using EvernestFront;
 using EvernestFront.Contract;
@@ -10,192 +10,122 @@ namespace EvernestAPI.Controllers
 {
     public class RightController : ApiController
     {
-        // /Right/{id}/{streamId}
+
+        //     GET /Right/{streamId}
+        // Get the rights that the Key has on the given stream.
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage Get(string sourceId, int streamId)
+        public HttpResponseMessage GetRight(long id)
         {
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
+
+            if (!body.ContainsKey("key"))
+                return Response.MissingArgument(Request, "Key");
+
+            var sourceProvider = new SourceProvider();
+            var sourceRequest = sourceProvider.GetSource((string)body["key"]);
+
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "Key");
+
+            var source = sourceRequest.Result;
+
+            var eventStreamRequest = source.GetEventStream(id);
+
+            if (!eventStreamRequest.Success)
+                return Response.BadArgument(Request, "StreamId");
+
+            var eventStream = eventStreamRequest.Result;
+
+            var right = eventStream.SourceRight;
+
             var ans = new Hashtable();
+            ans["Right"] = AccessRightTools.AccessRightToString(right);
 
-            try
-            {
-                body = Tools.ParseRequest(Request);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
-
-            // Get the Stream
-            var front = new EvernestFront.UsersBuilder();
-            var userReq = front.GetUser((string)body["key"]);
-
-            if (!userReq.Success)
-            {
-                ans["Status"] = "Error";
-                ans["Error"] = userReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-
-            var user = userReq.Result;
-
-
-            var sourceReq = user.GetSource(sourceId);
-            if (!sourceReq.Success)
-            {
-                ans["Status"]="Error";
-                ans["Error"]=sourceReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            var source = sourceReq.Result;
-
-            var eventStreamReq = source.GetEventStream(streamId);
-
-                if (!eventStreamReq.Success)
-                {
-                    ans["Status"] = "Error";
-                    ans["Error"] = eventStreamReq.Error;
-                    return Request.CreateResponse(HttpStatusCode.OK, ans);
-                }
-
-                var stream = eventStreamReq.Result;
-      
-               var accessRight = stream.UserRight;
-
-               ans["AccessRight"] = accessRight;
-            // BEGIN DEBUG //
-            var debug = new Hashtable();
-            debug["Controller"] = "Right";
-            debug["Method"] = "Set";
-            debug["sourceId"] = sourceId;
-            debug["streamId"] = streamId;
-            debug["right"] = accessRight;
-            debug["body"] = body;
-            ans["Debug"] = debug;
-            // END DEBUG //
-
-            return Request.CreateResponse(HttpStatusCode.OK, ans);
+            return Response.Success(Request, ans);
         }
 
-        // /Right/{sourceId}/{streamId}/Set/{right}
+
+        //     * GET /Right/{SourceId}/{StreamId}
+        // Get the rights the the source has on the stream. You must provide a user key.
+        [HttpGet]
+        [HttpPost]
+        [ActionName("Default")]
+        public HttpResponseMessage GetRight(long id, long streamId)
+        {
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
+
+            if (!body.ContainsKey("userkey"))
+                return Response.MissingArgument(Request, "UserKey");
+
+            var userProvider = new UserProvider();
+            var userRequest = userProvider.GetUser((string) body["userkey"]);
+
+            if (!userRequest.Success)
+                return Response.BadArgument(Request, "UserKey");
+
+            var user = userRequest.Result;
+
+            var sourceRequest = user.GetSource(id);
+
+            if (!sourceRequest.Success)
+                return Response.BadArgument(Request, "SourceId");
+
+            var source = sourceRequest.Result;
+
+            var eventStreamRequest = source.GetEventStream(streamId);
+
+            if (!eventStreamRequest.Success)
+                return Response.BadArgument(Request, "StreamId");
+
+            var eventStream = eventStreamRequest.Result;
+
+            var right = eventStream.SourceRight;
+
+            var ans = new Hashtable();
+            ans["Right"] = AccessRightTools.AccessRightToString(right);
+
+            return Response.Success(Request, ans);
+        }
+
+
+        //     * POST /Right/{sourceId}/{streamId}/Set/{right}
+        // Set the right of the given source on the given stream. You must provide a user key.
         [HttpGet]
         [HttpPost]
         [ActionName("Set")]
-        public HttpResponseMessage Set(string sourceId, int streamId, string right)
+        public HttpResponseMessage Set(long id, long streamId, string right)
         {
-            var ans = new Hashtable();
-<<<<<<< HEAD
             Hashtable body;
-=======
-            Hashtable nvc;
-            var failed = false;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
 
-            FrontError? error = null;
-            string errorMessage = null;
-            var accessRight = AccessRight.NoRight;
+            if (!body.ContainsKey("userkey"))
+                return Response.MissingArgument(Request, "UserKey");
 
->>>>>>> origin/master
-            try
-            {
-                body = Tools.ParseRequest(Request);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            var userProvider = new UserProvider();
+            var userRequest = userProvider.GetUser((string) body["userkey"]);
 
-            // Get the Stream
-            var front = new EvernestFront.UsersBuilder();
-            var userReq = front.GetUser((string)body["key"]);
+            if (!userRequest.Success)
+                return Response.BadArgument(Request, "UserKey");
 
-            if (!userReq.Success)
-            {
-                ans["Status"] = "Error";
-                ans["Error"] = userReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
+            var user = userRequest.Result;
 
-            var user = userReq.Result;
+            var accessRight = AccessRightTools.StringToAccessRight(right);
 
+            var guidRequest = user.SetSourceRight(id, streamId, accessRight);
 
-            var sourceReq = user.GetSource(sourceId);
-            if (!sourceReq.Success)
-            {
-                ans["Status"] = "Error";
-                ans["Error"] = sourceReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            var source = sourceReq.Result;
+            if (!guidRequest.Success)
+                return Response.Error(Request, "Error while setting source right.");
 
-            var eventStreamReq = source.GetEventStream(streamId);
-
-            if (!eventStreamReq.Success)
-            {
-                ans["Status"] = "Error";
-                ans["Error"] = eventStreamReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-
-            var stream = eventStreamReq.Result;
-
-            AccessRight accessRight;
-
-            switch (right.ToLower())
-                    {
-                        case "none":
-                            accessRight = AccessRight.NoRight;
-                            break;
-                        case "readonly":
-                            accessRight = AccessRight.ReadOnly;
-                            break;
-                        case "writeonly":
-                            accessRight = AccessRight.WriteOnly;
-                            break;
-                        case "readwrite":
-                            accessRight = AccessRight.ReadWrite;
-                            break;
-                        case "admin":
-                            accessRight = AccessRight.Admin;
-                            break;
-                        case "root":
-                            accessRight = AccessRight.Root;
-                            break;
-
-                        default:
-                            // Should never happen
-                            return Request.CreateResponse(HttpStatusCode.InternalServerError);
-                    }
-            
-                    // Convert the string to an AccessRights enum
-
-            var GuidReq = stream.SetUserRight(sourceId, accessRight);
-
-            //TODO: Check if it is really sourceId
-            if (!GuidReq.Success)
-            {
-                ans["Status"]="Error";
-                ans["Error"]=GuidReq.Error;
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-
-            var Guid = GuidReq.Result;
-
-            ans["Guid"]=Guid;
-            // BEGIN DEBUG //
-            var debug = new Hashtable();
-            debug["Controller"] = "Right";
-            debug["Method"] = "Set";
-            debug["sourceId"] = sourceId;
-            debug["streamId"] = streamId;
-            debug["right"] = accessRight;
-            debug["body"] = body;
-            ans["Debug"] = debug;
-            // END DEBUG //
-
-            return Request.CreateResponse(HttpStatusCode.OK, ans);
-            
-            
+            var ans = new Hashtable();
+            ans["Guid"] = guidRequest.Result;
+            return Response.Success(Request, ans);
         }
     }
 }

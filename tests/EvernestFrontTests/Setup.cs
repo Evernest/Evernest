@@ -9,11 +9,12 @@ namespace EvernestFrontTests
     [SetUpFixture]
     class Setup
     {
+        //currently not called
         public static void ClearAsc()
         {
             try
             {
-                AzureStorageClient.Instance.ClearAll();
+                AzureStorageClient.Close();
             }
             catch (Exception e)
             {
@@ -29,8 +30,16 @@ namespace EvernestFrontTests
         [SetUp]
         public static void RunBeforeAnyTests()
         {
-            StartUp.Start();
+            AzureStorageClient.Instance.ClearAll();
+
+            var startUp = new StartUp();
+            startUp.Start();
         }
-            
+
+        [TearDown]
+        public void RunAfterAllTests()
+        {
+            AzureStorageClient.Instance.ClearAll();
+        }
     }
 }

@@ -21,23 +21,28 @@ namespace EvernestBack
         private Node _root;
         private readonly Stack<Node> _mislinked;
 
+        /// <summary>
+        /// Construct an empty History.
+        /// </summary>
         public History()
         {
-            _elementCounter = 0;
+            _elementCounter = 1;
             _mislinked = new Stack<Node>();
-            _lastNode = null;
-            _root = null;
+            _lastNode = _root = new Node(0, 0, null, null); //kind of a fake node
+            _mislinked.Push(_root);
         }
 
         /// <summary>
-        /// Clear the History.
+        /// Construct an empty History.
         /// </summary>
-        public void Clear()
+        /// <param name="blob">The blob from which to retrieve the History.</param>
+        public History(CloudBlockBlob blob)
         {
-            _elementCounter = 0;
-            _lastNode = null;
-            _root = null;
-            _mislinked.Clear();
+            _elementCounter = 1;
+            _mislinked = new Stack<Node>();
+            _lastNode = _root = new Node(0, 0, null, null);
+            _mislinked.Push(_root);
+            ReadFromBlob(blob);
         }
 
         /// <summary>
@@ -51,15 +56,14 @@ namespace EvernestBack
             if ((_elementCounter & 1) != 0)
             {
                 _lastNode.Right = new Node(key, element, null, null);
-                for (var tmp = _elementCounter; (tmp & 2) != 0; tmp >>= 1, _mislinked.Pop())
-                {
-                }
+                for (var tmp = _elementCounter; (tmp & 2) != 0; tmp >>= 1)
+                    _mislinked.Pop();
             }
             else
             {
                 if (_lastNode != null)
                 {
-                    var lastMislinkedNode = _mislinked.Last();
+                    var lastMislinkedNode = _mislinked.Peek();
                     lastMislinkedNode.Right = _lastNode = new Node(key, element, lastMislinkedNode.Right, null);
                     _mislinked.Push(_lastNode);
                 }
@@ -77,13 +81,13 @@ namespace EvernestBack
         /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
         /// </summary>
         /// <param name="key">The key to look for.</param>
-        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <param name="foundNode">The reference needed to be set to the foundNode.</param>
         /// <returns>
         /// True if such an element exists, false otherwise.
         /// </returns>
-        public bool UpperBound(long key, ref ulong element)
+        private bool UpperBound(long key, out Node foundNode)
         {
-            Node current = _root, upperBound = null;
+            Node current = _root.Right, upperBound = null;
             while (current != null)
             {
                 if (current.Key < key)
@@ -94,9 +98,50 @@ namespace EvernestBack
                     current = current.Left;
                 }
             }
-            if (upperBound != null)
-                element = upperBound.Element;
+            foundNode = upperBound;
             return upperBound != null;
+        }
+
+        /// <summary>
+        /// Retrieves the element with the least key which is greater (or equal) than the given key.
+        /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
+        /// </summary>
+        /// <param name="key">The key to look for.</param>
+        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <returns>
+        /// True if such an element exists, false otherwise.
+        /// </returns>
+        public bool UpperBound(long key, ref ulong element)
+        {
+            Node upperBound;
+            if (UpperBound(key, out upperBound))
+            {
+                element = upperBound.Element;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Retrieves the element with the least key which is greater (or equal) than the given key.
+        /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
+        /// </summary>
+        /// <param name="key">The key to look for.</param>
+        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <param name="foundKey">The reference needed to be set to the key of the requested element's value.</param>
+        /// <returns>
+        /// True if such an element exists, false otherwise.
+        /// </returns>
+        public bool UpperBound(long key, ref ulong element, ref long foundKey)
+        {
+            Node upperBound;
+            if (UpperBound(key, out upperBound))
+            {
+                element = upperBound.Element;
+                foundKey = upperBound.Key;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -110,15 +155,15 @@ namespace EvernestBack
         /// </returns>
         public bool LowerBound(long key, ref ulong element)
         {
-            Node current = _root, leastBound = null;
+            Node current = _root.Right, leastBound = null;
             while (current != null)
             {
                 if (current.Key > key)
-                    current = current.Right;
+                    current = current.Left;
                 else
                 {
                     leastBound = current;
-                    current = current.Left;
+                    current = current.Right;
                 }
             }
             if (leastBound != null)
@@ -136,8 +181,27 @@ namespace EvernestBack
         /// </returns>
         public bool GreatestElement(ref ulong element)
         {
-            if (_lastNode != null)
+            if (_lastNode != _root)
                 element = _lastNode.Element;
+            return _lastNode != null;
+        }
+
+        /// <summary>
+        /// Retrieves the element whose key is the greatest.
+        /// If two keys have the same value, they are ordered by their insertion order (the later the greater).
+        /// </summary>
+        /// <param name="element">The reference needed to be set to the requested element's value.</param>
+        /// <param name="key">The key needed to be set to the requested element's key.</param>
+        /// <returns>
+        /// True if such an element exists, false otherwise.
+        /// </returns>
+        public bool GreatestElement(ref ulong element, ref long key)
+        {
+            if (_lastNode != _root)
+            {
+                element = _lastNode.Element;
+                key = _lastNode.Key;
+            }
             return _lastNode != null;
         }
 
@@ -159,9 +223,12 @@ namespace EvernestBack
             //infix traversal (writes nodes in their key's order)
             var currentlyVisitedNodes = new Stack<Node>();
             Node currentNode;
-            currentlyVisitedNodes.Push(_root);
-            while ((currentNode = currentlyVisitedNodes.Last().Left) != null)
-                currentlyVisitedNodes.Push(currentNode);
+            if (_root.Right != null)
+            {
+                currentlyVisitedNodes.Push(_root.Right);
+                while ((currentNode = currentlyVisitedNodes.Peek().Left) != null)
+                    currentlyVisitedNodes.Push(currentNode);
+            }
             while (currentlyVisitedNodes.Count > 0)
             {
                 currentNode = currentlyVisitedNodes.First();
@@ -188,9 +255,8 @@ namespace EvernestBack
         /// </summary>
         /// <param name="src">The byte array containing a description of the History.</param>
         /// <param name="offset">The offset at which the description should be read.</param>
-        public void Deserialize(byte[] src, int offset)
+        private void Deserialize(byte[] src, int offset)
         {
-            Clear();
             var elementCount = BitConverter.ToInt64(src, offset);
             offset += sizeof (long);
             for (long i = 0; i < elementCount; i++)
@@ -207,7 +273,7 @@ namespace EvernestBack
         /// Clear the History, and retrieve one from the blob.
         /// </summary>
         /// <param name="blob">The blob from which to retrieve the History description</param>
-        public void ReadFromBlob(CloudBlockBlob blob)
+        private void ReadFromBlob(CloudBlockBlob blob)
         {
             var sizeBytes = new Byte[sizeof (long)];
             blob.DownloadRangeToByteArray(sizeBytes, 0, 0, sizeof (long));
@@ -217,6 +283,9 @@ namespace EvernestBack
             Deserialize(serializedHistory, 0);
         }
 
+        /// <summary>
+        /// A node of the binary search tree.
+        /// </summary>
         private class Node
         {
             public Node(long key, ulong element, Node left, Node right)

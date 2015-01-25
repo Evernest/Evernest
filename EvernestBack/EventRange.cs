@@ -1,32 +1,36 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
 namespace EvernestBack
 {
-
     public class EventRange : IEnumerable<LowLevelEvent>
     {
-        internal byte[] _src;
-        internal int _count;
-        internal int _offset;
+        private readonly byte[] _src;
+        private readonly int _offset;
+        public int Size { get; private set; }
 
-        internal EventRange(byte[] src, int offset, int count)
+        /// <summary>
+        /// Construct an EventRange with a byte array, an offset, and the number of bytes.
+        /// </summary>
+        /// <param name="src">The byte array.</param>
+        /// <param name="offset">The offset where the data should be read.</param>
+        /// <param name="size">The number of bytes to read.</param>
+        internal EventRange(byte[] src, int offset, int size)
         {
             _src = src;
             _offset = offset;
-            _count = count;
+            Size = size;
         }
 
         public EventRangeEnumerator GetEnumerator(int position)
         {
-            return new EventRangeEnumerator(_src, _offset, _count, position);
+            return new EventRangeEnumerator(_src, _offset, Size, position);
         }
 
         public EventRangeEnumerator GetEnumerator()
         {
-            return new EventRangeEnumerator(_src, _offset, _count);
+            return new EventRangeEnumerator(_src, _offset, Size);
         }
 
         IEnumerator<LowLevelEvent> IEnumerable<LowLevelEvent>.GetEnumerator()
@@ -38,6 +42,35 @@ namespace EvernestBack
         {
             return GetEnumerator();
         }
+
+        /// <summary>
+        /// Try to create an EventRange containing the specified events.
+        /// </summary>
+        /// <param name="firstId">The first event's id.</param>
+        /// <param name="lastId">The last event's id.</param>
+        /// <param name="subRange">The range to be retrieved.</param>
+        /// <returns>True if the range has successfully been created, false otherwise.</returns>
+        public bool MakeSubRange(long firstId, long lastId, out EventRange subRange)
+        {
+            EventRangeEnumerator enumerator = GetEnumerator();
+            while (enumerator.MoveNext() && enumerator.CurrentId < firstId) {}
+            if (enumerator.CurrentId != firstId)
+            {
+                subRange = null;
+                return false;
+            }
+            subRange = enumerator.NextRange();
+            enumerator = subRange.GetEnumerator();
+            while (enumerator.MoveNext() && enumerator.CurrentId < lastId) {}
+            if (enumerator.CurrentId != lastId)
+            {
+                subRange = null;
+                return false;
+            }
+            subRange = enumerator.PreviousRange();
+            return true;
+        }
+
     }
 
     public class EventRangeEnumerator : IEnumerator<LowLevelEvent>
@@ -49,10 +82,10 @@ namespace EvernestBack
         private int _currentMessageLength;
 
         /// <summary>
-        /// The RequestID of the current LowLevelEvent.
-        /// Faster than Current.RequestID.
+        /// The RequestId of the current LowLevelEvent.
+        /// Faster than Current.RequestId.
         /// </summary>
-        public long CurrentID { get; private set; }
+        public long CurrentId { get; private set; }
 
         /// <summary>
         /// The size of the bitwise representation of the current LowLevelEvent in bytes.
@@ -66,7 +99,7 @@ namespace EvernestBack
         {
             get
             {
-                return new LowLevelEvent(Encoding.Unicode.GetString(_src, _position - _currentMessageLength, _currentMessageLength), CurrentID);
+                return new LowLevelEvent(Encoding.Unicode.GetString(_src, _position - _currentMessageLength, _currentMessageLength), CurrentId);
             }
         }
 
@@ -81,6 +114,7 @@ namespace EvernestBack
             _startOffset = offset;
             _endPosition = offset + count;
             _position = _startOffset+position;
+            CurrentId = -1;
         }
 
         internal EventRangeEnumerator(byte[] src, int offset, int count)
@@ -89,17 +123,18 @@ namespace EvernestBack
             _startOffset = offset;
             _endPosition = offset + count;
             _position = _startOffset;
+            CurrentId = -1;
         }
 
         public bool MoveNext()
         {
-            if ( _position + sizeof (long) < _endPosition)
+            if ( _position + sizeof (long) + sizeof (int) <= _endPosition)
             {
-                CurrentID = Util.ToLong(_src, _position);
+                CurrentId = Util.ToLong(_src, _position);
                 _position += sizeof (long) + sizeof (int);
-                return _position < _endPosition
+                return _position <= _endPosition
                        &&
-                       (_position += (_currentMessageLength = Util.ToInt(_src, _position - sizeof (int)))) <
+                       (_position += (_currentMessageLength = Util.ToInt(_src, _position - sizeof (int)))) <=
                        _endPosition;
             }
             return false;
@@ -117,35 +152,23 @@ namespace EvernestBack
         }
 
         /// <summary>
-        /// Create an EventRange ending with the current event (excluded).
+        /// Create an EventRange ending with the current event.
         /// Undefined behaviour if the current event isn't properly defined.
         /// </summary>
         /// <returns>Described EventRange.</returns>
         public EventRange PreviousRange()
         {
-            return new EventRange(_src, _startOffset, _position - (sizeof(int) + sizeof(long) + _currentMessageLength));
+            return new EventRange(_src, _startOffset, _position-_startOffset);
         }
 
         public void Reset()
         {
             _position = _startOffset;
             _currentMessageLength = 0;
+            CurrentId = -1;
         }
 
         public void Dispose()
         { }
-    }
-
-    public class ControlledEventRange : EventRange
-    {
-        public long FirstId { get; private set; }
-        public long LastId { get; private set; }
-
-        public ControlledEventRange(byte[] src, int offset, int count, int firstId, int lastId):
-            base(src, offset, count)
-        {
-            FirstId = firstId;
-            LastId = lastId;
-        }
     }
 }

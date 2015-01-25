@@ -5,16 +5,21 @@ namespace EvernestFront
 {
     public class SystemCommandResultViewer
     {
-        private SystemCommandResultManager _manager;
+        internal SystemCommandResultManager Manager;
 
         public SystemCommandResultViewer()
         {
-            _manager = Injector.Instance.SystemCommandResultManager;
+            Manager = Injector.Instance.SystemCommandResultViewer.Manager;
+        }
+
+        internal SystemCommandResultViewer(SystemCommandResultManager manager)
+        {
+            Manager = manager;
         }
 
         public bool TryGetResult(Guid commandGuid, out Response<Guid> response)
         {
-            return _manager.TryGetResult(commandGuid, out response);
+            return Manager.TryGetResult(commandGuid, out response);
         }
     }
 }

@@ -8,9 +8,8 @@ namespace EvernestFront
     {
         public Response<EventStream> GetEventStream(long streamId)
         {
-            var builder = new EventStreamsProvider();
             EventStream eventStream;
-            if (builder.TryGetEventStream(this, streamId, out eventStream))
+            if (_eventStreamProvider.TryGetEventStream(this, streamId, out eventStream))
                 return new Response<EventStream>(eventStream);
             else
                 return new Response<EventStream>(FrontError.EventStreamIdDoesNotExist);
@@ -18,9 +17,8 @@ namespace EvernestFront
 
         public Response<EventStream> GetEventStream(string streamName)
         {
-            var builder = new EventStreamsProvider();
             EventStream eventStream;
-            if (builder.TryGetEventStream(this, streamName, out eventStream))
+            if (_eventStreamProvider.TryGetEventStream(this, streamName, out eventStream))
                 return new Response<EventStream>(eventStream);
             else
                 return new Response<EventStream>(FrontError.EventStreamIdDoesNotExist);
@@ -28,16 +26,14 @@ namespace EvernestFront
 
         public Response<Guid> CreateEventStream(string streamName)
         {
-            var builder = new EventStreamsProvider();
-            return builder.CreateEventStream(this, streamName);
+            return _eventStreamProvider.CreateEventStream(this, streamName);
         }
 
         //password is asked again because event stream deletion is a major operation
         public Response<Guid> DeleteEventStream(long eventStreamId, string password)
         {
-            var builder = new EventStreamsProvider();
             EventStream eventStream;
-            if (!builder.TryGetEventStream(this, eventStreamId, out eventStream))
+            if (!_eventStreamProvider.TryGetEventStream(this, eventStreamId, out eventStream))
                 return new Response<Guid>(FrontError.EventStreamIdDoesNotExist);
             if (!VerifyPassword(password))
                 return new Response<Guid>(FrontError.WrongPassword);

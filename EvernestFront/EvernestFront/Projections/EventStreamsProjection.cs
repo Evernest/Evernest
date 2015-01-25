@@ -92,7 +92,7 @@ namespace EvernestFront.Projections
 
         private void When(EventStreamCreatedSystemEvent systemEvent)
         {
-            var backStream = _azureStorageClient.GetEventStream(Convert.ToString(systemEvent.StreamId));
+            var backStream = _azureStorageClient.GetEventStream(systemEvent.StreamId);
             var eventStreamData = new EventStreamRecord(systemEvent.StreamName, systemEvent.CreatorName,
                 backStream);
             var nti = Dictionaries.NameToId.SetItem(systemEvent.StreamName, systemEvent.StreamId);
@@ -105,6 +105,22 @@ namespace EvernestFront.Projections
             var nti = Dictionaries.NameToId.Remove(systemEvent.StreamName);
             var itd = Dictionaries.IdToData.Remove(systemEvent.StreamId);
             Dictionaries = Dictionaries.SetNameToId(nti).SetIdToData(itd);
+        }
+
+        private void When(UserDeletedSystemEvent systemEvent)
+        {
+            var dictionaries = Dictionaries;
+            foreach (var eventStreamId in systemEvent.RelatedEventStreams)
+            {
+                EventStreamRecord data;
+                if (dictionaries.IdToData.TryGetValue(eventStreamId, out data))
+                {
+                    var itd = dictionaries.IdToData.SetItem(eventStreamId,
+                        data.RemoveUser(systemEvent.UserName));
+                    dictionaries = dictionaries.SetIdToData(itd);
+                }
+            }
+            Dictionaries = dictionaries;
         }
 
         private void When(UserRightSetSystemEvent systemEvent)

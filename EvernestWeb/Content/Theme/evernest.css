@@ -1,0 +1,250 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.lead {
+    font-weight: bold;
+}
+
+
+/* Right menu */
+
+.evernest-right-menu{
+    float: right;
+}
+
+
+/* Callouts */
+
+.evernest-callout-danger {
+    background-color: #fffaf0;
+    border-left: 3px solid #ff7f50;
+    padding: 0.2em 1em;
+    margin: 1em 0;
+}
+
+.evernest-callout-danger h4 {
+    color: #ff7f50;
+}
+
+/* navbar */
+
+.navbar {
+    background-color: white;
+	border-bottom: 1px solid #c5dbe5;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:active,
+.navbar-inverse .navbar-nav > li > a:focus {
+    color: #c6c6c6;
+}
+
+.navbar-brand {
+    padding: 5px;
+}
+
+
+.nav {
+	float: right;
+	color: white;
+	text-transform: uppercase;
+}
+
+.nav.right {
+    float: right;
+}
+
+.nav.left {
+    float: left;
+}
+
+header {
+	background-color: white;
+	border-bottom: 1px solid #c5dbe5;
+}
+
+
+.navbar .btn {
+    color: #c5dbe5;
+    border: 1px solid #c5dbe5;
+}
+
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-toggle:focus {
+    background-color: #c5dbe5;
+}
+
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form,
+.navbar-inverse .navbar-toggle {
+    border-color: #8eb9cc;
+}
+
+.navbar-inverse .navbar-toggle .icon-bar {
+    background-color: #8eb9cc;
+}
+
+.navbar-collapse {
+    background-color: #f9f9f9;
+}
+
+@media (min-width: 768px) {
+    .navbar-collapse {
+        background-color: white;
+    }
+}
+
+/* Slides */
+
+.slide--wrapper {
+	min-height: 100vh;
+	text-align: center;
+	padding: 10em 0;
+	box-sizing: border-box;
+    position: relative;
+}
+
+.slide h1 {
+    font-size: 1.9em;
+}
+
+.slide .scheme {
+    margin: 3em 0;
+}
+
+.slide--more {
+    display: inline-block;
+    height: 25px;
+    background-image: url("../Images/more_blue.svg");
+    background-repeat: no-repeat;
+    padding-left: 25px;
+
+    position: absolute;
+    right: 0;
+    bottom: 10em;
+}
+
+.slide:nth-child(2n+1) {
+	background-color: #195977;
+}
+
+.slide:nth-child(2n+1) h1 {
+	color: white;
+}
+
+.slide:nth-child(2n+1) .summary {
+    font-style: italic;
+	color: #c6c6c6;
+    font-size: 1.3em;
+}
+
+.slide:nth-child(2n+1) .slide--more {
+    background-image: url("../Images/more.svg");
+    color: white;
+}
+
+.slide:nth-child(2n) h1 {
+	color: #195977;
+}
+
+.slide--next {
+    position: absolute;
+    bottom: 7em;
+    left: 0;
+    right: 0;
+    width: 64px;
+    margin: auto;
+}
+
+
+/* Slide try (last slide) */
+
+.slide-try--or-wrapper {
+    color: #c6c6c6;
+    border-bottom: 1px solid #c6c6c6;
+    height: 0.6em;
+    line-height: 1em;
+    margin: 2em 0;
+    text-transform: uppercase;
+}
+
+.slide-try--or {
+    background-color: white;
+    padding: 0 1em;
+}
+
+
+
+/* buttons */
+
+.btn {
+    border-color: #8eb9cc;
+    border-radius: 2px;
+    text-transform: uppercase;
+}
+
+.btn-primary:hover {
+    border-color: #8eb9cc;
+    background-color: #8eb9cc;
+}
+
+.btn-primary {
+    color: white;
+    background-color: #c5dbe5;
+}
+
+img {
+    max-width: 100%;
+}
+
+
+/* Tables */
+
+
+th {
+    color: white;
+    background-color: #195977;
+    font-weight: 200;
+}
+
+.table thead > tr > th,
+.table tbody > tr > th,
+.table tfoot > tr > th,
+.table thead > tr > td,
+.table tbody > tr > td,
+.table tfoot > tr > td {
+    border: none;
+    background-color: none;
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
+    background-color: #edeff0;
+}
+
+.table-striped > tbody > tr:nth-child(even) > td,
+.table-striped > tbody > tr:nth-child(even) > th {
+    background-color: #f9f9f9;
+}
+
+/* Footer */
+
+footer p {
+    padding: 15px;
+}

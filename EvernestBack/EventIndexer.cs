@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace EvernestBack
@@ -9,14 +9,10 @@ namespace EvernestBack
         private History _milestones;
         private ulong _currentChunkBytes;
         private ulong _lastPosition;
-        private uint _eventChunkSizeInBytes;
-        private BufferedBlobIO _bufferedStreamIO;
-        private CloudBlockBlob _streamIndexBlob;
-        private uint _indexUpdateMinimumEntryCount;
-        private uint _newEntryCount;
-        private uint _indexUpdateMinimumDelay;
-        private DateTime _lastIndexUpdateTime;
-        private HashCache _cache;
+        private readonly uint _eventChunkSizeInBytes;
+        private readonly BufferedBlobIO _bufferedStreamIO;
+        private readonly CloudBlockBlob _streamIndexBlob;
+        private readonly RangeCache _cache;
 
         /// <summary>
         /// Constructor.
@@ -26,17 +22,14 @@ namespace EvernestBack
         /// <param name="updateMinimumEntryCount">The minimum number of registered indexes (also referred as milestones) to be added before the indexer attempts to re-update the additional stream index information.</param>
         /// <param name="updateMinimumDelay">The minimum delay before before the indexer attempts to re-update the additional stream index information.</param>
         /// <param name="minimumChunkSize">The minimum number of bytes to be read before the indexer registers a new index (also referred as milestone).</param>
-        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, uint updateMinimumEntryCount, uint updateMinimumDelay, uint minimumChunkSize, Int32 cacheSize)
+        /// <param name="cacheSize">The cache size in bytes.</param>
+        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, uint minimumChunkSize, int cacheSize)
         {
-            _indexUpdateMinimumEntryCount = updateMinimumEntryCount;
-            _indexUpdateMinimumDelay = updateMinimumDelay;
             _eventChunkSizeInBytes = minimumChunkSize;
             _bufferedStreamIO = buffer;
             _streamIndexBlob = streamIndexBlob;
             _milestones = new History();
-            _lastIndexUpdateTime = DateTime.UtcNow;
-            _newEntryCount = 0;
-            _cache = new HashCache(cacheSize);
+            _cache = new RangeCache(cacheSize);
         }
 
         /// <summary>
@@ -51,50 +44,52 @@ namespace EvernestBack
                 _lastPosition += _currentChunkBytes;
                 _milestones.Insert(id, _lastPosition);
                 _currentChunkBytes = wroteBytes;
-                _newEntryCount++;
-                UploadIndexIfMeetConditions();
             }
             else
                 _currentChunkBytes += wroteBytes;
         }
 
         /// <summary>
-        /// Try to retrieve an event.
+        /// Try to retrieve an event range.
         /// </summary>
-        /// <param name="id">The id of the requested event.</param>
-        /// <param name="message">The string to which the event's message should be written.</param>
-        /// <returns>True if the event was successfully retrieved, false otherwise.</returns>
-        public bool FetchEvent(long id, out string message)
+        /// <param name="firstId">The first event's id.</param>
+        /// <param name="lastId">The last event's id.</param>
+        /// <param name="range">The range to be retrieved.</param>
+        /// <returns>True if the range was successfully retrieved, false otherwise.</returns>
+        public bool FetchEventRange(long firstId, long lastId, out EventRange range)
         {
-            if (PullFromLocalCache(id, out message))
-            {
-                Console.WriteLine("Pull from cache.");
-                return true;
-            } else { 
-                if (PullFromCloud(id, out message)) 
-                {
-                    Console.WriteLine("Encache.");
-                    _cache.Add(id, message); 
-                    return true;
-                } 
-            }
-            return false;
+            return _cache.TrySetRange(firstId, lastId, out range) || PullRangeFromCloud(firstId, lastId, out range);
         }
 
-
-        private bool PullFromLocalCache(long id, out string message)
+        /// <summary>
+        /// Try to retrieve an event range from the server.
+        /// </summary>
+        /// <param name="firstId">The first event's id.</param>
+        /// <param name="lastId">The last event's id.</param>
+        /// <param name="range">The range to be retrieved.</param>
+        /// <returns>True if the range was successfully retrieved, false otherwise.</returns>
+        private bool PullRangeFromCloud(long firstId, long lastId, out EventRange range) //DRY!!
         {
-            message = _cache.Get(id); 
-            return !message.Equals("", StringComparison.InvariantCulture);
-        }
-
-        public void UploadIndexIfMeetConditions()
-        {
-            if (DateTime.UtcNow.Subtract(_lastIndexUpdateTime).TotalSeconds > _indexUpdateMinimumDelay
-                && _newEntryCount > _indexUpdateMinimumEntryCount)
+            ulong firstByte = 0;
+            ulong lastByte = 0;
+            long lastRetrievedKey = 0;
+            _milestones.LowerBound(firstId, ref firstByte);
+            if (!_milestones.UpperBound(lastId+1, ref lastByte, ref lastRetrievedKey) && (lastByte = _bufferedStreamIO.TotalWrittenBytes) == 0)
             {
-                UploadIndex();
+                range = null;
+                return false; //there's nothing written!
             }
+            if (lastRetrievedKey == 0)
+                lastRetrievedKey = lastId + 1;
+            else
+                lastRetrievedKey--;
+            var byteCount = (int)(lastByte - firstByte);
+            var buffer = new Byte[byteCount];
+            var realByteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int)firstByte, byteCount);
+            EventRange superRange = new EventRange(buffer, 0, realByteCount);
+            if (byteCount == realByteCount) //shouldn't be necessary, but who knows?
+                _cache.InsertRange(superRange, firstId, lastRetrievedKey);
+            return superRange.MakeSubRange(firstId, lastId, out range);
         }
 
         /// <summary>
@@ -102,10 +97,15 @@ namespace EvernestBack
         /// </summary>
         public void UploadIndex()
         {
-            _newEntryCount = 0;
-            _lastIndexUpdateTime = DateTime.UtcNow;
             var serializedMilestones = _milestones.Serialize();
-            _streamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
+            try
+            {
+                _streamIndexBlob.UploadFromByteArray(serializedMilestones, 0, serializedMilestones.Length);
+            }
+            catch (StorageException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
 
         /// <summary>
@@ -114,17 +114,18 @@ namespace EvernestBack
         /// <returns>The last known event id pushed on the server.</returns>
         public long ReadIndexInfo()
         {
-            long lastKnownID = 0;
+            long nextId = 0;
             if(_streamIndexBlob.Exists())
             {
-                _milestones.ReadFromBlob(_streamIndexBlob);
-                if(_milestones.GreatestElement(ref _lastPosition))
+                _milestones = new History(_streamIndexBlob);
+                if(_milestones.GreatestElement(ref _lastPosition, ref nextId))
                 {
+                    nextId++;
                     ulong lastByte = _bufferedStreamIO.TotalWrittenBytes;
-                    if (lastByte - _lastPosition <= 0)
+                    if (lastByte < _lastPosition)
                     {
                         _lastPosition = 0;
-                        _milestones.Clear();
+                        _milestones = new History();
                     }
                     if (lastByte > 0)
                     {
@@ -134,38 +135,14 @@ namespace EvernestBack
                         EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            lastKnownID = enumerator.CurrentID;
-                            NotifyNewEntry(lastKnownID, (ulong)enumerator.CurrentSize);
+                            nextId = enumerator.CurrentId;
+                            NotifyNewEntry(nextId, (ulong)enumerator.CurrentSize);
+                            nextId++;
                         }
                     }
                 }
             }
-            return lastKnownID;
-        }
-
-        private bool PullFromCloud(long id, out string message)
-        {
-            ulong firstByte = 0;
-            ulong lastByte = 0;
-            _milestones.LowerBound(id, ref firstByte);
-            if (!_milestones.UpperBound(id + 1, ref lastByte) && (lastByte = _bufferedStreamIO.TotalWrittenBytes) == 0)
-            {
-                message = "";
-                return false; //there's nothing written!
-            }
-            var byteCount = (int) (lastByte - firstByte);
-            var buffer = new Byte[byteCount];
-            byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int) firstByte, byteCount);
-            EventRange unreadRange = new EventRange(buffer, 0, byteCount);
-            EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
-            while (enumerator.MoveNext() && enumerator.CurrentID != id) ;
-            if (enumerator.CurrentID == id)
-            {
-                message = enumerator.Current.Message;
-                return true;
-            }
-            message = "";
-            return false;
+            return nextId;
         }
 
         public void Dispose()

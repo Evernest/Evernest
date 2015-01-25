@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using EvernestBack;
 using EvernestFront.Utilities;
 using EvernestFront.Contract;
@@ -12,16 +15,8 @@ namespace EvernestFront
 
         public SystemEventStream(AzureStorageClient azureStorageClient, long systemEventStreamId)
         {
-            //TODO: update when method TryGet... is implemented in AzureStorageClient
-            var stringId = Convert.ToString(systemEventStreamId);
-            try
-            {
-                _backEventStream = azureStorageClient.GetNewEventStream(stringId);
-            }
-            catch (ArgumentException)
-            {
-                _backEventStream = azureStorageClient.GetEventStream(stringId);
-            }
+            if(!azureStorageClient.TryGetFreshEventStream(systemEventStreamId, out _backEventStream))
+                _backEventStream = azureStorageClient.GetEventStream(systemEventStreamId);
         }
 
         public void CreateSystemStream()
@@ -37,10 +32,30 @@ namespace EvernestFront
             _backEventStream.Push(contractString, CallbackSuccess, CallbackFailure);
         }
         private void CallbackSuccess(LowLevelEvent acceptedEvent) { }
-        private void CallbackFailure(LowLevelEvent deniedEvent, string errorMessage) { }
+        private void CallbackFailure(string deniedQuery, string errorMessage) { }
 
-        //TODO: reading in system event stream
+        internal List<ISystemEvent> PullAll()
+        {
+            var eventList = new List<ISystemEvent>();
+            var stopWaitHandle = new AutoResetEvent(false);
+            var serializer = new Serializer();
+            var size = _backEventStream.Size();
+            _backEventStream.PullRange
+            (
+                0,
+                size-1,
+                range =>
+                {
+                    eventList.AddRange(range.Select(ev => serializer.ReadSystemEventEnvelope(ev.Message)));
+                    stopWaitHandle.Set();
+                },
+                (firstId, lastId, errorMessage) => stopWaitHandle.Set());
+            stopWaitHandle.WaitOne();
+            return eventList;
+        }
+
     }
+
 
 
 }

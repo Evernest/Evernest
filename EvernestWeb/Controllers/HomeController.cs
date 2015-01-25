@@ -17,6 +17,12 @@ namespace EvernestWeb.Controllers
             return View();
         }
 
+        // GET: /Home/Documentation
+        public ActionResult Documentation()
+        {
+            return View();
+        }
+
         // GET: /Home/Contact
         public ActionResult Contact()
         {

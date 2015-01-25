@@ -1,8 +1,82 @@
-﻿@model EvernestFront.Source
+﻿@using EvernestWeb.ViewModels
+@model EvernestWeb.Models.SourceModel
 
 @{
     ViewBag.Title = "Source";
 }
 
-<h2>Source</h2>
+<h2><a href="/Manager">Manager</a> &gt; Source #@Model.Id - @Model.Name</h2>
 
+<div>
+    <div>
+        <h4>Source info</h4>
+        @{
+            if (Model != null)
+            {
+                <ul>
+                    <li>
+                        <strong>Source ID :</strong> @Model.Id</li>
+                    <li>
+                        <strong>Source key :</strong> @Model.Key</li>
+                </ul>
+            }
+        }
+
+    </div>
+
+    <div>
+        <h4>Stream permissions</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Stream name</th>
+                    <th>Access level</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (Model != null && Model.RelatedEventStreams != null && Model.RelatedEventStreams.Count > 0)
+                {
+                    foreach (var stream in Model.RelatedEventStreams)
+                    {
+                        ViewBag.StreamId = stream.Id;
+                        ViewBag.SourceId = Model.Id;
+                        <tr>
+                            <td>@stream.Name</td>
+                            <td>
+                                @{
+                                    var updateStream = new EvernestWeb.ViewModels.UpdateSourceRight();
+                                    updateStream.Right = stream.Right;
+                                    Html.RenderPartial("_UpdateSourceRightFormPartial", updateStream);
+                                }
+                            </td>
+                            <td>
+                                @{
+                                    Html.RenderPartial("_DeleteSourceRightFormPartial", new EvernestWeb.ViewModels.DeleteSourceRight());
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td></td>
+                        <td><em>No rights given to source.</em></td>
+                        <td></td>
+                    </tr>
+
+                }
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td style="min-width: 15%;"></td>
+                    <td>@{ Html.RenderPartial("_NewStreamToSourceFormPartial", new NewStreamToSourceModel()); }</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

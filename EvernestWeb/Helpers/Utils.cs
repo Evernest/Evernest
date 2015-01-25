@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using EvernestFront;
+using EvernestFront.Contract;
+using EvernestWeb.Models;
 using EvernestWeb.ViewModels;
 
 namespace EvernestWeb.Helpers
@@ -11,58 +13,51 @@ namespace EvernestWeb.Helpers
     /// </summary>
     public class Utils
     {
-        /*
-        public static StreamsSources getStreamsSources(EvernestFront.Answers.GetUser u)
+        /// <summary>
+        /// Associate strings right names to corresponding Front objets
+        /// </summary>
+        public static readonly Dictionary<string, AccessRight> AccessRightsDictionary = new Dictionary<string, AccessRight>
         {
-            List<KeyValuePair<long, AccessRights>> listStreams = u.User.RelatedEventStreams;
-            List<KeyValuePair<string, string>> listSources = u.User.Sources;
-            StreamsSources streamsSources = new StreamsSources();
-            foreach (var elt in listStreams)
-            {
-                EvernestFront.Answers.GetEventStream s = EventStream.GetStream(elt.Key);
-                if (s.Success)
-                    streamsSources.AddEventStream(s.EventStream);
-            }
-            foreach (var src in listSources)
-            {
-                EvernestFront.Answers.GetSource s = Source.GetSource(src.Value); // the second string is the Key to fetch the source
-                if (s.Success)
-                    streamsSources.AddSource(s.Source);
-            }
+            {"ReadOnly",  AccessRight.ReadOnly },
+            {"WriteOnly", AccessRight.WriteOnly},
+            {"ReadWrite", AccessRight.ReadWrite},
+            {"Admin",     AccessRight.Admin    }
+        };
 
-            return streamsSources;
-        }
-        */
-
-
-        public static StreamAndEvents getStreamsAndEvents(long streamId, long userId)
+        public static ModelStream ModelStreamFromStream(EventStream e)
         {
+            if (e != null)
+                return new ModelStream
+                {
+                    UserRight = e.UserRight,
+                    Id = e.Id,
+                    Name = e.Name,
+                    Count = e.Count,
+                    LastEventId = e.LastEventId
+                };
             return null;
-            /*
-            EvernestFront.Answers.GetEventStream s = EvernestFront.EventStream.GetStream(streamId);
-            EvernestFront.Answers.GetUser u = EvernestFront.User.GetUser(userId);
-            if (s.Success && u.Success)
-            {
-                // fetch stream
-                StreamAndEvents streamAndEvents = new StreamAndEvents();
-                streamAndEvents.Id = s.EventStream.Id;
-                streamAndEvents.Name = s.EventStream.Name;
-                streamAndEvents.Count = s.EventStream.Count;
-                streamAndEvents.LastEventId = s.EventStream.LastEventId;
-                streamAndEvents.RelatedUsers = s.EventStream.RelatedUsers;
-
-                // fetch stream's events
-                int begin = 0;
-                if (s.EventStream.LastEventId > 10)
-                    begin = Convert.ToInt32(s.EventStream.LastEventId) - 10;
-
-                EvernestFront.Answers.PullRange r = u.User.PullRange(streamId, begin, s.EventStream.LastEventId);
-                streamAndEvents.Events = r.Events;
-
-                return streamAndEvents;
-            }
-            */
         }
 
+        public static ModelSource ModelSourceFromSource(Source s)
+        {
+            if (s != null)
+                return new ModelSource
+                {
+                    Name = s.Name,
+                    Id = s.Id
+                };
+            return null;
+        }
+
+        public static EventModel EventModelFromEvent(Event e)
+        {
+            if (e != null)
+                return new EventModel
+                {
+                    Id = e.Id,
+                    Message = e.Message
+                };
+            return null;
+        }
     }
 }

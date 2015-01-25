@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using EvernestFront.Contract;
+using EvernestWeb.Helpers;
 
 namespace EvernestWeb.ViewModels
 {
@@ -11,7 +12,7 @@ namespace EvernestWeb.ViewModels
     {
         [Required]
         [Display(Name = "Stream name")]
-        [StringLength(100, ErrorMessage = "The source name length must be between 4 and 100 characters.", MinimumLength = 4)]
+        [StringLength(100, ErrorMessage = "The stream name length must be between 4 and 100 characters.", MinimumLength = 4)]
         public string Name { get; set; }
     }
 
@@ -33,48 +34,119 @@ namespace EvernestWeb.ViewModels
     {
         [Required]
         [Display(Name = "Event content")]
-        [StringLength(100, ErrorMessage = "The source name length must be between 4 and 100 characters.", MinimumLength = 4)]
+        [StringLength(100, ErrorMessage = "The event name length must be between 4 and 100 characters.", MinimumLength = 4)]
         public string Content { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
     }
-
-    /// <summary>
-    /// Data displayed in main manager page
-    /// </summary>
-    public class ManagerModel
-    {
-        public List<EvernestFront.EventStream> Streams { get; set; }
-        public List<EvernestFront.Source> Sources { get; set; }
-    }
-
-
-    // Beyond this point, a refactoring might be required
-
-    public class AddUserModel
+    
+    public class NewStreamUserModel
     {
         [Required]
-        [Display(Name = "Add User")]
-        public string NewUser { get; set; }
+        [Display(Name = "New Stream User")]
+        public long NewUser { get; set; }
 
         [Required]
         public AccessRight Right { get; set; }
 
         [Required]
         public long StreamId { get; set; }
+
+        public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
     }
 
-    public class StreamAndEvents
+    public class GetEventById
     {
-        // Stream
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public long Count { get; set; }
-        public long LastEventId { get; set;}
-        public List<KeyValuePair<string, AccessRight>> RelatedUsers { get; set; }
+        [Required]
+        [Display(Name = "Get event by Id")]
+        public long EventId { get; set; }
 
-        // Events
-        public List<EvernestFront.Event> Events;
+        [Required]
+        public long StreamId { get; set; }
+    }
 
-        // AddUser
-        public AddUserModel AddUserModelObject { get; set; }
+    public class DeleteStreamModel
+    {
+        [Required]
+        [StringLength(100, ErrorMessage = "Password is too short. It requires at least 6 characters.", MinimumLength = 6)]
+        [Display(Name = "Confirm with your password")]
+        public string DeleteConfirmPassword { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
+    }
+
+    public class DeleteSourceModel
+    {
+        [Required]
+        [StringLength(100, ErrorMessage = "Password is too short. It requires at least 6 characters.", MinimumLength = 6)]
+        [Display(Name = "Confirm with your password")]
+        public string DeleteConfirmPassword { get; set; }
+
+        [Required]
+        public long SourceId { get; set; }
+    }
+
+    public class NewStreamToSourceModel
+    {
+        [Required]
+        [Display(Name = "Stream Id")]
+        public long StreamId { get; set; }
+
+        [Required]
+        public AccessRight Right { get; set; }
+
+        [Required]
+        public long SourceId { get; set; }
+
+        public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
+    }
+
+    public class UpdateUserRightOnStream
+    {
+        [Required]
+        public long StreamId { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+
+        [Required]
+        public AccessRight Right { get; set; }
+
+        public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
+
+    }
+
+    public class DeleteUserRightOnStream
+    {
+        [Required]
+        public long StreamId { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+    }
+
+    public class UpdateSourceRight
+    {
+        [Required]
+        public long SourceId { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
+
+        [Required]
+        public AccessRight Right { get; set; }
+
+        public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
+    }
+
+    public class DeleteSourceRight
+    {
+        [Required]
+        public long SourceId { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
     }
 }

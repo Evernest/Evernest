@@ -14,13 +14,14 @@ namespace EvernestAPI
                 routeTemplate: "{controller}/{id}/{action}/{arg0}/{arg1}",
                 constraints: new
                 {
-                    id = @"\d+",
+                    id = @"\d*", // Note the star to make id optional
                     action = @"[a-zA-Z]*", // Note the star to make action optional
                     arg0 = @"\d*", // Note the star to make arg0 optional
                     arg1 = @"\d*", // Note the star to make arg1 optional
                 },
                 defaults: new
                 {
+                    id = RouteParameter.Optional,
                     action = "Default",
                     arg0 = RouteParameter.Optional,
                     arg1 = RouteParameter.Optional,
@@ -33,12 +34,13 @@ namespace EvernestAPI
                 constraints: new
                 {
                     id = @"\d+",
-                    streamId = @"\d+",
+                    streamId = @"\d*", // Note the star to make streamId optional
                     action = @"[a-zA-Z]*", // Note the star to make action optional
-                    right = @"(None|ReadOnly|WriteOnly|ReadWrite|Admin|Root)?", // Note the ? to make right optional
+                    right = @"(None|ReadOnly|WriteOnly|ReadWrite|Admin)?", // Note the ? to make right optional
                 },
                 defaults: new
                 {
+                    streamId = RouteParameter.Optional,
                     action = "Default",
                     right = RouteParameter.Optional,
                 }
@@ -66,17 +68,6 @@ namespace EvernestAPI
                 {
                     action="New",
                 }
-                );
-
-            config.Routes.MapHttpRoute(
-                name: "APIUserAdd",
-                routeTemplate: "{controller}/Add/{username}/{password}",
-                constraints: new
-                {
-                    username = @"[a-zA-Z0-9]*",
-                    password = @"[a-zA-Z0-9]*",
-                },
-                defaults: new {}
                 );
         }
     }

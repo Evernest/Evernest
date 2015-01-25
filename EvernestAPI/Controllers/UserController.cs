@@ -1,112 +1,94 @@
 ﻿using System.Collections;
-using System.Net;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
 using EvernestAPI.Models;
+using EvernestFront;
+using EvernestFront.Contract;
 
 namespace EvernestAPI.Controllers
 {
     public class UserController : ApiController
     {
-        // /User/{id}
+
+        //     * GET /User
+        // Get informations on the user represented by the user key that you must provide.
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
         public HttpResponseMessage GetUser()
         {
-            try
+            Hashtable body;
+            try { body = Tools.ParseRequest(Request); }
+            catch { return Response.BadRequest(Request); }
+
+            if (!body.ContainsKey("userkey"))
+                return Response.MissingArgument(Request, "UserKey");
+
+            var userProvider = new UserProvider();
+            var userRequest = userProvider.GetUser((string) body["userkey"]);
+
+            if (!userRequest.Success)
+                return Response.BadArgument(Request, "UserKey");
+
+            var user = userRequest.Result;
+
+            var userHashtbl = new Hashtable();
+
+            userHashtbl["Id"] = user.Id;
+            userHashtbl["Name"] = user.Name;
+
+            var userSources = new List<Hashtable>();
+            foreach (var id in user.Sources)
             {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
-
-                var front = new EvernestFront.UsersBuilder();
-
-                var userReq = front.GetUser((string)body["key"]);
-
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "User";
-                debug["Method"] = "Response<User>";
-                debug["key"] = body["key"];
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
-
-                if (userReq.Success)
-                {
-                    var user = userReq.Result;
-                    ans["Status"] = "Success";
-                    ans["id"] = user.Id;
-                    ans["name"] = user.Name;
-                    ans["OwnedSources"] = user.Sources;
-                    ans["RelatedStreams"] = user.RelatedEventStreams;
-                }
-                else
-                {
-                    ans["Status"] = "Error";
-                    ans["FieldError"] = userReq.Error;
-                }
-
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
+                var tmp = new Hashtable();
+                tmp["Id"] = id;
+                userSources.Add(tmp);
             }
-            catch
+            userHashtbl["Sources"] = userSources; // Possible with a Linq request ?
+
+            var userStreams = new List<Hashtable>();
+            foreach (var id in user.RelatedEventStreams)
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                var tmp = new Hashtable();
+                tmp["Id"] = id;
+                userStreams.Add(tmp);
             }
+            userHashtbl["Streams"] = userStreams;
+
+            var ans = new Hashtable();
+            ans["User"] = userHashtbl;
+
+            return Response.Success(Request, ans);
         }
-        
 
-        // User/Add/{username}/{password}
+
+        //     GET /User/{UserId}
+        // Get informations on the user represented by its id.
         [HttpGet]
         [HttpPost]
-        [ActionName("Add")]
-        public HttpResponseMessage AddUser(string username, string password)
+        [ActionName("Default")]
+        public HttpResponseMessage GetUser(long id)
         {
-            try
-            {
-                var body = Tools.ParseRequest(Request);
-                var ans = new Hashtable();
+            var userProvider = new UserProvider();
+            var userPublicInfoRequest = userProvider.GetUserPublicInfo(id);
 
-                var front =  new EvernestFront.UsersBuilder();
+            if (!userPublicInfoRequest.Success)
+                return Response.BadArgument(Request, "UserId");
 
+            var userPublicInfo = userPublicInfoRequest.Result;
 
-                var GuidReq = front.AddUser(username, password);
+            var userHashtbl = new Hashtable();
+            userHashtbl["Id"] = userPublicInfo.Id;
+            userHashtbl["Name"] = userPublicInfo.Name;
 
-                
+            var ans = new Hashtable();
+            ans["User"] = userHashtbl;
 
-                // BEGIN DEBUG //
-                var debug = new Hashtable();
-                debug["Controller"] = "User";
-                debug["Method"] = "Default";
-                debug["key"] = body["key"];
-                debug["body"] = body;
-                ans["Debug"] = debug;
-                // END DEBUG //
-
-                if (GuidReq.Success)
-                {
-                    var Guid = GuidReq.Result;
-                    ans["Status"] = "Success";
-                    ans["Guid"] = Guid;
-                }
-                else
-                {
-                    ans["Status"] = "Error";
-                    ans["FieldErrors"] = GuidReq.Error;
-
-                }
-                return Request.CreateResponse(HttpStatusCode.OK, ans);
-            }
-            catch
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            return Response.Success(Request, ans);
         }
 
-
-
-        // Not routed ?
-        
-
+        // API can't create a User.
     }
 }

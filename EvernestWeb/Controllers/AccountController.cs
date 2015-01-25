@@ -2,8 +2,8 @@
 using System.Web.Security;
 
 ﻿using EvernestFront;
-
-﻿using EvernestWeb.ViewModels;
+using EvernestWeb.Models;
+using EvernestWeb.ViewModels;
 ﻿
 namespace EvernestWeb.Controllers
 {
@@ -12,7 +12,8 @@ namespace EvernestWeb.Controllers
         // GET: /Account
         public ActionResult Index()
         {
-            return View();
+            Models.User user = (Models.User)Session["User"];
+            return View(user);
         }
 
         // GET: /Account/ChangePwd
@@ -28,7 +29,7 @@ namespace EvernestWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                var front = new UsersProvider();
+                var front = new UserProvider();
                 Models.User user = (Models.User) Session["User"];
                 var userReq = front.GetUser(user.Id);
                 if (!userReq.Success)
@@ -42,6 +43,7 @@ namespace EvernestWeb.Controllers
                     ModelState.AddModelError("Password", "Incorrect Password.");
                     return View(model);
                 }
+                ViewBag.Status = "Password modified.";
                 return View(model);
             }
             return View(model);
@@ -63,7 +65,7 @@ namespace EvernestWeb.Controllers
             if (ModelState.IsValid)
             {
                 // Ask front for identification
-                var front = new UsersProvider();
+                var front = new UserProvider();
                 var userReq = front.IdentifyUser(user.Username, user.Password);
                 if (!userReq.Success)
                 {
@@ -106,7 +108,7 @@ namespace EvernestWeb.Controllers
             }
 
             // Add user in front
-            var front = new UsersProvider();
+            var front = new UserProvider();
             var addUserReq = front.AddUser(model.Username, model.Password);
             if (!addUserReq.Success)
             {

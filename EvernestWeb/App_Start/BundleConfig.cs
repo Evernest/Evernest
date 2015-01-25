@@ -23,10 +23,12 @@ namespace EvernestWeb
                       "~/Content/Scripts/bootstrap.js",
                       "~/Content/Scripts/respond.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/evernest").Include(
+                      "~/Content/Scripts/evernest.js"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/Theme/bootstrap.css",
-                      "~/Content/Theme/EvernestWeb2.css",
-                      "~/Content/Theme/Site.css"));
+                      "~/Content/Theme/evernest.css"));
         }
     }
 }

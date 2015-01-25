@@ -1,20 +1,24 @@
-﻿using System.Web;
-using EvernestFront;
-using EvernestFront.SystemCommandHandling;
-
-[assembly: PreApplicationStartMethod(typeof(StartUp), "Start")]
+﻿using System;
+using System.Diagnostics;
+using EvernestBack;
 
 namespace EvernestFront
 {
-    public static class StartUp
+    /// <summary>
+    /// Execute setup operations to make the
+    /// EvernestFront library operational. This class should be removed
+    /// when Injector and AzureStorageClient are no longer singletons.
+    /// Cf commentary for Injector.
+    /// </summary>
+    public class StartUp
     {
-        public static void Start()
+        public void Start()
         {
+            var azureStorageClient = AzureStorageClient.Instance;
             var injector = Injector.Instance;
-            injector.Build();
-            //TODO: read system event stream
-            injector.SystemCommandHandler.HandleCommands();
-            injector.Dispatcher.DispatchSystemEvents();
+            injector.BuildFront(azureStorageClient);
         }
+
+        
     }
 }

@@ -7,16 +7,23 @@ using EvernestFront.Projections;
 
 namespace EvernestFront
 {
-    public class SourcesProvider
+    public class SourceProvider
     {
-        private readonly SourcesProjection _sourcesProjection;
+        internal readonly SourcesProjection SourcesProjection;
 
-        private readonly SystemCommandHandler _systemCommandHandler;
+        internal readonly EventStreamProvider EventStreamProvider;
 
-        public SourcesProvider()
+        public SourceProvider()
         {
-            _sourcesProjection = Injector.Instance.SourcesProjection;
-            _systemCommandHandler = Injector.Instance.SystemCommandHandler;
+            var sourceProvider = Injector.Instance.SourceProvider;
+            SourcesProjection = sourceProvider.SourcesProjection;
+            EventStreamProvider = sourceProvider.EventStreamProvider;
+        }
+
+        internal SourceProvider(SourcesProjection sourcesProjection, EventStreamProvider eventStreamProvider)
+        {
+            SourcesProjection = sourcesProjection;
+            EventStreamProvider = eventStreamProvider;
         }
 
         public Response<Source> GetSource(string sourceKey)
@@ -35,14 +42,14 @@ namespace EvernestFront
         internal bool TryGetSource(string sourceKey, out Source source, out FrontError? error)
         {
             SourceRecord sourceData;
-            if (!_sourcesProjection.TryGetSourceData(sourceKey, out sourceData))
+            if (!SourcesProjection.TryGetSourceData(sourceKey, out sourceData))
             {
                 source = null;
                 error = FrontError.SourceKeyDoesNotExist;
                 return false;
             }
 
-            var usersBuilder = new UsersProvider();
+            var usersBuilder = new UserProvider();
             User user;
             if (!usersBuilder.TryGetUser(sourceData.UserId, out user))
             {
@@ -51,7 +58,7 @@ namespace EvernestFront
                 return false;
             }
 
-            source = new Source(sourceKey, sourceData.SourceName, sourceData.SourceId, user, sourceData.RelatedEventStreams);
+            source = new Source(EventStreamProvider, sourceKey, sourceData.SourceName, sourceData.SourceId, user, sourceData.RelatedEventStreams);
             error = null;
             return true;
         }

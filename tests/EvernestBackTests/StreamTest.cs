@@ -195,7 +195,7 @@ namespace EvernestBackTests
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
             Random rng = GetRNG();
-            const int count = 1000;
+            const int count = 100000;
             DateTime start = DateTime.UtcNow;
             for(int i = 0 ; i < count ; i++)
                 SinglePush(stream, RandomString(rng, 42));

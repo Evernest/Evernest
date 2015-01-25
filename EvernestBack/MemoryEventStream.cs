@@ -7,7 +7,7 @@ namespace EvernestBack
     /// <summary>This is a small test Stream storing messages in a List instead of in Azure.</summary>
     public class MemoryEventStream : IEventStream
     {
-        public long Index;
+        public long Index { get; private set; }
         private readonly List<string> _messages = new List<string>();
         private readonly string _streamFileName;
 

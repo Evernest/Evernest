@@ -5,8 +5,7 @@
     @Html.AntiForgeryToken()
 
     <div class="form-group">
-        @Html.LabelFor(m => m.StreamId, new { @class = "sr-only" })
-        @Html.TextBoxFor(m => m.StreamId, new { @class = "form-control", @placeholder = "Add stream by ID..." })
+        @Html.DropDownListFor(m => m.StreamId, new SelectList(Model.StreamsDictionary, "Value", "Key"), new { @class = "form-control" })
     </div>
     <div class="form-group">
         @Html.DropDownListFor(m => m.Right, new SelectList(Model.AccessRightsDictionary, "Key", "Value"), new { @class = "form-control" })

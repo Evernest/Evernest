@@ -73,7 +73,16 @@
             <tfoot>
                 <tr>
                     <td style="min-width: 15%;"></td>
-                    <td>@{ Html.RenderPartial("_NewStreamToSourceFormPartial", new NewStreamToSourceModel()); }</td>
+                    <td>
+                        @{
+                            if (Model != null && Model.streamsDic != null)
+                            {
+                                var srcModel = new NewStreamToSourceModel();
+                                srcModel.StreamsDictionary = Model.streamsDic;
+                                Html.RenderPartial("_NewStreamToSourceFormPartial", srcModel);
+                            }
+                        }
+                    </td>
                     <td></td>
                 </tr>
             </tfoot>

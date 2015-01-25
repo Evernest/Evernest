@@ -61,24 +61,25 @@
         <h4>Pull event by ID</h4>
         <table class="table table-striped">
             <thead>
-                <tr><th>Id</th><th>Message</th></tr>
+            <tr><th>Id</th><th>Message</th><th></th></tr>
             </thead>
             @if (Model != null && Model.PulledEvent != null)
             {
                 <tbody>
-                <tr><td>@Model.PulledEvent.Id</td><td>@Model.PulledEvent.Message</td></tr>
+                <tr><td>@Model.PulledEvent.Id</td><td>@Model.PulledEvent.Message</td><td></td></tr>
                 </tbody>
             }
             else
             {
                 <tbody>
-                <tr><td><td><em>No event pulled, please enter request in form below.</em></td></td></tr>
+                <tr><td></td><td><em>No event pulled, please enter request in form below.</em></td><td></td></tr>
                 </tbody>
             }
             <tfoot>
                 <tr>
                     <td style="min-width: 15%;"></td>
                     <td>@{ Html.RenderPartial("_GetEventByIdFormPartial", new EvernestWeb.ViewModels.GetEventById());}</td>
+                    <td></td>
                 </tr>
             </tfoot>
         </table>
@@ -98,8 +99,6 @@
             <tr>
                 <th>Id</th>
                 <th>Message</th>
-                <th></th>
-                <th></th>
             </tr>
             </thead>
             <tbody>

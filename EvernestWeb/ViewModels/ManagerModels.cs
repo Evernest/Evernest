@@ -45,7 +45,7 @@ namespace EvernestWeb.ViewModels
     {
         [Required]
         [Display(Name = "New Stream User")]
-        public long NewUser { get; set; }
+        public string NewUser { get; set; }
 
         [Required]
         public AccessRight Right { get; set; }
@@ -90,16 +90,17 @@ namespace EvernestWeb.ViewModels
 
     public class NewStreamToSourceModel
     {
+        
         [Required]
-        [Display(Name = "Stream Id")]
         public long StreamId { get; set; }
-
+    
         [Required]
         public AccessRight Right { get; set; }
 
         [Required]
         public long SourceId { get; set; }
 
+        public Dictionary<string, long> StreamsDictionary { get; set; }
         public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
     }
 

@@ -6,7 +6,7 @@
 
     <div class="form-group">
         @Html.LabelFor(m => m.EventId, new { @class = "sr-only" })
-        @Html.TextBoxFor(m => m.EventId, new { @class = "form-control", @placeholder = "Pull event by ID..." })
+        @Html.TextBoxFor(m => m.EventId, new { @class = "form-control", @placeholder = "Pull event by ID...", @value = "" })
     </div>
     <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId);}" />
     <input type="submit" class="btn btn-default" value="Pull" />

@@ -53,11 +53,18 @@ namespace EvernestWeb.Controllers
             Models.User user = (Models.User)Session["User"];
             var userReq = front.GetUser(user.Id);
 
-            ViewBag.StreamId = model.StreamId;
+            if (userReq.Success)
+            {
+                var streamReq = userReq.Result.GetEventStream(model.StreamId);
+                if (streamReq.Success)
+                {
+                    ViewBag.StreamId = model.StreamId;
+                    var streamEventsModel = new StreamEventsModel(userReq.Result, model.StreamId, model.EventId);
+                    return View(streamEventsModel);
+                }
+            }
 
-            var streamEventsModel = new StreamEventsModel(userReq.Result, model.StreamId, model.EventId);
-
-            return View(streamEventsModel);
+            return RedirectToAction("Index", "Manager");
 
         }
 
@@ -225,6 +232,15 @@ namespace EvernestWeb.Controllers
 
             var sourceModel = new SourceModel(userReq.Result, id);
             ViewBag.SourceId = id;
+
+            var streamReq = userReq.Result.RelatedEventStreams;
+            Dictionary<string, long> dic = new Dictionary<string, long>();
+            foreach (var streamId in streamReq)
+            {
+                var eventStreamReq = userReq.Result.GetEventStream(streamId).Result;
+                dic.Add(eventStreamReq.Name, streamId);
+            }
+            sourceModel.streamsDic = dic;
 
             return View(sourceModel);
         }

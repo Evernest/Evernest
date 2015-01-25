@@ -69,14 +69,18 @@ namespace EvernestWeb.Models
 
         public StreamEventsModel(EvernestFront.User u, long streamId)
         {
-            EventStream es = u.GetEventStream(streamId).Result;
-            Stream = Utils.ModelStreamFromStream(es);
-            RelatedUsers = es.GetRelatedUsers().Result;
-            long begin = es.LastEventId - 10 < 0 ? 0 : es.LastEventId - 10;
-            long end = es.LastEventId;
-            List<Event> le = es.PullRange(begin, end).Result;
-            if (le != null && le.Count() > 0)
-                Events = le.Select(x => Utils.EventModelFromEvent(x));
+            var streamReq = u.GetEventStream(streamId);
+            if (streamReq.Success)
+            {
+                EventStream es = streamReq.Result;
+                Stream = Utils.ModelStreamFromStream(es);
+                RelatedUsers = es.GetRelatedUsers().Result;
+                long begin = es.LastEventId - 10 < 0 ? 0 : es.LastEventId - 10;
+                long end = es.LastEventId;
+                List<Event> le = es.PullRange(begin, end).Result;
+                if (le != null && le.Count() > 0)
+                    Events = le.Select(x => Utils.EventModelFromEvent(x));
+            }
         }
 
         public StreamEventsModel(EvernestFront.User u, long streamId, long eventId) : this(u, streamId)
@@ -110,8 +114,10 @@ namespace EvernestWeb.Models
         public string Key { get; set; }
         public string Name { get; set; }
         public long Id { get; set; }
-        public List<RelatedEventStreams> RelatedEventStreams { get; set; } 
+        public List<RelatedEventStreams> RelatedEventStreams { get; set; }
 
+        public Dictionary<string, long> streamsDic { get; set; }
+ 
         public SourceModel(EvernestFront.User u, long sourceId)
         {
             var sourceReq = u.GetSource(sourceId);

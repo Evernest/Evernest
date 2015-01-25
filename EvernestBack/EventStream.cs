@@ -135,8 +135,8 @@ namespace EvernestBack
         /// </summary>
         public void Update()
         {
-            _bufferedIO.FlushBuffer();
-            _indexer.UploadIndex();
+            _writer.AddSynchronizedAction(() => { _bufferedIO.FlushBuffer(); });
+            _reader.AddSynchronizedAction(_indexer.UploadIndex);
         }
 
         /// <summary>

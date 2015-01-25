@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Threading;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using System.Collections.Immutable;
 
 namespace EvernestBack
 {
@@ -14,7 +15,7 @@ namespace EvernestBack
         private static readonly object InitializeLock = new object();
         private static AzureStorageClient _singleton;
         private readonly bool _dummy;
-        private readonly Dictionary<String, IEventStream> _openedStreams;
+        private ImmutableDictionary<String, IEventStream> _openedStreams;
         private readonly Int32 _minimumBufferSize;
         private readonly UInt32 _eventChunkSize;
         private readonly UInt32 _updateDelay;
@@ -30,7 +31,7 @@ namespace EvernestBack
         private AzureStorageClient()
         {
             _dummy = Boolean.Parse(ConfigurationManager.AppSettings["Dummy"]);
-            _openedStreams = new Dictionary<String, IEventStream>();
+            _openedStreams = ImmutableDictionary<String, IEventStream>.Empty;
             if (_dummy) // temporary dummy mode
             {
                 StreamContainer = null;
@@ -173,7 +174,7 @@ namespace EvernestBack
                 stream = new EventStream(this, streamId, _minimumBufferSize, _eventChunkSize, _cacheSize);
             }
 
-            _openedStreams.Add(streamId, stream);
+            _openedStreams = _openedStreams.Add(streamId, stream);
             return stream;
         }
 
@@ -216,7 +217,7 @@ namespace EvernestBack
             IEventStream stream;
             if (_openedStreams.TryGetValue(streamId, out stream))
             {
-                _openedStreams.Remove(streamId);        // calls destructor & closes stream
+                _openedStreams = _openedStreams.Remove(streamId);        // calls destructor & closes stream
                 stream.Dispose();
             }
         }
@@ -284,7 +285,8 @@ namespace EvernestBack
         /// <param name="o">Unused (necessary for the callback).</param>
         private void UpdateAll(object o)
         {
-            foreach (KeyValuePair<string, IEventStream> pair in _openedStreams)
+            ImmutableDictionary<string, IEventStream> localDictionary = _openedStreams;
+            foreach (KeyValuePair<string, IEventStream> pair in localDictionary)
                 pair.Value.Update();
         }
 
@@ -296,7 +298,7 @@ namespace EvernestBack
             _updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
             foreach (KeyValuePair<string, IEventStream> pair in _openedStreams)
                 pair.Value.Dispose();
-            _openedStreams.Clear();
+            _openedStreams = _openedStreams.Clear();
 
             if (_dummy)
             {

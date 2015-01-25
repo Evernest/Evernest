@@ -257,3 +257,26 @@ th {
 footer p {
     padding: 15px;
 }
+
+
+/* Subtitle <h3> for manager pages */
+
+.manager-navbar-disabled {
+    color: #888;    
+}
+
+.manager-subtitle {
+    margin: 0px;
+    padding: 0px;
+    font-size: 1.5em;
+    margin-left: 20px;
+    margin-bottom: 42px;
+    font-style: italic;
+}
+
+.manager-subtitle .info {
+    color: #888;
+    font-size: 0.8em;
+    display: inline-block;
+    padding-left: 20px;
+}

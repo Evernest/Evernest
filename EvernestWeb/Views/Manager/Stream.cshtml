@@ -2,21 +2,10 @@
 @using EvernestWeb.Models
 @model EvernestWeb.Models.StreamEventsModel
 
-<h2><a href="/Manager">Manager</a> &gt; Stream #@Model.Stream.Id - @Model.Stream.Name</h2>
+<h2><a href="/Manager">Manager</a> &gt; <span class="manager-navbar-disabled">Stream</span> &gt; @Html.ActionLink("#" + Model.Stream.Id, "Stream", "Manager", new {id = Model.Stream.Id}, null)</h2>
+<h3 class="manager-subtitle">@Model.Stream.Name <span class="info">@Model.Stream.Count events</span></h3>
 
 <div>
-    <div>
-        <h4>Stream information</h4>
-        @{
-            if (Model != null)
-            {
-                <ul>
-                    <li><strong>Stream ID :</strong> @Model.Stream.Id</li>
-                    <li><strong>Event count :</strong> @Model.Stream.Count</li>
-                </ul>
-                }
-        }
-    </div>
 
     <div>
         <h4>Related users</h4>

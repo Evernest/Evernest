@@ -5,7 +5,6 @@
     @Html.AntiForgeryToken()
     <div class="form-group">
         @Html.DropDownListFor(x => x.Right, new SelectList(Model.AccessRightsDictionary, "Key", "Value"), new { @class = "form-control" })
-
     </div>
     <input type="hidden" name="UserId" value="@{Write(ViewBag.UserId);}" />
     <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId);}" />

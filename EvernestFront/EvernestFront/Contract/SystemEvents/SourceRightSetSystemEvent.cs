@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace EvernestFront.Contract.SystemEvents
 {
@@ -16,6 +12,7 @@ namespace EvernestFront.Contract.SystemEvents
         [DataMember]
         internal AccessRight SourceRight { get; set; }
 
+        [JsonConstructor]
         internal SourceRightSetSystemEvent(string sourceKey, long eventStreamId, AccessRight sourceRight)
         {
             SourceKey = sourceKey;

@@ -9,12 +9,6 @@
     padding-right: 15px;
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
-}
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
@@ -35,24 +29,6 @@ textarea {
 }
 
 
-/* For store-streams */
-
-.store-streams{
-    padding: 0px;
-    margin: 0px;
-}
-
-.store-streams li{
-    list-style-type: none;
-    background-color: #aad2ef;
-    margin: 0px 0px 1px 0px;
-    padding: 3px 10px;
-}
-
-.store-streams li:hover{
-    background-color: #b6d7ef;
-}
-
 /* Callouts */
 
 .evernest-callout-danger {
@@ -64,6 +40,18 @@ textarea {
 
 .evernest-callout-danger h4 {
     color: #ff7f50;
+}
+
+
+.evernest-callout-success {
+    background-color: #ecfae8;
+    border-left: 3px solid #49a322;
+    padding: 0.2em 1em;
+    margin: 1em 0;
+}
+
+.evernest-callout-success h4 {
+    color: #49a322;
 }
 
 /* navbar */
@@ -107,6 +95,31 @@ header {
 .navbar .btn {
     color: #c5dbe5;
     border: 1px solid #c5dbe5;
+}
+
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-toggle:focus {
+    background-color: #c5dbe5;
+}
+
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form,
+.navbar-inverse .navbar-toggle {
+    border-color: #8eb9cc;
+}
+
+.navbar-inverse .navbar-toggle .icon-bar {
+    background-color: #8eb9cc;
+}
+
+.navbar-collapse {
+    background-color: #f9f9f9;
+}
+
+@media (min-width: 768px) {
+    .navbar-collapse {
+        background-color: white;
+    }
 }
 
 /* Slides */
@@ -163,11 +176,12 @@ header {
 }
 
 .slide--next {
-    margin: auto;
     position: absolute;
     bottom: 7em;
     left: 0;
     right: 0;
+    width: 64px;
+    margin: auto;
 }
 
 
@@ -239,4 +253,10 @@ th {
 .table-striped > tbody > tr:nth-child(even) > td,
 .table-striped > tbody > tr:nth-child(even) > th {
     background-color: #f9f9f9;
+}
+
+/* Footer */
+
+footer p {
+    padding: 15px;
 }

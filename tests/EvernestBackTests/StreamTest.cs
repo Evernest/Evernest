@@ -208,6 +208,12 @@ namespace EvernestBackTests
             Console.WriteLine("pull time ("+count+" elements):"+DateTime.UtcNow.Subtract(start).TotalMilliseconds + "ms");
         }
 
+        [TestFixtureSetUp]
+        public void Setup()
+        {
+            AzureStorageClient.Instance.ClearAll();
+        }
+
         [TestFixtureTearDown]
         public void Cleanup()
         {

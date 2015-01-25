@@ -11,7 +11,7 @@
             <fieldset>
                 <legend>Delete Stream : @ViewBag.StreamId</legend>
                 @Html.LabelFor(m => m.DeleteConfirmPassword)
-                @Html.TextBoxFor(m => m.DeleteConfirmPassword)
+                @Html.PasswordFor(m => m.DeleteConfirmPassword)
                 <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId);}" />
                 <input type="submit" value="Confirm deletion" />
             </fieldset>

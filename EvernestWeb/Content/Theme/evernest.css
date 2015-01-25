@@ -114,12 +114,20 @@ header {
     background-color: #c5dbe5;
 }
 
+.navbar-inverse .navbar-collapse,
+.navbar-inverse .navbar-form,
 .navbar-inverse .navbar-toggle {
     border-color: #8eb9cc;
 }
 
-.navbar-collapse {
-    background-color: #f9f9f9;
+.navbar-inverse .navbar-toggle .icon-bar {
+    background-color: #8eb9cc;
+}
+
+@media (max-width: 768px) {
+    .navbar-collapse {
+        background-color: #f9f9f9;
+    }
 }
 
 /* Slides */

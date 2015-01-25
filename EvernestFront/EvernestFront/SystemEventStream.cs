@@ -15,17 +15,8 @@ namespace EvernestFront
 
         public SystemEventStream(AzureStorageClient azureStorageClient, long systemEventStreamId)
         {
-            //if (!azureStorageClient.TryGetFreshEventStream(systemEventStreamId, out _backEventStream))
-            //    _backEventStream = azureStorageClient.GetEventStream(systemEventStreamId);
-            //TODO: update when method TryGet... is implemented in AzureStorageClient
-            try
-            {
-                _backEventStream = azureStorageClient.GetNewEventStream(systemEventStreamId);
-            }
-            catch (ArgumentException)
-            {
+            if(!azureStorageClient.TryGetFreshEventStream(systemEventStreamId, out _backEventStream))
                 _backEventStream = azureStorageClient.GetEventStream(systemEventStreamId);
-            }
         }
 
         public void CreateSystemStream()

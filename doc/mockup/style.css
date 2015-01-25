@@ -122,3 +122,39 @@ img {
     background-color: white;
     padding: 0 1em;
 }
+
+/* Tables */
+
+.table {
+    
+}
+
+
+
+
+
+th {
+    color: white;
+    background-color: #195977;
+    font-weight: 200;
+}
+
+.table thead > tr > th,
+.table tbody > tr > th,
+.table tfoot > tr > th,
+.table thead > tr > td,
+.table tbody > tr > td,
+.table tfoot > tr > td {
+    border: none;
+    background-color: none;
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
+    background-color: #edeff0;
+}
+
+.table-striped > tbody > tr:nth-child(even) > td,
+.table-striped > tbody > tr:nth-child(even) > th {
+    background-color: #f9f9f9;
+}

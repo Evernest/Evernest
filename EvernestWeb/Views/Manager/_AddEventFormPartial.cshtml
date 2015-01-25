@@ -1,14 +1,15 @@
 ﻿@model EvernestWeb.ViewModels.NewEventModel
 
-@using (Html.BeginForm("PushEvent", "Manager", FormMethod.Post, new { @class = "form-inline" }))
-{
-    @Html.AntiForgeryToken()
-    @Html.ValidationSummary()
-    <div class="form-group">
-                @Html.LabelFor(m => m.Content, new { @class = "sr-only" })
-                @Html.TextBoxFor(m => m.Content, new { @class = "form-control", @placeholder = "Push event..." })
-                <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId);}" />
-    </div>
-    <input type="submit" class="btn btn-default" value="Push Event" />
-}
+@{ Html.BeginForm("PushEvent", "Manager", FormMethod.Post, new {@class = "form-inline"}); }
 
+@Html.AntiForgeryToken()
+
+<div class="form-group">
+    @Html.LabelFor(m => m.Content, new {@class = "sr-only"})
+    @Html.TextBoxFor(m => m.Content, new {@class = "form-control", @placeholder = "Push event..."})
+
+</div>
+<input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId); }"/>
+<input type="submit" class="btn btn-default" value="Push Event"/>
+
+@{ Html.EndForm(); }

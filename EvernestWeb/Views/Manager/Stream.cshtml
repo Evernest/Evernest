@@ -25,6 +25,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Role</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -33,17 +34,15 @@
                      {
                          foreach (KeyValuePair<string, AccessRight> usr in Model.RelatedUsers)
                          {
-                             
-                             Write(usr.Key);
                              ViewBag.UserId = usr.Key;
                              var updateUser = new EvernestWeb.ViewModels.UpdateUserRightOnStream();
                              updateUser.Right = usr.Value;
-                             Html.RenderPartial("_UpdateUserRightOnStreamFormPartial", updateUser);
-                             Html.RenderPartial("_DeleteUserRightOnStreamFormPartial", new EvernestWeb.ViewModels.DeleteUserRightOnStream());
-
-
-                            
-                             //<tr><td>@usr.Key</td><td>@usr.Value</td></tr>
+                             
+                             <tr>
+                                 <td>@usr.Key</td>
+                                 <td>@{ Html.RenderPartial("_UpdateUserRightOnStreamFormPartial", updateUser); }</td>
+                                 <td>@{ Html.RenderPartial("_DeleteUserRightOnStreamFormPartial", new EvernestWeb.ViewModels.DeleteUserRightOnStream()); }</td>
+                             </tr>
                          }
                      }
                  }
@@ -52,6 +51,7 @@
                 <tr>
                     <td style="min-width: 15%;"></td>
                     <td>@{ Html.RenderPartial("_AddUserFormPartial", new EvernestWeb.ViewModels.NewStreamUserModel());}</td>
+                    <td></td>
                 </tr>
             </tfoot>
         </table>

@@ -126,6 +126,7 @@
     <Compile Include="ViewModels\ManagerModels.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Images\arrow.png" />
     <Content Include="Content\Images\evernest.png" />
     <Content Include="Content\Images\explain_events.png" />
     <Content Include="Content\Images\explain_rights.png" />
@@ -134,8 +135,9 @@
     <Content Include="Content\Images\explain_user_rights.png" />
     <Content Include="Content\Images\logo.png" />
     <Content Include="Content\Images\mountain.png" />
+    <Content Include="Content\Scripts\evernest.js" />
     <Content Include="Content\Theme\bootstrap.css" />
-    <Content Include="Content\Theme\EvernestWeb.css" />
+    <Content Include="Content\Theme\evernest.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\Fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />

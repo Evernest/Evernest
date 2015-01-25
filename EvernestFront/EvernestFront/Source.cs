@@ -18,13 +18,16 @@ namespace EvernestFront
 
         internal User User { get; private set; }
 
-        internal Source(string sourceKey, string name, long id, User user, IDictionary<long, AccessRight> eventStreams)
+        private readonly EventStreamProvider _eventStreamProvider;
+
+        internal Source(EventStreamProvider eventStreamProvider, string sourceKey, string name, long id, User user, IDictionary<long, AccessRight> eventStreams)
         {
             Key = sourceKey;
             Name = name;
             Id = id;
             User = user;
             RelatedEventStreams = eventStreams;
+            _eventStreamProvider = eventStreamProvider;
         }
 
         public Response<EventStreamBySource> GetEventStream(long eventStreamId)
@@ -32,9 +35,8 @@ namespace EvernestFront
             AccessRight right;
             if (!RelatedEventStreams.TryGetValue(eventStreamId, out right))
                 right = AccessRight.NoRight;
-            var builder = new EventStreamProvider();
             EventStreamBySource eventStream;
-            if (builder.TryGetEventStreamBySource(this, right, eventStreamId, out eventStream))
+            if (_eventStreamProvider.TryGetEventStreamBySource(this, right, eventStreamId, out eventStream))
                 return new Response<EventStreamBySource>(eventStream);
             else
                 return new Response<EventStreamBySource>(FrontError.EventStreamIdDoesNotExist);

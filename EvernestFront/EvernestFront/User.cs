@@ -13,6 +13,8 @@ namespace EvernestFront
     {
         private readonly SystemCommandHandler _systemCommandHandler;
 
+        private readonly EventStreamProvider _eventStreamProvider;
+
         public long Id { get; private set; }
 
         public string Name { get; private set; }
@@ -36,11 +38,12 @@ namespace EvernestFront
 
         private IDictionary<long, string> SourceIdToKey { get; set; }
 
-        internal User(SystemCommandHandler systemCommandHandler, long id, string name, string sph, byte[] ps,
+        internal User(SystemCommandHandler systemCommandHandler, EventStreamProvider eventStreamProvider, long id, string name, string sph, byte[] ps,
             ImmutableDictionary<string, string> keys, ImmutableDictionary<string, long> sources, 
             ImmutableDictionary<long, string> sourceKeys, IEnumerable<long> eventStreams)
         {
             _systemCommandHandler = systemCommandHandler;
+            _eventStreamProvider = eventStreamProvider;
             Id = id;
             Name = name;
             SaltedPasswordHash = sph;

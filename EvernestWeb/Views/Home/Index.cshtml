@@ -3,80 +3,46 @@
     Layout = "~/Views/Shared/_BaseLayout.cshtml";
 }
 
-<!--
-<div>
-    <img alt="Evernest" src="@Url.Content("~/Content/Images/Evernest.png")" style="max-width: 60em" />
-</div>
-
-<div class="jumbotron">
-    <p class="lead">
-        Evernest is an easy-to-use event store service.
-    </p>
-    <p>
-        A large part of daily data comes from different kinds of log output and is not easy to manage. It can be found in different places and with different representation format.
-    </p>
-    <p>
-        Evernest provides a simple unified way to store and visualize event-driven data, thanks to a flexible API combined with a nice user interface.
-    </p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting Started</h2>
-        <p>
-            Evernest provides you a simple interface, both for humans and programs.
-            You can manage many <em>event streams</em> and isolate your different programs thanks to right limited <em>source API keys</em>.
-        </p>
-        <p><a class="btn btn-default" href="">Learn more &raquo;</a>
-        </p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web API</h2>
-        <p>
-            Interact with your Evernest data though a full featured web API.
-        </p>
-        <p><a class="btn btn-default" href="https://github.com/Evernest/Evernest/wiki/API-Reference">Learn more &raquo;</a>
-        </p>
-    </div>
-    <div class="col-md-4">
-        <h2>Documentation</h2>
-        <p>
-            Evernest help pages are available on our Wiki.
-        </p>
-        <p><a class="btn btn-default" href="https://github.com/Evernest/Evernest/wiki">Learn more &raquo;</a>
-        </p>
-    </div>
-</div>
--->
-
-<section class="slide slide-one">
+<section class="slide" id="slide-1">
     <div class="container body-content slide--wrapper">
         <h1><img alt="let your log touch the cloud" src="@Url.Content("~/Content/Images/mountain.png" )" /></h1>
         <h3>Evernest is an easy-to-use event store service that enable you to manage all kind of logs</h3>
+
+        <a href="#slide-2" class="smooth-link slide--next">
+            <img alt="Next" src="@Url.Content("~/Content/Images/arrow.png")" />
+        </a>
     </div>
 </section>
 
-<section class="slide">
+<section class="slide" id="slide-2">
     <div class="container body-content slide--wrapper">
         <h1>Access your events though a simple interface</h1>
         <p class="summary">Push events to streams and pull them by slices.</p>
 
         <img class="scheme" alt="" src="@Url.Content("~/Content/Images/explain_events.png")" />
         <a class="slide--more" href="">More about events</a>
+
+        <a href="#slide-3" class="smooth-link slide--next">
+            <img alt="Next" src="@Url.Content("~/Content/Images/arrow.png")" />
+        </a>
     </div>
 </section>
 
-<section class="slide">
+<section class="slide" id="slide-3">
     <div class="container body-content slide--wrapper">
         <h1>Organize your events into streams</h1>
         <p class="summary">Use different event streams to store different type of data.</p>
 
         <img class="scheme" alt="" src="@Url.Content("~/Content/Images/explain_streams.png")" />
         <a class="slide--more" href="">More about streams</a>
+
+        <a href="#slide-4" class="smooth-link slide--next">
+            <img alt="Next" src="@Url.Content("~/Content/Images/arrow.png")" />
+        </a>
     </div>
 </section>
 
-<section class="slide">
+<section class="slide" id="slide-4">
     <div class="container body-content slide--wrapper">
         <h1>Isolate your different event sources</h1>
         <p class="summary">
@@ -86,30 +52,42 @@
 
         <img class="scheme" alt="" src="@Url.Content("~/Content/Images/explain_sources.png")" />
         <a class="slide--more" href="">More about sources</a>
+
+        <a href="#slide-5" class="smooth-link slide--next">
+            <img alt="Next" src="@Url.Content("~/Content/Images/arrow.png")" />
+        </a>
     </div>
 </section>
 
-<section class="slide">
+<section class="slide" id="slide-5">
     <div class="container body-content slide--wrapper">
         <h1>Share event streams with your collaborators</h1>
         <p class="summary">Provide an access to your common project streams to your collaborators and share their events.</p>
 
         <img class="scheme" alt="" src="@Url.Content("~/Content/Images/explain_user_rights.png")" />
         <a class="slide--more" href="">More about user rights</a>
+
+        <a href="#slide-6" class="smooth-link slide--next">
+            <img alt="Next" src="@Url.Content("~/Content/Images/arrow.png")" />
+        </a>
     </div>
 </section>
 
-<section class="slide">
+<section class="slide" id="slide-6">
     <div class="container body-content slide--wrapper">
         <h1>Benefit from the power of precise access rights</h1>
         <p class="summary">Enable read or write access only to some of your sources or collaborators. Or allow them to manage other people's rights.</p>
 
         <img class="scheme" alt="" src="@Url.Content("~/Content/Images/explain_rights.png")" />
         <a class="slide--more" href="">More about rights</a>
+
+        <a href="#slide-7" class="smooth-link slide--next">
+            <img alt="Next" src="@Url.Content("~/Content/Images/arrow.png")" />
+        </a>
     </div>
 </section>
 
-<section class="slide slide-try">
+<section class="slide slide-try" id="slide-7">
     <div class="container body-content slide--wrapper">
         <a class="btn btn-primary" href="@Url.Action("Register", "Account")">Sign up and try Evernest for free</a>
         <p class="slide-try--or-wrapper"><span class="slide-try--or">or</span></p>

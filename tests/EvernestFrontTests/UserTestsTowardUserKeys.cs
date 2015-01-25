@@ -9,7 +9,6 @@ namespace EvernestFrontTests
     class UserTestsTowardUserKeys
     {
         private string _userName;
-        private string _userName2;
         private string _keyName;
 
         internal static string CreateUserKey_ReturnKey_AssertSuccess(User user, string keyName)
@@ -25,7 +24,6 @@ namespace EvernestFrontTests
         public void Names()
         {
             _userName = Helpers.NewName;
-            _userName2 = Helpers.NewName;
             _keyName = Helpers.NewName;
         }
 

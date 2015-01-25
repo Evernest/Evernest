@@ -12,6 +12,10 @@ using EvernestBack;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Represents an event stream from a given user's point of view: 
+    /// some methods return an error if this user does not have the appropriate right over the event stream.
+    /// </summary>
     public class EventStream
     {
         private readonly SystemCommandHandler _systemCommandHandler;

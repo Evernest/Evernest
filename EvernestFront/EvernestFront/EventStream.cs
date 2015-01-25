@@ -12,6 +12,10 @@ using EvernestBack;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Represents an event stream from a given user's point of view: 
+    /// some methods return an error if this user does not have the appropriate right over the event stream.
+    /// </summary>
     public class EventStream
     {
         private readonly SystemCommandHandler _systemCommandHandler;
@@ -58,6 +62,14 @@ namespace EvernestFront
             return new Response<IDictionary<string, AccessRight>>(RelatedUsers);
         }
 
+        /// <summary>
+        /// Give user with id targetId right about this, 
+        /// provided the user or source which was used to create this instance has Admin right on this.
+        /// Right to give cannot be Admin (use method SetUserRightToAdmin in that case).
+        /// </summary>
+        /// <param name="targetId"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public Response<Guid> SetUserRight(long targetId, AccessRight right)
         {
             var usersBuilder = new UserProvider();
@@ -67,7 +79,40 @@ namespace EvernestFront
             return SetUserRight(targetUser.Name, right);
         }
 
+        //Password is required to give someone Admin right because this operation cannot be reverted.
+        public Response<Guid> SetUserRightToAdmin(long targetId, string password)
+        {
+            var usersBuilder = new UserProvider();
+            User targetUser;
+            if (!usersBuilder.TryGetUser(targetId, out targetUser))
+                return new Response<Guid>(FrontError.UserIdDoesNotExist);
+            return SetUserRightToAdmin(targetUser.Name, password);
+        }
+
+        /// <summary>
+        /// Give user called targetName right about this, 
+        /// provided the user or source which was used to create this instance has Admin right on this.
+        /// Right to give cannot be Admin (use method SetUserRightToAdmin in that case).
+        /// </summary>
+        /// <param name="targetName"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public Response<Guid> SetUserRight(string targetName, AccessRight right)
+        {
+            if (right==AccessRight.Admin)
+                return new Response<Guid>(FrontError.CannotSetAdminWithoutPassword);
+            return SetUserRightToAny(targetName, right);
+        }
+
+        //Password is required to give someone Admin right because this operation cannot be reverted.
+        public Response<Guid> SetUserRightToAdmin(string targetName, string password)
+        {
+            if (!_user.VerifyPassword(password))
+                return new Response<Guid>(FrontError.WrongPassword);
+            return SetUserRightToAny(targetName, AccessRight.Admin);
+        }
+
+        private Response<Guid> SetUserRightToAny(string targetName, AccessRight right)
         {
             if (!ValidateAccessAction(AccessAction.Admin))
                 return new Response<Guid>(FrontError.AdminAccessDenied);
@@ -214,6 +259,8 @@ namespace EvernestFront
         {
             if (!ValidateAccessAction(AccessAction.Admin))
                 return new Response<Guid>(FrontError.AdminAccessDenied);
+            if (!_user.VerifyPassword(password))
+                return new Response<Guid>(FrontError.WrongPassword);
             var command = new EventStreamDeletionCommand(_systemCommandHandler, Id, Name, _user.Name, _user.Id, password);
             command.Send();
             return new Response<Guid>(command.Guid);

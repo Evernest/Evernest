@@ -10,9 +10,8 @@ namespace EvernestBack
     /// see it as an EventStream factory</summary>
     public class AzureStorageClient
     {
-        private static readonly object _initializeLock = new object();
+        private static readonly object InitializeLock = new object();
         private static AzureStorageClient _singleton;
-        private readonly CloudBlobClient _blobClient;
         private readonly bool _dummy;
         private readonly Dictionary<String, IEventStream> _openedStreams;
         private readonly Int32 _minimumBufferSize;
@@ -32,9 +31,7 @@ namespace EvernestBack
             _openedStreams = new Dictionary<String, IEventStream>();
             if (_dummy) // temporary dummy mode
             {
-                _blobClient = null;
                 StreamContainer = null;
-
                 DummyDataPath = ConfigurationManager.AppSettings["DummyDataPath"];
             }
             else
@@ -60,9 +57,9 @@ namespace EvernestBack
                     Console.Error.WriteLine("Source : {0}", e.Source);
                     throw;
                 }
-                _blobClient = storageAccount.CreateCloudBlobClient();
-                StreamContainer = _blobClient.GetContainerReference("stream");
-                StreamIndexContainer = _blobClient.GetContainerReference("streamindex");
+                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+                StreamContainer = blobClient.GetContainerReference("stream");
+                StreamIndexContainer = blobClient.GetContainerReference("streamindex");
                 try
                 {
                     StreamContainer.CreateIfNotExists();
@@ -75,6 +72,9 @@ namespace EvernestBack
             }
         }
 
+        /// <summary>
+        /// Close all the opened streams.
+        /// </summary>
         private void CloseAll()
         {
             // Properly dispose of each event stream so that the data is saved.
@@ -95,7 +95,7 @@ namespace EvernestBack
         {
             get
             {
-                lock (_initializeLock)
+                lock (InitializeLock)
                 {
                     if (_singleton == null)
                         _singleton = new AzureStorageClient();    
@@ -107,143 +107,180 @@ namespace EvernestBack
         /// <summary>
         ///     Get an already created EventStream
         /// </summary>
-        /// <param name="streamID"> The name of the stream you want.</param>
+        /// <param name="streamId"> The name of the stream you want.</param>
         /// <returns> The EventStream</returns>
-        public IEventStream GetEventStream(String streamID) //not thread-safe yet
+        public IEventStream GetEventStream(String streamId) //not thread-safe yet
         {
-            var stream = OpenStream(streamID);
+            var stream = OpenStream(streamId);
             return stream;
         }
 
         /// <summary>
         /// Get an already created EventStream
         /// </summary>
-        /// <param name="streamID">The ID of the stream you want</param>
+        /// <param name="streamId">The ID of the stream you want</param>
         /// <returns>The EventStream</returns>
-        public IEventStream GetEventStream(Int64 streamID)
+        public IEventStream GetEventStream(Int64 streamId)
         {
-            return GetEventStream("" + streamID);
+            return GetEventStream("" + streamId);
         }
 
         /// <summary>
         ///     Create and open an EventStream
         /// </summary>
-        /// <param name="streamID"> The name of the new stream. </param>
+        /// <param name="streamId"> The name of the new stream. </param>
         /// <returns>The new EventStream</returns>
-        public IEventStream GetNewEventStream(String streamID)
+        public IEventStream GetNewEventStream(String streamId)
         {
-            CreateEventStream(streamID);
-            var stream = OpenStream(streamID);
+            CreateEventStream(streamId);
+            var stream = OpenStream(streamId);
             return stream;
         }
 
         /// <summary>
         ///     Create and open an EventStream
         /// </summary>
-        /// <param name="streamID"> The ID of the new stream. </param>
+        /// <param name="streamId"> The ID of the new stream. </param>
         /// <returns>The new EventStream</returns>
-        public IEventStream GetNewEventStream(Int64 streamID)
+        public IEventStream GetNewEventStream(Int64 streamId)
         {
-            return GetNewEventStream("" + streamID);
+            return GetNewEventStream("" + streamId);
         }
 
         /// <summary>
         ///     Open a Stream.
         /// </summary>
-        /// <param name="streamID">The name of theEvent Stream to open.</param>
+        /// <param name="streamId">The name of theEvent Stream to open.</param>
         /// <returns>The EventStream.</returns>
-        private IEventStream OpenStream(String streamID)
+        private IEventStream OpenStream(String streamId)
         {
-            if (!StreamExists(streamID))
-                throw new ArgumentException("The stream " + streamID + " does not exist.");
+            if (!StreamExists(streamId))
+                throw new ArgumentException("The stream " + streamId + " does not exist.");
             IEventStream stream;
-            if (_openedStreams.TryGetValue(streamID, out stream))
+            if (_openedStreams.TryGetValue(streamId, out stream))
             {
                 // If the stream is already opened
                 return stream;
             }
             if (_dummy)
             {
-                stream = new MemoryEventStream(this, streamID);
+                stream = new MemoryEventStream(this, streamId);
             }
             else
             {
-                stream = new EventStream(this, streamID, _minimumBufferSize, 
+                stream = new EventStream(this, streamId, _minimumBufferSize, 
                     _indexUpdateMinimumEntryCount, _indexUpdateMinimumDelay, _eventChunkSize, _cacheSize);
             }
 
-            _openedStreams.Add(streamID, stream);
+            _openedStreams.Add(streamId, stream);
             return stream;
         }
 
         /// <summary>
         ///     Create an EventStream, throws if the EventStream already exists.
         /// </summary>
-        /// <param name="streamID">The name of the stream to create.</param>
-        private void CreateEventStream(String streamID)
+        /// <param name="streamId">The name of the stream to create.</param>
+        private void CreateEventStream(String streamId)
         {
-            if (StreamExists(streamID))
-                throw new ArgumentException("Stream already exists : " + streamID);
+            if (StreamExists(streamId))
+                throw new ArgumentException("Stream already exists : " + streamId);
             if (_dummy)
-                MemoryEventStream.CreateStream(this, streamID);
+                MemoryEventStream.CreateStream(this, streamId);
             else
-                EventStream.CreateStream(this, streamID);
+                EventStream.CreateStream(this, streamId);
         }
 
-        public void DeleteStreamIfExists(string streamID)
+        /// <summary>
+        /// Delete a stream if it already exists.
+        /// </summary>
+        /// <param name="streamId">The stream's name.</param>
+        public void DeleteStreamIfExists(string streamId)
         {
-            if (StreamExists(streamID))
+            if (StreamExists(streamId))
             {
-                CloseStream(streamID);
+                CloseStream(streamId);
                 if (_dummy)
-                    MemoryEventStream.DeleteStream(this, streamID);
+                    MemoryEventStream.DeleteStream(this, streamId);
                 else
-                    EventStream.DeleteStream(this, streamID);
+                    EventStream.DeleteStream(this, streamId);
             }
         }
 
-        public void CloseStream(string streamID)
+        /// <summary>
+        /// Close a stream if it already exists and is already opened.
+        /// </summary>
+        /// <param name="streamId">The stream's name.</param>
+        public void CloseStream(string streamId)
         {
             IEventStream stream;
-            if (_openedStreams.TryGetValue(streamID, out stream))
+            if (_openedStreams.TryGetValue(streamId, out stream))
             {
-                _openedStreams.Remove(streamID);        // calls destructor & closes stream
+                _openedStreams.Remove(streamId);        // calls destructor & closes stream
                 stream.Dispose();
             }
         }
 
-        public void DeleteStreamIfExists(Int64 streamID)
+        /// <summary>
+        /// Delete a stream if it already exists.
+        /// </summary>
+        /// <param name="streamId">The stream's number (will be converted to the corresponding string).</param>
+        public void DeleteStreamIfExists(Int64 streamId)
         {
-            DeleteStreamIfExists("" + streamID);
+            DeleteStreamIfExists(streamId.ToString());
         }
 
-        public bool StreamExists(string streamID)
+        /// <summary>
+        /// Return whether the stream exists.
+        /// </summary>
+        /// <param name="streamId">The stream's name.</param>
+        /// <returns></returns>
+        public bool StreamExists(string streamId)
         {
             if (_dummy)
-                return MemoryEventStream.StreamExists(this, streamID);
-            return EventStream.StreamExists(this, streamID);
+                return MemoryEventStream.StreamExists(this, streamId);
+            return EventStream.StreamExists(this, streamId);
         }
 
-        public bool StreamExists(Int64 streamID)
+        /// <summary>
+        /// Return whether the stream exists.
+        /// </summary>
+        /// <param name="streamId">The stream's number (will be converted to the corresponding string).</param>
+        /// <returns></returns>
+        public bool StreamExists(Int64 streamId)
         {
-            return StreamExists("" + streamID);
+            return StreamExists("" + streamId);
         }
 
-        public bool TryGetFreshEventStream(string streamStringID, out IEventStream stream)
+        /// <summary>
+        /// Try to create a new event stream if it doesn't already exists.
+        /// </summary>
+        /// <param name="streamStringId">The stream's name.</param>
+        /// <param name="stream">The stream to be retrieved.</param>
+        /// <returns>True if the stream didn't already exist, false otherwise.</returns>
+        public bool TryGetFreshEventStream(string streamStringId, out IEventStream stream)
         {
             stream = null;
-            if (StreamExists(streamStringID))
+            if (StreamExists(streamStringId))
                 return false;
-            stream = GetNewEventStream(streamStringID);
+            stream = GetNewEventStream(streamStringId);
             return true;
         }
 
 
-        public bool TryGetFreshEventStream(Int64 streamID, out IEventStream stream)
+        /// <summary>
+        /// Try to create a new event stream if it doesn't already exists.
+        /// </summary>
+        /// <param name="streamId">The stream's number (will be converted to the corresponding string).</param>
+        /// <param name="stream">The stream to be retrieved.</param>
+        /// <returns>True if the stream didn't already exist, false otherwise.</returns>
+        public bool TryGetFreshEventStream(Int64 streamId, out IEventStream stream)
         {
-            return TryGetFreshEventStream("" + streamID, out stream);
+            return TryGetFreshEventStream("" + streamId, out stream);
         }
 
+        /// <summary>
+        /// Close and delete all existing streams.
+        /// </summary>
         public void ClearAll()
         {
             foreach (KeyValuePair<string, IEventStream> pair in _openedStreams)

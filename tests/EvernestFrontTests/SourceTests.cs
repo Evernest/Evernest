@@ -60,7 +60,11 @@ namespace EvernestFrontTests
             var getStream = adminSource.GetEventStream(streamId);
             Assert.IsTrue(getStream.Success);
             var stream = getStream.Result;
-            Response<Guid> ans = stream.SetUserRight(targetUserName, right);
+            Response<Guid> ans;
+            if (right == AccessRight.Admin)
+                ans = stream.SetUserRightToAdmin(targetUserName, UserTests.Password);
+            else
+                ans = stream.SetUserRight(targetUserName, right);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             System.Threading.Thread.Sleep(50);
@@ -132,7 +136,7 @@ namespace EvernestFrontTests
             long readerId = UserTests.AddUser_GetId_AssertSuccess(readerName);
             long streamId = EventStreamTests.CreateEventStream_GetId_AssertSuccess(creatorId, streamName);
             var readerSourceKey = CreateSource_GetKey_AssignStream_AssertSuccess(readerId, streamId, sourceName, AccessRight.Admin);
-            EventStreamTests.SetRights_AssertSuccess(creatorId, streamId, readerName, AccessRight.ReadOnly);
+            EventStreamTests.SetRight_AssertSuccess(creatorId, streamId, readerName, AccessRight.ReadOnly);
 
             Source readerSource = GetSource_AssertSuccess(readerSourceKey);
             var ans = readerSource.User.GetEventStream(streamId).Result.SetUserRight(readerName, AccessRight.ReadWrite); //reader cannot allow himself to write

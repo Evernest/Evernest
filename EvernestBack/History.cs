@@ -281,6 +281,9 @@ namespace EvernestBack
             Deserialize(serializedHistory, 0);
         }
 
+        /// <summary>
+        /// A node of the binary search tree.
+        /// </summary>
         private class Node
         {
             public Node(long key, ulong element, Node left, Node right)

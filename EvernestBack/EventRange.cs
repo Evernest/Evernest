@@ -6,22 +6,21 @@ namespace EvernestBack
 {
     public class EventRange : IEnumerable<LowLevelEvent>
     {
-        private byte[] _src;
-        private int _offset;
+        private readonly byte[] _src;
+        private readonly int _offset;
         public int Size { get; private set; }
 
+        /// <summary>
+        /// Construct an EventRange with a byte array, an offset, and the number of bytes.
+        /// </summary>
+        /// <param name="src">The byte array.</param>
+        /// <param name="offset">The offset where the data should be read.</param>
+        /// <param name="size">The number of bytes to read.</param>
         internal EventRange(byte[] src, int offset, int size)
         {
             _src = src;
             _offset = offset;
             Size = size;
-        }
-
-        public EventRange(EventRange range)
-        {
-            _src = range._src;
-            _offset = range._offset;
-            Size = range.Size;
         }
 
         public EventRangeEnumerator GetEnumerator(int position)
@@ -44,19 +43,26 @@ namespace EvernestBack
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Try to create an EventRange containing the specified events.
+        /// </summary>
+        /// <param name="firstId">The first event's id.</param>
+        /// <param name="lastId">The last event's id.</param>
+        /// <param name="subRange">The range to be retrieved.</param>
+        /// <returns>True if the range has successfully been created, false otherwise.</returns>
         public bool MakeSubRange(long firstId, long lastId, out EventRange subRange)
         {
             EventRangeEnumerator enumerator = GetEnumerator();
-            while (enumerator.MoveNext() && enumerator.CurrentID < firstId) ;
-            if (enumerator.CurrentID != firstId)
+            while (enumerator.MoveNext() && enumerator.CurrentId < firstId) {}
+            if (enumerator.CurrentId != firstId)
             {
                 subRange = null;
                 return false;
             }
             subRange = enumerator.NextRange();
             enumerator = subRange.GetEnumerator();
-            while (enumerator.MoveNext() && enumerator.CurrentID < lastId) ;
-            if (enumerator.CurrentID != lastId)
+            while (enumerator.MoveNext() && enumerator.CurrentId < lastId) {}
+            if (enumerator.CurrentId != lastId)
             {
                 subRange = null;
                 return false;
@@ -76,10 +82,10 @@ namespace EvernestBack
         private int _currentMessageLength;
 
         /// <summary>
-        /// The RequestID of the current LowLevelEvent.
-        /// Faster than Current.RequestID.
+        /// The RequestId of the current LowLevelEvent.
+        /// Faster than Current.RequestId.
         /// </summary>
-        public long CurrentID { get; private set; }
+        public long CurrentId { get; private set; }
 
         /// <summary>
         /// The size of the bitwise representation of the current LowLevelEvent in bytes.
@@ -93,7 +99,7 @@ namespace EvernestBack
         {
             get
             {
-                return new LowLevelEvent(Encoding.Unicode.GetString(_src, _position - _currentMessageLength, _currentMessageLength), CurrentID);
+                return new LowLevelEvent(Encoding.Unicode.GetString(_src, _position - _currentMessageLength, _currentMessageLength), CurrentId);
             }
         }
 
@@ -108,7 +114,7 @@ namespace EvernestBack
             _startOffset = offset;
             _endPosition = offset + count;
             _position = _startOffset+position;
-            CurrentID = -1;
+            CurrentId = -1;
         }
 
         internal EventRangeEnumerator(byte[] src, int offset, int count)
@@ -117,14 +123,14 @@ namespace EvernestBack
             _startOffset = offset;
             _endPosition = offset + count;
             _position = _startOffset;
-            CurrentID = -1;
+            CurrentId = -1;
         }
 
         public bool MoveNext()
         {
             if ( _position + sizeof (long) + sizeof (int) <= _endPosition)
             {
-                CurrentID = Util.ToLong(_src, _position);
+                CurrentId = Util.ToLong(_src, _position);
                 _position += sizeof (long) + sizeof (int);
                 return _position <= _endPosition
                        &&
@@ -159,7 +165,7 @@ namespace EvernestBack
         {
             _position = _startOffset;
             _currentMessageLength = 0;
-            CurrentID = -1;
+            CurrentId = -1;
         }
 
         public void Dispose()

@@ -6,17 +6,17 @@ namespace EvernestBack
 {
     internal class EventIndexer:IDisposable
     {
-        private History _milestones;
+        private readonly History _milestones;
         private ulong _currentChunkBytes;
         private ulong _lastPosition;
-        private uint _eventChunkSizeInBytes;
-        private BufferedBlobIO _bufferedStreamIO;
-        private CloudBlockBlob _streamIndexBlob;
-        private uint _indexUpdateMinimumEntryCount;
+        private readonly uint _eventChunkSizeInBytes;
+        private readonly BufferedBlobIO _bufferedStreamIO;
+        private readonly CloudBlockBlob _streamIndexBlob;
+        private readonly uint _indexUpdateMinimumEntryCount;
         private uint _newEntryCount;
-        private uint _indexUpdateMinimumDelay;
+        private readonly uint _indexUpdateMinimumDelay;
         private DateTime _lastIndexUpdateTime;
-        private RangeCache _cache;
+        private readonly RangeCache _cache;
 
         /// <summary>
         /// Constructor.
@@ -26,7 +26,8 @@ namespace EvernestBack
         /// <param name="updateMinimumEntryCount">The minimum number of registered indexes (also referred as milestones) to be added before the indexer attempts to re-update the additional stream index information.</param>
         /// <param name="updateMinimumDelay">The minimum delay before before the indexer attempts to re-update the additional stream index information.</param>
         /// <param name="minimumChunkSize">The minimum number of bytes to be read before the indexer registers a new index (also referred as milestone).</param>
-        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, uint updateMinimumEntryCount, uint updateMinimumDelay, uint minimumChunkSize, Int32 cacheSize)
+        /// <param name="cacheSize">The cache size in bytes.</param>
+        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, uint updateMinimumEntryCount, uint updateMinimumDelay, uint minimumChunkSize, int cacheSize)
         {
             _indexUpdateMinimumEntryCount = updateMinimumEntryCount;
             _indexUpdateMinimumDelay = updateMinimumDelay;
@@ -58,11 +59,25 @@ namespace EvernestBack
                 _currentChunkBytes += wroteBytes;
         }
 
+        /// <summary>
+        /// Try to retrieve an event range.
+        /// </summary>
+        /// <param name="firstId">The first event's id.</param>
+        /// <param name="lastId">The last event's id.</param>
+        /// <param name="range">The range to be retrieved.</param>
+        /// <returns>True if the range was successfully retrieved, false otherwise.</returns>
         public bool FetchEventRange(long firstId, long lastId, out EventRange range)
         {
             return _cache.TrySetRange(firstId, lastId, out range) || PullRangeFromCloud(firstId, lastId, out range);
         }
 
+        /// <summary>
+        /// Try to retrieve an event range from the server.
+        /// </summary>
+        /// <param name="firstId">The first event's id.</param>
+        /// <param name="lastId">The last event's id.</param>
+        /// <param name="range">The range to be retrieved.</param>
+        /// <returns>True if the range was successfully retrieved, false otherwise.</returns>
         private bool PullRangeFromCloud(long firstId, long lastId, out EventRange range) //DRY!!
         {
             ulong firstByte = 0;
@@ -87,6 +102,9 @@ namespace EvernestBack
             return superRange.MakeSubRange(firstId, lastId, out range);
         }
 
+        /// <summary>
+        /// Update the index if the update conditions are met.
+        /// </summary>
         public void UploadIndexIfMeetConditions()
         {
             if (DateTime.UtcNow.Subtract(_lastIndexUpdateTime).TotalSeconds > _indexUpdateMinimumDelay
@@ -141,7 +159,7 @@ namespace EvernestBack
                         EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            nextId = enumerator.CurrentID;
+                            nextId = enumerator.CurrentId;
                             NotifyNewEntry(nextId, (ulong)enumerator.CurrentSize);
                             nextId++;
                         }

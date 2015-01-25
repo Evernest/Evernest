@@ -10,7 +10,7 @@ namespace EvernestFrontTests
     [TestFixture]
     public class UserTests
     {
-        private const string Password = "password";
+        internal const string Password = "password";
 
         internal static long AddUser_GetId_AssertSuccess(string userName)
         {

@@ -35,7 +35,7 @@ namespace EvernestAPI
                     id = @"\d+",
                     streamId = @"\d+",
                     action = @"[a-zA-Z]*", // Note the star to make action optional
-                    right = @"(None|ReadOnly|WriteOnly|ReadWrite|Admin|Root)?", // Note the ? to make right optional
+                    right = @"(None|ReadOnly|WriteOnly|ReadWrite|Admin)?", // Note the ? to make right optional
                 },
                 defaults: new
                 {

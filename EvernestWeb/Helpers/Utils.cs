@@ -22,7 +22,6 @@ namespace EvernestWeb.Helpers
             {"WriteOnly", AccessRight.WriteOnly},
             {"ReadWrite", AccessRight.ReadWrite},
             {"Admin",     AccessRight.Admin    },
-            {"Root",      AccessRight.Root     },
 
         };
 

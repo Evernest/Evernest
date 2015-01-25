@@ -9,12 +9,6 @@
     padding-right: 15px;
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
-}
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
@@ -34,24 +28,6 @@ textarea {
     float: right;
 }
 
-
-/* For store-streams */
-
-.store-streams{
-    padding: 0px;
-    margin: 0px;
-}
-
-.store-streams li{
-    list-style-type: none;
-    background-color: #aad2ef;
-    margin: 0px 0px 1px 0px;
-    padding: 3px 10px;
-}
-
-.store-streams li:hover{
-    background-color: #b6d7ef;
-}
 
 /* Callouts */
 
@@ -124,9 +100,13 @@ header {
     background-color: #8eb9cc;
 }
 
-@media (max-width: 768px) {
+.navbar-collapse {
+    background-color: #f9f9f9;
+}
+
+@media (min-width: 768px) {
     .navbar-collapse {
-        background-color: #f9f9f9;
+        background-color: white;
     }
 }
 
@@ -261,4 +241,10 @@ th {
 .table-striped > tbody > tr:nth-child(even) > td,
 .table-striped > tbody > tr:nth-child(even) > th {
     background-color: #f9f9f9;
+}
+
+/* Footer */
+
+footer p {
+    padding: 15px;
 }

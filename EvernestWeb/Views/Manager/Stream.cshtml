@@ -2,18 +2,17 @@
 @using EvernestWeb.Models
 @model EvernestWeb.Models.StreamEventsModel
 
-<h2><a href="/Manager">Manager</a> &gt; Stream</h2>
+<h2><a href="/Manager">Manager</a> &gt; Stream #@Model.Stream.Id - @Model.Stream.Name</h2>
 
 <div>
     <div>
-        <h4>Stream</h4>
+        <h4>Stream information</h4>
         @{
             if (Model != null)
             {
                 <ul>
-                    <li>Id : @Model.Stream.Id</li>
-                    <li>Name : @Model.Stream.Name</li>
-                    <li>Total Events : @Model.Stream.Count</li>
+                    <li><strong>Stream ID :</strong> @Model.Stream.Id</li>
+                    <li><strong>Event count :</strong> @Model.Stream.Count</li>
                 </ul>
             }
         }
@@ -49,22 +48,30 @@
     </div>
 
     <div>
-        @{ Html.RenderPartial("_GetEventByIdFormPartial", new EvernestWeb.ViewModels.GetEventById());}
+        <h4>Pull event by ID</h4>
+        <table class="table table-striped">
+            @if (Model != null && Model.PulledEvent != null)
+            {
+                <thead>
+                    <tr><th>Id</th><th>Message</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th>@Model.PulledEvent.Id</th><th>@Model.PulledEvent.Message</th></tr>
+                </tbody>
+            }
+            <tfoot>
+                <tr>
+                    <td style="min-width: 15%;"></td>
+                    <td>@{ Html.RenderPartial("_GetEventByIdFormPartial", new EvernestWeb.ViewModels.GetEventById());}</td>
+                </tr>
+            </tfoot>
+        </table>
+        
     </div>
 
     <!-- requested event -->
 
         
-    @if (Model != null && Model.PulledEvent != null)
-    {
-        <div>
-            <h4>Pulled Event</h4>
-            <ul>
-                <li>Id - Message</li>
-                <li>@Model.PulledEvent.Id -- @Model.PulledEvent.Message</li>
-            </ul>
-        </div>
-    }
                 
 
 
@@ -72,31 +79,28 @@
         <h4>Last Events</h4>
         <table class="table table-striped">
             <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Message</th>
-                    <th></th>
-                    <th></th>
-                </tr>
+            <tr>
+                <th>Id</th>
+                <th>Message</th>
+                <th></th>
+                <th></th>
+            </tr>
             </thead>
+            <tbody>
             @{
                 if (Model != null && Model.Events != null)
                 {
-
-                    <tbody>
-                    @foreach (EventModel e in Model.Events)
+                    foreach (EventModel e in Model.Events)
                     {
                         <tr><td>@e.Id</td><td>@e.Message</td></tr>
                     }
-                    </tbody>
                 }
                 else
                 {
-                    <tbody>
                     <tr><td></td><td><em>No events pushed yet.</em></td></tr>
-                    </tbody>
                 }
             }
+            </tbody>
 
             <tfoot>
                 <tr>

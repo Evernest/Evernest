@@ -35,14 +35,14 @@ namespace EvernestFront
         public long LastEventId { get { return Count-1; } }
 
         //there is a public method GetRelatedUsers
-        private ImmutableDictionary<string, AccessRight> RelatedUsers { get; set; }
+        private ImmutableHashSet<int> RelatedUsers { get; set; } 
 
         private IEventStream BackStream { get; set; }
 
 
         internal EventStream(SystemCommandHandler systemCommandHandler, User user, AccessRight userRight, 
             HashSet<AccessAction> possibleActions, long streamId, string name, 
-            ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
+            ImmutableHashSet<int> users, IEventStream backStream)
         {
             _systemCommandHandler = systemCommandHandler;
             Id = streamId;
@@ -55,11 +55,11 @@ namespace EvernestFront
         }
 
 
-        public Response<IDictionary<string,AccessRight>> GetRelatedUsers()
+        public Response<IEnumerable<int>> GetRelatedUsers()
         {
             if (!ValidateAccessAction(AccessAction.Admin))
-                return new Response<IDictionary<string, AccessRight>>(FrontError.AdminAccessDenied);
-            return new Response<IDictionary<string, AccessRight>>(RelatedUsers);
+                return new Response<IEnumerable<int>>(FrontError.AdminAccessDenied);
+            return new Response<IEnumerable<int>>(RelatedUsers);
         }
 
         /// <summary>

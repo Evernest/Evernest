@@ -204,7 +204,10 @@ namespace EvernestWeb.Controllers
             // if right == admin
             if (model.Right == AccessRight.Admin)
             {
-                Session["ConfirmModel"] = model;
+                NewStreamUserModel modelBis = new NewStreamUserModel();
+                modelBis.NewUser = model.UserId;
+                modelBis.StreamId = model.StreamId;
+                Session["ConfirmModel"] = modelBis;
                 return RedirectToAction("ConfirmForAdmin", "Manager");
             }
 

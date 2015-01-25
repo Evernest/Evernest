@@ -1,0 +1,68 @@
+
+body {
+	padding: 0;
+	margin: 0;
+}
+
+
+header,
+footer {
+	display: -webkit-flex;
+	display: flex;
+
+	-webkit-flex-flow: row wrap;
+	flex-flow: row wrap;
+
+	-webkit-justify-content: space-between;
+	justify-content: space-between;
+
+	-webkit-align-items: center;
+	align-items: center;
+
+	min-height: 50px;
+}
+
+header {
+	background-color: white;
+	border-bottom: 2px solid #195977;
+}
+
+footer {
+	background-color: #195977;
+}
+
+.nav {
+	float: right;
+	color: white;
+	text-transform: uppercase;
+}
+
+
+.menu {
+	float: right;
+	color: white;
+	text-transform: uppercase;
+}
+
+.menu--item {
+	color: white;
+}
+
+
+
+
+.slide {
+
+}
+
+.slide--wrapper {
+	min-height: 100vh;
+	text-align: center;
+	margin: 0 20%;
+	padding: 10em 0;
+	box-sizing: border-box;
+}
+
+.slide:nth-child(2n+1) {
+	background-color: #195977;
+}

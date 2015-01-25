@@ -56,6 +56,19 @@ namespace EvernestWeb.ViewModels
         public Dictionary<string, AccessRight> AccessRightsDictionary = Utils.AccessRightsDictionary;
     }
 
+    public class NewStreamUserModelExtended
+    {
+        [Required]
+        public string NewUser { get; set; }
+
+        [Required]
+        public long StreamId { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The password length must be between 4 and 100 characters.", MinimumLength = 4)]
+        public string Password { get; set; }
+    }
+
     public class GetEventById
     {
         [Required]

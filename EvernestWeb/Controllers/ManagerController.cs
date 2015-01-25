@@ -127,6 +127,37 @@ namespace EvernestWeb.Controllers
             return View();
         }
 
+        public ActionResult ConfirmForAdmin()
+        {
+            NewStreamUserModel newUserModel = (NewStreamUserModel) Session["ConfirmModel"];
+            
+            return View(newUserModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateUserRightAdmin(NewStreamUserModelExtended model)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction("ConfirmForAdmin", "Manager");
+
+            Session["ConfirmModel"] = null;
+
+            var front = new UserProvider();
+            Models.User user = (Models.User)Session["User"];
+
+            var userReq = front.GetUser(user.Id);
+            if (!userReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+            var streamReq = userReq.Result.GetEventStream(model.StreamId);
+            if (!streamReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
+            var setReq = streamReq.Result.SetUserRightToAdmin(model.NewUser, model.Password);
+
+            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+        }
+
         // POST: /Manager/AddUser
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -138,6 +169,14 @@ namespace EvernestWeb.Controllers
             if (!ModelState.IsValid)
                 return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
+            // if right == admin
+            if (model.Right == AccessRight.Admin)
+            {
+                Session["ConfirmModel"] = model;
+                return RedirectToAction("ConfirmForAdmin", "Manager");
+            }
+
+            // else
             Models.User user = (Models.User)Session["User"];
 
             var userReq = front.GetUser(user.Id);
@@ -162,6 +201,14 @@ namespace EvernestWeb.Controllers
             if (!ModelState.IsValid)
                 return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
+            // if right == admin
+            if (model.Right == AccessRight.Admin)
+            {
+                Session["ConfirmModel"] = model;
+                return RedirectToAction("ConfirmForAdmin", "Manager");
+            }
+
+            // else
             var front = new UserProvider();
             Models.User user = (Models.User)Session["User"];
             var userReq = front.GetUser(user.Id);

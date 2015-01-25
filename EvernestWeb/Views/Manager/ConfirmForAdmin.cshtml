@@ -1,0 +1,14 @@
+﻿@model EvernestWeb.ViewModels.NewStreamUserModel
+
+<h2><a href="/Manager">Manager</a> &gt; Set User Right on a Stream</h2>
+
+<div>
+    <p>Please, confirm withyour password to set admin right to this user.</p>
+    @{
+        ViewBag.NewUser = Model.NewUser;
+        ViewBag.StreamId = Model.StreamId;
+        Html.RenderPartial("_ConfirmPasswordUserRightFormPartial", new EvernestWeb.ViewModels.NewStreamUserModelExtended());
+    }
+
+</div>
+

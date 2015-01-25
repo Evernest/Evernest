@@ -197,6 +197,8 @@
     <Content Include="Views\Manager\_DeleteUserRightOnStreamFormPartial.cshtml" />
     <Content Include="Views\Manager\_UpdateSourceRightFormPartial.cshtml" />
     <Content Include="Views\Manager\_DeleteSourceRightFormPartial.cshtml" />
+    <Content Include="Views\Manager\ConfirmForAdmin.cshtml" />
+    <Content Include="Views\Manager\_ConfirmPasswordUserRightFormPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

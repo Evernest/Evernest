@@ -24,7 +24,7 @@ namespace EvernestFrontTests
             Response<Guid> response;
             while (!viewer.TryGetResult(ans.Result, out response))
             {
-                System.Threading.Thread.Sleep(50);
+                Thread.Sleep(50);
             }
             var get = user.GetEventStream(streamName);
             Assert.IsTrue(get.Success);
@@ -32,12 +32,17 @@ namespace EvernestFrontTests
         }
 
 
-        internal static void SetRights_AssertSuccess(long userId, long streamId, string targetUserName, AccessRight rights)
+        internal static void SetRight_AssertSuccess(long userId, long streamId, 
+            string targetUserName, AccessRight right)
         {
             var user = UserTests.GetUser_AssertSuccess(userId);
             var getStream = user.GetEventStream(streamId);
             var stream = getStream.Result;
-            var ans = stream.SetUserRight(targetUserName, rights);
+            Response<Guid> ans;
+            if (right == AccessRight.Admin)
+                ans = stream.SetUserRightToAdmin(targetUserName, UserTests.Password);
+            else
+                ans = stream.SetUserRight(targetUserName, right);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             Thread.Sleep(100);
@@ -120,13 +125,13 @@ namespace EvernestFrontTests
             long adminId = UserTests.AddUser_GetId_AssertSuccess(adminName);
             var streamName = Helpers.NewName;
             long streamId = CreateEventStream_GetId_AssertSuccess(creatorId, streamName);
-            SetRights_AssertSuccess(creatorId, streamId, adminName, AccessRight.Admin);
-            SetRights_AssertSuccess(adminId, streamId, readerName, AccessRight.ReadOnly);
-            SetRights_AssertSuccess(creatorId, streamId, readerName, AccessRight.ReadWrite);
+            SetRight_AssertSuccess(creatorId, streamId, adminName, AccessRight.Admin);
+            SetRight_AssertSuccess(adminId, streamId, readerName, AccessRight.ReadOnly);
+            SetRight_AssertSuccess(creatorId, streamId, readerName, AccessRight.ReadWrite);
         }
 
         [Test]
-        public void SetUserRightsById_Success()
+        public void SetUserRightById_Success()
         {
             var creatorName = Helpers.NewName;
             var adminName = Helpers.NewName;
@@ -140,7 +145,7 @@ namespace EvernestFrontTests
             var creatorUser = UserTests.GetUser_AssertSuccess(creatorId);
             var getStream = creatorUser.GetEventStream(streamId);
             var stream = getStream.Result;
-            var ans = stream.SetUserRight(adminId, AccessRight.Admin);
+            var ans = stream.SetUserRightToAdmin(adminId, UserTests.Password);
             Assert.IsTrue(ans.Success);
             Assert.IsNull(ans.Error);
             Thread.Sleep(100);
@@ -163,7 +168,7 @@ namespace EvernestFrontTests
             long creatorId = UserTests.AddUser_GetId_AssertSuccess(creatorName);
             long readerId = UserTests.AddUser_GetId_AssertSuccess(readerName);
             long streamId = CreateEventStream_GetId_AssertSuccess(creatorId, streamName);
-            SetRights_AssertSuccess(creatorId, streamId, readerName, AccessRight.ReadOnly);
+            SetRight_AssertSuccess(creatorId, streamId, readerName, AccessRight.ReadOnly);
 
             User reader = UserTests.GetUser_AssertSuccess(readerId);
             var getReaderStream = reader.GetEventStream(streamName);
@@ -181,7 +186,7 @@ namespace EvernestFrontTests
             long creatorId = UserTests.AddUser_GetId_AssertSuccess(creatorName);
             long evilAdminId = UserTests.AddUser_GetId_AssertSuccess(evilAdminName);
             long streamId = CreateEventStream_GetId_AssertSuccess(creatorId, streamName);
-            SetRights_AssertSuccess(creatorId, streamId, evilAdminName, AccessRight.Admin);
+            SetRight_AssertSuccess(creatorId, streamId, evilAdminName, AccessRight.Admin);
 
             User evilAdmin = UserTests.GetUser_AssertSuccess(evilAdminId);
             var getEvilAdminStream = evilAdmin.GetEventStream(streamName);
@@ -305,7 +310,7 @@ namespace EvernestFrontTests
             long streamId = CreateEventStream_GetId_AssertSuccess(userId, streamName);
             long eventId = PushEvent_GetId_AssertSuccess(userId, streamId, Message);
             long user2Id = UserTests.AddUser_GetId_AssertSuccess(userName2);
-            SetRights_AssertSuccess(userId, streamId, userName2, AccessRight.WriteOnly);
+            SetRight_AssertSuccess(userId, streamId, userName2, AccessRight.WriteOnly);
 
             User user2 = UserTests.GetUser_AssertSuccess(user2Id);
             var stream = user2.GetEventStream(streamName).Result;

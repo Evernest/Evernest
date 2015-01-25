@@ -5,6 +5,7 @@
         AdminAccessDenied=0,
         BackendError=1,
         CannotDestituteAdmin=2,
+        CannotSetAdminWithoutPassword=22,
         EventStreamIdDoesNotExist=3,
         EventStreamNameTaken=4,
         InvalidEventId=5,

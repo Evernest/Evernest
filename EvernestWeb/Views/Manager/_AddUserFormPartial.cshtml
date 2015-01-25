@@ -6,7 +6,7 @@
 
     <div class="form-group">
         @Html.LabelFor(m => m.NewUser, new {@class = "sr-only"})
-        @Html.TextBoxFor(m => m.NewUser, new {@class = "form-control", @placeholder = "Add user by ID..."})
+        @Html.TextBoxFor(m => m.NewUser, new {@class = "form-control", @placeholder = "Add user by Name..."})
     </div>
     <div class="form-group">
         @Html.DropDownListFor(m => m.Right, new SelectList(Model.AccessRightsDictionary, "Key", "Value"), new {@class = "form-control"})

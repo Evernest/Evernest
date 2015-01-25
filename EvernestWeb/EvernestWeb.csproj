@@ -177,7 +177,6 @@
     <Content Include="Content\Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Account\Index.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Manager\Index.cshtml" />
     <Content Include="Views\Manager\Stream.cshtml" />
     <Content Include="Views\Manager\_AddEventFormPartial.cshtml" />
@@ -197,6 +196,7 @@
     <Content Include="Views\Manager\_DeleteUserRightOnStreamFormPartial.cshtml" />
     <Content Include="Views\Manager\_UpdateSourceRightFormPartial.cshtml" />
     <Content Include="Views\Manager\_DeleteSourceRightFormPartial.cshtml" />
+    <Content Include="Views\Account\SignUp.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

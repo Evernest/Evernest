@@ -207,5 +207,11 @@ namespace EvernestBackTests
             stream.FlushPullRequests();
             Console.WriteLine("pull time ("+count+" elements):"+DateTime.UtcNow.Subtract(start).TotalMilliseconds + "ms");
         }
+
+        [TestFixtureTearDown]
+        public void Cleanup()
+        {
+            AzureStorageClient.Instance.ClearAll();
+        }
     }
 }

@@ -34,11 +34,11 @@ textarea {
 .evernest-callout-danger {
     background-color: #fffaf0;
     border-left: 3px solid #ff7f50;
-    padding: 0.2em 1em;
+    padding: 0.5em 1em;
     margin: 1em 0;
 }
 
-.evernest-callout-danger h4 {
+.evernest-callout-danger h5 {
     color: #ff7f50;
 }
 

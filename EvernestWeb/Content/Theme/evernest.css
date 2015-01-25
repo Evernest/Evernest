@@ -243,6 +243,7 @@ th {
 .table tfoot > tr > td {
     border: none;
     background: none;
+    vertical-align: middle;
 }
 
 

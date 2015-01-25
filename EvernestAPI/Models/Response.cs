@@ -8,22 +8,27 @@ namespace EvernestAPI.Models
 {
     internal static class Response
     {
+        private static Hashtable GetBasiceResponseHashtable(bool success)
+        {
+            var ans = new Hashtable();
+            ans["Success"] = success;
+            ans["UtcTime"] = DateTime.UtcNow;
+        }
        
         public static HttpResponseMessage Error(HttpRequestMessage request, string errorMessage)
         {
-            var ans = new Hashtable();
-            ans["Success"] = false;
+            var ans = GetBasiceResponseHashtable(success: false);
+
             var error = new Hashtable();
             error["Message"] = errorMessage;
             ans["Error"] = error;
+
             return request.CreateResponse(HttpStatusCode.OK, ans); // TODO: find an other Status Code
         }
 
         public static HttpResponseMessage MissingArgument(HttpRequestMessage request, string argument)
         {
-            var ans = new Hashtable();
-
-            ans["Succes"] = false;
+            var ans = GetBasiceResponseHashtable(success: false);
 
             var error = new Hashtable();
             error["Message"] = "MissingArgument";
@@ -36,9 +41,7 @@ namespace EvernestAPI.Models
 
         public static HttpResponseMessage BadArgument(HttpRequestMessage request, string[] arguments)
         {
-            var ans = new Hashtable();
-
-            ans["Succes"] = false;
+            var ans = GetBasiceResponseHashtable(success: false);
 
             var error = new Hashtable();
             error["Message"] = "BadArgument";
@@ -56,9 +59,7 @@ namespace EvernestAPI.Models
 
         public static HttpResponseMessage BadRequest(HttpRequestMessage request)
         {
-            var ans = new Hashtable();
-
-            ans["Success"] = false;
+            var ans = GetBasiceResponseHashtable(success: false); 
             
             var error = new Hashtable();
             error["Message"] = "BadRequest";
@@ -70,17 +71,16 @@ namespace EvernestAPI.Models
 
         public static HttpResponseMessage Success(HttpRequestMessage request, object o)
         {
-            var ans = new Hashtable();
-            ans["Success"] = true;
+            var ans = GetBasiceResponseHashtable(success: true); 
+
             ans["Response"] = o;
+
             return request.CreateResponse(HttpStatusCode.OK, ans);
         }
 
         public static HttpResponseMessage NotImplemented(HttpRequestMessage request)
         {
-            var ans = new Hashtable();
-            
-            ans["Success"] = false;
+            var ans = GetBasiceResponseHashtable(success: false); 
             
             var error = new Hashtable();
             error["Message"] = "NotImplemented";

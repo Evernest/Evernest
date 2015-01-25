@@ -67,17 +67,6 @@ namespace EvernestAPI
                     action="New",
                 }
                 );
-
-            config.Routes.MapHttpRoute(
-                name: "APIUserAdd",
-                routeTemplate: "{controller}/Add/{username}/{password}",
-                constraints: new
-                {
-                    username = @"[a-zA-Z0-9]*",
-                    password = @"[a-zA-Z0-9]*",
-                },
-                defaults: new {}
-                );
         }
     }
 }

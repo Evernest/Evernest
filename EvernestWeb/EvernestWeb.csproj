@@ -135,11 +135,10 @@
     <Content Include="Content\Images\logo.png" />
     <Content Include="Content\Images\mountain.png" />
     <Content Include="Content\Theme\bootstrap.css" />
-    <Content Include="Content\Theme\EvernestWeb2.css" />
+    <Content Include="Content\Theme\EvernestWeb.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\Fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Theme\Site.css" />
     <Content Include="Content\Scripts\bootstrap.js" />
     <Content Include="Content\Scripts\bootstrap.min.js" />
     <Content Include="ClassDiagram1.cd" />

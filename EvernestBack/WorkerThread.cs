@@ -90,6 +90,9 @@ namespace EvernestBack
         private readonly ConcurrentQueue< CallbackDecorator<TQuery, TAnswer> > _extendedQueryQueue =
             new ConcurrentQueue< CallbackDecorator<TQuery, TAnswer> >();
 
+        private readonly ConcurrentQueue<Action> _synchronizedActions =
+            new ConcurrentQueue<Action>(); 
+
         private Thread _worker;
         private readonly TJob _job;
         private bool _keepOnWorking = true;
@@ -122,6 +125,9 @@ namespace EvernestBack
                     else
                         extendedQuery.Failure("TODO");
                 }
+                Action action;
+                while (_synchronizedActions.TryDequeue(out action))
+                    action();
                 _newTicket.WaitOne();  
             }
         }
@@ -135,6 +141,12 @@ namespace EvernestBack
             _keepOnWorking = true;
             _worker = new Thread(WorkLoop);
             _worker.Start();
+        }
+
+        public void AddSynchronizedAction(Action action)
+        {
+            _synchronizedActions.Enqueue(action);
+            _newTicket.Set();
         }
 
         /// <summary>

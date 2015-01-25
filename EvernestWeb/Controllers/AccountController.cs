@@ -2,7 +2,6 @@
 using System.Web.Security;
 
 ﻿using EvernestFront;
-using EvernestWeb.Models;
 using EvernestWeb.ViewModels;
 ﻿
 namespace EvernestWeb.Controllers
@@ -88,18 +87,18 @@ namespace EvernestWeb.Controllers
             return View(user);
         }
 
-        // GET: /Account/Register
+        // GET: /Account/SignUp
         [AllowAnonymous]
-        public ActionResult Register()
+        public ActionResult SignUp()
         {
             return View();
         }
 
-        // POST: /Account/Register
+        // POST: /Account/SignUp
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterModel model)
+        public ActionResult SignUp(RegisterModel model)
         {
             // Check user input
             if (!ModelState.IsValid)
@@ -116,7 +115,7 @@ namespace EvernestWeb.Controllers
                 return View(model);
             }
 
-            ViewBag.message = "User as succesfully been added.";
+            ViewBag.Message = "User as succesfully been added.";
             return View();
         }
 

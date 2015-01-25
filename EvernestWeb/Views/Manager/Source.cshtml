@@ -5,24 +5,10 @@
     ViewBag.Title = "Source";
 }
 
-<h2><a href="/Manager">Manager</a> &gt; Source #@Model.Id - @Model.Name</h2>
+<h2><a href="/Manager">Manager</a> &gt; <span class="manager-navbar-disabled">Source</span> &gt; @Html.ActionLink("#" + Model.Id, "Source", "Manager", new {id = Model.Id}, null)</h2>
+<h3 class="manager-subtitle">@Model.Name <span class="info">@Model.Key</span></h3>
 
 <div>
-    <div>
-        <h4>Source info</h4>
-        @{
-            if (Model != null)
-            {
-                <ul>
-                    <li>
-                        <strong>Source ID :</strong> @Model.Id</li>
-                    <li>
-                        <strong>Source key :</strong> @Model.Key</li>
-                </ul>
-            }
-        }
-
-    </div>
 
     <div>
         <h4>Stream permissions</h4>

@@ -2,82 +2,128 @@
 @using EvernestWeb.Models
 @model EvernestWeb.Models.StreamEventsModel
 
-<h2><a href="/Manager">Manager</a> &gt; Stream</h2>
+<h2><a href="/Manager">Manager</a> &gt; Stream #@Model.Stream.Id - @Model.Stream.Name</h2>
 
 <div>
     <div>
-        <h4>Stream</h4>
+        <h4>Stream information</h4>
         @{
             if (Model != null)
             {
                 <ul>
-                    <li>Id : @Model.Stream.Id</li>
-                    <li>Name : @Model.Stream.Name</li>
-                    <li>Total Events : @Model.Stream.Count</li>
+                    <li><strong>Stream ID :</strong> @Model.Stream.Id</li>
+                    <li><strong>Event count :</strong> @Model.Stream.Count</li>
                 </ul>
-                <ul>
-                    <li>Related Users</li>
-                    @{
-                        if (Model.RelatedUsers != null)
-                        {
-                            foreach (KeyValuePair<string, AccessRight> usr in Model.RelatedUsers)
-                            {
-                                <li>
-                                    @{
-                                        Write(usr.Key);
-                                        ViewBag.UserId = usr.Key;
-                                        Html.RenderPartial("_UpdateUserRightOnStreamFormPartial", new EvernestWeb.ViewModels.UpdateUserRightOnStream(usr.Value));
-                                        Html.RenderPartial("_DeleteUserRightOnStreamFormPartial", new EvernestWeb.ViewModels.DeleteUserRightOnStream());
-
-
-                                    }
-                                </li>
-                    }
-                        }
-}
-                </ul>
-            }
+                }
         }
     </div>
 
     <div>
-        @{ Html.RenderPartial("_AddUserFormPartial", new EvernestWeb.ViewModels.NewStreamUserModel());}
+        <h4>Related users</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                  @{
+                     if (Model.RelatedUsers != null)
+                     {
+                         foreach (KeyValuePair<string, AccessRight> usr in Model.RelatedUsers)
+                         {
+                             @{
+                             Write(usr.Key);
+                             ViewBag.UserId = usr.Key;
+                             Html.RenderPartial("_UpdateUserRightOnStreamFormPartial", new EvernestWeb.ViewModels.UpdateUserRightOnStream(usr.Value));
+                             Html.RenderPartial("_DeleteUserRightOnStreamFormPartial", new EvernestWeb.ViewModels.DeleteUserRightOnStream());
 
-        @{ Html.RenderPartial("_GetEventByIdFormPartial", new EvernestWeb.ViewModels.GetEventById());}
 
-        @{ Html.RenderPartial("_AddEventFormPartial", new EvernestWeb.ViewModels.NewEventModel()); }
+                            }
+                             //<tr><td>@usr.Key</td><td>@usr.Value</td></tr>
+                         }
+                     }
+                 }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td style="min-width: 15%;"></td>
+                    <td>@{ Html.RenderPartial("_AddUserFormPartial", new EvernestWeb.ViewModels.NewStreamUserModel());}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
+    <div>
+        <h4>Pull event by ID</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr><th>Id</th><th>Message</th></tr>
+            </thead>
+            @if (Model != null && Model.PulledEvent != null)
+            {
+                <tbody>
+                <tr><td>@Model.PulledEvent.Id</td><td>@Model.PulledEvent.Message</td></tr>
+                </tbody>
+            }
+            else
+            {
+                <tbody>
+                <tr><td><td><em>No event pulled, please enter request in form below.</em></td></td></tr>
+                </tbody>
+            }
+            <tfoot>
+                <tr>
+                    <td style="min-width: 15%;"></td>
+                    <td>@{ Html.RenderPartial("_GetEventByIdFormPartial", new EvernestWeb.ViewModels.GetEventById());}</td>
+                </tr>
+            </tfoot>
+        </table>
+        
     </div>
 
     <!-- requested event -->
 
         
-    @if (Model != null && Model.PulledEvent != null)
-    {
-        <div>
-            <h4>Pulled Event</h4>
-            <ul>
-                <li>Id - Message</li>
-                <li>@Model.PulledEvent.Id -- @Model.PulledEvent.Message</li>
-            </ul>
-        </div>
-    }
                 
 
 
     <div>
-        <h4>Last Events</h4>
-        @{
-    if (Model != null && Model.Events != null)
-            {
-                <ul>
-                    <li>Id - Message etc...</li>
-                    @foreach (EventModel e in Model.Events)
+        <h4>Last events</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Message</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                if (Model != null && Model.Events != null)
+                {
+                    foreach (EventModel e in Model.Events)
                     {
-                        <li>@e.Id -- @e.Message</li>
+                        <tr><td>@e.Id</td><td>@e.Message</td></tr>
                     }
-                </ul>
+                }
+                else
+                {
+                    <tr><td></td><td><em>No events pushed yet.</em></td></tr>
+                }
             }
-        }
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td style="min-width: 15%;"></td>
+                    <td>
+                        @{ Html.RenderPartial("_AddEventFormPartial", new EvernestWeb.ViewModels.NewEventModel()); }
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </div>

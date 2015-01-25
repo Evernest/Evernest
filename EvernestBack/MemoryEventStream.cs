@@ -143,5 +143,13 @@ namespace EvernestBack
                 file.Delete();
             }
         }
+
+        /// <summary>
+        /// Request a server update
+        /// </summary>
+        public void Update()
+        {
+            //TODO: you may want to start writing the file here
+        }
     }
 }

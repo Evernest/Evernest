@@ -43,5 +43,10 @@ namespace EvernestBack
         ///     In particular, Size() - 1 is always valid as index, as soon as it is positive or 0.
         /// </summary>
         long Size();
+
+        /// <summary>
+        /// Request a server update.
+        /// </summary>
+        void Update();
     }
 }

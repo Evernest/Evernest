@@ -61,7 +61,7 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage GetSource(long sourceId)
+        public HttpResponseMessage GetSource(long id)
         {
             Hashtable body;
             try { body = Tools.ParseRequest(Request); }
@@ -78,7 +78,7 @@ namespace EvernestAPI.Controllers
 
             var user = userRequest.Result;
 
-            var sourceRequest = user.GetSource(sourceId);
+            var sourceRequest = user.GetSource(id);
 
             if (!sourceRequest.Success)
                 return Response.BadArgument(Request, "SourceId");

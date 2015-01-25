@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Threading;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 
@@ -16,14 +17,15 @@ namespace EvernestBack
         private readonly Dictionary<String, IEventStream> _openedStreams;
         private readonly Int32 _minimumBufferSize;
         private readonly UInt32 _eventChunkSize;
-        private readonly UInt32 _indexUpdateMinimumEntryCount;
-        private readonly UInt32 _indexUpdateMinimumDelay;
+        private readonly UInt32 _updateDelay;
         private readonly Int32 _cacheSize;
 
         internal readonly long PageBlobSize;
         internal readonly string DummyDataPath;
         internal readonly CloudBlobContainer StreamContainer;
         internal readonly CloudBlobContainer StreamIndexContainer;
+
+        private readonly Timer _updateTimer;
 
         private AzureStorageClient()
         {
@@ -44,8 +46,7 @@ namespace EvernestBack
                     PageBlobSize = UInt32.Parse(ConfigurationManager.AppSettings["PageBlobSize"]);
                     _minimumBufferSize = Int32.Parse(ConfigurationManager.AppSettings["MinimumBufferSize"]);
                     _eventChunkSize = UInt32.Parse(ConfigurationManager.AppSettings["EventChunkSize"]);
-                    _indexUpdateMinimumEntryCount = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumentryCount"]);
-                    _indexUpdateMinimumDelay = UInt32.Parse(ConfigurationManager.AppSettings["IndexUpdateMinimumDelay"]);
+                    _updateDelay = UInt32.Parse(ConfigurationManager.AppSettings["UpdateDelay"]);
                     _cacheSize = Int32.Parse(ConfigurationManager.AppSettings["CacheSize"]);
                     storageAccount = CloudStorageAccount.Parse(connectionString);
                 }
@@ -70,6 +71,7 @@ namespace EvernestBack
                     Console.WriteLine(e.Message);
                 }
             }
+            _updateTimer = new Timer(UpdateAll, new object(),  _updateDelay, _updateDelay);
         }
 
         /// <summary>
@@ -168,8 +170,7 @@ namespace EvernestBack
             }
             else
             {
-                stream = new EventStream(this, streamId, _minimumBufferSize, 
-                    _indexUpdateMinimumEntryCount, _indexUpdateMinimumDelay, _eventChunkSize, _cacheSize);
+                stream = new EventStream(this, streamId, _minimumBufferSize, _eventChunkSize, _cacheSize);
             }
 
             _openedStreams.Add(streamId, stream);
@@ -224,7 +225,7 @@ namespace EvernestBack
         /// Delete a stream if it already exists.
         /// </summary>
         /// <param name="streamId">The stream's number (will be converted to the corresponding string).</param>
-        public void DeleteStreamIfExists(Int64 streamId)
+        public void DeleteStreamIfExists(long streamId)
         {
             DeleteStreamIfExists(streamId.ToString());
         }
@@ -266,16 +267,25 @@ namespace EvernestBack
             return true;
         }
 
-
         /// <summary>
         /// Try to create a new event stream if it doesn't already exists.
         /// </summary>
         /// <param name="streamId">The stream's number (will be converted to the corresponding string).</param>
         /// <param name="stream">The stream to be retrieved.</param>
         /// <returns>True if the stream didn't already exist, false otherwise.</returns>
-        public bool TryGetFreshEventStream(Int64 streamId, out IEventStream stream)
+        public bool TryGetFreshEventStream(long streamId, out IEventStream stream)
         {
-            return TryGetFreshEventStream("" + streamId, out stream);
+            return TryGetFreshEventStream(streamId.ToString(), out stream);
+        }
+
+        /// <summary>
+        /// Update the server for all opened streams (timer callback).
+        /// </summary>
+        /// <param name="o">Unused (necessary for the callback).</param>
+        private void UpdateAll(object o)
+        {
+            foreach (KeyValuePair<string, IEventStream> pair in _openedStreams)
+                pair.Value.Update();
         }
 
         /// <summary>
@@ -283,6 +293,7 @@ namespace EvernestBack
         /// </summary>
         public void ClearAll()
         {
+            _updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
             foreach (KeyValuePair<string, IEventStream> pair in _openedStreams)
                 pair.Value.Dispose();
             _openedStreams.Clear();
@@ -298,6 +309,7 @@ namespace EvernestBack
                 StreamIndexContainer.CreateIfNotExists();
                 StreamContainer.CreateIfNotExists();
             }
+            _updateTimer.Change(_updateDelay, _updateDelay);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Web.Http;
 using System.Net.Http;
+using System.Web.UI;
 using EvernestAPI.Models;
 using EvernestFront;
 using EvernestFront.Contract;
@@ -15,7 +16,7 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage GetRight(long streamId)
+        public HttpResponseMessage GetRight(long id)
         {
             Hashtable body;
             try { body = Tools.ParseRequest(Request); }
@@ -32,7 +33,7 @@ namespace EvernestAPI.Controllers
 
             var source = sourceRequest.Result;
 
-            var eventStreamRequest = source.GetEventStream(streamId);
+            var eventStreamRequest = source.GetEventStream(id);
 
             if (!eventStreamRequest.Success)
                 return Response.BadArgument(Request, "StreamId");
@@ -53,7 +54,7 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Default")]
-        public HttpResponseMessage GetRight(long sourceId, long streamId)
+        public HttpResponseMessage GetRight(long id, long streamId)
         {
             Hashtable body;
             try { body = Tools.ParseRequest(Request); }
@@ -70,7 +71,7 @@ namespace EvernestAPI.Controllers
 
             var user = userRequest.Result;
 
-            var sourceRequest = user.GetSource(sourceId);
+            var sourceRequest = user.GetSource(id);
 
             if (!sourceRequest.Success)
                 return Response.BadArgument(Request, "SourceId");
@@ -98,7 +99,7 @@ namespace EvernestAPI.Controllers
         [HttpGet]
         [HttpPost]
         [ActionName("Set")]
-        public HttpResponseMessage Set(long sourceId, long streamId, string right)
+        public HttpResponseMessage Set(long id, long streamId, string right)
         {
             Hashtable body;
             try { body = Tools.ParseRequest(Request); }
@@ -117,7 +118,7 @@ namespace EvernestAPI.Controllers
 
             var accessRight = AccessRightTools.StringToAccessRight(right);
 
-            var guidRequest = user.SetSourceRight(sourceId, streamId, accessRight);
+            var guidRequest = user.SetSourceRight(id, streamId, accessRight);
 
             if (!guidRequest.Success)
                 return Response.Error(Request, "Error while setting source right.");

@@ -14,6 +14,11 @@ namespace EvernestAPI
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            //initializes FrontEnd
+            //TODO: probably move this
+            var frontStartUp = new EvernestFront.StartUp();
+            frontStartUp.Start();
         }
     }
 }

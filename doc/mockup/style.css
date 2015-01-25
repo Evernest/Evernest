@@ -93,6 +93,8 @@ footer {
 
 
 .btn {
+    border-radius: 2px;
+    text-transform: uppercase;
     color: #c5dbe5;
     border: 1px solid #c5dbe5;
 }
@@ -106,3 +108,17 @@ img {
     max-width: 100%;
 }
 
+
+.slide-try--or-wrapper {
+    color: #c6c6c6;
+    border-bottom: 1px solid #c6c6c6;
+    height: 0.6em;
+    line-height: 1em;
+    margin: 2em 0;
+    text-transform: uppercase;
+}
+
+.slide-try--or {
+    background-color: white;
+    padding: 0 1em;
+}

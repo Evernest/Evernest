@@ -21,6 +21,9 @@ namespace EvernestBack
         private Node _root;
         private readonly Stack<Node> _mislinked;
 
+        /// <summary>
+        /// Construct an empty History.
+        /// </summary>
         public History()
         {
             _elementCounter = 1;
@@ -30,16 +33,16 @@ namespace EvernestBack
         }
 
         /// <summary>
-        /// Clear the History.
+        /// Construct an empty History.
         /// </summary>
-        public void Clear()
+        /// <param name="blob">The blob from which to retrieve the History.</param>
+        public History(CloudBlockBlob blob)
         {
             _elementCounter = 1;
-            _lastNode = _root;
-            _root.Right = null;
-            _root.Left = null;
-            _mislinked.Clear();
+            _mislinked = new Stack<Node>();
+            _lastNode = _root = new Node(0, 0, null, null);
             _mislinked.Push(_root);
+            ReadFromBlob(blob);
         }
 
         /// <summary>
@@ -252,9 +255,8 @@ namespace EvernestBack
         /// </summary>
         /// <param name="src">The byte array containing a description of the History.</param>
         /// <param name="offset">The offset at which the description should be read.</param>
-        public void Deserialize(byte[] src, int offset)
+        private void Deserialize(byte[] src, int offset)
         {
-            Clear();
             var elementCount = BitConverter.ToInt64(src, offset);
             offset += sizeof (long);
             for (long i = 0; i < elementCount; i++)
@@ -271,7 +273,7 @@ namespace EvernestBack
         /// Clear the History, and retrieve one from the blob.
         /// </summary>
         /// <param name="blob">The blob from which to retrieve the History description</param>
-        public void ReadFromBlob(CloudBlockBlob blob)
+        private void ReadFromBlob(CloudBlockBlob blob)
         {
             var sizeBytes = new Byte[sizeof (long)];
             blob.DownloadRangeToByteArray(sizeBytes, 0, 0, sizeof (long));

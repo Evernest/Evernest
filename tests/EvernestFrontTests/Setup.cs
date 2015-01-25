@@ -30,8 +30,16 @@ namespace EvernestFrontTests
         [SetUp]
         public static void RunBeforeAnyTests()
         {
+            AzureStorageClient.Instance.ClearAll();
+
             var startUp = new StartUp();
             startUp.Start();
+        }
+
+        [TearDown]
+        public void RunAfterAllTests()
+        {
+            AzureStorageClient.Instance.ClearAll();
         }
     }
 }

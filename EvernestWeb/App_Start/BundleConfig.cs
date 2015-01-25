@@ -25,8 +25,7 @@ namespace EvernestWeb
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/Theme/bootstrap.css",
-                      "~/Content/Theme/EvernestWeb2.css",
-                      "~/Content/Theme/Site.css"));
+                      "~/Content/Theme/EvernestWeb.css"));
         }
     }
 }

@@ -274,6 +274,5 @@ namespace EvernestFrontTests
             Helpers.ErrorAssert(FrontError.ReadAccessDenied, ans);
         }
 
-        
     }
 }

@@ -8,9 +8,13 @@
 }
 
 <div class="container body-content">
-    <p class="evernest-callout-success">
-        @ViewBag.Message
-    </p>
+    @if (ViewBag.Message != "")
+    {
+        <p class="evernest-callout-success">
+            @ViewBag.Message
+        </p>
+    }
+    
 
     @RenderBody()
 </div>

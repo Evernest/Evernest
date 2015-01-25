@@ -2,7 +2,6 @@
 using System.Web.Security;
 
 ﻿using EvernestFront;
-using EvernestWeb.Models;
 using EvernestWeb.ViewModels;
 ﻿
 namespace EvernestWeb.Controllers
@@ -116,7 +115,7 @@ namespace EvernestWeb.Controllers
                 return View(model);
             }
 
-            ViewBag.message = "User as succesfully been added.";
+            ViewBag.Message = "User as succesfully been added.";
             return View();
         }
 

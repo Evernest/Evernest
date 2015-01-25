@@ -141,7 +141,10 @@ namespace EvernestWeb.Controllers
             if (!streamReq.Success)
                 return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
-            streamReq.Result.SetUserRight(model.NewUser, model.Right);
+            var setReq = streamReq.Result.SetUserRight(model.NewUser, model.Right);
+            if (!setReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
             return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
         }
 
@@ -162,7 +165,10 @@ namespace EvernestWeb.Controllers
             if (!streamReq.Success)
                 return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
-            streamReq.Result.SetUserRight(model.UserId, model.Right);
+            var setReq = streamReq.Result.SetUserRight(model.UserId, model.Right);
+            if (!setReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
             return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
         }
 
@@ -183,7 +189,10 @@ namespace EvernestWeb.Controllers
             if (!streamReq.Success)
                 return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
-            streamReq.Result.SetUserRight(model.UserId, EvernestFront.Contract.AccessRight.NoRight);
+            var setReq = streamReq.Result.SetUserRight(model.UserId, EvernestFront.Contract.AccessRight.NoRight);
+            if (!setReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+
             return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
         }
 
@@ -207,7 +216,9 @@ namespace EvernestWeb.Controllers
             if (!streamReq.Success)
                 return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
-            streamReq.Result.Push(model.Content);
+            var pushReq = streamReq.Result.Push(model.Content);
+            if (!pushReq.Success)
+                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
 
             return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
         }
@@ -263,7 +274,9 @@ namespace EvernestWeb.Controllers
             if (!userReq.Success)
                 return RedirectToAction("Index", "Manager");
 
-            userReq.Result.DeleteSource(id);
+            var deleteReq = userReq.Result.DeleteSource(id);
+            if (!deleteReq.Success)
+                return RedirectToAction("Index", "Manager");
 
             return RedirectToAction("Index", "Manager");
         }
@@ -280,9 +293,10 @@ namespace EvernestWeb.Controllers
             var userReq = front.GetUser(user.Id);
 
             var sourceRightReq = userReq.Result.SetSourceRight(model.SourceId, model.StreamId, model.Right);
+            if (!sourceRightReq.Success)
+                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
 
             return RedirectToAction("Source", "Manager", new { id = model.SourceId });
-
         }
 
         [HttpPost]
@@ -297,6 +311,8 @@ namespace EvernestWeb.Controllers
             var userReq = front.GetUser(user.Id);
 
             var sourceRightReq = userReq.Result.SetSourceRight(model.SourceId, model.StreamId, model.Right);
+            if (!sourceRightReq.Success)
+                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
 
             return RedirectToAction("Source", "Manager", new { id = model.SourceId });
 
@@ -314,6 +330,8 @@ namespace EvernestWeb.Controllers
             var userReq = front.GetUser(user.Id);
 
             var sourceRightReq = userReq.Result.SetSourceRight(model.SourceId, model.StreamId, AccessRight.NoRight);
+            if (!sourceRightReq.Success)
+                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
 
             return RedirectToAction("Source", "Manager", new { id = model.SourceId });
 

@@ -27,14 +27,13 @@ namespace EvernestBack
         /// <param name="updateMinimumDelay">The minimum delay before re-updating the aditional stream index inforamtion.</param>
         /// <param name="minimumChunkSize">The minimum number of bytes to be read before a new index (also referred as milestone) is registered.</param>
         /// /// <param name="cacheSize">The maximum cache size (in bytes).</param>
-        public EventStream(AzureStorageClient storage, string streamId, int minimumBufferSize, uint updateMinimumEntryCount, uint updateMinimumDelay, uint minimumChunkSize, int cacheSize)
+        public EventStream(AzureStorageClient storage, string streamId, int minimumBufferSize, uint minimumChunkSize, int cacheSize)
         {
             CloudPageBlob blob = storage.StreamContainer.GetPageBlobReference(streamId);
             var streamIndexBlob = storage.StreamIndexContainer.GetBlockBlobReference(streamId);
 
             _bufferedIO = new BufferedBlobIO(blob, minimumBufferSize);
-            _indexer = new EventIndexer(streamIndexBlob, _bufferedIO, updateMinimumEntryCount, updateMinimumDelay,
-                minimumChunkSize, cacheSize);
+            _indexer = new EventIndexer(streamIndexBlob, _bufferedIO, minimumChunkSize, cacheSize);
             _writerJob = new WriterJob(_bufferedIO, _indexer, _indexer.ReadIndexInfo());
             _writer = new Writer(_writerJob);
             _reader = new Reader(new ReaderJob(_indexer));
@@ -129,6 +128,15 @@ namespace EvernestBack
         public long Size()
         {
             return _writerJob.CurrentId;
+        }
+
+        /// <summary>
+        /// Request a server update.
+        /// </summary>
+        public void Update()
+        {
+            _bufferedIO.FlushBuffer();
+            _indexer.UploadIndex();
         }
 
         /// <summary>

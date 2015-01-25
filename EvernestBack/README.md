@@ -67,9 +67,6 @@ depending on the stream's size.
 Future improvments
 ------------------
 
-EvernestBack doesn't make regular time-based updates which could lead to loss
-of data if the program crashes even when no new events have been pushed for a
-moderately long time.
 EvernestBack doesn't properly handle the creation of a new blob when exceeding
 the maximum capacity of the current blob.
 EvernestBack doesn't use thread pools, which may cause slowdowns when using a

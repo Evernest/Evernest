@@ -12,10 +12,6 @@ namespace EvernestBack
         private readonly uint _eventChunkSizeInBytes;
         private readonly BufferedBlobIO _bufferedStreamIO;
         private readonly CloudBlockBlob _streamIndexBlob;
-        private readonly uint _indexUpdateMinimumEntryCount;
-        private uint _newEntryCount;
-        private readonly uint _indexUpdateMinimumDelay;
-        private DateTime _lastIndexUpdateTime;
         private readonly RangeCache _cache;
 
         /// <summary>
@@ -27,16 +23,12 @@ namespace EvernestBack
         /// <param name="updateMinimumDelay">The minimum delay before before the indexer attempts to re-update the additional stream index information.</param>
         /// <param name="minimumChunkSize">The minimum number of bytes to be read before the indexer registers a new index (also referred as milestone).</param>
         /// <param name="cacheSize">The cache size in bytes.</param>
-        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, uint updateMinimumEntryCount, uint updateMinimumDelay, uint minimumChunkSize, int cacheSize)
+        public EventIndexer( CloudBlockBlob streamIndexBlob, BufferedBlobIO buffer, uint minimumChunkSize, int cacheSize)
         {
-            _indexUpdateMinimumEntryCount = updateMinimumEntryCount;
-            _indexUpdateMinimumDelay = updateMinimumDelay;
             _eventChunkSizeInBytes = minimumChunkSize;
             _bufferedStreamIO = buffer;
             _streamIndexBlob = streamIndexBlob;
             _milestones = new History();
-            _lastIndexUpdateTime = DateTime.UtcNow;
-            _newEntryCount = 0;
             _cache = new RangeCache(cacheSize);
         }
 
@@ -52,8 +44,6 @@ namespace EvernestBack
                 _lastPosition += _currentChunkBytes;
                 _milestones.Insert(id, _lastPosition);
                 _currentChunkBytes = wroteBytes;
-                _newEntryCount++;
-                UploadIndexIfMeetConditions();
             }
             else
                 _currentChunkBytes += wroteBytes;
@@ -103,24 +93,10 @@ namespace EvernestBack
         }
 
         /// <summary>
-        /// Update the index if the update conditions are met.
-        /// </summary>
-        public void UploadIndexIfMeetConditions()
-        {
-            if (DateTime.UtcNow.Subtract(_lastIndexUpdateTime).TotalSeconds > _indexUpdateMinimumDelay
-                && _newEntryCount > _indexUpdateMinimumEntryCount)
-            {
-                UploadIndex();
-            }
-        }
-
-        /// <summary>
         /// Update the additional stream index information.
         /// </summary>
         public void UploadIndex()
         {
-            _newEntryCount = 0;
-            _lastIndexUpdateTime = DateTime.UtcNow;
             var serializedMilestones = _milestones.Serialize();
             try
             {

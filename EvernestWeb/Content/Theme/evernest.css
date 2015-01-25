@@ -239,7 +239,7 @@ th {
 .table tbody > tr > td,
 .table tfoot > tr > td {
     border: none;
-    background-color: none;
+    background: none;
 }
 
 .table-striped > tbody > tr:nth-child(odd) > td,

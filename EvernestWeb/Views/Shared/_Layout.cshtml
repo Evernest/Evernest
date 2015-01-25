@@ -8,7 +8,7 @@
 }
 
 <div class="container body-content">
-    @if (ViewBag.Message != "")
+    @if (!String.IsNullOrEmpty(ViewBag.Message))
     {
         <p class="evernest-callout-success">
             @ViewBag.Message

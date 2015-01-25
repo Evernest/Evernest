@@ -25,7 +25,7 @@
     </div>
 
     <div>
-        <h4>Stream Permissions</h4>
+        <h4>Stream permissions</h4>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -35,18 +35,23 @@
             </thead>
             <tbody>
 
-                @if (Model != null)
+                @if (Model != null && Model.RelatedEventStreams != null && Model.RelatedEventStreams.Count > 0)
                 {
-                    if (Model.RelatedEventStreams != null)
+                    foreach (var stream in Model.RelatedEventStreams)
                     {
-                        foreach (var stream in Model.RelatedEventStreams)
-                        {
-                            <tr>
-                                <td>@stream.Key</td>
-                                <td>@stream.Value</td>
-                            </tr>
-                        }
+                        <tr>
+                            <td>@stream.Key</td>
+                            <td>@stream.Value</td>
+                        </tr>
                     }
+                }
+                else
+                {
+                    <tr>
+                        <td></td>
+                        <td><em>No rights given to source.</em></td>
+                    </tr>
+
                 }
 
             </tbody>

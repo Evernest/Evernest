@@ -3,7 +3,6 @@
 @using (Html.BeginForm("NewStreamToSource", "Manager", FormMethod.Post, new { @class = "form-inline" }))
 {
     @Html.AntiForgeryToken()
-    @Html.ValidationSummary()
 
     <div class="form-group">
         @Html.LabelFor(m => m.StreamId, new { @class = "sr-only" })

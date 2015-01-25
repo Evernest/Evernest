@@ -28,7 +28,7 @@ namespace EvernestBackTests
 
         private static Random GetRNG()
         {
-            int seed = /*(int) DateTime.Now.Ticks*/ 42;
+            const int seed = /*(int) DateTime.Now.Ticks*/ 42;
             //i'm lazy so i don't want to make strings myself, change the seed if it doesn't satisfy you
             //fixed number when pushing because i want deterministic behaviour on the build server
             Console.WriteLine("Seed used : " + seed);
@@ -131,7 +131,7 @@ namespace EvernestBackTests
         {
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
-            int count = 100;
+            const int count = 100;
             Random rng = GetRNG();
             List<string> pushedStrings = new List<string>();
             for (int i = 0; i < count; i++)
@@ -163,7 +163,7 @@ namespace EvernestBackTests
         {
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
-            int count = 20;
+            const int count = 20;
             Random rng = GetRNG();
             List<string> pushedStrings = new List<string>();
             for (int i = 0; i < count; i++)
@@ -195,7 +195,7 @@ namespace EvernestBackTests
             AzureStorageClient.Instance.DeleteStreamIfExists("TEST");
             var stream = AzureStorageClient.Instance.GetNewEventStream("TEST");
             Random rng = GetRNG();
-            const int count = 100000;
+            const int count = 10000;
             DateTime start = DateTime.UtcNow;
             for(int i = 0 ; i < count ; i++)
                 SinglePush(stream, RandomString(rng, 42));

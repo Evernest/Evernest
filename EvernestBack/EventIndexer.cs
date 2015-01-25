@@ -6,7 +6,7 @@ namespace EvernestBack
 {
     internal class EventIndexer:IDisposable
     {
-        private readonly History _milestones;
+        private History _milestones;
         private ulong _currentChunkBytes;
         private ulong _lastPosition;
         private readonly uint _eventChunkSizeInBytes;
@@ -141,7 +141,7 @@ namespace EvernestBack
             long nextId = 0;
             if(_streamIndexBlob.Exists())
             {
-                _milestones.ReadFromBlob(_streamIndexBlob);
+                _milestones = new History(_streamIndexBlob);
                 if(_milestones.GreatestElement(ref _lastPosition, ref nextId))
                 {
                     nextId++;
@@ -149,7 +149,7 @@ namespace EvernestBack
                     if (lastByte < _lastPosition)
                     {
                         _lastPosition = 0;
-                        _milestones.Clear();
+                        _milestones = new History();
                     }
                     if (lastByte > 0)
                     {

@@ -163,11 +163,11 @@ header {
 }
 
 .slide--next {
-    margin: auto;
     position: absolute;
     bottom: 7em;
     left: 0;
     right: 0;
+    width: 64px;
 }
 
 

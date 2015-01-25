@@ -52,12 +52,12 @@ namespace EvernestBackTests
                 {
                     stream.Pull
                     (
-                        pushedEvent.RequestID,
+                        pushedEvent.RequestId,
                         pulledEvent =>
                         {
-                            Console.WriteLine(pushedEvent.RequestID);
+                            Console.WriteLine(pushedEvent.RequestId);
                             Assert.AreEqual(pushedEvent.Message, pulledEvent.Message);
-                            Assert.AreEqual(pushedEvent.RequestID, pulledEvent.RequestID);
+                            Assert.AreEqual(pushedEvent.RequestId, pulledEvent.RequestId);
                         },
                         Fail
                     );
@@ -76,7 +76,7 @@ namespace EvernestBackTests
             stream.Pull(id,
                 pulledEvent =>
                 {
-                    Assert.AreEqual(pulledEvent.RequestID, pulledEvent.RequestID);
+                    Assert.AreEqual(pulledEvent.RequestId, pulledEvent.RequestId);
                 }, Fail);
         }
 
@@ -107,7 +107,7 @@ namespace EvernestBackTests
             stream.Push(str,
                 pushAgent =>
                 {
-                    stream.Pull(pushAgent.RequestID,
+                    stream.Pull(pushAgent.RequestId,
                         pullAgent => { Assert.AreEqual(pullAgent.Message, str); },
                         Fail );
                 },
@@ -150,7 +150,7 @@ namespace EvernestBackTests
                 stream.Pull(i,
                     pulledEvent =>
                     {
-                        Assert.AreEqual(pushedStrings.ElementAt((int) pulledEvent.RequestID), pulledEvent.Message);
+                        Assert.AreEqual(pushedStrings.ElementAt((int) pulledEvent.RequestId), pulledEvent.Message);
                     },
                     Fail
                     );
@@ -180,8 +180,8 @@ namespace EvernestBackTests
                     //Assert.AreEqual(pulledRange.Count(), count);
                     foreach (LowLevelEvent pulledEvent in pulledRange)
                     {
-                        Console.WriteLine(pulledEvent.RequestID);
-                        Assert.AreEqual(pushedStrings.ElementAt((int)pulledEvent.RequestID), pulledEvent.Message);
+                        Console.WriteLine(pulledEvent.RequestId);
+                        Assert.AreEqual(pushedStrings.ElementAt((int)pulledEvent.RequestId), pulledEvent.Message);
                     }
                 },
                 Fail

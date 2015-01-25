@@ -81,7 +81,7 @@
     <Compile Include="EventRange.cs" />
     <Compile Include="History.cs" />
     <Compile Include="EventIndexer.cs" />
-    <Compile Include="HashCache.cs" />
+    <Compile Include="RangeCache.cs" />
     <Compile Include="MemoryEventStream.cs" />
     <Compile Include="LowLevelEvent.cs" />
     <Compile Include="IEventStream.cs" />

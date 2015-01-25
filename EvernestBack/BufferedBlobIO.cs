@@ -15,13 +15,14 @@ namespace EvernestBack
     /// </summary>
     internal class BufferedBlobIO:IDisposable
     {
-        private byte[] _writeBuffer;
-        private CloudPageBlob _blob;
-        private int _currentBufferPosition, _maximumBufferSize;
+        private readonly byte[] _writeBuffer;
+        private readonly CloudPageBlob _blob;
+        private int _currentBufferPosition;
+        private readonly int _maximumBufferSize;
         private long _currentPage;
         private const Int16 PageSize = 512;
         public ulong TotalWrittenBytes {get; private set;}
-        private object _bufferLock = new object();
+        private readonly object _bufferLock = new object();
 
         public BufferedBlobIO( CloudPageBlob blob, int minimumBufferSize)
         {
@@ -38,6 +39,11 @@ namespace EvernestBack
                 _blob.DownloadRangeToByteArray(_writeBuffer, 0, (int)TotalWrittenBytes - _currentBufferPosition + PageSize, _currentBufferPosition);
         }
 
+        /// <summary>
+        /// Computes a well-aligned buffer size.
+        /// </summary>
+        /// <param name="minimumBufferSize">The minimum buffer size.</param>
+        /// <returns></returns>
         private static int BufferSize(int minimumBufferSize)
         {
             return Math.Max(2*PageSize,

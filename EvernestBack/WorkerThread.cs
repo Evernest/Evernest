@@ -20,36 +20,52 @@ namespace EvernestBack
         bool Consume(TQuery query, out TAnswer answer);
     }
 
+    /// <summary>
+    /// Consume event pushes requests and try to return the corresponding pushed events.
+    /// </summary>
     internal class WriterJob : IWorkerStrategy<string, LowLevelEvent>
     {
-        public long CurrentID { get; private set; }
+        public long CurrentId { get; private set; }
         private readonly EventIndexer _indexer;
         private readonly BufferedBlobIO _writeBuffer;
 
+        /// <summary>
+        /// Construct the WriteJob.
+        /// </summary>
+        /// <param name="buffer">The (buffered) interface with the blob.</param>
+        /// <param name="indexer">The indexer to notify when new events are appended to the stream.</param>
+        /// <param name="firstId">The first event id to use.</param>
         public WriterJob(BufferedBlobIO buffer, EventIndexer indexer, long firstId)
         {
             _indexer = indexer;
             _writeBuffer = buffer;
-            CurrentID = firstId;
+            CurrentId = firstId;
         }
 
         public bool Consume(string query, out LowLevelEvent answer)
         {
             int size;
-            answer = new LowLevelEvent(query, CurrentID);
+            answer = new LowLevelEvent(query, CurrentId);
             var bytes = answer.Serialize(out size);
             if (!_writeBuffer.Push(bytes, 0, size))
                 return false;
-            _indexer.NotifyNewEntry(CurrentID, (ulong)size);
-            CurrentID++;
+            _indexer.NotifyNewEntry(CurrentId, (ulong)size);
+            CurrentId++;
             return true;
         }
     }
 
+    /// <summary>
+    /// Consume event ranges requests and try to return the corresponding event ranges.
+    /// </summary>
     internal class ReaderJob : IWorkerStrategy<Tuple<long, long>, EventRange>
     {
         private readonly EventIndexer _indexer;
 
+        /// <summary>
+        /// Construct the ReadorJob.
+        /// </summary>
+        /// <param name="indexer">The indexer which should be used to retrieve the events.</param>
         public ReaderJob(EventIndexer indexer)
         {
             _indexer = indexer;
@@ -77,7 +93,7 @@ namespace EvernestBack
         private Thread _worker;
         private readonly TJob _job;
         private bool _keepOnWorking = true;
-        EventWaitHandle _newTicket = new AutoResetEvent(false);
+        private readonly EventWaitHandle _newTicket = new AutoResetEvent(false);
 
         /// <summary>
         /// Construct the host class with an instance of the corresponding strategy class.
@@ -95,12 +111,12 @@ namespace EvernestBack
         /// </summary>
         private void WorkLoop()
         {
-            CallbackDecorator<TQuery, TAnswer> extendedQuery;
-            TAnswer answer;
             while (_keepOnWorking)
             {
+                CallbackDecorator<TQuery, TAnswer> extendedQuery;
                 while (_extendedQueryQueue.TryDequeue(out extendedQuery))
                 {
+                    TAnswer answer;
                     if (_job.Consume(extendedQuery.Query, out answer))
                         extendedQuery.Success(answer);
                     else

@@ -15,29 +15,41 @@
                     <li>Name : @Model.Stream.Name</li>
                     <li>Total Events : @Model.Stream.Count</li>
                 </ul>
-                <ul>
-                    <li>Related Users</li>
-                    @{
-                        if (Model.RelatedUsers != null)
-                        {
-                            foreach (KeyValuePair<string, AccessRight> usr in Model.RelatedUsers)
-                            {
-                                <li>@usr.Key (@usr.Value)</li>
-                            }
-                        }
-                    }
-                </ul>
             }
         }
     </div>
 
     <div>
-        @{ Html.RenderPartial("_AddUserFormPartial", new EvernestWeb.ViewModels.NewStreamUserModel());}
+        <h4>Related users</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                  @{
+                     if (Model.RelatedUsers != null)
+                     {
+                         foreach (KeyValuePair<string, AccessRight> usr in Model.RelatedUsers)
+                         {
+                             <tr><td>@usr.Key</td><td>@usr.Value</td></tr>
+                         }
+                     }
+                 }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td>@{ Html.RenderPartial("_AddUserFormPartial", new EvernestWeb.ViewModels.NewStreamUserModel());}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
+    <div>
         @{ Html.RenderPartial("_GetEventByIdFormPartial", new EvernestWeb.ViewModels.GetEventById());}
-
-        @{ Html.RenderPartial("_AddEventFormPartial", new EvernestWeb.ViewModels.NewEventModel()); }
-
     </div>
 
     <!-- requested event -->
@@ -58,17 +70,42 @@
 
     <div>
         <h4>Last Events</h4>
-        @{
-    if (Model != null && Model.Events != null)
-            {
-                <ul>
-                    <li>Id - Message etc...</li>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Message</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            @{
+                if (Model != null && Model.Events != null)
+                {
+
+                    <tbody>
                     @foreach (EventModel e in Model.Events)
                     {
-                        <li>@e.Id -- @e.Message</li>
+                        <tr><td>@e.Id</td><td>@e.Message</td></tr>
                     }
-                </ul>
+                    </tbody>
+                }
+                else
+                {
+                    <tbody>
+                    <tr><td></td><td><em>No events pushed yet.</em></td></tr>
+                    </tbody>
+                }
             }
-        }
+
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td>
+                        @{ Html.RenderPartial("_AddEventFormPartial", new EvernestWeb.ViewModels.NewEventModel()); }
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </div>

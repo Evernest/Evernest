@@ -4,6 +4,12 @@ using EvernestBack;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Execute setup operations to make the
+    /// EvernestFront library operational. This class should be removed
+    /// when Injector and AzureStorageClient are no longer singletons.
+    /// Cf commentary for Injector.
+    /// </summary>
     public class StartUp
     {
         public void Start()
@@ -11,9 +17,6 @@ namespace EvernestFront
             var azureStorageClient = AzureStorageClient.Instance;
             var injector = Injector.Instance;
             injector.BuildFront(azureStorageClient);
-            injector.SystemEventRecuperator.FetchAndDispatch();
-            injector.SystemCommandHandler.HandleCommands();
-            injector.SystemEventQueue.DispatchSystemEvents();
         }
 
         

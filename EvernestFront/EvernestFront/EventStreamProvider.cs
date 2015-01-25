@@ -11,15 +11,14 @@ namespace EvernestFront
     {
         private readonly EventStreamsProjection _eventStreamsProjection;
 
-        private readonly SystemCommandHandler _systemCommandReceiver;
+        private readonly SystemCommandHandler _systemCommandHandler;
 
-        public EventStreamProvider()
+        internal EventStreamProvider(SystemCommandHandler systemCommandHandler,
+            EventStreamsProjection eventStreamsProjection)
         {
-            _eventStreamsProjection = Injector.Instance.EventStreamsProjection;
-            _systemCommandReceiver = Injector.Instance.SystemCommandHandler;
+            _systemCommandHandler = systemCommandHandler;
+            _eventStreamsProjection = eventStreamsProjection;
         }
-
-
 
         
 
@@ -30,7 +29,7 @@ namespace EvernestFront
                 return new Response<Guid>(FrontError.EventStreamNameTaken);
             // this is supposed to be called by a user object, so creator should always exist
 
-            var command = new EventStreamCreationCommand(_systemCommandReceiver, streamName, user.Name, user.Id);
+            var command = new EventStreamCreationCommand(_systemCommandHandler, streamName, user.Name, user.Id);
             command.Send();
             return new Response<Guid>(command.Guid);
         }
@@ -75,7 +74,7 @@ namespace EvernestFront
                 var userRight = GetUserRight(source.User.Name, eventStreamData);
                 var possibleActions = accessManager.ComputePossibleAccessActions(userRight);
                 possibleActions.IntersectWith(accessManager.ComputePossibleAccessActions(sourceRight));
-                eventStream = new EventStreamBySource(_systemCommandReceiver, source.User, userRight, source, sourceRight,
+                eventStream = new EventStreamBySource(_systemCommandHandler, source.User, userRight, source, sourceRight,
                     possibleActions, eventStreamId, eventStreamData.StreamName,
                     eventStreamData.RelatedUsers, eventStreamData.BackStream);
                 return true;
@@ -100,7 +99,7 @@ namespace EvernestFront
             var accessManager = new AccessVerifier();
             var userRight = GetUserRight(user.Name, eventStreamData);
             var possibleActions = accessManager.ComputePossibleAccessActions(userRight);
-            return new EventStream(_systemCommandReceiver, user, userRight, possibleActions, eventStreamId, eventStreamData.StreamName,
+            return new EventStream(_systemCommandHandler, user, userRight, possibleActions, eventStreamId, eventStreamData.StreamName,
                 eventStreamData.RelatedUsers, eventStreamData.BackStream);
         }
     }

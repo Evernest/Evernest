@@ -11,14 +11,25 @@ namespace EvernestFront
 {
     public class UserProvider
     {
-        private readonly UsersProjection _usersProjection;
+        internal readonly UsersProjection UsersProjection;
 
-        private readonly SystemCommandHandler _systemCommandHandler;
+        internal readonly SystemCommandHandler SystemCommandHandler;
+
+        internal readonly EventStreamProvider EventStreamProvider;
 
         public UserProvider()
         {
-            _usersProjection = Injector.Instance.UsersProjection;
-            _systemCommandHandler = Injector.Instance.SystemCommandHandler;
+            var usersProvider = Injector.Instance.UserProvider;
+            UsersProjection = usersProvider.UsersProjection;
+            SystemCommandHandler = usersProvider.SystemCommandHandler;
+            EventStreamProvider = usersProvider.EventStreamProvider;
+        }
+
+        internal UserProvider(SystemCommandHandler systemCommandHandler, UsersProjection usersProjection, EventStreamProvider eventStreamProvider)
+        {
+            SystemCommandHandler = systemCommandHandler;
+            UsersProjection = usersProjection;
+            EventStreamProvider = eventStreamProvider;
         }
 
 
@@ -99,9 +110,9 @@ namespace EvernestFront
 
         public Response<Guid> AddUser(string userName, string password)
         {
-            if (!_usersProjection.UserNameExists(userName))
+            if (!UsersProjection.UserNameExists(userName))
             {
-                var command = new UserCreationCommand(_systemCommandHandler, userName, password);
+                var command = new UserCreationCommand(SystemCommandHandler, userName, password);
                 command.Send();
                 return new Response<Guid>(command.Guid);
             }
@@ -112,7 +123,7 @@ namespace EvernestFront
         internal bool TryGetUser(long userId, out User user)
         {
             UserRecord userData;
-            if (_usersProjection.TryGetUserData(userId, out userData))
+            if (UsersProjection.TryGetUserData(userId, out userData))
             {
                 user = ConstructUser(userId, userData);
                 return true;
@@ -128,7 +139,7 @@ namespace EvernestFront
         {
             long userId;
             UserRecord userData;
-            if (_usersProjection.TryGetUserIdAndData(userName, out userId, out userData))
+            if (UsersProjection.TryGetUserIdAndData(userName, out userId, out userData))
             {
                 user = ConstructUser(userId, userData);
                 return true;
@@ -144,7 +155,7 @@ namespace EvernestFront
         {
             long userId;
             UserRecord userData;
-            if (_usersProjection.TryGetUserIdAndDataByKey(userKey, out userId, out userData))
+            if (UsersProjection.TryGetUserIdAndDataByKey(userKey, out userId, out userData))
             {
                 user = ConstructUser(userId, userData);
                 return true;
@@ -158,7 +169,7 @@ namespace EvernestFront
 
         private User ConstructUser(long userId, UserRecord userData)
         {
-            return new User(_systemCommandHandler, userId, userData.UserName,
+            return new User(SystemCommandHandler, EventStreamProvider, userId, userData.UserName,
                     userData.SaltedPasswordHash, userData.PasswordSalt,
                     userData.Keys, userData.SourceNameToId, userData.SourceIdToKey,
                     userData.RelatedEventStreams);

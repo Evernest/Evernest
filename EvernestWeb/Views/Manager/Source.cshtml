@@ -1,50 +1,61 @@
-﻿@using EvernestFront.Contract
+﻿@using EvernestWeb.ViewModels
 @model EvernestWeb.Models.SourceModel
 
 @{
     ViewBag.Title = "Source";
 }
 
-<h2><a href="/Manager">Manager</a> &gt; Source</h2>
+<h2><a href="/Manager">Manager</a> &gt; Source #@Model.Id - @Model.Name</h2>
 
 <div>
     <div>
-        <h4>Source</h4>
+        <h4>Source info</h4>
         @{
             if (Model != null)
             {
                 <ul>
-                    <li>Id : @Model.Id</li>
-                    <li>Name : @Model.Name</li>
-                    <li>Key : @Model.Key</li>
+                    <li>
+                        <strong>Source ID :</strong> @Model.Id</li>
+                    <li>
+                        <strong>Source key :</strong> @Model.Key</li>
                 </ul>
-
             }
         }
 
     </div>
 
     <div>
-        @{ Html.RenderPartial("_NewStreamToSourceFormPartial", new EvernestWeb.ViewModels.NewStreamToSourceModel());}
-    </div>
+        <h4>Stream Permissions</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Stream name</th>
+                    <th>Access level</th>
+                </tr>
+            </thead>
+            <tbody>
 
-    <div>
-        @{
-            if (Model != null)
-            {
-                <ul>
-                    <li>Related Streams</li>
-                    @{
-                        if (Model.RelatedEventStreams != null)
+                @if (Model != null)
+                {
+                    if (Model.RelatedEventStreams != null)
+                    {
+                        foreach (var stream in Model.RelatedEventStreams)
                         {
-                            foreach (KeyValuePair<string, AccessRight> stream in Model.RelatedEventStreams)
-                            {
-                                <li>@stream.Key (@stream.Value)</li>
-                            }
+                            <tr>
+                                <td>@stream.Key</td>
+                                <td>@stream.Value</td>
+                            </tr>
                         }
                     }
-                </ul>
-            }
-        }
+                }
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td style="min-width: 15%;"></td>
+                    <td>@{ Html.RenderPartial("_NewStreamToSourceFormPartial", new NewStreamToSourceModel()); }</td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </div>

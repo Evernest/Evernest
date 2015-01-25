@@ -126,6 +126,7 @@
     <Compile Include="ViewModels\ManagerModels.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Images\evernest.png" />
     <Content Include="Content\Theme\bootstrap.css" />
     <Content Include="Content\Theme\EvernestWeb2.css" />
     <Content Include="favicon.ico" />
@@ -183,7 +184,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\Images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Fonts\glyphicons-halflings-regular.woff" />

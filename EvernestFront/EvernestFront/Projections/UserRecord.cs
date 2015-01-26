@@ -3,6 +3,9 @@ using EvernestFront.Contract;
 
 namespace EvernestFront.Projections
 {
+    /// <summary>
+    /// Data stored in UsersProjection for each user. Immutable to allow concurrent access (unique writer, multiple readers).
+    /// </summary>
     class UserRecord
     {
         internal string UserName { get; set; }

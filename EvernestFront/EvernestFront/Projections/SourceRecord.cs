@@ -3,6 +3,9 @@ using EvernestFront.Contract;
 
 namespace EvernestFront.Projections
 {
+    /// <summary>
+    /// Data stored in SourcesProjection for each source. Immutable to allow concurrent access (unique writer, multiple readers).
+    /// </summary>
     class SourceRecord
     {
         //no key field because the dictionary is indexed by them

@@ -5,7 +5,7 @@ using EvernestFront.Contract;
 namespace EvernestFront.Projections
 {
     /// <summary>
-    /// Data stored in EventStreamProjection for each eventstream. Immutable to allow concurrent access (unique writer, multiple readers).
+    /// Data stored in EventStreamsProjection for each eventstream. Immutable to allow concurrent access (unique writer, multiple readers).
     /// </summary>
     class EventStreamRecord
     {

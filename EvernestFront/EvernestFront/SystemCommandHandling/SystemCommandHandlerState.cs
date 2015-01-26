@@ -9,9 +9,11 @@ namespace EvernestFront.SystemCommandHandling
 {
     /// <summary>
     /// This is the state of the SystemCommandHandler, which uses it to validate commands. 
-    /// It updates itself on SystemEvents through public method OnSystemEvent, 
-    /// which is called both by the SystemCommandHandler when it issues a SystemEvent,
-    /// and at startup when reading the SystemEventStream.
+    /// It implements IProjection because it is updated through system events. 
+    /// When SystemCommandHandler produces a system events, this is updated before handling
+    /// the next system command, so it is always totally accurate.
+    /// This is also updated at startup on all the system events read on the system
+    /// history stream.
     /// </summary>
     class SystemCommandHandlerState : IProjection
     {

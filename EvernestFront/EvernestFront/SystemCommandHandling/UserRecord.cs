@@ -3,7 +3,7 @@
 namespace EvernestFront.SystemCommandHandling
 {
     /// <summary>
-    /// Regoup information SystemCommandHandlerState should remember about each user.
+    /// Data stored in SystemCommandHandlerState for each user.
     /// </summary>
     class UserRecord
     {

@@ -13,16 +13,19 @@ namespace EvernestBackTests
     {
         static void Fail(string query, string errorMessage)
         {
+            Console.WriteLine("Fail.");
             Assert.Fail();
         }
 
         static void Fail(long query, string errorMessage)
         {
+            Console.WriteLine("Fail.");
             Assert.Fail();
         }
 
         static void Fail(long firstId, long lastId, string errorMessage)
         {
+            Console.WriteLine("Fail.");
             Assert.Fail();
         }
 

@@ -238,9 +238,9 @@ namespace EvernestBack
                     if (!DirectUpload(_writeBuffer, 0, _currentBufferPosition))
                         return false;
                 }
+                UpdateSizeInfo();
+                _bufferNeedsUpdate = false;
             }
-            UpdateSizeInfo();
-            _bufferNeedsUpdate = false;
             return true;
         }
 

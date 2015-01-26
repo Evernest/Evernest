@@ -1,18 +1,17 @@
-﻿@using EvernestWeb.Models;
-
+﻿@using EvernestWeb.Models
 @{
     ViewBag.User = null;
     ViewBag.IsAuthenticated = false;
     if (Session["User"] != null)
     {
         ViewBag.IsAuthenticated = true;
-        ViewBag.User = (User)Session["User"];
+        ViewBag.User = (User) Session["User"];
     }
 }
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
@@ -28,14 +27,16 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="@Url.Action("Index", "Home")">
-                <img alt="Evernest" src="@Url.Content("~/Content/Images/logo.png")" />
+                <img alt="Evernest" src="@Url.Content("~/Content/Images/logo.png")"/>
             </a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav left">
                 <li>@Html.ActionLink("About", "About", "Home")</li>
                 <li>@Html.ActionLink("Documentation", "Documentation", "Home")</li>
-                <li><a href="https://github.com/Evernest/Evernest" target="_blank">Development</a></li>
+                <li>
+                    <a href="https://github.com/Evernest/Evernest" target="_blank">Development</a>
+                </li>
                 <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
             </ul>
             <!-- test -->
@@ -45,7 +46,7 @@
                     <ul class="nav navbar-nav right">
                         <li>
                             <a href="@Url.Action("Index", "Account")">
-                                <img alt="" src="@Url.Content("~/Content/Images/profile.svg")" />
+                                <img alt="" src="@Url.Content("~/Content/Images/profile.svg")"/>
                                 @ViewBag.User.Username
                             </a>
                         </li>
@@ -65,24 +66,26 @@
         </div>
     </div>
 </div>
-    @RenderBody()
-    <div class="container body-content">
-        <hr />
-        <footer>
-            <ul class="nav navbar-nav right">
-                <li>@Html.ActionLink("About", "About", "Home")</li>
-                <li>@Html.ActionLink("Documentation", "Documentation", "Home")</li>
-                <li><a href="https://github.com/Evernest/Evernest" target="_blank">Development</a></li>
-                <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-            </ul>
+@RenderBody()
+<div class="container body-content">
+    <hr/>
+    <footer>
+        <ul class="nav navbar-nav right">
+            <li>@Html.ActionLink("About", "About", "Home")</li>
+            <li>@Html.ActionLink("Documentation", "Documentation", "Home")</li>
+            <li>
+                <a href="https://github.com/Evernest/Evernest" target="_blank">Development</a>
+            </li>
+            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+        </ul>
 
-            <p class="left">&copy; @DateTime.Now.Year - Evernest</p>
-        </footer>
-    </div>
+        <p class="left">&copy; @DateTime.Now.Year - Evernest</p>
+    </footer>
+</div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/evernest")
-    @RenderSection("scripts", required: false)
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/evernest")
+@RenderSection("scripts", false)
 </body>
 </html>

@@ -1,46 +1,49 @@
-﻿@model IEnumerable<EvernestWeb.Models.ModelSource>
+﻿@using EvernestWeb.ViewModels
+@model IEnumerable<EvernestWeb.Models.ModelSource>
 
 <table class="table table-striped">
     <thead>
-        <tr>
-            <th>#</th>
-            <th>Source name</th>
-            <th></th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>#</th>
+        <th>Source name</th>
+        <th></th>
+        <th></th>
+    </tr>
     </thead>
 
     <tbody>
-        @foreach (var source in Model)
-        {
-            if (source != null)
-            {
-                <tr>
-                    <td>@source.Id</td>
-                    <td>@source.Name</td>
-                    <td>@Html.ActionLink("Details", "Source", "Manager", new {id = source.Id}, null)</td>
-                    <td>@Html.ActionLink("Delete", "DeleteSource", "Manager", new {id = source.Id}, null)</td>
-                </tr>
-            }
-        }
-        @if (!Model.Any())
+    @foreach (var source in Model)
+    {
+        if (source != null)
         {
             <tr>
-                <td></td>
-                <td><em>You have no source yet.</em></td>
-                <td></td>
-                <td></td>
+                <td>@source.Id</td>
+                <td>@source.Name</td>
+                <td>@Html.ActionLink("Details", "Source", "Manager", new {id = source.Id}, null)</td>
+                <td>@Html.ActionLink("Delete", "DeleteSource", "Manager", new {id = source.Id}, null)</td>
             </tr>
         }
-    </tbody>
-    <tfoot>
+    }
+    @if (!Model.Any())
+    {
         <tr>
-            <td style="min-width: 15%;"></td>
+            <td></td>
             <td>
-                @{ Html.RenderPartial("_NewSourcePartial", new EvernestWeb.ViewModels.NewSourceModel()); }
+                <em>You have no source yet.</em>
             </td>
             <td></td>
             <td></td>
         </tr>
+    }
+    </tbody>
+    <tfoot>
+    <tr>
+        <td style="min-width: 15%;"></td>
+        <td>
+            @{ Html.RenderPartial("_NewSourcePartial", new NewSourceModel()); }
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
     </tfoot>
 </table>

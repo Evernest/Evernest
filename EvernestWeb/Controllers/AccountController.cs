@@ -1,9 +1,9 @@
 ﻿using System.Web.Mvc;
 using System.Web.Security;
-
-﻿using EvernestFront;
+using EvernestFront;
 using EvernestWeb.ViewModels;
-﻿
+using User = EvernestWeb.Models.User;
+
 namespace EvernestWeb.Controllers
 {
     public class AccountController : Controller
@@ -11,7 +11,7 @@ namespace EvernestWeb.Controllers
         // GET: /Account
         public ActionResult Index()
         {
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             return View(user);
         }
 
@@ -29,7 +29,7 @@ namespace EvernestWeb.Controllers
             if (ModelState.IsValid)
             {
                 var front = new UserProvider();
-                Models.User user = (Models.User) Session["User"];
+                var user = (User) Session["User"];
                 var userReq = front.GetUser(user.Id);
                 if (!userReq.Success)
                 {
@@ -37,7 +37,7 @@ namespace EvernestWeb.Controllers
                     return View(model);
                 }
                 var setPasswordReq = userReq.Result.SetPassword(model.Password, model.NewPassword);
-                if(!setPasswordReq.Success)
+                if (!setPasswordReq.Success)
                 {
                     ModelState.AddModelError("Password", "Incorrect Password.");
                     return View(model);
@@ -59,7 +59,7 @@ namespace EvernestWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(Models.User user, string returnUrl)
+        public ActionResult Login(User user, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -124,7 +124,7 @@ namespace EvernestWeb.Controllers
         {
             Session["User"] = null;
             FormsAuthentication.SignOut();
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

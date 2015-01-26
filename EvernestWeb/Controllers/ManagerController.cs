@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
-using System.Web.Routing;
 using EvernestFront;
 using EvernestFront.Contract;
-using EvernestWeb.ViewModels;
 using EvernestWeb.Models;
-using EvernestWeb.Helpers;
+using EvernestWeb.ViewModels;
+using User = EvernestWeb.Models.User;
 
 namespace EvernestWeb.Controllers
 {
@@ -16,7 +14,7 @@ namespace EvernestWeb.Controllers
         public ActionResult Index()
         {
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
                 return View();
@@ -31,7 +29,7 @@ namespace EvernestWeb.Controllers
         public ActionResult Stream(long id)
         {
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
 
             ViewBag.StreamId = id;
@@ -48,9 +46,9 @@ namespace EvernestWeb.Controllers
 
             // Check user input
             if (!ModelState.IsValid)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
 
             if (userReq.Success)
@@ -65,7 +63,6 @@ namespace EvernestWeb.Controllers
             }
 
             return RedirectToAction("Index", "Manager");
-
         }
 
         // POST: /Manager/NewStream
@@ -79,7 +76,7 @@ namespace EvernestWeb.Controllers
 
             // Get user
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
                 return RedirectToAction("Index", "Manager");
@@ -103,7 +100,7 @@ namespace EvernestWeb.Controllers
             }
 
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
                 return RedirectToAction("Index", "Manager");
@@ -123,7 +120,7 @@ namespace EvernestWeb.Controllers
         public ActionResult DeleteStream(long id)
         {
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
 
             ViewBag.StreamName = userReq.Result.GetEventStream(id).Result.Name;
@@ -134,8 +131,8 @@ namespace EvernestWeb.Controllers
 
         public ActionResult ConfirmForAdmin()
         {
-            NewStreamUserModel newUserModel = (NewStreamUserModel) Session["ConfirmModel"];
-            
+            var newUserModel = (NewStreamUserModel) Session["ConfirmModel"];
+
             return View(newUserModel);
         }
 
@@ -149,18 +146,18 @@ namespace EvernestWeb.Controllers
             Session["ConfirmModel"] = null;
 
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
 
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
             var streamReq = userReq.Result.GetEventStream(model.StreamId);
             if (!streamReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             var setReq = streamReq.Result.SetUserRightToAdmin(model.NewUser, model.Password);
 
-            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+            return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
         }
 
         // POST: /Manager/AddUser
@@ -172,7 +169,7 @@ namespace EvernestWeb.Controllers
 
             // Check user input
             if (!ModelState.IsValid)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             // if right == admin
             if (model.Right == AccessRight.Admin)
@@ -182,21 +179,21 @@ namespace EvernestWeb.Controllers
             }
 
             // else
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
 
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             var streamReq = userReq.Result.GetEventStream(model.StreamId);
             if (!streamReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             var setReq = streamReq.Result.SetUserRight(model.NewUser, model.Right);
             if (!setReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
-            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+            return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
         }
 
         [HttpPost]
@@ -204,12 +201,12 @@ namespace EvernestWeb.Controllers
         public ActionResult UpdateUserRightOnStream(UpdateUserRightOnStream model)
         {
             if (!ModelState.IsValid)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             // if right == admin
             if (model.Right == AccessRight.Admin)
             {
-                NewStreamUserModel modelBis = new NewStreamUserModel();
+                var modelBis = new NewStreamUserModel();
                 modelBis.NewUser = model.UserId;
                 modelBis.StreamId = model.StreamId;
                 Session["ConfirmModel"] = modelBis;
@@ -218,20 +215,20 @@ namespace EvernestWeb.Controllers
 
             // else
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             var streamReq = userReq.Result.GetEventStream(model.StreamId);
             if (!streamReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             var setReq = streamReq.Result.SetUserRight(model.UserId, model.Right);
             if (!setReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
-            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+            return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
         }
 
         [HttpPost]
@@ -239,23 +236,23 @@ namespace EvernestWeb.Controllers
         public ActionResult DeleteUserRightOnStream(DeleteUserRightOnStream model)
         {
             if (!ModelState.IsValid)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             var streamReq = userReq.Result.GetEventStream(model.StreamId);
             if (!streamReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
-            var setReq = streamReq.Result.SetUserRight(model.UserId, EvernestFront.Contract.AccessRight.NoRight);
+            var setReq = streamReq.Result.SetUserRight(model.UserId, AccessRight.NoRight);
             if (!setReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
-            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+            return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
         }
 
         // POST: /Manager/PushEvent
@@ -267,22 +264,22 @@ namespace EvernestWeb.Controllers
 
             // Check user input
             if (!ModelState.IsValid)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
-            var user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             var streamReq = userReq.Result.GetEventStream(model.StreamId);
             if (!streamReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
             var pushReq = streamReq.Result.Push(model.Content);
             if (!pushReq.Success)
-                return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+                return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
 
-            return RedirectToAction("Stream", "Manager", new { id = model.StreamId });
+            return RedirectToAction("Stream", "Manager", new {id = model.StreamId});
         }
 
         // ----- Sources -----
@@ -291,7 +288,7 @@ namespace EvernestWeb.Controllers
         public ActionResult Source(long id)
         {
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
                 return RedirectToAction("Index", "Manager");
@@ -300,7 +297,7 @@ namespace EvernestWeb.Controllers
             ViewBag.SourceId = id;
 
             var streamReq = userReq.Result.RelatedEventStreams;
-            Dictionary<string, long> dic = new Dictionary<string, long>();
+            var dic = new Dictionary<string, long>();
             foreach (var streamId in streamReq)
             {
                 var eventStreamReq = userReq.Result.GetEventStream(streamId).Result;
@@ -323,7 +320,7 @@ namespace EvernestWeb.Controllers
                 return RedirectToAction("Index", "Manager");
 
             // Get user
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
                 return RedirectToAction("Index", "Manager");
@@ -339,8 +336,8 @@ namespace EvernestWeb.Controllers
         // GET: /Manager/DeleteSource/{Id}
         public ActionResult DeleteSource(long id)
         {
-            var front = new UserProvider(); 
-            Models.User user = (Models.User)Session["User"];
+            var front = new UserProvider();
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
             if (!userReq.Success)
                 return RedirectToAction("Index", "Manager");
@@ -360,14 +357,14 @@ namespace EvernestWeb.Controllers
                 return RedirectToAction("Source", "Manager", new {id = model.SourceId});
 
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
 
             var sourceRightReq = userReq.Result.SetSourceRight(model.SourceId, model.StreamId, model.Right);
             if (!sourceRightReq.Success)
-                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+                return RedirectToAction("Source", "Manager", new {id = model.SourceId});
 
-            return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+            return RedirectToAction("Source", "Manager", new {id = model.SourceId});
         }
 
         [HttpPost]
@@ -375,18 +372,17 @@ namespace EvernestWeb.Controllers
         public ActionResult UpdateSourceRight(UpdateSourceRight model)
         {
             if (!ModelState.IsValid)
-                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+                return RedirectToAction("Source", "Manager", new {id = model.SourceId});
 
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
 
             var sourceRightReq = userReq.Result.SetSourceRight(model.SourceId, model.StreamId, model.Right);
             if (!sourceRightReq.Success)
-                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+                return RedirectToAction("Source", "Manager", new {id = model.SourceId});
 
-            return RedirectToAction("Source", "Manager", new { id = model.SourceId });
-
+            return RedirectToAction("Source", "Manager", new {id = model.SourceId});
         }
 
         [HttpPost]
@@ -394,19 +390,17 @@ namespace EvernestWeb.Controllers
         public ActionResult DeleteSourceRight(DeleteSourceRight model)
         {
             if (!ModelState.IsValid)
-                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+                return RedirectToAction("Source", "Manager", new {id = model.SourceId});
 
             var front = new UserProvider();
-            Models.User user = (Models.User)Session["User"];
+            var user = (User) Session["User"];
             var userReq = front.GetUser(user.Id);
 
             var sourceRightReq = userReq.Result.SetSourceRight(model.SourceId, model.StreamId, AccessRight.NoRight);
             if (!sourceRightReq.Success)
-                return RedirectToAction("Source", "Manager", new { id = model.SourceId });
+                return RedirectToAction("Source", "Manager", new {id = model.SourceId});
 
-            return RedirectToAction("Source", "Manager", new { id = model.SourceId });
-
+            return RedirectToAction("Source", "Manager", new {id = model.SourceId});
         }
-
     }
 }

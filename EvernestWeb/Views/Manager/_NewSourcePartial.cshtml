@@ -1,15 +1,14 @@
 ﻿@model EvernestWeb.ViewModels.NewSourceModel
 
-@{Html.BeginForm("NewSource", "Manager", FormMethod.Post, new { @class = "form-inline" });}
+@{ Html.BeginForm("NewSource", "Manager", FormMethod.Post, new {@class = "form-inline"}); }
 
 @Html.AntiForgeryToken()
 
 <div class="form-group">
-    @Html.LabelFor(m => m.Name, new { @class = "sr-only" })
-    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @placeholder = "Create new source..." })
+    @Html.LabelFor(m => m.Name, new {@class = "sr-only"})
+    @Html.TextBoxFor(m => m.Name, new {@class = "form-control", @placeholder = "Create new source..."})
 </div>
 
-<input type="submit" class="btn btn-default" value="Create" />
+<input type="submit" class="btn btn-default" value="Create"/>
 
-@{Html.EndForm();}
-
+@{ Html.EndForm(); }

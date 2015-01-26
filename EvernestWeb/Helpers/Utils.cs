@@ -1,27 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using EvernestFront;
 using EvernestFront.Contract;
 using EvernestWeb.Models;
-using EvernestWeb.ViewModels;
 
 namespace EvernestWeb.Helpers
 {
     /// <summary>
-    /// Misc static utility functions dealing with Front API.
-    /// To be refactored.
+    ///     Misc static utility functions dealing with Front API.
+    ///     To be refactored.
     /// </summary>
     public class Utils
     {
         /// <summary>
-        /// Associate strings right names to corresponding Front objets
+        ///     Associate strings right names to corresponding Front objets
         /// </summary>
-        public static readonly Dictionary<string, AccessRight> AccessRightsDictionary = new Dictionary<string, AccessRight>
+        public static readonly Dictionary<string, AccessRight> AccessRightsDictionary = new Dictionary
+            <string, AccessRight>
         {
-            {"ReadOnly",  AccessRight.ReadOnly },
+            {"ReadOnly", AccessRight.ReadOnly},
             {"WriteOnly", AccessRight.WriteOnly},
             {"ReadWrite", AccessRight.ReadWrite},
-            {"Admin",     AccessRight.Admin    }
+            {"Admin", AccessRight.Admin}
         };
 
         public static ModelStream ModelStreamFromStream(EventStream e)

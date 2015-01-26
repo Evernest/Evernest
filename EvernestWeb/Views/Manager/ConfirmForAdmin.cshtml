@@ -1,14 +1,16 @@
-﻿@model EvernestWeb.ViewModels.NewStreamUserModel
+﻿@using EvernestWeb.ViewModels
+@model NewStreamUserModel
 
-<h2><a href="/Manager">Manager</a> &gt; Set User Right on a Stream</h2>
+<h2>
+    <a href="/Manager">Manager</a> &gt; Set User Right on a Stream
+</h2>
 
 <div>
-    
+
     @{
         ViewBag.NewUser = Model.NewUser;
         ViewBag.StreamId = Model.StreamId;
-        Html.RenderPartial("_ConfirmPasswordUserRightFormPartial", new EvernestWeb.ViewModels.NewStreamUserModelExtended());
+        Html.RenderPartial("_ConfirmPasswordUserRightFormPartial", new NewStreamUserModelExtended());
     }
 
 </div>
-

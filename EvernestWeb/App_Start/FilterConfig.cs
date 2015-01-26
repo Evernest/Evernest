@@ -1,5 +1,4 @@
 ﻿using System.Web.Mvc;
-
 using EvernestWeb.Helpers;
 
 namespace EvernestWeb

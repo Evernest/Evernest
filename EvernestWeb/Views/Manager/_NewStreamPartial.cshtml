@@ -1,6 +1,6 @@
 ﻿@model EvernestWeb.ViewModels.NewStreamModel
 
-@{Html.BeginForm("NewStream", "Manager", FormMethod.Post, new {@class = "form-inline"});}
+@{ Html.BeginForm("NewStream", "Manager", FormMethod.Post, new {@class = "form-inline"}); }
 
 @Html.AntiForgeryToken()
 
@@ -11,5 +11,4 @@
 
 <input type="submit" class="btn btn-default" value="Create"/>
 
-@{Html.EndForm();}
-
+@{ Html.EndForm(); }

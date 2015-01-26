@@ -1,46 +1,49 @@
-﻿@model IEnumerable<EvernestWeb.Models.ModelStream>
+﻿@using EvernestWeb.ViewModels
+@model IEnumerable<EvernestWeb.Models.ModelStream>
 
 <table class="table table-striped">
     <thead>
-        <tr>
-            <th>#</th>
-            <th>Stream name</th>
-            <th></th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>#</th>
+        <th>Stream name</th>
+        <th></th>
+        <th></th>
+    </tr>
     </thead>
 
     <tbody>
-        @foreach (var stream in Model)
-        {
-            if (stream != null)
-            {
-                <tr>
-                    <td>@stream.Id</td>
-                    <td>@stream.Name</td>
-                    <td>@Html.ActionLink("Details", "Stream", "Manager", new {id = stream.Id}, null)</td>
-                    <td>@Html.ActionLink("Delete", "DeleteStream", "Manager", new {id = stream.Id}, null)</td>
-                </tr>
-            }
-        }
-        @if (!Model.Any())
+    @foreach (var stream in Model)
+    {
+        if (stream != null)
         {
             <tr>
-                <td></td>
-                <td><em>You have no stream yet.</em></td>
-                <td></td>
-                <td></td>
+                <td>@stream.Id</td>
+                <td>@stream.Name</td>
+                <td>@Html.ActionLink("Details", "Stream", "Manager", new {id = stream.Id}, null)</td>
+                <td>@Html.ActionLink("Delete", "DeleteStream", "Manager", new {id = stream.Id}, null)</td>
             </tr>
         }
-    </tbody>
-    <tfoot>
+    }
+    @if (!Model.Any())
+    {
         <tr>
-            <td style="min-width: 15%;"></td>
+            <td></td>
             <td>
-                @{ Html.RenderPartial("_NewStreamPartial", new EvernestWeb.ViewModels.NewStreamModel()); }
+                <em>You have no stream yet.</em>
             </td>
             <td></td>
             <td></td>
         </tr>
+    }
+    </tbody>
+    <tfoot>
+    <tr>
+        <td style="min-width: 15%;"></td>
+        <td>
+            @{ Html.RenderPartial("_NewStreamPartial", new NewStreamModel()); }
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
     </tfoot>
 </table>

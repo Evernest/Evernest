@@ -14,7 +14,7 @@
             <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.Username)
             </p>
-            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @placeholder = "User name" })
+            @Html.TextBoxFor(m => m.Username, new {@class = "form-control", @placeholder = "User name"})
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.Password)
@@ -28,9 +28,9 @@
             <p class="text-danger">
                 @Html.ValidationMessageFor(m => m.ConfirmPassword)
             </p>
-            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = "Confirm password" })
+            @Html.PasswordFor(m => m.ConfirmPassword, new {@class = "form-control", @placeholder = "Confirm password"})
         </div>
-        <input type="submit" class="btn btn-primary" value="Sign Up" />
+        <input type="submit" class="btn btn-primary" value="Sign Up"/>
     </fieldset>
 }
 

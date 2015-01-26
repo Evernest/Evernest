@@ -1,12 +1,11 @@
 ﻿using System.Web;
 using System.Web.Mvc;
-
 using EvernestWeb.Models;
 
 namespace EvernestWeb.Helpers
 {
     /// <summary>
-    /// SessionAuthorize adds to AuthorizeAttribute a check of session variable User.
+    ///     SessionAuthorize adds to AuthorizeAttribute a check of session variable User.
     /// </summary>
     public class SessionAuthorize : AuthorizeAttribute
     {

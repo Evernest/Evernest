@@ -1,24 +1,25 @@
 ﻿@model EvernestWeb.ViewModels.DeleteStreamModel
 
-<h2><a href="/Manager">Manager</a> &gt; Delete a stream</h2>
+<h2>
+    <a href="/Manager">Manager</a> &gt; Delete a stream
+</h2>
 
 <div>
-        
-        @using (Html.BeginForm("DeleteStream", "Manager", FormMethod.Post))
-        {
-            <p class="evernest-callout-danger">Please, confirm with your password to delete this stream.</p>
-            @Html.AntiForgeryToken()
-            @Html.ValidationSummary()
-            <fieldset>
-                <legend>Delete stream #@ViewBag.StreamId : @ViewBag.StreamName</legend>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.DeleteConfirmPassword)
-                    @Html.PasswordFor(m => m.DeleteConfirmPassword, new { @class = "form-control", @placeholder = "Password" })
-                </div>
-                <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId);}" />
-                <input type="submit" class="btn btn-primary" value="Confirm deletion" />
-            </fieldset>
-        }
-    
-</div>
 
+    @using (Html.BeginForm("DeleteStream", "Manager", FormMethod.Post))
+    {
+        <p class="evernest-callout-danger">Please, confirm with your password to delete this stream.</p>
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+        <fieldset>
+            <legend>Delete stream #@ViewBag.StreamId : @ViewBag.StreamName</legend>
+            <div class="form-group">
+                @Html.LabelFor(m => m.DeleteConfirmPassword)
+                @Html.PasswordFor(m => m.DeleteConfirmPassword, new {@class = "form-control", @placeholder = "Password"})
+            </div>
+            <input type="hidden" name="StreamId" value="@{ Write(ViewBag.StreamId); }"/>
+            <input type="submit" class="btn btn-primary" value="Confirm deletion"/>
+        </fieldset>
+    }
+
+</div>

@@ -115,7 +115,7 @@ namespace EvernestWeb.Controllers
                 return View(model);
             }
 
-            ViewBag.Message = "User as succesfully been added.";
+            ViewBag.Message = "User has succesfully been added.";
             return View();
         }
 

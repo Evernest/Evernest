@@ -1,9 +1,4 @@
-﻿using System;
-using EvernestBack;
-using EvernestFront.Contract;
-using EvernestFront.Contract.SystemEvents;
-
-namespace EvernestFront.SystemCommandHandling.Commands
+﻿namespace EvernestFront.SystemCommandHandling.Commands
 {
     class EventStreamCreationCommand : CommandBase
     {

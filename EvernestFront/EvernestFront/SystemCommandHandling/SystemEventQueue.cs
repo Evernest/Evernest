@@ -8,9 +8,11 @@ using EvernestFront.Projections;
 
 namespace EvernestFront.SystemCommandHandling
 {
+    /// <summary>
+    /// Thread-safe queue for SystemEvents. Once an event is dequeued, it updates the projections and is stored on Azure in a system stream.
+    /// </summary>
     class SystemEventQueue
     {
-
 
         private readonly Dispatcher _dispatcher;
         private SystemEventStream SystemEventStream { set; get; }

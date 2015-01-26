@@ -12,6 +12,12 @@ using EvernestFront.Utilities;
 
 namespace EvernestFront.SystemCommandHandling
 {
+    /// <summary>
+    /// Allows to queue system commands in a thread-safe way (using a ConcurrentQueue). 
+    /// Once a command is dequeued, its success or is decided using fully up-to-date information (the SystemCommandHandlerState). 
+    /// If it is successful, a corresponding SystemEvent is created and updates the SystemCommandHandlerState before the next command is dequeued.
+    /// At this point, the outcome can be consulted using the command GUID.
+    /// </summary>
     class SystemCommandHandler
     {
         private readonly AzureStorageClient _azureStorageClient;

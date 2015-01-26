@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using EvernestFront.Contract;
-using EvernestFront.Contract.SystemEvents;
-using EvernestFront.Utilities;
-
-namespace EvernestFront.SystemCommandHandling.Commands
+﻿namespace EvernestFront.SystemCommandHandling.Commands
 {
     class EventStreamDeletionCommand : CommandBase
     {

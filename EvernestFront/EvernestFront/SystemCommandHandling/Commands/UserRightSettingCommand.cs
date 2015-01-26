@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using EvernestFront.Contract;
-using EvernestFront.Contract.SystemEvents;
+﻿using EvernestFront.Contract;
 
 namespace EvernestFront.SystemCommandHandling.Commands
 {

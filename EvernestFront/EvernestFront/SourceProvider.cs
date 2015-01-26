@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using EvernestFront.SystemCommandHandling;
+﻿using System.Diagnostics;
 using EvernestFront.Contract;
 using EvernestFront.Projections;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Contains the logic for consulting the SourcesProjection to build Source objects.
+    /// </summary>
     public class SourceProvider
     {
         internal readonly SourcesProjection SourcesProjection;

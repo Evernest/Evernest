@@ -4,6 +4,9 @@ using EvernestFront.Contract;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Contains simple helper methods to handle access rights.
+    /// </summary>
     class AccessVerifier
     {
         public HashSet<AccessAction> ComputePossibleAccessActions(AccessRight right)
@@ -88,23 +91,6 @@ namespace EvernestFront
                 case (AccessRight.Admin):
                 case (AccessRight.Root):
                     return true;
-                default:
-                    throw new Exception("AccessVerifier.CanAdmin : case not handled");
-            }
-        }
-
-        private bool CanBeModified(AccessRight right)
-        {
-            switch (right)
-            {
-                case (AccessRight.NoRight):
-                case (AccessRight.WriteOnly):
-                case (AccessRight.ReadOnly):
-                case (AccessRight.ReadWrite):
-                    return true;
-                case (AccessRight.Admin):
-                case (AccessRight.Root):
-                    return false;
                 default:
                     throw new Exception("AccessVerifier.CanAdmin : case not handled");
             }

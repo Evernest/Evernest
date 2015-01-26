@@ -1,10 +1,11 @@
 ﻿using System.Runtime.Serialization;
-using EvernestFront.Utilities;
-using EvernestFront.Contract.SystemEvents;
 using Newtonsoft.Json;
 
 namespace EvernestFront.Contract
 {
+    /// <summary>
+    /// This contract allows to serialize/deserialize all system events in a polymorphic manner (see Utilities.Serializer.ReadSystemEventEnvelope)
+    /// </summary>
     [DataContract]
     class SystemEventEnvelope
     {

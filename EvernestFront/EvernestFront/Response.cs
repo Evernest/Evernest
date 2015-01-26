@@ -2,12 +2,14 @@
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Return type of all public methods used by the website and the API.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class Response<T>
     {
         public bool Success {get; private set;}
         
-        //TODO : protected string requestID;
-
         public FrontError? Error { get; private set; }
 
         public T Result { get; private set; }

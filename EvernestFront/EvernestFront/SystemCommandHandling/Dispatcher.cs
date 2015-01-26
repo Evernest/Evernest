@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Projections;
 
 namespace EvernestFront.SystemCommandHandling
 {
+    /// <summary>
+    /// Is used to distribute system events to the appropriate projections (including the SystemCommandHandlerState in some cases)
+    /// </summary>
     class Dispatcher
     {
         IEnumerable<IProjection> Projections { get; set; }

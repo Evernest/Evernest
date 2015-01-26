@@ -4,6 +4,9 @@ using Newtonsoft.Json;
 
 namespace EvernestFront.Contract
 {
+    /// <summary>
+    /// User events are stored in event streams in this serialized format.
+    /// </summary>
     [DataContract]
     class EventContract
     {

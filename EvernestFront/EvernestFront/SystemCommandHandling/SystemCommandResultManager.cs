@@ -3,6 +3,9 @@ using System.Collections.Immutable;
 
 namespace EvernestFront.SystemCommandHandling
 {
+    /// <summary>
+    /// Stores command results. They can be consulted using a CommandResultViewer.
+    /// </summary>
     class SystemCommandResultManager
     {
         private ImmutableDictionary<Guid, Response<Guid>> _resultDictionary;

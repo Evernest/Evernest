@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using EvernestFront.SystemCommandHandling;
 using EvernestFront.SystemCommandHandling.Commands;
 using EvernestFront.Contract;
@@ -9,6 +8,9 @@ using EvernestFront.Utilities;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Short-lived object that represents a user. Is built from the UsersProjection using a UserProvider.
+    /// </summary>
     public partial class User
     {
         private readonly SystemCommandHandler _systemCommandHandler;

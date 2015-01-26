@@ -1,7 +1,4 @@
-﻿using EvernestFront.Contract;
-using EvernestFront.Contract.SystemEvents;
-
-namespace EvernestFront.SystemCommandHandling.Commands
+﻿namespace EvernestFront.SystemCommandHandling.Commands
 {
     internal class UserKeyCreationCommand : CommandBase
     {

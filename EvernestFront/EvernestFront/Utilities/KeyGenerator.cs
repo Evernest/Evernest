@@ -5,6 +5,9 @@ using System.Text;
 
 namespace EvernestFront.Utilities
 {
+    /// <summary>
+    /// Generates cryptographically strong random strings to be used as user/source keys.
+    /// </summary>
     class KeyGenerator
     {
         private const string AllowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";

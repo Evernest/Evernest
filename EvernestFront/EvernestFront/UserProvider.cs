@@ -9,6 +9,9 @@ using UserRecord = EvernestFront.Projections.UserRecord;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Contains the logic for consulting the UsersProjection to get or create Users.
+    /// </summary>
     public class UserProvider
     {
         internal readonly UsersProjection UsersProjection;

@@ -1,5 +1,8 @@
 ﻿namespace EvernestFront.Contract
 {
+    /// <summary>
+    /// Errors that are returned to the website or the API in case of an invalid command
+    /// </summary>
     public enum FrontError
     {
         AdminAccessDenied=0,

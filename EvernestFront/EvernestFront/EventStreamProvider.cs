@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using EvernestFront.Contract;
 using EvernestFront.Projections;
 using EvernestFront.SystemCommandHandling;
@@ -7,6 +6,9 @@ using EvernestFront.SystemCommandHandling.Commands;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Contains the logic for consulting the EventStreamsProjection to get or create EventStreams.
+    /// </summary>
     class EventStreamProvider
     {
         private readonly EventStreamsProjection _eventStreamsProjection;

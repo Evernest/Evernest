@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using EvernestBack;
+﻿using System.Collections.Generic;
 using EvernestFront.Contract;
 using EvernestFront.Contract.SystemEvents;
 using EvernestFront.Projections;

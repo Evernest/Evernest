@@ -3,6 +3,9 @@ using EvernestFront.Contract;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Short-lived object that represents a source. Is built from the SourcesProjection using a SourceProvider.
+    /// </summary>
     public class Source
     {   
         public string Key { get; private set; }

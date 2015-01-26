@@ -15,6 +15,13 @@ Response
 Public methods return a Response object, which indicates whether the request was successful, the requested information if it was, and relevant errors if it wasn't.
 These responses are then read by the website or the API to provide the user with the required information.
 
+
+Projections
+====================
+
+Projections are data needed to answer requests, which are quick to access, at the cost of not being always fully up-to-date.
+It is used to display information for clients. When exactness is critical in order to validate an action, we first ask the projections: if they refuse it we directly return an error; if they accept, we tell the client it is probably accepted, and double-check by issuing a system command and waiting until it is treated using fully up-to-date information to perform the action.
+
 System commands
 =========================================
 
@@ -28,26 +35,3 @@ If Success is false, the command is dropped, because it is likely invalid (it's 
 Once the command is dequeued, it is treated using completely accurate data, and an accurate response can be found using a CommandResultViewer and the command GUID.
 At this point, the relevant objects have indeed been created and can be looked up to find Ids.
 
-User public methods
-
-=====================================
-
-
-    Response<User> UserBuilder.GetUser(string userName)
-
-    Response<User> UserBuilder.GetUser(long userId)
-
-    Response<Guid> UserBuilder.AddUser(string userName)
-
-    Response<Guid> UserBuilder.AddUser(string userName, string password)
-
-
-Source public methods
-=======================================
-
-    Response<Tuple<String, Guid>> User.CreateSource(string sourceName)
-    Response<Source> User.GetSource(string sourceName)
-    Response<Source> User.GetSource(long sourceId)
-    Response<Source> SourcesBuilder.GetSource(string sourceKey)
-    Response<Guid> User.SetSourceRight(string sourceKey, long streamId, AccessRight right)
-    Response<Guid> User.DeleteSource(long sourceId)

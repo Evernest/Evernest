@@ -120,31 +120,31 @@ namespace EvernestBack
         public long ReadIndexInfo()
         {
             long nextId = 0;
+            ulong lastByte = _bufferedStreamIO.TotalWrittenBytes;
             if(_streamIndexBlob.Exists())
             {
                 _milestones = new History(_streamIndexBlob);
                 if(_milestones.GreatestElement(ref _lastPosition, ref nextId))
                 {
                     nextId++;
-                    ulong lastByte = _bufferedStreamIO.TotalWrittenBytes;
                     if (lastByte < _lastPosition)
                     {
                         _lastPosition = 0;
                         _milestones = new History();
                     }
-                    if (lastByte > 0)
-                    {
-                        byte[] buffer = new byte[lastByte - _lastPosition];
-                        int byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int)_lastPosition, (int)(lastByte - _lastPosition));
-                        EventRange unreadRange = new EventRange(buffer, 0, byteCount);
-                        EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
-                        while (enumerator.MoveNext())
-                        {
-                            nextId = enumerator.CurrentId;
-                            NotifyNewEntry(nextId, (ulong)enumerator.CurrentSize);
-                            nextId++;
-                        }
-                    }
+                }
+            }
+            if (lastByte > 0)
+            {
+                byte[] buffer = new byte[lastByte - _lastPosition];
+                int byteCount = _bufferedStreamIO.DownloadRangeToByteArray(buffer, 0, (int)_lastPosition, (int)(lastByte - _lastPosition));
+                EventRange unreadRange = new EventRange(buffer, 0, byteCount);
+                EventRangeEnumerator enumerator = unreadRange.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    nextId = enumerator.CurrentId;
+                    NotifyNewEntry(nextId, (ulong)enumerator.CurrentSize);
+                    nextId++;
                 }
             }
             return nextId;

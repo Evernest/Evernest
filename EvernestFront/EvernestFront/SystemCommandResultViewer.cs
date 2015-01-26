@@ -5,7 +5,8 @@ namespace EvernestFront
 {
     /// <summary>
     /// Allows to view the result of a command once it has been treated by the system.
-    /// If a successful command can be seen here, the system state has already been updated accordingly.
+    /// If a successful command can be seen here, the corresponding action has already been performed and the projections are aware of it :
+    /// this means that a command that requires the previous one can be issued.
     /// </summary>
     public class SystemCommandResultViewer
     {

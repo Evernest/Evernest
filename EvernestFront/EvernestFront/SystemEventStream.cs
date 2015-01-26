@@ -8,6 +8,10 @@ using EvernestFront.Contract.SystemEvents;
 
 namespace EvernestFront
 {
+    /// <summary>
+    /// Used to store all past SystemEvents on Azure. 
+    /// After a shutdown, they can be retrieved using the method PullAll and used by a SystemEventRecuperator to rebuild the pre-shutdown system state.
+    /// </summary>
     class SystemEventStream
     {
         private readonly IEventStream _backEventStream;
@@ -18,20 +22,15 @@ namespace EvernestFront
                 _backEventStream = azureStorageClient.GetEventStream(systemEventStreamId);
         }
 
-        public void CreateSystemStream()
-        {
-
-        }
-
         internal void Push(ISystemEvent systemEvent)
         {
             var serializer = new Serializer();
             var contract = new SystemEventEnvelope(systemEvent.GetType().Name,serializer.WriteContract(systemEvent));
             var contractString = serializer.WriteContract(contract);
-            _backEventStream.Push(contractString, CallbackSuccess, CallbackFailure);
+            _backEventStream.Push(contractString, PushCallbackSuccess, PushCallbackFailure);
         }
-        private void CallbackSuccess(LowLevelEvent acceptedEvent) { }
-        private void CallbackFailure(string deniedQuery, string errorMessage) { }
+        private void PushCallbackSuccess(LowLevelEvent acceptedEvent) { }
+        private void PushCallbackFailure(string deniedQuery, string errorMessage) { }
 
         internal List<ISystemEvent> PullAll()
         {

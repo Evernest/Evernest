@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Threading;
 using EvernestFront.SystemCommandHandling;
 using EvernestFront.SystemCommandHandling.Commands;
@@ -44,6 +45,9 @@ namespace EvernestFront
             HashSet<AccessAction> possibleActions, long streamId, string name, 
             ImmutableDictionary<string,AccessRight> users, IEventStream backStream)
         {
+            Debug.Assert(backStream!=null, "EvernestFront.EventStream: backstream is null", 
+                "Try to get an eventstream whose backstream is null. This should not happen as the only time we store" +
+                "such eventstreams is when reading history stream; they should be deleted before we reach the end of history stream");
             _systemCommandHandler = systemCommandHandler;
             Id = streamId;
             Name = name;

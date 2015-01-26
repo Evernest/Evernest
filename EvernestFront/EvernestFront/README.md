@@ -5,9 +5,11 @@ EvernestFront
 
 EvernestFront provides to Website and Web API functions handling Evernest core objects. (See [Concepts](https://github.com/Evernest/Evernest/wiki/Concepts:-Events,-Streams-and-Rights))
 
-It uses event streams provided by EvernestBack to store user events but also meta data such as object (user, source, stream) creation and deletion.
+An instance of EvernestFront is interfaced with the back-end using an EvernestBack.AzureStorageClient.
 
-It checks for available rights at each request for data or action.
+It uses event streams provided by EvernestBack to store user events but also meta-data such as object (user, source, stream) creation and deletion.
+
+It stores user and source rights over the event streams and uses them to validate or invalidate requests.
 
 Response
 ================
@@ -33,5 +35,10 @@ If Success is true, the command is queued. Unless other commands that invalidate
 If Success is false, the command is dropped, because it is likely invalid (it's invalid unless other recent commands validate it, in which case it should be re-issued later).
 
 Once the command is dequeued, it is treated using completely accurate data, and an accurate response can be found using a CommandResultViewer and the command GUID.
-At this point, the relevant objects have indeed been created and can be looked up to find Ids.
+At this point, the corresponding action has been performed and the projections have been updated : for example, created objects can be looked up to find Ids.
 
+System events and persistence
+=========================================
+
+Once a SystemCommand is dequeued and accepted, a matching SystemEvent is created. They represent events that have occurred and are used to update projections. 
+In addition, SystemEvents are serialized and stored on Azure in a SystemEventStream. After a restart, they are deserialized and used to rebuild the pre-shutdown system state.

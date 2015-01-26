@@ -254,6 +254,32 @@ namespace EvernestBack
         }
 
         /// <summary>
+        /// Try to get an existing event stream.
+        /// </summary>
+        /// <param name="streamStringId">The stream's name.</param>
+        /// <param name="stream">The stream to be retrieved.</param>
+        /// <returns>True if the stream exists, false otherwise.</returns>
+        public bool TryGetExistingEventStream(string streamStringId, out IEventStream stream)
+        {
+            stream = null;
+            if (!StreamExists(streamStringId))
+                return false;
+            stream = OpenStream(streamStringId);
+            return true;
+        }
+
+        /// <summary>
+        /// Try to get an existing event stream.
+        /// </summary>
+        /// <param name="streamId">The stream's Id (to be converted into a string).</param>
+        /// <param name="stream">The stream to be retrieved.</param>
+        /// <returns>True if the stream exists, false otherwise.</returns>
+        public bool TryGetExistingEventStream(long streamId, out IEventStream stream)
+        {
+            return TryGetExistingEventStream(streamId.ToString(), out stream);
+        }
+
+        /// <summary>
         /// Try to create a new event stream if it doesn't already exists.
         /// </summary>
         /// <param name="streamStringId">The stream's name.</param>

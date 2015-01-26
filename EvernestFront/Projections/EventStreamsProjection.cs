@@ -98,7 +98,7 @@ namespace EvernestFront.Projections
         private void When(EventStreamCreatedSystemEvent systemEvent)
         {
             IEventStream backStream;
-            _azureStorageClient.TryGetEventStream(systemEvent.StreamId, out backStream);
+            _azureStorageClient.TryGetExistingEventStream(systemEvent.StreamId, out backStream);
             var eventStreamData = new EventStreamRecord(systemEvent.StreamName, systemEvent.CreatorName,
                 backStream);
             var nti = Dictionaries.NameToId.SetItem(systemEvent.StreamName, systemEvent.StreamId);

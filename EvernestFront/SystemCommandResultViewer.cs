@@ -12,6 +12,7 @@ namespace EvernestFront
     {
         internal SystemCommandResultManager Manager;
 
+        //TODO: remove this awful constructor when proper dependencies injection is implemented (cf Injector)
         public SystemCommandResultViewer()
         {
             Manager = Injector.Instance.SystemCommandResultViewer.Manager;

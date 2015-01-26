@@ -6,7 +6,7 @@ namespace EvernestFront.Projections
 {
     /// <summary>
     /// Data stored about sources in order to answer quickly to requests on them. 
-    /// By design, it is not always totally up-to-date.
+    /// By design, it is not always fully up-to-date.
     /// KeyToData is immutable to allow concurrent access (unique writer, multiple readers).
     /// </summary>
     class SourcesProjection : IProjection

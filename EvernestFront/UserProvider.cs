@@ -20,6 +20,7 @@ namespace EvernestFront
 
         internal readonly EventStreamProvider EventStreamProvider;
 
+        //TODO: remove this awful constructor when proper dependencies injection is implemented (cf Injector)
         public UserProvider()
         {
             var usersProvider = Injector.Instance.UserProvider;

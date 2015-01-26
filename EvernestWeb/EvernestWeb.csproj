@@ -210,7 +210,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EvernestFront\EvernestFront\EvernestFront.csproj">
+    <ProjectReference Include="..\EvernestFront\EvernestFront.csproj">
       <Project>{955f313d-19ed-4f17-904b-4d95a4ee7e74}</Project>
       <Name>EvernestFront</Name>
     </ProjectReference>

@@ -3,7 +3,8 @@ Evernest
 
 ![Evernest](https://raw.githubusercontent.com/Evernest/Evernest/master/doc/images/logo.png)
 
-**Warning:** Evernest is still under development. Some features may not be fully implemented yet.
+NB: Evernest was a school project and is no longer developped
+-------------------------------------------------------------
 
 Evernest is an easy-to-use event store service.
 
@@ -14,6 +15,8 @@ Evernest provides a simple unified way to store and visualize event-driven data 
 
 Main features
 -------------
+
+**Warning:** Evernest is still under development. Some features may not be fully implemented yet.
 
  * **Easy-to-use** Both for programers and administrators.
  * **Open Source** You can install and use your own clone of Evernest. Feel free to customize it!
@@ -47,4 +50,4 @@ We also have an automatically generated [documentation](http://dev.evernest.org/
 History
 -------
 
-Evernest is being developped as a project for Cloud Computing lecture at ENS Paris (by [J. Vermorel](http://vermorel.com/)).
+Evernest is being developped as a project for Cloud Computing lecture at ENS Paris (by [J. Vermorel](http://vermorel.com/)) in 2014-2015.
